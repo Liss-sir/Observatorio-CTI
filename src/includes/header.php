@@ -115,7 +115,7 @@
         </div>
       </a>
       <nav class="nav-desktop">
-        <a href="inicio.html">Inicio</a>
+        <a href="../../view/landing/landing.php">Inicio</a>
         <a href="busqueda.html">Perfiles</a>
         <a href="busqueda.html">Lineas Tecnologicas</a>
         <a href="tecnologias-emergentes.html">Tecnologias Emergentes</a>

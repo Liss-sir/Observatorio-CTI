@@ -68,7 +68,7 @@
         <div class="footer-nav">
           <h4>Navegacion</h4>
           <ul>
-            <li><a href="inicio.html">Inicio</a></li>
+            <li><a href="../../view/landing/landing.php">Inicio</a></li>
             <li><a href="busqueda.html">Perfiles</a></li>
             <li><a href="busqueda.html">Lineas Tecnologicas</a></li>
             <li><a href="tecnologias-emergentes.html">Tecnologias Emergentes</a></li>
