@@ -1,29 +1,17 @@
 <?php
-
-header('Content-Type: application/json');
-require_once 'charge.php';
+$host = 'localhost';
+$dbname = 'observatorio_cti';
+$username = 'root';
+$password = '';
 
 try {
-    $host = getenv('DB_HOST');
-    $dbname = getenv('DB_NAME');
-    $user = getenv('DB_USER');
-    $pass = getenv('DB_PASS');
-    $port = getenv('DB_PORT') ?: 3306;
-
-    $dsn = "mysql:host=$host;port=$port;dbname=$dbname;charset=utf8mb4";
-
-    $pdo = new PDO($dsn, $user, $pass);
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-
-    echo json_encode([
-        "status" => "success",
-        "message" => "Connection with the database $dbname successful"
-    ]);
-
-} catch (PDOException $e) {
-    echo json_encode([
-        "status" => "error",
-        "message" => "Error of connection: " . $e->getMessage()
-    ]);
-    exit;
+    $conn = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8mb4", $username, $password);
+    $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    
+} catch(PDOException $e) {
+    die(json_encode([
+        "error" => "Error de conexión: " . $e->getMessage()
+    ]));
 }
+
+?>
