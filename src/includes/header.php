@@ -122,7 +122,7 @@
         <a href="tecnologias-emergentes.html">Gestión Perfiles</a>
       </nav>
       <div class="header-actions" style="display:flex;align-items:center;gap:12px;">
-        <a href="login.html" class="btn-login">Iniciar Sesion</a>
+        <a href="login.php" class="btn-login">Iniciar Sesion</a>
       </div>
     </div>
   </header>
