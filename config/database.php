@@ -1,5 +1,6 @@
 <?php
 
+header('Content-Type: application/json');
 require_once 'charge.php';
 
 try {
@@ -12,11 +13,17 @@ try {
     $dsn = "mysql:host=$host;port=$port;dbname=$dbname;charset=utf8mb4";
 
     $pdo = new PDO($dsn, $user, $pass);
-
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-    echo "Connection with the database $dbname successful";
+    echo json_encode([
+        "status" => "success",
+        "message" => "Connection with the database $dbname successful"
+    ]);
 
 } catch (PDOException $e) {
-    die("Error of conection: " . $e->getMessage());
+    echo json_encode([
+        "status" => "error",
+        "message" => "Error of connection: " . $e->getMessage()
+    ]);
+    exit;
 }
