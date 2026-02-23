@@ -1,0 +1,12 @@
+# Ignorar archivo de entorno
+.env
+
+# Logs
+*.log
+
+# Archivos temporales
+*.tmp
+
+# Configuración de sistema
+.DS_Store
+Thumbs.db
