@@ -102,7 +102,7 @@
   <!-- HEADER -->
   <header class="site-header">
     <div class="header-inner">
-      <a href="inicio.html" class="logo-link">
+      <a href="landing.php" class="logo-link">
         <div class="logo-group">
           <div class="logo-images">
             <img src="../../assets/img/logo-tecnnova.jpeg" alt="logo-tecnnova">
@@ -122,7 +122,7 @@
         <a href="tecnologias-emergentes.html">Gestión Perfiles</a>
       </nav>
       <div class="header-actions" style="display:flex;align-items:center;gap:12px;">
-        <a href="login.php" class="btn-login">Iniciar Sesion</a>
+        <a href="../../auth/login/login.php" class="btn-login">Iniciar Sesion</a>
       </div>
     </div>
   </header>
