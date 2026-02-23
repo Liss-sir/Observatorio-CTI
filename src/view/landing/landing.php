@@ -52,12 +52,6 @@ echo <<<'HTML'
               Buscar
             </button>
           </div>
-
-          <button class="mx-auto mt-3 inline-flex items-center gap-2 text-sm font-semibold text-slate-500 hover:text-slate-700">
-            <i data-lucide="sliders-horizontal" class="h-4 w-4"></i>
-            Filtros avanzados
-            <i data-lucide="chevron-down" class="h-4 w-4"></i>
-          </button>
         </div>
 
       </div>
