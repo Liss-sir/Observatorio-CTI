@@ -46,8 +46,8 @@ function nav_classes(string $target): string {
         <a href="tecnologias-emergentes.html" class="<?= nav_classes('tecnologias-emergentes.html') ?>">Historial</a>
       </nav>
       <div class="flex items-center gap-3">
-        <a href="login.html" class="inline-flex items-center px-4 py-1.5 border border-[#00a300]/30 rounded-md text-sm font-medium text-[#1a2620] bg-transparent hover:bg-[#e4f0e4] transition-colors duration-200">Iniciar Sesion</a>
-        <a href="login.html" class="inline-flex items-center px-4 py-1.5 border border-[#00a300]/30 rounded-md text-sm font-medium text-[#fff] bg-[#29a802] hover:bg-[#228b23] transition-colors duration-200">Registrarse</a>
+        <a href="../../auth/login/login.php" class="inline-flex items-center px-4 py-1.5 border border-[#00a300]/30 rounded-md text-sm font-medium text-[#1a2620] bg-transparent hover:bg-[#e4f0e4] transition-colors duration-200">Iniciar Sesion</a>
+        <a href="login." class="inline-flex items-center px-4 py-1.5 border border-[#00a300]/30 rounded-md text-sm font-medium text-[#fff] bg-[#29a802] hover:bg-[#228b23] transition-colors duration-200">Registrarse</a>
       </div>
     </div>
   </header>
