@@ -120,7 +120,7 @@ echo
             </a>
           </div>
           <div class="bg-white border border-gray-200 rounded-2xl shadow-sm hover:shadow-lg transition-all duration-300 hover:-translate-y-1 p-8 text-center animate delay-2">
-            <img class="w-20 h-20 rounded-full object-cover border-2 border-gray-200 mx-auto mb-4 hover:border-green-700/40 transition-all duration-300 hover:scale-105" src="../../assets/member2.jpg" alt="Foto de Lisseth Soto Monsalve" />
+            <img class="w-20 h-20 rounded-full object-cover border-2 border-gray-200 mx-auto mb-4 hover:border-green-700/40 transition-all duration-300 hover:scale-105" src="../../assets/img/creadores_img/lissi_creador.jpeg" alt="Foto de Lisseth Soto Monsalve" />
             <div class="font-['Plus_Jakarta_Sans'] font-bold text-base">Lisseth Soto Monsalve</div>
             <span class="inline-block mt-1.5 px-4 py-1.5 rounded-full text-xs font-semibold bg-[#f0f9f0] text-[#228B22] whitespace-nowrap">Lider de Proyecto</span>
             <div class="mt-2 text-xs text-[#737373]">Analisis y Desarrollo de Software</div>
