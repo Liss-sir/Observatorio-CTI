@@ -54,15 +54,18 @@ La plataforma busca centralizar y estructurar la información del entorno produc
   git clone https://github.com/TU-USUARIO/Observatorio-CTI.git
 
 2. Copiar el proyecto en el directorio del servidor local:
+   
   htdocs/ (XAMPP)
+
   www/ (WAMP)
 
-3. Importar la base de datos en phpMyAdmin.
+4. Importar la base de datos en phpMyAdmin.
 
-4. Configurar las credenciales de conexión en:
+5. Configurar las credenciales de conexión en:
   config/database.php
 
   Ejemplo:
+  
     $host = 'localhost';
     $dbname = 'observatorio_cti';
     $user = 'root';
