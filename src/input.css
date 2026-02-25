@@ -1,0 +1,15 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+
+  .btn-sena {
+    @apply bg-sena text-white hover:bg-sena-hover transition-colors duration-200 px-4 py-1.5 rounded-md text-sm font-medium;
+  }
+
+  .btn-sena-outline {
+    @apply border border-sena-border text-sena-text-main hover:bg-sena-soft transition-colors duration-200 px-4 py-1.5 rounded-md text-sm font-medium;
+  }
+
+}
