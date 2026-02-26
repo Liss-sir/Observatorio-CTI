@@ -10,6 +10,7 @@ class LoginModel {
 
     /**
      * Iniciar sesión con correo y contraseña
+     * Soporta contraseñas hasheadas y en texto plano (con rehasheo automático)
      * @param string $correo
      * @param string $password
      * @return array ['success' => bool, 'usuario' => array|null, 'error' => string|null]
@@ -39,13 +40,27 @@ class LoginModel {
                 return ['success' => false, 'error' => 'Correo electrónico no verificado'];
             }
 
-            // Verificar contraseña
+            // --- Verificación de contraseña (hash + texto plano legacy) ---
+            $passwordValid = false;
+
+            // 1. Intentar con password_verify (para hashes)
             if (password_verify($password, $usuario['password_hash'])) {
-                unset($usuario['password_hash']); // No enviar hash al frontend
-                return ['success' => true, 'usuario' => $usuario];
+                $passwordValid = true;
+            }
+            // 2. Si falla, comparar en texto plano (soporte para contraseñas legacy)
+            elseif ($password === $usuario['password_hash']) {
+                $passwordValid = true;
+                // Rehashear la contraseña y actualizar en la BD para migrar a hash
+                $this->cambiarPassword($usuario['id_usuario'], $password);
             }
 
-            return ['success' => false, 'error' => 'Contraseña incorrecta'];
+            if (!$passwordValid) {
+                return ['success' => false, 'error' => 'Contraseña incorrecta'];
+            }
+
+            // Contraseña válida: devolver datos sin el hash
+            unset($usuario['password_hash']);
+            return ['success' => true, 'usuario' => $usuario];
 
         } catch (Exception $e) {
             return ['success' => false, 'error' => 'Error en el servidor'];
@@ -127,7 +142,7 @@ class LoginModel {
     }
 
     /**
-     * Cambiar contraseña de un usuario
+     * Cambiar contraseña de un usuario (genera hash automáticamente)
      * @param int $id_usuario
      * @param string $nueva_password
      * @return bool
