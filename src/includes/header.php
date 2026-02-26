@@ -66,7 +66,7 @@ function nav_classes(string $target): string {
 
       <!-- BOTONES -->
       <div class="flex items-center gap-3">
-        <a href="login.html"
+        <a href="../../auth/login/login.php"
            class="inline-flex items-center px-4 py-1.5 rounded-md text-sm font-medium btn-sena-outline transition-colors duration-200">
            Iniciar Sesion
         </a>
