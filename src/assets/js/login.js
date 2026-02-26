@@ -1,30 +1,23 @@
-document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("DOMContentLoaded", () => {
 
-    const tabs = document.querySelectorAll(".tab-btn");
-    const forms = document.querySelectorAll(".form-role");
+    lucide.createIcons(); // activa lucide
 
-    tabs.forEach(tab => {
-        tab.addEventListener("click", () => {
+    const toggleBtn = document.getElementById("togglePassword");
+    const passwordInput = document.getElementById("password");
 
-            const role = tab.getAttribute("data-role");
+    toggleBtn.addEventListener("click", () => {
 
-            // Reset tabs
-            tabs.forEach(t => {
-                t.classList.remove("bg-white", "shadow-sm", "font-medium");
-                t.classList.add("text-gray-500");
-            });
+        const isPassword = passwordInput.type === "password";
 
-            // Activate clicked tab
-            tab.classList.add("bg-white", "shadow-sm", "font-medium");
-            tab.classList.remove("text-gray-500");
+        // Cambiar tipo
+        passwordInput.type = isPassword ? "text" : "password";
 
-            // Hide all forms
-            forms.forEach(form => form.classList.add("hidden"));
+        // Cambiar icono
+        toggleBtn.innerHTML = isPassword
+            ? '<i data-lucide="eye-off" class="w-5 h-5"></i>'
+            : '<i data-lucide="eye" class="w-5 h-5"></i>';
 
-            // Show selected form
-            document.getElementById(`form-${role}`).classList.remove("hidden");
-
-        });
+        lucide.createIcons(); // volver a renderizar icono
     });
 
 });
