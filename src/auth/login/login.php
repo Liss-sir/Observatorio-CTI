@@ -1,153 +1,124 @@
-<?php
-include __DIR__ . '/../../includes/header.php';
-$error = $_GET['error'] ?? null;
-?>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Login</title>
 
-<!-- Tailwind -->
-<script src="https://cdn.tailwindcss.com"></script>
+    <!-- Tailwind -->
+    <script src="https://cdn.tailwindcss.com"></script>
 
-<!-- Lucide -->
+    <!-- JS -->
+    <script src="/observatorio/Observatorio-CTI/src/assets/js/login.js"></script>
+</head>
+<body class="h-screen bg-gray-100">
 <script src="https://unpkg.com/lucide@latest"></script>
 
-<div class="min-h-[calc(100vh-64px)] bg-gray-100 flex items-center justify-center p-4">
 
-    <div class="w-full max-w-md">
+<div class="flex h-full">
 
-        <!-- Logo / Título -->
-        <div class="flex flex-col items-center mb-6">
-            <div class="bg-green-600 text-white w-12 h-12 flex items-center justify-center rounded-lg text-xl font-bold">
-                S
-            </div>
-            <h1 class="text-2xl font-semibold mt-4">Iniciar Sesión</h1>
-            <p class="text-gray-500 text-sm">Accede a tu panel de gestión</p>
-        </div>
+    <!-- LADO IZQUIERDO (IMAGEN + TEXTO) -->
+    <div class="hidden lg:flex w-1/2 relative">
 
-        <div class="bg-white rounded-xl shadow-md p-6">
+        <img src="../../assets/img/sena.jpeg"
+            class="absolute inset-0 w-full h-full object-cover">
 
-            <!-- Tabs -->
-            <div class="flex bg-gray-100 rounded-lg p-1 mb-5 text-sm">
+        <div class="absolute inset-0 bg-black/60"></div>
 
-                <button type="button" data-role="empresa"
-                    class="tab-btn flex-1 flex items-center justify-center gap-2 bg-white rounded-md py-2 shadow-sm font-medium">
-                    <i data-lucide="building-2" class="w-4 h-4"></i>
-                    Empresa
-                </button>
+        <div class="relative z-10 flex flex-col justify-center px-16 text-white">
+            
+            <h1 class="text-4xl font-bold leading-tight mb-6">
+                Observatorio de Perfiles Tecnológicos
+            </h1>
 
-                <button type="button" data-role="persona"
-                    class="tab-btn flex-1 flex items-center justify-center gap-2 text-gray-500 py-2"> 
-                    <i data-lucide="user" class="w-4 h-4"></i>
-                    Persona
-                </button>
+            <p class="text-lg opacity-80 max-w-md">
+                Necesidades empresariales clasificadas por líneas tecnológicas
+                y tecnologías emergentes del sector productivo risaraldense.
+            </p>
 
-                <button type="button" data-role="admin"
-                    class="tab-btn flex-1 flex items-center justify-center gap-2 text-gray-500 py-2">
-                    <i data-lucide="shield" class="w-4 h-4"></i>
-                    Admin
-                </button>
-
-            </div>
-
-            <?php if ($error): ?>
-                <div class="bg-red-50 border border-red-200 text-red-600 text-sm p-3 rounded-lg mb-4">
-                    Credenciales incorrectas
-                </div>
-            <?php endif; ?>
-
-            <!-- ================= EMPRESA ================= -->
-            <form method="POST" id="form-empresa" class="form-role space-y-4">
-
-                <div>
-                    <label class="text-sm text-gray-600">Nombre de la empresa</label>
-                    <input type="text" name="empresa"
-                        class="w-full mt-1 px-3 py-2 border rounded-lg focus:ring-2 focus:ring-green-500 focus:outline-none">
-                </div>
-
-                <div>
-                    <label class="text-sm text-gray-600">NIT</label>
-                    <input type="text" name="nit"
-                        class="w-full mt-1 px-3 py-2 border rounded-lg focus:ring-2 focus:ring-green-500 focus:outline-none">
-                </div>
-
-                <div>
-                    <label class="text-sm text-gray-600">Correo electrónico</label>
-                    <input type="email" name="email"
-                        class="w-full mt-1 px-3 py-2 border rounded-lg focus:ring-2 focus:ring-green-500 focus:outline-none">
-                </div>
-
-                <div>
-                    <label class="text-sm text-gray-600">Contraseña</label>
-                    <input type="password" name="password"
-                        class="w-full mt-1 px-3 py-2 border rounded-lg focus:ring-2 focus:ring-green-500 focus:outline-none">
-                </div>
-
-                <button type="submit"
-                    class="w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded-lg font-medium flex items-center justify-center gap-2">
-                    <i data-lucide="log-in" class="w-4 h-4"></i>
-                    Ingresar como Empresa
-                </button>
-
-            </form>
-
-            <!-- ================= PERSONA ================= -->
-            <form method="POST" id="form-persona" class="form-role space-y-4 hidden">
-
-                <div>
-                    <label class="text-sm text-gray-600">Número de documento</label>
-                    <input type="text" name="documento"
-                        class="w-full mt-1 px-3 py-2 border rounded-lg focus:ring-2 focus:ring-green-500 focus:outline-none">
-                </div>
-
-                <div>
-                    <label class="text-sm text-gray-600">Correo electrónico</label>
-                    <input type="email" name="email"
-                        class="w-full mt-1 px-3 py-2 border rounded-lg focus:ring-2 focus:ring-green-500 focus:outline-none">
-                </div>
-
-                <div>
-                    <label class="text-sm text-gray-600">Contraseña</label>
-                    <input type="password" name="password"
-                        class="w-full mt-1 px-3 py-2 border rounded-lg focus:ring-2 focus:ring-green-500 focus:outline-none">
-                </div>
-
-                <button type="submit"
-                    class="w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded-lg font-medium flex items-center justify-center gap-2">
-                    <i data-lucide="log-in" class="w-4 h-4"></i>
-                    Ingresar como Persona
-                </button>
-
-            </form>
-
-            <!-- ================= ADMIN ================= -->
-            <form method="POST" id="form-admin" class="form-role space-y-4 hidden">
-
-                <div>
-                    <label class="text-sm text-gray-600">Correo electrónico</label>
-                    <input type="email" name="email"
-                        class="w-full mt-1 px-3 py-2 border rounded-lg focus:ring-2 focus:ring-green-500 focus:outline-none">
-                </div>
-
-                <div>
-                    <label class="text-sm text-gray-600">Contraseña</label>
-                    <input type="password" name="password"
-                        class="w-full mt-1 px-3 py-2 border rounded-lg focus:ring-2 focus:ring-green-500 focus:outline-none">
-                </div>
-
-                <button type="submit"
-                    class="w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded-lg font-medium flex items-center justify-center gap-2">
-                    <i data-lucide="log-in" class="w-4 h-4"></i>
-                    Ingresar como Admin
-                </button>
-
-            </form>
+            <p class="absolute bottom-8 text-xs opacity-70">
+                Centro de Diseño e Innovación Tecnológica Industrial - SENA 2026
+            </p>
 
         </div>
     </div>
+
+    <!-- LADO DERECHO (FORMULARIO) -->
+    <div class="flex w-full lg:w-1/2 items-center justify-center px-8 bg-white">
+
+        <div class="w-full max-w-md bg-white rounded-2xl shadow-2xl border-2 border-gray-150 p-10 transition hover:shadow-3xl">
+
+            <h2 class="text-2xl font-semibold mb-2 text-center text-[30px]">
+                Iniciar Sesión
+            </h2>
+
+            <p class="text-gray-500 mb-8 text-center text-[18px]">
+                Accede a tu panel de gestión empresarial
+            </p>
+
+            <form class="space-y-6">
+
+                <!-- Email -->
+                <div>
+                    <label class="block text-sm mb-2">
+                        Correo electrónico
+                    </label>
+
+                    <div class="relative">
+                        <input type="email"
+                               placeholder="correo@ejemplo.com"
+                               class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 focus:outline-none bg-gray-100">
+                    </div>
+                </div>
+
+                <!-- Password -->
+                <div>
+                    <label class="block text-sm mb-2">
+                        Contraseña
+                    </label>
+
+                    <div class="relative">
+                        <input type="password"
+                            id="password"
+                            placeholder="Ingresa tu contraseña"
+                            class="w-full px-4 py-3 pr-12 rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 focus:outline-none bg-gray-100">
+
+                        <!-- Botón ojo -->
+                        <button type="button"
+                                id="togglePassword"
+                                class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-green-600 transition">
+
+                            <i data-lucide="eye" class="w-5 h-5"></i>
+
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Botón -->
+                <button type="submit"
+                        class="w-full bg-green-600 hover:bg-green-700 text-white py-3 rounded-lg font-medium transition">
+                    Ingresar
+                </button>
+
+            </form>
+
+            <div class="text-center mt-6 text-sm text-gray-500">
+                No tienes una cuenta?
+                <a href="../../auth/login/register.php" class="text-green-600 hover:underline">
+                    Regístrate aquí
+                </a>
+            </div>
+
+            <div class="text-center mt-4">
+                <a href="../../view/landing/landing.php" class="text-sm text-green-600 hover:underline">
+                    ← Volver al inicio
+                </a>
+            </div>
+
+        </div>
+
+    </div>
+
 </div>
 
-<script src="/observatorio/Observatorio-CTI/src/assets/js/login.js"></script>
-
-<script>
-    lucide.createIcons();
-</script>
-
-<?php include __DIR__ . '/../../includes/footer.php'; ?>
+</body>
+</html>
