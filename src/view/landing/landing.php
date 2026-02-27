@@ -72,7 +72,7 @@ echo <<<'HTML'
           <h2 class="mt-1 text-xl font-extrabold text-sena-text-main">Perfiles Destacados</h2>
         </div>
 
-        <a class="inline-flex items-center gap-2 text-sm font-bold text-sena-strong hover:text-sena-hover" href="#">
+        <a class="inline-flex items-center gap-2 text-sm font-bold text-sena-strong" href="#">
           Ver todos <i data-lucide="arrow-right" class="h-4 w-4"></i>
         </a>
       </div>
@@ -81,7 +81,7 @@ echo <<<'HTML'
         <!-- Card 1 -->
         <article class="group cursor-pointer rounded-xl border border-sena-border bg-white p-4 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-sena-strong hover:shadow-lg">
           <div class="flex items-center justify-between">
-            <span class="rounded-full bg-sena-soft px-2.5 py-0.5 text-[10px] font-extrabold text-sena-text-main">
+            <span class="rounded-full bg-sena-soft px-2.5 py-0.5 text-[10px] font-extrabold text-sena-strong">
               Tecnologías de
             </span>
             <span class="rounded-full bg-sena-soft px-2 py-0.5 text-[10px] font-extrabold text-sena-strong">
@@ -89,11 +89,11 @@ echo <<<'HTML'
             </span>
           </div>
 
-          <h3 class="mt-3 text-sm font-extrabold text-sena-text-main transition-colors duration-200 group-hover:text-sena-strong">
+          <h3 class="mt-3 text-sm font-extrabold text-sena-text-main transition-colors duration-200">
             Desarrollador Full Stack Senior
           </h3>
 
-          <p class="mt-1 text-xs font-semibold text-sena-text-muted transition-colors duration-200 group-hover:text-sena-strong">
+          <p class="mt-1 text-xs font-semibold text-sena-text-muted transition-colors duration-200">
             Se requiere profesional con experiencia en desarrollo de aplicaciones web complejas…
           </p>
 
@@ -103,25 +103,25 @@ echo <<<'HTML'
           </div>
 
           <div class="mt-4 flex items-center justify-between border-t border-sena-border pt-3">
-            <div class="text-xs font-bold text-sena-text-muted transition-colors duration-200 group-hover:text-sena-strong">
+            <div class="text-xs font-bold text-sena-text-muted transition-colors duration-200">
               TechColombia S.A.S.
             </div>
-            <i data-lucide="eye" class="h-4 w-4 text-sena-text-muted transition-colors duration-200 group-hover:text-sena-strong"></i>
+            <i data-lucide="eye" class="h-4 w-4 text-sena-text-muted transition-colors duration-200"></i>
           </div>
         </article>
 
         <!-- Card 2 -->
         <article class="group cursor-pointer rounded-xl border border-sena-border bg-white p-4 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-sena-strong hover:shadow-lg">
           <div class="flex items-center justify-between">
-            <span class="rounded-full bg-sena-soft px-2.5 py-0.5 text-[10px] font-extrabold text-sena-text-main">Tecnologías de</span>
+            <span class="rounded-full bg-sena-soft px-2.5 py-0.5 text-[10px] font-extrabold text-sena-strong">Tecnologías de</span>
             <span class="rounded-full bg-sena-soft px-2 py-0.5 text-[10px] font-extrabold text-sena-strong">Vigente</span>
           </div>
 
-          <h3 class="mt-3 text-sm font-extrabold text-sena-text-main transition-colors duration-200 group-hover:text-sena-strong">
+          <h3 class="mt-3 text-sm font-extrabold text-sena-text-main transition-colors duration-200">
             Especialista en Inteligencia Artificial
           </h3>
 
-          <p class="mt-1 text-xs font-semibold text-sena-text-muted transition-colors duration-200 group-hover:text-sena-strong">
+          <p class="mt-1 text-xs font-semibold text-sena-text-muted transition-colors duration-200">
             Perfil orientado a profesionales con experiencia en machine learning, deep…
           </p>
 
@@ -131,25 +131,25 @@ echo <<<'HTML'
           </div>
 
           <div class="mt-4 flex items-center justify-between border-t border-sena-border pt-3">
-            <div class="text-xs font-bold text-sena-text-muted transition-colors duration-200 group-hover:text-sena-strong">
+            <div class="text-xs font-bold text-sena-text-muted transition-colors duration-200">
               InnoSoft Ltda.
             </div>
-            <i data-lucide="eye" class="h-4 w-4 text-sena-text-muted transition-colors duration-200 group-hover:text-sena-strong"></i>
+            <i data-lucide="eye" class="h-4 w-4 text-sena-text-muted transition-colors duration-200"></i>
           </div>
         </article>
 
         <!-- Card 3 -->
         <article class="group cursor-pointer rounded-xl border border-sena-border bg-white p-4 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-sena-strong hover:shadow-lg">
           <div class="flex items-center justify-between">
-            <span class="rounded-full bg-sena-soft px-2.5 py-0.5 text-[10px] font-extrabold text-sena-text-main">Tecnologías de</span>
+            <span class="rounded-full bg-sena-soft px-2.5 py-0.5 text-[10px] font-extrabold text-sena-strong">Tecnologías de</span>
             <span class="rounded-full bg-sena-soft px-2 py-0.5 text-[10px] font-extrabold text-sena-strong">Vigente</span>
           </div>
 
-          <h3 class="mt-3 text-sm font-extrabold text-sena-text-main transition-colors duration-200 group-hover:text-sena-strong">
+          <h3 class="mt-3 text-sm font-extrabold text-sena-text-main transition-colors duration-200 group">
             Analista de Ciberseguridad
           </h3>
 
-          <p class="mt-1 text-xs font-semibold text-sena-text-muted transition-colors duration-200 group-hover:text-sena-strong">
+          <p class="mt-1 text-xs font-semibold text-sena-text-muted transition-colors duration-200">
             Se busca profesional para identificar vulnerabilidades, gestionar incidentes de…
           </p>
 
@@ -159,25 +159,25 @@ echo <<<'HTML'
           </div>
 
           <div class="mt-4 flex items-center justify-between border-t border-sena-border pt-3">
-            <div class="text-xs font-bold text-sena-text-muted transition-colors duration-200 group-hover:text-sena-strong">
-              DataVision Corp.
+            <div class="text-xs font-bold text-sena-text-muted transition-colors duration-200">
+                            DataVision Corp.
             </div>
-            <i data-lucide="eye" class="h-4 w-4 text-sena-text-muted transition-colors duration-200 group-hover:text-sena-strong"></i>
+            <i data-lucide="eye" class="h-4 w-4 text-sena-text-muted transition-colors duration-200"></i>
           </div>
         </article>
 
         <!-- Card 4 -->
         <article class="group cursor-pointer rounded-xl border border-sena-border bg-white p-4 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-sena-strong hover:shadow-lg">
           <div class="flex items-center justify-between">
-            <span class="rounded-full bg-sena-soft px-2.5 py-0.5 text-[10px] font-extrabold text-sena-text-main">Tecnologías de</span>
+            <span class="rounded-full bg-sena-soft px-2.5 py-0.5 text-[10px] font-extrabold text-sena-strong">Tecnologías de</span>
             <span class="rounded-full bg-sena-soft px-2 py-0.5 text-[10px] font-extrabold text-sena-strong">Vigente</span>
           </div>
 
-          <h3 class="mt-3 text-sm font-extrabold text-sena-text-main transition-colors duration-200 group-hover:text-sena-strong">
+          <h3 class="mt-3 text-sm font-extrabold text-sena-text-main transition-colors duration-200">
             Ingeniero de Datos
           </h3>
 
-          <p class="mt-1 text-xs font-semibold text-sena-text-muted transition-colors duration-200 group-hover:text-sena-strong">
+          <p class="mt-1 text-xs font-semibold text-sena-text-muted transition-colors duration-200">
             Profesional especializado en la creación y mantenimiento de pipelines de datos,…
           </p>
 
@@ -187,10 +187,10 @@ echo <<<'HTML'
           </div>
 
           <div class="mt-4 flex items-center justify-between border-t border-sena-border pt-3">
-            <div class="text-xs font-bold text-sena-text-muted transition-colors duration-200 group-hover:text-sena-strong">
+            <div class="text-xs font-bold text-sena-text-muted transition-colors duration-200">
               CloudNet Colombia
             </div>
-            <i data-lucide="eye" class="h-4 w-4 text-sena-text-muted transition-colors duration-200 group-hover:text-sena-strong"></i>
+            <i data-lucide="eye" class="h-4 w-4 text-sena-text-muted transition-colors duration-200"></i>
           </div>
         </article>
       </div>
@@ -209,7 +209,7 @@ echo <<<'HTML'
         <!-- TIC -->
         <article class="group cursor-pointer rounded-xl border border-sena-border bg-white p-5 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-sena-strong hover:shadow-md">
           <div class="flex h-full items-center gap-4">
-            <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-sena-soft text-sm font-extrabold text-sena-strong transition-colors duration-200 group-hover:bg-sena-strong group-hover:text-white">
+            <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-sena-soft text-sm font-extrabold text-sena-strong transition-colors duration-200 group-hover:bg-sena-strong">
               TIC
             </div>
             <div class="min-w-0">
@@ -224,7 +224,7 @@ echo <<<'HTML'
         <!-- BIO -->
         <article class="group cursor-pointer rounded-xl border border-sena-border bg-white p-5 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-sena-strong hover:shadow-md">
           <div class="flex h-full items-center gap-4">
-            <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-sena-soft text-sm font-extrabold text-sena-strong transition-colors duration-200 group-hover:bg-sena-strong group-hover:text-white">
+            <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-sena-soft text-sm font-extrabold text-sena-strong transition-colors duration-200 group-hover:bg-sena-strong">
               BIO
             </div>
             <div class="min-w-0">
@@ -237,7 +237,7 @@ echo <<<'HTML'
         <!-- DIS -->
         <article class="group cursor-pointer rounded-xl border border-sena-border bg-white p-5 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-sena-strong hover:shadow-md">
           <div class="flex h-full items-center gap-4">
-            <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-sena-soft text-sm font-extrabold text-sena-strong transition-colors duration-200 group-hover:bg-sena-strong group-hover:text-white">
+            <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-sena-soft text-sm font-extrabold text-sena-strong transition-colors duration-200 group-hover:bg-sena-strong">
               DIS
             </div>
             <div class="min-w-0">
@@ -250,7 +250,7 @@ echo <<<'HTML'
         <!-- PRO -->
         <article class="group cursor-pointer rounded-xl border border-sena-border bg-white p-5 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-sena-strong hover:shadow-md">
           <div class="flex h-full items-center gap-4">
-            <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-sena-soft text-sm font-extrabold text-sena-strong transition-colors duration-200 group-hover:bg-sena-strong group-hover:text-white">
+            <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-sena-soft text-sm font-extrabold text-sena-strong transition-colors duration-200 group-hover:bg-sena-strong">
               PRO
             </div>
             <div class="min-w-0">
@@ -273,7 +273,7 @@ echo <<<'HTML'
       <div class="mt-5 grid grid-cols-2 gap-4 md:grid-cols-5">
         <!-- item 1 -->
         <div class="group cursor-pointer rounded-xl border border-sena-border bg-white p-5 text-center shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-sena-strong hover:shadow-md">
-          <div class="mx-auto flex h-10 w-10 items-center justify-center rounded-full bg-sena-soft text-sena-strong transition-colors duration-200 group-hover:bg-sena-strong group-hover:text-white">
+          <div class="mx-auto flex h-10 w-10 items-center justify-center rounded-full bg-sena-soft text-sena-strong transition-colors duration-200 group-hover:bg-sena-strong">
             <i data-lucide="sparkles" class="h-4 w-4"></i>
           </div>
           <div class="mt-3 text-xs font-extrabold text-sena-text-main">Inteligencia Artificial</div>
@@ -282,7 +282,7 @@ echo <<<'HTML'
 
         <!-- item 2 -->
         <div class="group cursor-pointer rounded-xl border border-sena-border bg-white p-5 text-center shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-sena-strong hover:shadow-md">
-          <div class="mx-auto flex h-10 w-10 items-center justify-center rounded-full bg-sena-soft text-sena-strong transition-colors duration-200 group-hover:bg-sena-strong group-hover:text-white">
+          <div class="mx-auto flex h-10 w-10 items-center justify-center rounded-full bg-sena-soft text-sena-strong transition-colors duration-200 group-hover:bg-sena-strong">
             <i data-lucide="link" class="h-4 w-4"></i>
           </div>
           <div class="mt-3 text-xs font-extrabold text-sena-text-main">Blockchain</div>
@@ -291,7 +291,7 @@ echo <<<'HTML'
 
         <!-- item 3 -->
         <div class="group cursor-pointer rounded-xl border border-sena-border bg-white p-5 text-center shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-sena-strong hover:shadow-md">
-          <div class="mx-auto flex h-10 w-10 items-center justify-center rounded-full bg-sena-soft text-sena-strong transition-colors duration-200 group-hover:bg-sena-strong group-hover:text-white">
+          <div class="mx-auto flex h-10 w-10 items-center justify-center rounded-full bg-sena-soft text-sena-strong transition-colors duration-200 group-hover:bg-sena-strong">
             <i data-lucide="wifi" class="h-4 w-4"></i>
           </div>
           <div class="mt-3 text-xs font-extrabold text-sena-text-main">Internet de las Cosas (IoT)</div>
@@ -300,7 +300,7 @@ echo <<<'HTML'
 
         <!-- item 4 -->
         <div class="group cursor-pointer rounded-xl border border-sena-border bg-white p-5 text-center shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-sena-strong hover:shadow-md">
-          <div class="mx-auto flex h-10 w-10 items-center justify-center rounded-full bg-sena-soft text-sena-strong transition-colors duration-200 group-hover:bg-sena-strong group-hover:text-white">
+          <div class="mx-auto flex h-10 w-10 items-center justify-center rounded-full bg-sena-soft text-sena-strong transition-colors duration-200 group-hover:bg-sena-strong">
             <i data-lucide="cloud" class="h-4 w-4"></i>
           </div>
           <div class="mt-3 text-xs font-extrabold text-sena-text-main">Computación en la Nube</div>
@@ -309,7 +309,7 @@ echo <<<'HTML'
 
         <!-- item 5 -->
         <div class="group cursor-pointer rounded-xl border border-sena-border bg-white p-5 text-center shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-sena-strong hover:shadow-md">
-          <div class="mx-auto flex h-10 w-10 items-center justify-center rounded-full bg-sena-soft text-sena-strong transition-colors duration-200 group-hover:bg-sena-strong group-hover:text-white">
+          <div class="mx-auto flex h-10 w-10 items-center justify-center rounded-full bg-sena-soft text-sena-strong transition-colors duration-200 group-hover:bg-sena-strong">
             <i data-lucide="shield" class="h-4 w-4"></i>
           </div>
           <div class="mt-3 text-xs font-extrabold text-sena-text-main">Ciberseguridad Avanzada</div>
