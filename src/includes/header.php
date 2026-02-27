@@ -71,7 +71,7 @@ function nav_classes(string $target): string {
            Iniciar Sesion
         </a>
 
-        <a href="login.html"
+        <a href="../../auth/login/register.php"
            class="inline-flex items-center px-4 py-1.5 rounded-md text-sm font-medium btn-sena transition-colors duration-200">
            Registrarse
         </a>
