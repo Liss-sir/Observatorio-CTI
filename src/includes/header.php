@@ -24,10 +24,10 @@ function nav_classes(string $target): string {
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Tecnologias Emergentes - SENA Observatorio Tecnologico</title>
 
-  <!-- 🌐 GOOGLE FONTS -->
+  <!-- GOOGLE FONTS -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@600;700;800&display=swap" rel="stylesheet" />
 
-  <!-- 🎨 Tailwind CSS Compilado -->
+  <!-- Tailwind CSS Compilado -->
   <link rel="stylesheet" href="../../../assets/css/output.css">
 
 </head>
@@ -57,7 +57,7 @@ function nav_classes(string $target): string {
       <!-- NAV -->
       <nav class="flex items-center gap-2 justify-self-center">
         <a href="../../view/landing/landing.php" class="<?= nav_classes('landing.php') ?>">Inicio</a>
-        <a href="busqueda.html" class="<?= nav_classes('busqueda.html') ?>">Perfiles</a>
+        <a href="../../view/perfiles/perfiles.php" class="<?= nav_classes('perfiles.php') ?>">Perfiles</a>
         <a href="busqueda.html" class="<?= nav_classes('busqueda.html') ?>">Lineas Tecnologicas</a>
         <a href="tecnologias-emergentes.html" class="<?= nav_classes('tecnologias-emergentes.html') ?>">Tecnologias Emergentes</a>
         <a href="tecnologias-emergentes.html" class="<?= nav_classes('tecnologias-emergentes.html') ?>">Gestión Perfiles</a>
@@ -66,7 +66,7 @@ function nav_classes(string $target): string {
 
       <!-- BOTONES -->
       <div class="flex items-center gap-3">
-        <a href="login.html"
+        <a href="../../auth/login/login.php"
            class="inline-flex items-center px-4 py-1.5 rounded-md text-sm font-medium btn-sena-outline transition-colors duration-200">
            Iniciar Sesion
         </a>
