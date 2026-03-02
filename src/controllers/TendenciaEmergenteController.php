@@ -12,11 +12,7 @@ class TendenciaEmergenteController {
         $this->model = new TendenciaEmergenteModel($conn);
     }
 
-    /* ================= TENDENCIAS EMERGENTES (CRUD COMPLETO) ================= */
-
-    /**
-     * Listar tendencias activas
-     */
+    // List treands active
     public function listar() {
         $tendencias = $this->model->listar();
         echo json_encode([
@@ -25,9 +21,7 @@ class TendenciaEmergenteController {
         ]);
     }
 
-    /**
-     * Listar todas las tendencias (para administración)
-     */
+    // List all treands (from admin)
     public function listarTodas() {
         $tendencias = $this->model->listarTodas();
         echo json_encode([
@@ -36,9 +30,7 @@ class TendenciaEmergenteController {
         ]);
     }
 
-    /**
-     * Obtener una tendencia por ID
-     */
+    // Get treands for ID 
     public function obtener($id) {
         if (!$id) {
             echo json_encode([
@@ -63,13 +55,10 @@ class TendenciaEmergenteController {
         }
     }
 
-    /**
-     * Crear una nueva tendencia
-     */
+    // Create new treands
     public function crear() {
         $input = json_decode(file_get_contents("php://input"), true);
         
-        // Validaciones básicas
         if (empty($input['id_area'])) {
             echo json_encode([
                 'success' => false,
@@ -86,7 +75,6 @@ class TendenciaEmergenteController {
             return;
         }
         
-        // Validar que el nombre no exista en el área
         if ($this->model->nombreExisteEnArea($input['nombre'], $input['id_area'])) {
             echo json_encode([
                 'success' => false,
@@ -111,9 +99,7 @@ class TendenciaEmergenteController {
         }
     }
 
-    /**
-     * Actualizar tendencia existente
-     */
+    // Update treands exist
     public function actualizar() {
         $input = json_decode(file_get_contents("php://input"), true);
         
@@ -125,7 +111,6 @@ class TendenciaEmergenteController {
             return;
         }
         
-        // Validaciones condicionales
         if (isset($input['nombre']) && isset($input['id_area'])) {
             if (empty(trim($input['nombre']))) {
                 echo json_encode([
@@ -135,7 +120,6 @@ class TendenciaEmergenteController {
                 return;
             }
             
-            // Verificar si el nombre ya existe en el área (excluyendo el ID actual)
             if ($this->model->nombreExisteEnArea($input['nombre'], $input['id_area'], $input['id_tendencia'])) {
                 echo json_encode([
                     'success' => false,
@@ -153,9 +137,7 @@ class TendenciaEmergenteController {
         ]);
     }
 
-    /**
-     * Cambiar estado de la tendencia (activar/desactivar)
-     */
+    // Change state of the treands
     public function cambiarEstado($id, $accion) {
         if (!$id) {
             echo json_encode([
@@ -188,9 +170,7 @@ class TendenciaEmergenteController {
         ]);
     }
 
-    /**
-     * Eliminar tendencia (borrado físico)
-     */
+    // Delete treands 
     public function eliminar($id) {
         if (!$id) {
             echo json_encode([
@@ -215,11 +195,7 @@ class TendenciaEmergenteController {
         }
     }
 
-    /* ================= MÉTODOS POR ÁREA ================= */
-
-    /**
-     * Obtener tendencias por área
-     */
+    // Get trands for area
     public function obtenerPorArea($id_area) {
         if (!$id_area) {
             echo json_encode([
@@ -237,9 +213,7 @@ class TendenciaEmergenteController {
         ]);
     }
 
-    /**
-     * Obtener tendencias para select por área
-     */
+    // Get treands from select for area
     public function obtenerParaSelectPorArea($id_area) {
         if (!$id_area) {
             echo json_encode([
@@ -265,11 +239,7 @@ class TendenciaEmergenteController {
         ]);
     }
 
-    /* ================= MÉTODOS DE BÚSQUEDA ================= */
-
-    /**
-     * Buscar tendencias por término
-     */
+    // Search treands for term
     public function buscar() {
         $termino = $_GET['q'] ?? '';
         
@@ -289,6 +259,7 @@ class TendenciaEmergenteController {
         ]);
     }
 
+    // Search avanced whith filters
     /**
      * Búsqueda avanzada con filtros
      */
@@ -303,11 +274,7 @@ class TendenciaEmergenteController {
         ]);
     }
 
-    /* ================= VALIDACIONES ================= */
-
-    /**
-     * Verificar si el nombre de la tendencia ya existe en un área
-     */
+    // Verify if the name this treands exist in area
     public function verificarNombreExistente() {
         $input = json_decode(file_get_contents("php://input"), true);
         
@@ -330,9 +297,7 @@ class TendenciaEmergenteController {
         ]);
     }
 
-    /**
-     * Verificar si la tendencia tiene dependencias
-     */
+    // Verify if the trands have dependences
     public function verificarDependencias($id) {
         if (!$id) {
             echo json_encode([
@@ -349,11 +314,7 @@ class TendenciaEmergenteController {
         ]);
     }
 
-    /* ================= ESTADÍSTICAS ================= */
-
-    /**
-     * Obtener estadísticas de tendencias
-     */
+    // Get statistics in treands
     public function obtenerEstadisticas() {
         $estadisticas = $this->model->obtenerEstadisticas();
         echo json_encode([
@@ -362,11 +323,7 @@ class TendenciaEmergenteController {
         ]);
     }
 
-    /* ================= MÉTODOS ADICIONALES ================= */
-
-    /**
-     * Obtener tendencias para select (todas)
-     */
+    // Get treands for select
     public function obtenerParaSelect() {
         $tendencias = $this->model->obtenerParaSelect();
         
@@ -384,9 +341,7 @@ class TendenciaEmergenteController {
         ]);
     }
 
-    /**
-     * Obtener tendencias populares
-     */
+    // Get popular trends
     public function obtenerTendenciasPopulares() {
         $limite = $_GET['limite'] ?? 5;
         $tendencias = $this->model->obtenerTendenciasPopulares((int)$limite);
@@ -397,9 +352,7 @@ class TendenciaEmergenteController {
         ]);
     }
 
-    /**
-     * Obtener tendencias con conteo de líneas
-     */
+    // Get trends in cont this line
     public function obtenerConConteoLineas() {
         $id_area = $_GET['id_area'] ?? null;
         $tendencias = $this->model->obtenerConConteoLineas($id_area);
@@ -411,13 +364,11 @@ class TendenciaEmergenteController {
     }
 }
 
-/* ================= ROUTER ================= */
 
 $accion = $_GET['accion'] ?? null;
 $id = $_GET['id_tendencia'] ?? null;
 $id_area = $_GET['id_area'] ?? null;
 
-// Verificar conexión
 if (!isset($conn)) {
     echo json_encode(["error" => "Error de conexión a la base de datos"]);
     exit;
@@ -427,7 +378,6 @@ $controller = new TendenciaEmergenteController($conn);
 
 switch ($accion) {
     
-    // CRUD básico
     case "listar":
         $controller->listar();
         break;
@@ -460,7 +410,7 @@ switch ($accion) {
         $controller->eliminar($id);
         break;
     
-    // Métodos por área
+    // MMethods from area
     case "porArea":
         $controller->obtenerPorArea($id_area);
         break;
@@ -469,7 +419,7 @@ switch ($accion) {
         $controller->obtenerParaSelectPorArea($id_area);
         break;
     
-    // Búsqueda
+    // Searchin
     case "buscar":
         $controller->buscar();
         break;
@@ -478,7 +428,7 @@ switch ($accion) {
         $controller->buscarAvanzado();
         break;
         
-    // Validaciones
+    // Validation
     case "verificarNombre":
         $controller->verificarNombreExistente();
         break;
@@ -487,12 +437,12 @@ switch ($accion) {
         $controller->verificarDependencias($id);
         break;
         
-    // Estadísticas
+    // Statistics
     case "estadisticas":
         $controller->obtenerEstadisticas();
         break;
         
-    // Métodos adicionales
+    // Methods additional
     case "paraSelect":
         $controller->obtenerParaSelect();
         break;
