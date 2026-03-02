@@ -9,11 +9,7 @@ class TendenciaEmergenteModel {
         $this->conn = $db;
     }
 
-    /* ================= TENDENCIAS EMERGENTES (CRUD BÁSICO) ================= */
-
-    /**
-     * Listar todas las tendencias activas
-     */
+    // List all treands active
     public function listar() {
         try {
             $sql = "SELECT t.*, a.nombre_area 
@@ -29,9 +25,7 @@ class TendenciaEmergenteModel {
         }
     }
 
-    /**
-     * Listar todas las tendencias (incluyendo inactivas para administración)
-     */
+    // list all treands (include active from admin)
     public function listarTodas() {
         try {
             $sql = "SELECT t.*, a.nombre_area 
@@ -46,9 +40,7 @@ class TendenciaEmergenteModel {
         }
     }
 
-    /**
-     * Obtener una tendencia por ID
-     */
+    // Get treands for ID
     public function obtener($id) {
         try {
             $sql = "SELECT t.*, a.nombre_area 
@@ -63,9 +55,7 @@ class TendenciaEmergenteModel {
         }
     }
 
-    /**
-     * Crear una nueva tendencia
-     */
+    // Create new treands 
     public function crear($data) {
         try {
             $sql = "INSERT INTO tendencias_emergentes (id_area, nombre, descripcion, estado) 
@@ -86,9 +76,7 @@ class TendenciaEmergenteModel {
         }
     }
 
-    /**
-     * Actualizar tendencia existente
-     */
+    // Update treands exist
     public function actualizar($data) {
         try {
             $campos = [];
@@ -119,9 +107,7 @@ class TendenciaEmergenteModel {
         }
     }
 
-    /**
-     * Cambiar estado de la tendencia (activar/desactivar)
-     */
+    // Change state the treands (activate/desactivate)
     public function cambiarEstado($id, $estado) {
         try {
             $sql = "UPDATE tendencias_emergentes SET estado = ? WHERE id_tendencia = ?";
@@ -132,12 +118,9 @@ class TendenciaEmergenteModel {
         }
     }
 
-    /**
-     * Eliminar tendencia (borrado físico)
-     */
+    // Delete treands
     public function eliminar($id) {
         try {
-            // Verificar si la tendencia tiene dependencias
             if ($this->tieneDependencias($id)) {
                 return ['success' => false, 'error' => 'La tendencia tiene líneas tecnológicas asociadas'];
             }
@@ -153,11 +136,7 @@ class TendenciaEmergenteModel {
         }
     }
 
-    /* ================= MÉTODOS POR ÁREA ================= */
-
-    /**
-     * Obtener tendencias por área
-     */
+    // Get trands for area
     public function obtenerPorArea($id_area) {
         try {
             $sql = "SELECT id_tendencia, nombre, descripcion 
@@ -172,9 +151,7 @@ class TendenciaEmergenteModel {
         }
     }
 
-    /**
-     * Obtener tendencias para select por área
-     */
+    // Get treands from select area
     public function obtenerParaSelectPorArea($id_area) {
         try {
             $sql = "SELECT id_tendencia, nombre 
@@ -189,11 +166,7 @@ class TendenciaEmergenteModel {
         }
     }
 
-    /* ================= MÉTODOS DE BÚSQUEDA ================= */
-
-    /**
-     * Buscar tendencias por nombre o descripción
-     */
+    // Search treands for name or description
     public function buscar($termino) {
         try {
             $sql = "SELECT t.*, a.nombre_area 
@@ -210,9 +183,7 @@ class TendenciaEmergenteModel {
         }
     }
 
-    /**
-     * Buscar tendencias avanzado con filtros
-     */
+    // Search treands avanced whit filter
     public function buscarAvanzado($filtros) {
         try {
             $sql = "SELECT t.*, a.nombre_area 
@@ -246,11 +217,7 @@ class TendenciaEmergenteModel {
         }
     }
 
-    /* ================= MÉTODOS DE VALIDACIÓN ================= */
-
-    /**
-     * Verificar si el nombre de la tendencia ya existe en un área
-     */
+    // Verify if thename in the treands exist in area
     public function nombreExisteEnArea($nombre, $id_area, $excluir_id = null) {
         try {
             $sql = "SELECT COUNT(*) as total FROM tendencias_emergentes 
@@ -273,9 +240,7 @@ class TendenciaEmergenteModel {
         }
     }
 
-    /**
-     * Verificar si la tendencia tiene dependencias (líneas tecnológicas)
-     */
+    // Cerify if the trands have dependences
     public function tieneDependencias($id_tendencia) {
         try {
             $sql = "SELECT COUNT(*) as total FROM lineas_tecnologicas 
@@ -292,11 +257,7 @@ class TendenciaEmergenteModel {
         }
     }
 
-    /* ================= ESTADÍSTICAS ================= */
-
-    /**
-     * Obtener estadísticas de tendencias
-     */
+    // Get statistics in treands
     public function obtenerEstadisticas() {
         try {
             $sql = "SELECT 
@@ -310,7 +271,6 @@ class TendenciaEmergenteModel {
             $stmt->execute();
             $estadisticas = $stmt->fetch(PDO::FETCH_ASSOC);
             
-            // Tendencias por área
             $sql_por_area = "SELECT a.nombre_area, COUNT(t.id_tendencia) as total_tendencias
                             FROM areas a
                             LEFT JOIN tendencias_emergentes t ON a.id_area = t.id_area AND t.estado = 1
@@ -322,7 +282,6 @@ class TendenciaEmergenteModel {
             $stmt->execute();
             $estadisticas['tendencias_por_area'] = $stmt->fetchAll(PDO::FETCH_ASSOC);
             
-            // Tendencias recientes
             $sql_recientes = "SELECT t.id_tendencia, t.nombre, a.nombre_area, t.fecha_creacion
                              FROM tendencias_emergentes t
                              INNER JOIN areas a ON t.id_area = a.id_area
@@ -333,7 +292,6 @@ class TendenciaEmergenteModel {
             $stmt->execute();
             $estadisticas['tendencias_recientes'] = $stmt->fetchAll(PDO::FETCH_ASSOC);
             
-            // Áreas sin tendencias
             $sql_sin_tendencias = "SELECT COUNT(*) as areas_sin_tendencias
                                   FROM areas a
                                   LEFT JOIN tendencias_emergentes t ON a.id_area = t.id_area AND t.estado = 1
@@ -349,11 +307,7 @@ class TendenciaEmergenteModel {
         }
     }
 
-    /* ================= MÉTODOS ADICIONALES ================= */
-
-    /**
-     * Obtener tendencias para select (todas las activas)
-     */
+    // Get treands for selct (all active)
     public function obtenerParaSelect() {
         try {
             $sql = "SELECT t.id_tendencia, 
@@ -376,9 +330,7 @@ class TendenciaEmergenteModel {
         }
     }
 
-    /**
-     * Obtener tendencias populares (más usadas en líneas tecnológicas)
-     */
+    // Get treands popular
     public function obtenerTendenciasPopulares($limite = 5) {
         try {
             $sql = "SELECT t.id_tendencia, t.nombre, a.nombre_area, COUNT(lt.id_linea) as total_lineas
@@ -397,9 +349,7 @@ class TendenciaEmergenteModel {
         }
     }
 
-    /**
-     * Obtener tendencias por área con conteo de líneas
-     */
+    // Get treand for area whith cont in line
     public function obtenerConConteoLineas($id_area = null) {
         try {
             $sql = "SELECT t.id_tendencia, t.nombre, t.descripcion, t.estado,
