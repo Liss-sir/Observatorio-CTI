@@ -31,7 +31,7 @@ include __DIR__ . '/modal_deshabilitar_perfiles.php';
     <div class="max-w-[80rem] mx-auto px-4 py-8 lg:px-8">
 
       <!-- Back Link -->
-      <a href="sena-admin-perfiles.html" class="inline-flex items-center gap-1.5 text-sm text-sena-text-soft hover:text-sena-text-main transition-colors mb-6">
+      <a href="javascript:history.back()" class="inline-flex items-center gap-1.5 text-sm text-sena-text-soft hover:text-sena-text-main transition-colors mb-6">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-3.5 h-3.5"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
         Volver a resultados
       </a>
