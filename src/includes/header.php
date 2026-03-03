@@ -129,7 +129,7 @@ function nav_classes(string $target): string {
         <a href="../../view/landing/landing.php" class="<?= nav_classes('landing.php') ?>">Inicio</a>
         <a href="../../view/perfiles/perfiles.php" class="<?= nav_classes('perfiles.php') ?>">Perfiles</a>
 
-        <a href="#" class="<?= nav_classes('perfiles.php') ?>">Programas Formación</a>
+        <a href="#" class="<?= nav_classes('') ?>">Programas Formación</a>
         
         <!-- Menú desplegable Tendencias Actuales -->
         <div class="relative group" id="menu-tendencias">
@@ -198,7 +198,7 @@ function nav_classes(string $target): string {
               <div class="border-t border-gray-100 mx-4"></div>
               
               <!-- Proyección a Futuro -->
-              <a href="proyeccion-futuro.html"
+              <a href="../proyeccion_futuro/proyeccion_futuro.php"
                  class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-sena-soft hover:text-sena transition-all duration-200 group/item">
                 
                 <span class="w-8 h-8 bg-sena-soft/50 rounded-lg flex items-center justify-center text-sena group-hover/item:bg-sena group-hover/item:text-white transition-colors duration-200">
