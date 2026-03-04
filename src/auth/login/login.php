@@ -2,123 +2,260 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Login</title>
+    <title>Login | Observatorio CTI</title>
 
     <!-- Tailwind -->
     <script src="https://cdn.tailwindcss.com"></script>
 
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        sena: '#39a900'
+                    }
+                }
+            }
+        }
+    </script>
+
     <!-- JS -->
     <script src="/observatorio/Observatorio-CTI/src/assets/js/login.js"></script>
-</head>
-<body class="h-screen bg-gray-100">
-<script src="https://unpkg.com/lucide@latest"></script>
+    
+    <style>
+        /* Efecto de medio círculo para la imagen */
+        .clip-half-circle {
+            clip-path: ellipse(100% 100% at 0% 50%);
+        }
+        
+        /* Sombra personalizada para el logo */
+        .logo-shadow {
+            filter: drop-shadow(0 20px 25px -5px rgba(57, 169, 0, 0.25)) 
+                    drop-shadow(0 8px 10px -6px rgba(57, 169, 0, 0.2));
+        }
+        
+        /* Sombra más intensa en hover */
+        .logo-shadow:hover {
+            filter: drop-shadow(0 25px 30px -8px rgba(57, 169, 0, 0.4)) 
+                    drop-shadow(0 10px 15px -6px rgba(57, 169, 0, 0.3));
+        }
 
+        /* Animación de entrada del formulario */
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Animación de salida del formulario */
+        @keyframes slideOutDown {
+            from {
+                opacity: 1;
+                transform: translateY(0);
+            }
+            to {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+        }
+
+        .animate-form-in {
+            animation: slideInUp 1s cubic-bezier(0.4, 0.0, 0.2, 1) forwards;
+        }
+
+        .animate-form-out {
+            animation: slideOutDown 0.7s cubic-bezier(0.4, 0.0, 0.2, 1) forwards;
+        }
+
+        /* Animación de entrada para la imagen */
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .animate-image-in {
+            animation: slideInLeft 1s cubic-bezier(0.4, 0.0, 0.2, 1) forwards;
+        }
+    </style>
+</head>
+
+<body class="h-screen bg-gray-50 text-gray-800">
+
+<script src="https://unpkg.com/lucide@latest"></script>
 
 <div class="flex h-full">
 
-    <!-- LADO IZQUIERDO (IMAGEN + TEXTO) -->
-    <div class="hidden lg:flex w-1/2 relative">
-
-        <img src="../../assets/img/sena.jpeg"
-            class="absolute inset-0 w-full h-full object-cover">
-
-        <div class="absolute inset-0 bg-black/60"></div>
-
-        <div class="relative z-10 flex flex-col justify-center px-16 text-white">
+    <!-- LADO IZQUIERDO (IMAGEN EN MEDIO CÍRCULO) -->
+    <div class="hidden lg:flex w-1/2 relative overflow-visible bg-[#fff] animate-image-in">
+        
+        <!-- Contenedor con clip-path de medio círculo -->
+        <div class="absolute inset-0 clip-half-circle overflow-hidden">
+            <img src="../../assets/img/sena.jpeg"
+                 class="w-full h-full object-cover">
             
-            <h1 class="text-4xl font-bold leading-tight mb-6">
+            <!-- Overlay con gradiente ajustado al medio círculo -->
+            <div class="absolute inset-0 bg-gradient-to-r from-black/90 via-black/70 to-sena/50"></div>
+        </div>
+
+        <!-- Contenido textual (ajustado ligeramente a la derecha) -->
+        <div class="relative z-10 flex flex-col justify-center pl-32 pr-12 text-white max-w-xl h-full">
+            <h1 class="text-3xl xl:text-4xl font-semibold leading-snug mb-6">
                 Observatorio de Perfiles Tecnológicos
             </h1>
 
-            <p class="text-lg opacity-80 max-w-md">
-                Necesidades empresariales clasificadas por líneas tecnológicas
-                y tecnologías emergentes del sector productivo risaraldense.
+            <p class="text-base opacity-85 leading-relaxed">
+                Análisis estratégico de necesidades empresariales y tecnologías emergentes 
+                del sector productivo risaraldense.
             </p>
 
-            <p class="absolute bottom-8 text-xs opacity-70">
-                Centro de Diseño e Innovación Tecnológica Industrial - SENA 2026
-            </p>
+            <div class="h-1 w-14 bg-sena mt-8 rounded"></div>
 
+            <p class="absolute bottom-8 text-xs opacity-70 tracking-wide">
+                Centro de Diseño e Innovación Tecnológica Industrial · SENA 2026
+            </p>
         </div>
     </div>
 
-    <!-- LADO DERECHO (FORMULARIO) -->
-    <div class="flex w-full lg:w-1/2 items-center justify-center px-8 bg-white">
+    <!-- LADO DERECHO (FORMULARIO CON LOGO DESTACADO) -->
+    <div class="flex w-full lg:w-1/2 items-start justify-center px-8 bg-white overflow-y-auto pt-16">
+        <div class="w-full max-w-sm animate-form-in">
+            
+            <!-- Logo con sombra pronunciada -->
+            <div class="flex justify-center">
+                <div class="relative top-3">
+                    
+                    <!-- Logo con sombras personalizadas -->
+                    <img src="../../assets/img/logo-tecnnova.png"
+                         class="h-28 w-auto object-contain relative z-10
+                                logo-shadow transition-all duration-300
+                                hover:scale-105 cursor-pointer">
+                </div>
+            </div>
 
-        <div class="w-full max-w-md bg-white rounded-2xl shadow-2xl border-2 border-gray-150 p-10 transition hover:shadow-3xl">
+            <!-- Título -->
+            <div class="mb-8 text-center">
+                <h2 class="text-2xl font-semibold">
+                    Iniciar sesión
+                </h2>
 
-            <h2 class="text-2xl font-semibold mb-2 text-center text-[30px]">
-                Iniciar Sesión
-            </h2>
+                <!-- Línea verde sutil -->
+                <div class="h-1 w-10 bg-sena mx-auto mt-3 rounded"></div>
 
-            <p class="text-gray-500 mb-8 text-center text-[18px]">
-                Accede a tu panel de gestión empresarial
-            </p>
+                <p class="text-sm text-gray-500 mt-3">
+                    Ingresa tus credenciales para acceder al Observatorio CTI
+                </p>
+            </div>
 
+            <!-- Formulario -->
             <form class="space-y-6">
-
                 <!-- Email -->
                 <div>
-                    <label class="block text-sm mb-2">
+                    <label class="block text-sm mb-2 font-medium">
                         Correo electrónico
                     </label>
-
-                    <div class="relative">
-                        <input type="email"
-                               placeholder="correo@ejemplo.com"
-                               class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 focus:outline-none bg-gray-100">
-                    </div>
+                    <input type="email"
+                           placeholder="correo@ejemplo.com"
+                           class="w-full px-4 py-3 rounded-md border border-gray-300 
+                                  focus:border-sena focus:ring-1 focus:ring-sena/30
+                                  focus:outline-none transition">
                 </div>
 
                 <!-- Password -->
                 <div>
-                    <label class="block text-sm mb-2">
+                    <label class="block text-sm mb-2 font-medium">
                         Contraseña
                     </label>
-
                     <div class="relative">
                         <input type="password"
-                            id="password"
-                            placeholder="Ingresa tu contraseña"
-                            class="w-full px-4 py-3 pr-12 rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 focus:outline-none bg-gray-100">
+                               id="password"
+                               placeholder="Ingresa tu contraseña"
+                               class="w-full px-4 py-3 pr-12 rounded-md border border-gray-300 
+                                      focus:border-sena focus:ring-1 focus:ring-sena/30
+                                      focus:outline-none transition">
 
-                        <!-- Botón ojo -->
                         <button type="button"
                                 id="togglePassword"
-                                class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-green-600 transition">
-
+                                class="absolute right-3 top-1/2 -translate-y-1/2 
+                                       text-gray-400 hover:text-sena transition">
                             <i data-lucide="eye" class="w-5 h-5"></i>
-
                         </button>
                     </div>
                 </div>
 
                 <!-- Botón -->
                 <button type="submit"
-                        class="w-full bg-green-600 hover:bg-green-700 text-white py-3 rounded-lg font-medium transition">
+                        class="w-full bg-sena text-white py-3 rounded-md 
+                               hover:bg-[#2d8a00] transition font-medium shadow-sm
+                               hover:shadow-lg hover:shadow-sena/20">
                     Ingresar
                 </button>
-
             </form>
 
-            <div class="text-center mt-6 text-sm text-gray-500">
-                No tienes una cuenta?
-                <a href="../../auth/login/register.php" class="text-green-600 hover:underline">
-                    Regístrate aquí
-                </a>
-            </div>
+            <!-- Links -->
+            <div class="text-center mt-8 text-sm text-gray-500 space-y-3">
+                <p>
+                    ¿No tienes una cuenta?
+                    <a href="../../auth/login/register.php" 
+                       class="text-sena font-medium hover:underline">
+                        Regístrate
+                    </a>
+                </p>
 
-            <div class="text-center mt-4">
-                <a href="../../view/landing/landing.php" class="text-sm text-green-600 hover:underline">
+                <a href="../../view/landing/landing.php" 
+                   class="block text-gray-400 hover:text-sena transition">
                     ← Volver al inicio
                 </a>
             </div>
-
         </div>
-
     </div>
-
 </div>
+
+<script>
+lucide.createIcons();
+
+// Toggle password visibility
+const togglePassword = document.getElementById('togglePassword');
+const passwordInput = document.getElementById('password');
+
+if (togglePassword && passwordInput) {
+    togglePassword.addEventListener('click', function() {
+        const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+        passwordInput.setAttribute('type', type);
+        
+        const icon = this.querySelector('i');
+        icon.setAttribute('data-lucide', type === 'password' ? 'eye' : 'eye-off');
+        lucide.createIcons();
+    });
+}
+
+// Animación de salida del formulario al enviar
+const form = document.querySelector('form');
+if (form) {
+    form.addEventListener('submit', function(e) {
+        const formContainer = document.querySelector('.animate-form-in');
+        if (formContainer) {
+            formContainer.classList.remove('animate-form-in');
+            formContainer.classList.add('animate-form-out');
+            
+            // Evitar que se envíe inmediatamente para ver la animación
+            setTimeout(() => {
+                // Aquí iría el envío del formulario o redirección
+            }, 400);
+        }
+    });
+}
+</script>
 
 </body>
 </html>
