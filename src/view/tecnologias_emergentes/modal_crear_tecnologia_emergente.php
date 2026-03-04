@@ -1,5 +1,5 @@
-<!-- modal_editar_proyeccion_futuro.php -->
-<div id="modal-editar-proyeccion-futuro" class="hidden fixed inset-0 z-50 overflow-y-auto" aria-hidden="true">
+<!-- modal_crear_tecnologia_emergente.php -->
+<div id="modal-crear-tecnologia-emergente" class="hidden fixed inset-0 z-50 overflow-y-auto" aria-hidden="true">
   <!-- Overlay -->
   <div class="fixed inset-0 bg-black bg-opacity-80 transition-opacity"></div>
 
@@ -17,12 +17,12 @@
 
         <!-- Header -->
         <div class="border-b border-sena-border px-6 py-4">
-          <h3 class="text-lg font-semibold text-sena-text-main">Editar Proyección a Futuro</h3>
-          <p class="mt-1 text-sm text-sena-text-soft">Completa los datos para editar la proyección a futuro.</p>
+          <h3 class="text-lg font-semibold text-sena-text-main">Nueva Tecnología Emergente</h3>
+          <p class="mt-1 text-sm text-sena-text-soft">Completa los datos para crear una nueva tecnología emergente.</p>
         </div>
 
         <!-- Form -->
-        <form id="form-editar-proyeccion-futuro" class="px-6 py-4">
+        <form id="form-nueva-tecnologia-emergente" class="px-6 py-4">
           <!-- área -->
           <div class="mb-4">
             <label class="mb-1 block text-sm font-medium text-sena-text-main">Área</label>
@@ -46,28 +46,12 @@
           <!-- Descripción -->
           <div class="mb-4">
             <label class="mb-1 block text-sm font-medium text-sena-text-main">Descripción</label>
-            <textarea name="descripcion" rows="3" placeholder="Describe la proyección a futuro..."
-                      class="w-full rounded-lg border border-sena-border px-3 py-2 text-sm text-sena-text-main placeholder-sena-text-soft focus:border-sena focus:ring-2 focus:ring-sena/20"></textarea>
-          </div>
-
-          <!-- Fecha (Años) -->
-          <div class="mb-4">
-            <label class="mb-1 block text-sm font-medium text-sena-text-main">Fecha (Años)</label>
-            <div class="select-container">
-              <select name="fecha" class="custom-select">
-                <option value="">Selecciona el número de años</option>
-                <option value="1">1 año</option>
-                <option value="2">2 años</option>
-                <option value="3">3 años</option>
-                <option value="4">4 años</option>
-                <option value="5">5 años</option>
-                <option value="6">6 años</option>
-                <option value="7">7 años</option>
-                <option value="8">8 años</option>
-                <option value="9">9 años</option>
-                <option value="10">10 años</option>
-              </select>
-            </div>
+            <textarea 
+                name="descripcion" 
+                rows="3"  
+                placeholder="Describe las responsabilidades y requisitos del perfil..."
+                class="w-full rounded-lg border border-sena-border px-3 py-2 text-sm text-sena-text-main placeholder-sena-text-soft focus:border-[#39A900] focus:ring-2 focus:ring-[#39A900] focus:ring-opacity-20 focus:outline-none"
+                ></textarea>
           </div>
 
           <!-- Footer buttons -->
@@ -76,7 +60,7 @@
               Cancelar
             </button>
             <button type="submit" class="rounded-lg bg-sena px-4 py-2 text-sm font-medium text-white hover:opacity-90 transition-opacity">
-              Editar Proyección a Futuro
+              Crear Tendencia Actual
             </button>
           </div>
         </form>
@@ -84,4 +68,3 @@
     </div>
   </div>
 </div>
-

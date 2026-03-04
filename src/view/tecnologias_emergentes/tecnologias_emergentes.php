@@ -1,5 +1,14 @@
 <?php
 include __DIR__ . '../../../includes/header.php';
+include __DIR__ . '/modal_crear_tecnologia_emergente.php';
+include __DIR__ . '/modal_confirmacion_crear_te.php';
+include __DIR__ . '/modal_editar_tecnologia_emergente.php';
+include __DIR__ . '/modal_confirmacion_editar_te.php';
+include __DIR__ . '/modal_detalle_tecnologia_emergente.php'; 
+include __DIR__ . '/modal_deshabilitar_te.php';
+include __DIR__ . '/modal_confirmacion_dehabilitar_te.php';
+include __DIR__ . '/modal_habilitar_tecnologia_emergente.php';
+include __DIR__ . '/modal_confirmacion_habilitar_te.php';
 ?>
 
 <!DOCTYPE html>
@@ -7,318 +16,261 @@ include __DIR__ . '../../../includes/header.php';
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Tecnologias Emergentes - SENA Observatorio Tecnologico</title>
+  <title>Tendencias Actuales - SENA Observatorio Tecnologico</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@600;700;800&display=swap" rel="stylesheet" />
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  <link rel="stylesheet" href="../../../assets/css/output.css">
+  <link rel="stylesheet" href="../../assets/css/globals.css">
+<body class="font-['Inter'] text-sena-text-main antialiased min-h-screen flex flex-col">
 
-    :root {
-      --background: #fcfcfc;
-      --foreground: #1a2620;
-      --card: #ffffff;
-      --primary: #00a300;
-      --primary-foreground: #ffffff;
-      --secondary: #f0f5f0;
-      --muted: #f3f4f3;
-      --muted-foreground: #6b756e;
-      --accent: #e4f0e4;
-      --accent-foreground: #1a6b1a;
-      --border: #e2e5e2;
-      --radius: 0.5rem;
-      --font-sans: 'Inter', system-ui, sans-serif;
-      --font-heading: 'Montserrat', system-ui, sans-serif;
-    }
+  <!-- ===== MAIN CONTENT ===== -->
+  <main class="flex-1">
+    <div class="max-w-[80rem] mx-auto px-4 py-8 lg:px-8">
 
-    body {
-      font-family: var(--font-sans);
-      background-color: var(--background);
-      color: var(--foreground);
-      line-height: 1.5;
-      -webkit-font-smoothing: antialiased;
-    }
-    a { text-decoration: none; color: inherit; }
-
-
-    /* ===== TABS ===== */
-    .page-content {
-      max-width: 1280px; margin: 0 auto; padding: 32px 16px;
-    }
-    .tab-nav {
-      display: flex; align-items: center; gap: 4px;
-      border: 1px solid var(--border); background-color: var(--card);
-      border-radius: 8px; padding: 4px; margin-bottom: 24px;
-    }
-    .tab-nav a {
-      display: flex; align-items: center; gap: 8px;
-      padding: 8px 16px; border: none; border-radius: 6px;
-      font-size: 14px; font-weight: 500; font-family: var(--font-sans);
-      cursor: pointer; background: transparent;
-      color: var(--muted-foreground); transition: all 0.2s;
-    }
-    .tab-nav a.active {
-      background-color: var(--primary); color: var(--primary-foreground);
-      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-    }
-    .tab-nav a svg { width: 16px; height: 16px; }
-
-    /* ===== GRID CARDS ===== */
-    .grid-3 {
-      display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;
-    }
-    .card {
-      border: 1px solid var(--border); background-color: var(--card);
-      border-radius: var(--radius); transition: border-color 0.2s, box-shadow 0.2s;
-    }
-    .card:hover { border-color: rgba(0,163,0,0.3); box-shadow: 0 4px 12px rgba(0,0,0,0.06); }
-    .card-body { padding: 20px; }
-    .card-top-row { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 12px; }
-    .card-icon {
-      width: 40px; height: 40px; border-radius: 8px;
-      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
-    }
-    .card-icon.accent-bg { background-color: var(--accent); }
-    .card-icon svg { width: 20px; height: 20px; color: var(--primary); }
-    .card-count { font-size: 12px; color: var(--muted-foreground); }
-    .card h3 { font-family: var(--font-heading); font-size: 14px; font-weight: 600; color: var(--foreground); margin-bottom: 8px; }
-    .card .card-sub { font-size: 12px; color: var(--muted-foreground); margin-bottom: 12px; }
-    .badge-secondary {
-      display: inline-flex; padding: 2px 8px; background-color: var(--accent);
-      border-radius: 4px; font-size: 10px; color: var(--accent-foreground);
-    }
-    .tags { display: flex; flex-wrap: wrap; gap: 4px; }
-    .card-link {
-      display: inline-flex; align-items: center; gap: 4px; margin-top: 12px;
-      font-size: 12px; font-weight: 500; color: var(--primary);
-    }
-    .card-link svg { width: 12px; height: 12px; }
-
-    .section-heading { margin-bottom: 24px; }
-    .section-heading h2 { font-family: var(--font-heading); font-size: 20px; font-weight: 700; color: var(--foreground); }
-    .section-heading p { font-size: 14px; color: var(--muted-foreground); margin-top: 4px; }
-
-    /* ===== FOOTER ===== */
-    .site-footer { border-top: 1px solid var(--border); background-color: var(--card); }
-    .footer-inner { max-width: 1280px; margin: 0 auto; padding: 40px 16px; }
-    .footer-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; }
-    .footer-brand p { font-size: 14px; line-height: 1.6; color: var(--muted-foreground); }
-    .footer-nav h4, .footer-contact h4 { font-size: 14px; font-weight: 600; color: var(--foreground); margin-bottom: 12px; }
-    .footer-nav ul, .footer-contact ul { list-style: none; display: flex; flex-direction: column; gap: 8px; }
-    .footer-nav a { font-size: 14px; color: var(--muted-foreground); transition: color 0.2s; }
-    .footer-nav a:hover { color: var(--primary); }
-    .footer-contact li { font-size: 14px; color: var(--muted-foreground); }
-    .footer-bottom { margin-top: 32px; padding-top: 24px; border-top: 1px solid var(--border); text-align: center; }
-    .footer-bottom p { font-size: 12px; color: var(--muted-foreground); }
-
-    @media (max-width: 1024px) {
-      .grid-3 { grid-template-columns: repeat(2, 1fr); }
-    }
-    @media (max-width: 768px) {
-      .nav-desktop, .header-actions { display: none; }
-      .grid-3 { grid-template-columns: 1fr; }
-      .footer-grid { grid-template-columns: 1fr; }
-      .logo-text { display: none; }
-      .tab-nav { flex-wrap: wrap; }
-    }
-  </style>
-</head>
-<body>
-
-  <main>
-    <div class="page-content">
-      
-
-      <!-- TECNOLOGIAS EMERGENTES CONTENT -->
-      <div class="section-heading">
-        <h2>Tecnologias Emergentes</h2>
-        <p>Tecnologias de vanguardia asociadas a los perfiles registrados</p>
+      <!-- TECNOLOGÍAS EMERGENTES CONTENT -->
+      <div class="section-heading mb-6">
+        <h2 class="font-['Montserrat'] text-2xl font-bold text-sena-text-main">Tecnologías Emergentes</h2>
+        <p class="text-sm text-sena-text-soft mt-1">Transformación digital y nuevas dinámicas del sector productivo risaraldense.</p>
       </div>
 
-      <div class="grid-3">
-        <!-- Inteligencia Artificial -->
-        <div class="card">
-          <div class="card-body">
-            <div class="card-top-row">
-              <div class="card-icon accent-bg">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><path d="M15 2v2M15 20v2M2 15h2M2 9h2M20 15h2M20 9h2M9 2v2M9 20v2" stroke-linecap="round"/></svg>
-              </div>
-              <span class="card-count">2 perfiles</span>
-            </div>
-            <h3>Inteligencia Artificial</h3>
-            <p class="card-sub">2 vigentes &middot; 2 lineas</p>
-            <div class="tags">
-              <span class="badge-secondary">Tecnologias de la</span>
-              <span class="badge-secondary">Biotecnologia y Nanotecnologia</span>
-            </div>
-            <a href="busqueda.html" class="card-link">Ver perfiles <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path d="M5 12h14m0 0-7-7m7 7-7 7" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
-          </div>
+      <!-- BARRA DE BÚSQUEDA Y BOTÓN CREAR -->
+      <div class="flex items-center gap-3 mb-6">
+        <div class="relative flex-1">
+          <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-sena-text-soft pointer-events-none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+          <input type="text" class="w-full h-10 pl-10 pr-3 text-sm border border-sena-border rounded-lg bg-white text-sena-text-main placeholder:text-sena-text-soft focus:border-sena focus:ring-2 focus:ring-sena/15 outline-none transition-all" placeholder="Buscar tecnologías...">
         </div>
+        <button id="btn-crear-tendencia" class="flex items-center gap-2 px-5 py-2 text-sm font-medium text-white bg-sena rounded-lg whitespace-nowrap h-10 hover:opacity-90 transition-opacity">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+          Crear Tecnología Emergente
+        </button>
+      </div>
 
-        <!-- Blockchain -->
-        <div class="card">
-          <div class="card-body">
-            <div class="card-top-row">
-              <div class="card-icon accent-bg">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><path d="M15 2v2M15 20v2M2 15h2M2 9h2M20 15h2M20 9h2M9 2v2M9 20v2" stroke-linecap="round"/></svg>
-              </div>
-              <span class="card-count">2 perfiles</span>
-            </div>
-            <h3>Blockchain</h3>
-            <p class="card-sub">2 vigentes &middot; 1 linea</p>
-            <div class="tags">
-              <span class="badge-secondary">Tecnologias de la</span>
-            </div>
-            <a href="busqueda.html" class="card-link">Ver perfiles <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path d="M5 12h14m0 0-7-7m7 7-7 7" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
-          </div>
-        </div>
+      <!-- CONTENIDO PRINCIPAL -->
+      <div class="flex gap-8">
+        <!-- Results -->
+        <div class="flex-1 min-w-0">
+          <p class="text-sm text-sena-text-soft mb-4"><strong class="font-medium text-sena-text-main">12</strong> tecnologías emergentes encontradas</p>
 
-        <!-- Internet de las Cosas (IoT) -->
-        <div class="card">
-          <div class="card-body">
-            <div class="card-top-row">
-              <div class="card-icon accent-bg">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><path d="M15 2v2M15 20v2M2 15h2M2 9h2M20 15h2M20 9h2M9 2v2M9 20v2" stroke-linecap="round"/></svg>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+            <!-- Inteligencia Artificial -->
+            <div class="border border-sena-border rounded-lg bg-white p-4 hover:border-sena/30 hover:shadow-sm transition-all cursor-pointer tarjeta-tecnologia" data-id="1" data-nombre="Inteligencia Artificial" data-descripcion="Computación cuántica accesible desde la nube para desarrolladores y empresas, permitiendo experimentación real en problemas de optimización y criptografía." data-estado="activo">
+              <div class="flex items-start justify-between mb-2">
+                <div class="w-10 h-10 bg-sena-soft rounded-lg flex items-center justify-center flex-shrink-0">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 text-sena">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18L9 11.25l4.306 4.307a11.95 11.95 0 015.814-5.519l2.74-1.22m0 0l-5.94-2.28m5.94 2.28l-2.28 5.941" />
+                  </svg>
+                </div>
+                <div class="flex items-center gap-1">
+                  <button class="btn-editar-tendencia p-1.5 rounded-lg text-sena-text-soft hover:bg-sena-soft hover:text-sena transition-colors" title="Editar tendencia" data-id="1" data-nombre="Inteligencia Artificial" data-descripcion="Computación cuántica accesible desde la nube para desarrolladores y empresas, permitiendo experimentación real en problemas de optimización y criptografía.">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4">
+                      <path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/>
+                    </svg>
+                  </button>
+                  <div class="switch-sena active" title="Activo"></div>
+                </div>
               </div>
-              <span class="card-count">1 perfil</span>
+              <h3 class="font-['Montserrat'] text-sm font-semibold text-sena-text-main mb-1">Inteligencia Artificial</h3>
+              <p class="text-xs text-sena-text-soft line-clamp-2">Computación cuántica accesible desde la nube para desarrolladores y empresas, permitiendo experimentación real en problemas de optimización y criptografía.</p>
             </div>
-            <h3>Internet de las Cosas (IoT)</h3>
-            <p class="card-sub">1 vigente &middot; 1 linea</p>
-            <div class="tags">
-              <span class="badge-secondary">Electronica y Automatizacion</span>
-            </div>
-            <a href="busqueda.html" class="card-link">Ver perfiles <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path d="M5 12h14m0 0-7-7m7 7-7 7" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
-          </div>
-        </div>
 
-        <!-- Computacion en la Nube -->
-        <div class="card">
-          <div class="card-body">
-            <div class="card-top-row">
-              <div class="card-icon accent-bg">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><path d="M15 2v2M15 20v2M2 15h2M2 9h2M20 15h2M20 9h2M9 2v2M9 20v2" stroke-linecap="round"/></svg>
+            <!-- Blockchain -->
+            <div class="border border-sena-border rounded-lg bg-white p-4 hover:border-sena/30 hover:shadow-sm transition-all cursor-pointer tarjeta-tecnologia" data-id="2" data-nombre="Blockchain" data-descripcion="Tecnología de registro distribuido que permite crear sistemas descentralizados para transacciones seguras y transparentes." data-estado="activo">
+              <div class="flex items-start justify-between mb-2">
+                <div class="w-10 h-10 bg-sena-soft rounded-lg flex items-center justify-center flex-shrink-0">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 text-sena">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18L9 11.25l4.306 4.307a11.95 11.95 0 015.814-5.519l2.74-1.22m0 0l-5.94-2.28m5.94 2.28l-2.28 5.941" />
+                  </svg>
+                </div>
+                <div class="flex items-center gap-1">
+                  <button class="btn-editar-tendencia p-1.5 rounded-lg text-sena-text-soft hover:bg-sena-soft hover:text-sena transition-colors" title="Editar tendencia" data-id="2" data-nombre="Blockchain" data-descripcion="Tecnología de registro distribuido que permite crear sistemas descentralizados para transacciones seguras y transparentes.">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4">
+                      <path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/>
+                    </svg>
+                  </button>
+                  <div class="switch-sena active" title="Activo"></div>
+                </div>
               </div>
-              <span class="card-count">4 perfiles</span>
+              <h3 class="font-['Montserrat'] text-sm font-semibold text-sena-text-main mb-1">Blockchain</h3>
+              <p class="text-xs text-sena-text-soft line-clamp-2">Tecnología de registro distribuido que permite crear sistemas descentralizados para transacciones seguras y transparentes.</p>
             </div>
-            <h3>Computacion en la Nube</h3>
-            <p class="card-sub">4 vigentes &middot; 2 lineas</p>
-            <div class="tags">
-              <span class="badge-secondary">Tecnologias de la</span>
-              <span class="badge-secondary">Servicios y Gestion</span>
-            </div>
-            <a href="busqueda.html" class="card-link">Ver perfiles <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path d="M5 12h14m0 0-7-7m7 7-7 7" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
-          </div>
-        </div>
 
-        <!-- Ciberseguridad Avanzada -->
-        <div class="card">
-          <div class="card-body">
-            <div class="card-top-row">
-              <div class="card-icon accent-bg">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><path d="M15 2v2M15 20v2M2 15h2M2 9h2M20 15h2M20 9h2M9 2v2M9 20v2" stroke-linecap="round"/></svg>
+            <!-- Internet de las Cosas (IoT) -->
+            <div class="border border-sena-border rounded-lg bg-white p-4 hover:border-sena/30 hover:shadow-sm transition-all cursor-pointer tarjeta-tecnologia" data-id="3" data-nombre="Internet de las Cosas (IoT)" data-descripcion="Red de dispositivos conectados que recopilan, comparten e intercambian datos en tiempo real para automatizar procesos." data-estado="inactivo">
+              <div class="flex items-start justify-between mb-2">
+                <div class="w-10 h-10 bg-sena-soft rounded-lg flex items-center justify-center flex-shrink-0">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 text-sena">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18L9 11.25l4.306 4.307a11.95 11.95 0 015.814-5.519l2.74-1.22m0 0l-5.94-2.28m5.94 2.28l-2.28 5.941" />
+                  </svg>
+                </div>
+                <div class="flex items-center gap-1">
+                  <button class="btn-editar-tendencia p-1.5 rounded-lg text-sena-text-soft hover:bg-sena-soft hover:text-sena transition-colors" title="Editar tendencia" data-id="3" data-nombre="Internet de las Cosas (IoT)" data-descripcion="Red de dispositivos conectados que recopilan, comparten e intercambian datos en tiempo real para automatizar procesos.">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4">
+                      <path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/>
+                    </svg>
+                  </button>
+                  <div class="switch-sena" title="Inactivo"></div>
+                </div>
               </div>
-              <span class="card-count">4 perfiles</span>
+              <h3 class="font-['Montserrat'] text-sm font-semibold text-sena-text-main mb-1">Internet de las Cosas (IoT)</h3>
+              <p class="text-xs text-sena-text-soft line-clamp-2">Red de dispositivos conectados que recopilan, comparten e intercambian datos en tiempo real para automatizar procesos.</p>
             </div>
-            <h3>Ciberseguridad Avanzada</h3>
-            <p class="card-sub">4 vigentes &middot; 1 linea</p>
-            <div class="tags">
-              <span class="badge-secondary">Tecnologias de la</span>
-            </div>
-            <a href="busqueda.html" class="card-link">Ver perfiles <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path d="M5 12h14m0 0-7-7m7 7-7 7" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
-          </div>
-        </div>
 
-        <!-- Big Data y Analitica -->
-        <div class="card">
-          <div class="card-body">
-            <div class="card-top-row">
-              <div class="card-icon accent-bg">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><path d="M15 2v2M15 20v2M2 15h2M2 9h2M20 15h2M20 9h2M9 2v2M9 20v2" stroke-linecap="round"/></svg>
+            <!-- Computacion en la Nube -->
+            <div class="border border-sena-border rounded-lg bg-white p-4 hover:border-sena/30 hover:shadow-sm transition-all cursor-pointer tarjeta-tecnologia" data-id="4" data-nombre="Computación en la Nube" data-descripcion="Entrega de servicios informáticos a través de internet, permitiendo acceso flexible a recursos y aplicaciones bajo demanda." data-estado="activo">
+              <div class="flex items-start justify-between mb-2">
+                <div class="w-10 h-10 bg-sena-soft rounded-lg flex items-center justify-center flex-shrink-0">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 text-sena">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18L9 11.25l4.306 4.307a11.95 11.95 0 015.814-5.519l2.74-1.22m0 0l-5.94-2.28m5.94 2.28l-2.28 5.941" />
+                  </svg>
+                </div>
+                <div class="flex items-center gap-1">
+                  <button class="btn-editar-tendencia p-1.5 rounded-lg text-sena-text-soft hover:bg-sena-soft hover:text-sena transition-colors" title="Editar tendencia" data-id="4" data-nombre="Computación en la Nube" data-descripcion="Entrega de servicios informáticos a través de internet, permitiendo acceso flexible a recursos y aplicaciones bajo demanda.">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4">
+                      <path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/>
+                    </svg>
+                  </button>
+                  <div class="switch-sena active" title="Activo"></div>
+                </div>
               </div>
-              <span class="card-count">3 perfiles</span>
+              <h3 class="font-['Montserrat'] text-sm font-semibold text-sena-text-main mb-1">Computacion en la Nube</h3>
+              <p class="text-xs text-sena-text-soft line-clamp-2">Entrega de servicios informáticos a través de internet, permitiendo acceso flexible a recursos y aplicaciones bajo demanda.</p>
             </div>
-            <h3>Big Data y Analitica</h3>
-            <p class="card-sub">3 vigentes &middot; 2 lineas</p>
-            <div class="tags">
-              <span class="badge-secondary">Tecnologias de la</span>
-              <span class="badge-secondary">Biotecnologia y Nanotecnologia</span>
-            </div>
-            <a href="busqueda.html" class="card-link">Ver perfiles <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path d="M5 12h14m0 0-7-7m7 7-7 7" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
-          </div>
-        </div>
 
-        <!-- Realidad Aumentada/Virtual -->
-        <div class="card">
-          <div class="card-body">
-            <div class="card-top-row">
-              <div class="card-icon accent-bg">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><path d="M15 2v2M15 20v2M2 15h2M2 9h2M20 15h2M20 9h2M9 2v2M9 20v2" stroke-linecap="round"/></svg>
+            <!-- Ciberseguridad Avanzada -->
+            <div class="border border-sena-border rounded-lg bg-white p-4 hover:border-sena/30 hover:shadow-sm transition-all cursor-pointer tarjeta-tecnologia" data-id="5" data-nombre="Ciberseguridad Avanzada" data-descripcion="Protección integral contra ciberataques mediante tecnologías avanzadas y estrategias defensivas para sistemas críticos." data-estado="activo">
+              <div class="flex items-start justify-between mb-2">
+                <div class="w-10 h-10 bg-sena-soft rounded-lg flex items-center justify-center flex-shrink-0">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 text-sena">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18L9 11.25l4.306 4.307a11.95 11.95 0 015.814-5.519l2.74-1.22m0 0l-5.94-2.28m5.94 2.28l-2.28 5.941" />
+                  </svg>
+                </div>
+                <div class="flex items-center gap-1">
+                  <button class="btn-editar-tendencia p-1.5 rounded-lg text-sena-text-soft hover:bg-sena-soft hover:text-sena transition-colors" title="Editar tendencia" data-id="5" data-nombre="Ciberseguridad Avanzada" data-descripcion="Protección integral contra ciberataques mediante tecnologías avanzadas y estrategias defensivas para sistemas críticos.">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4">
+                      <path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/>
+                    </svg>
+                  </button>
+                  <div class="switch-sena active" title="Activo"></div>
+                </div>
               </div>
-              <span class="card-count">1 perfil</span>
+              <h3 class="font-['Montserrat'] text-sm font-semibold text-sena-text-main mb-1">Ciberseguridad Avanzada</h3>
+              <p class="text-xs text-sena-text-soft line-clamp-2">Protección integral contra ciberataques mediante tecnologías avanzadas y estrategias defensivas para sistemas críticos.</p>
             </div>
-            <h3>Realidad Aumentada/Virtual</h3>
-            <p class="card-sub">0 vigentes &middot; 1 linea</p>
-            <div class="tags">
-              <span class="badge-secondary">Diseno e Innovacion</span>
-            </div>
-            <a href="busqueda.html" class="card-link">Ver perfiles <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path d="M5 12h14m0 0-7-7m7 7-7 7" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
-          </div>
-        </div>
 
-        <!-- Robotica Colaborativa -->
-        <div class="card">
-          <div class="card-body">
-            <div class="card-top-row">
-              <div class="card-icon accent-bg">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><path d="M15 2v2M15 20v2M2 15h2M2 9h2M20 15h2M20 9h2M9 2v2M9 20v2" stroke-linecap="round"/></svg>
+            <!-- Big Data y Analitica -->
+            <div class="border border-sena-border rounded-lg bg-white p-4 hover:border-sena/30 hover:shadow-sm transition-all cursor-pointer tarjeta-tecnologia" data-id="6" data-nombre="Big Data y Analítica" data-descripcion="Procesamiento y análisis de grandes volúmenes de datos para obtener insights valiosos que impulsen decisiones estratégicas." data-estado="activo">
+              <div class="flex items-start justify-between mb-2">
+                <div class="w-10 h-10 bg-sena-soft rounded-lg flex items-center justify-center flex-shrink-0">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 text-sena">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18L9 11.25l4.306 4.307a11.95 11.95 0 015.814-5.519l2.74-1.22m0 0l-5.94-2.28m5.94 2.28l-2.28 5.941" />
+                  </svg>
+                </div>
+                <div class="flex items-center gap-1">
+                  <button class="btn-editar-tendencia p-1.5 rounded-lg text-sena-text-soft hover:bg-sena-soft hover:text-sena transition-colors" title="Editar tendencia" data-id="6" data-nombre="Big Data y Analítica" data-descripcion="Procesamiento y análisis de grandes volúmenes de datos para obtener insights valiosos que impulsen decisiones estratégicas.">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4">
+                      <path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/>
+                    </svg>
+                  </button>
+                  <div class="switch-sena active" title="Activo"></div>
+                </div>
               </div>
-              <span class="card-count">2 perfiles</span>
+              <h3 class="font-['Montserrat'] text-sm font-semibold text-sena-text-main mb-1">Big Data y Analítica</h3>
+              <p class="text-xs text-sena-text-soft line-clamp-2">Procesamiento y análisis de grandes volúmenes de datos para obtener insights valiosos que impulsen decisiones estratégicas.</p>
             </div>
-            <h3>Robotica Colaborativa</h3>
-            <p class="card-sub">1 vigente &middot; 1 linea</p>
-            <div class="tags">
-              <span class="badge-secondary">Electronica y Automatizacion</span>
-            </div>
-            <a href="busqueda.html" class="card-link">Ver perfiles <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path d="M5 12h14m0 0-7-7m7 7-7 7" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
-          </div>
-        </div>
 
-        <!-- Manufactura Aditiva (Impresion 3D) -->
-        <div class="card">
-          <div class="card-body">
-            <div class="card-top-row">
-              <div class="card-icon accent-bg">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><path d="M15 2v2M15 20v2M2 15h2M2 9h2M20 15h2M20 9h2M9 2v2M9 20v2" stroke-linecap="round"/></svg>
+            <!-- Realidad Aumentada/Virtual -->
+            <div class="border border-sena-border rounded-lg bg-white p-4 hover:border-sena/30 hover:shadow-sm transition-all cursor-pointer tarjeta-tecnologia" data-id="7" data-nombre="Realidad Aumentada/Virtual" data-descripcion="Tecnologías inmersivas que superponen información digital en el mundo real o crean entornos virtuales para experiencias interactivas." data-estado="inactivo">
+              <div class="flex items-start justify-between mb-2">
+                <div class="w-10 h-10 bg-sena-soft rounded-lg flex items-center justify-center flex-shrink-0">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 text-sena">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18L9 11.25l4.306 4.307a11.95 11.95 0 015.814-5.519l2.74-1.22m0 0l-5.94-2.28m5.94 2.28l-2.28 5.941" />
+                  </svg>
+                </div>
+                <div class="flex items-center gap-1">
+                  <button class="btn-editar-tendencia p-1.5 rounded-lg text-sena-text-soft hover:bg-sena-soft hover:text-sena transition-colors" title="Editar tendencia" data-id="7" data-nombre="Realidad Aumentada/Virtual" data-descripcion="Tecnologías inmersivas que superponen información digital en el mundo real o crean entornos virtuales para experiencias interactivas.">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4">
+                      <path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/>
+                    </svg>
+                  </button>
+                  <div class="switch-sena" title="Inactivo"></div>
+                </div>
               </div>
-              <span class="card-count">1 perfil</span>
+              <h3 class="font-['Montserrat'] text-sm font-semibold text-sena-text-main mb-1">Realidad Aumentada/Virtual</h3>
+              <p class="text-xs text-sena-text-soft line-clamp-2">Tecnologías inmersivas que superponen información digital en el mundo real o crean entornos virtuales para experiencias interactivas.</p>
             </div>
-            <h3>Manufactura Aditiva (Impresion 3D)</h3>
-            <p class="card-sub">1 vigente &middot; 1 linea</p>
-            <div class="tags">
-              <span class="badge-secondary">Materiales e Industria</span>
-            </div>
-            <a href="busqueda.html" class="card-link">Ver perfiles <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path d="M5 12h14m0 0-7-7m7 7-7 7" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
-          </div>
-        </div>
 
-        <!-- Automatizacion de Procesos (RPA) -->
-        <div class="card">
-          <div class="card-body">
-            <div class="card-top-row">
-              <div class="card-icon accent-bg">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><path d="M15 2v2M15 20v2M2 15h2M2 9h2M20 15h2M20 9h2M9 2v2M9 20v2" stroke-linecap="round"/></svg>
+            <!-- Robótica Colaborativa -->
+            <div class="border border-sena-border rounded-lg bg-white p-4 hover:border-sena/30 hover:shadow-sm transition-all cursor-pointer tarjeta-tecnologia" data-id="8" data-nombre="Robótica Colaborativa" data-descripcion="Robots diseñados para trabajar junto a personas en entornos compartidos, mejorando productividad y seguridad laboral." data-estado="activo">
+              <div class="flex items-start justify-between mb-2">
+                <div class="w-10 h-10 bg-sena-soft rounded-lg flex items-center justify-center flex-shrink-0">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 text-sena">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18L9 11.25l4.306 4.307a11.95 11.95 0 015.814-5.519l2.74-1.22m0 0l-5.94-2.28m5.94 2.28l-2.28 5.941" />
+                  </svg>
+                </div>
+                <div class="flex items-center gap-1">
+                  <button class="btn-editar-tendencia p-1.5 rounded-lg text-sena-text-soft hover:bg-sena-soft hover:text-sena transition-colors" title="Editar tendencia" data-id="8" data-nombre="Robótica Colaborativa" data-descripcion="Robots diseñados para trabajar junto a personas en entornos compartidos, mejorando productividad y seguridad laboral.">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4">
+                      <path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/>
+                    </svg>
+                  </button>
+                  <div class="switch-sena active" title="Activo"></div>
+                </div>
               </div>
-              <span class="card-count">2 perfiles</span>
+              <h3 class="font-['Montserrat'] text-sm font-semibold text-sena-text-main mb-1">Robótica Colaborativa</h3>
+              <p class="text-xs text-sena-text-soft line-clamp-2">Robots diseñados para trabajar junto a personas en entornos compartidos, mejorando productividad y seguridad laboral.</p>
             </div>
-            <h3>Automatizacion de Procesos (RPA)</h3>
-            <p class="card-sub">2 vigentes &middot; 1 linea</p>
-            <div class="tags">
-              <span class="badge-secondary">Servicios y Gestion</span>
+
+            <!-- Manufactura Aditiva (Impresión 3D) -->
+            <div class="border border-sena-border rounded-lg bg-white p-4 hover:border-sena/30 hover:shadow-sm transition-all cursor-pointer tarjeta-tecnologia" data-id="9" data-nombre="Manufactura Aditiva (Impresión 3D)" data-descripcion="Tecnología de fabricación que construye objetos capa por capa, revolucionando prototipos, personalización y producción." data-estado="activo">
+              <div class="flex items-start justify-between mb-2">
+                <div class="w-10 h-10 bg-sena-soft rounded-lg flex items-center justify-center flex-shrink-0">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 text-sena">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18L9 11.25l4.306 4.307a11.95 11.95 0 015.814-5.519l2.74-1.22m0 0l-5.94-2.28m5.94 2.28l-2.28 5.941" />
+                  </svg>
+                </div>
+                <div class="flex items-center gap-1">
+                  <button class="btn-editar-tendencia p-1.5 rounded-lg text-sena-text-soft hover:bg-sena-soft hover:text-sena transition-colors" title="Editar tendencia" data-id="9" data-nombre="Manufactura Aditiva (Impresión 3D)" data-descripcion="Tecnología de fabricación que construye objetos capa por capa, revolucionando prototipos, personalización y producción.">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4">
+                      <path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/>
+                    </svg>
+                  </button>
+                  <div class="switch-sena active" title="Activo"></div>
+                </div>
+              </div>
+              <h3 class="font-['Montserrat'] text-sm font-semibold text-sena-text-main mb-1">Manufactura Aditiva (Impresión 3D)</h3>
+              <p class="text-xs text-sena-text-soft line-clamp-2">Tecnología de fabricación que construye objetos capa por capa, revolucionando prototipos, personalización y producción.</p>
             </div>
-            <a href="busqueda.html" class="card-link">Ver perfiles <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path d="M5 12h14m0 0-7-7m7 7-7 7" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+
+            <!-- Automatización de Procesos (RPA) -->
+            <div class="border border-sena-border rounded-lg bg-white p-4 hover:border-sena/30 hover:shadow-sm transition-all cursor-pointer tarjeta-tecnologia" data-id="10" data-nombre="Automatización de Procesos (RPA)" data-descripcion="Automatización de tareas repetitivas mediante software que simula acciones humanas, aumentando eficiencia y reduciendo costos." data-estado="inactivo">
+              <div class="flex items-start justify-between mb-2">
+                <div class="w-10 h-10 bg-sena-soft rounded-lg flex items-center justify-center flex-shrink-0">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 text-sena">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18L9 11.25l4.306 4.307a11.95 11.95 0 015.814-5.519l2.74-1.22m0 0l-5.94-2.28m5.94 2.28l-2.28 5.941" />
+                  </svg>
+                </div>
+                <div class="flex items-center gap-1">
+                  <button class="btn-editar-tendencia p-1.5 rounded-lg text-sena-text-soft hover:bg-sena-soft hover:text-sena transition-colors" title="Editar tendencia" data-id="10" data-nombre="Automatización de Procesos (RPA)" data-descripcion="Automatización de tareas repetitivas mediante software que simula acciones humanas, aumentando eficiencia y reduciendo costos.">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4">
+                      <path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/>
+                    </svg>
+                  </button>
+                  <div class="switch-sena" title="Inactivo"></div>
+                </div>
+              </div>
+              <h3 class="font-['Montserrat'] text-sm font-semibold text-sena-text-main mb-1">Automatización de Procesos (RPA)</h3>
+              <p class="text-xs text-sena-text-soft line-clamp-2">Automatización de tareas repetitivas mediante software que simula acciones humanas, aumentando eficiencia y reduciendo costos.</p>
+            </div>
           </div>
         </div>
       </div>
     </div>
   </main>
+
+  <!-- Script para controlar los modales -->
+   <script src="../../assets/js/tecnologias_emergentes/tecnologias_emergentes.js"></script>
+
 </body>
 </html>
 <?php include __DIR__ . '../../../includes/footer.php'; ?>

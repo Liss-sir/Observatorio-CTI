@@ -66,6 +66,15 @@ function nav_classes(string $target): string {
       transform: rotate(180deg);
     }
 
+    /* NUEVO: Estilos para el menú fijo de Programas */
+    .menu-fijo #submenu-programas {
+      display: block !important;
+    }
+
+    .menu-fijo #svg-menu-programas {
+      transform: rotate(180deg);
+    }
+
     /* SOLUCIÓN: Menú con separación justa */
     #menu-tendencias {
       position: relative;
@@ -99,6 +108,25 @@ function nav_classes(string $target): string {
     #menu-tendencias:hover .zona-seguridad {
       display: block;
     }
+
+    /* NUEVO: Estilos específicos para el menú de Programas (análogo a Tendencias) */
+    #menu-programas {
+      position: relative;
+    }
+
+    #submenu-programas {
+      margin-top: 15px;
+    }
+
+    #menu-programas:hover #submenu-programas,
+    #submenu-programas:hover,
+    .menu-fijo #submenu-programas {
+      display: block !important;
+    }
+
+    #menu-programas:hover .zona-seguridad {
+      display: block;
+    }
   </style>
 </head>
 
@@ -129,7 +157,76 @@ function nav_classes(string $target): string {
         <a href="../../view/landing/landing.php" class="<?= nav_classes('landing.php') ?>">Inicio</a>
         <a href="../../view/perfiles/perfiles.php" class="<?= nav_classes('perfiles.php') ?>">Perfiles</a>
 
-        <a href="#" class="<?= nav_classes('') ?>">Programas Formación</a>
+        <!-- NUEVO: Inicio del submenú de Programas (idéntico al de Tendencias) -->
+        <!-- Menú desplegable Programas Formación -->
+        <div class="relative group" id="menu-programas">
+          
+          <!-- Contenedor con hover unificado -->
+          <div class="flex items-center rounded-md hover:bg-sena-soft transition-colors duration-200">
+
+            <a href="#"
+               class="px-3 py-2 rounded-l-md text-sm font-medium text-sena-text-muted hover:text-sena transition-colors duration-200">
+              Programas Formación
+            </a>
+
+            <button id="btn-menu-programas"
+                    type="button"
+                    class="px-1 py-2 rounded-r-md text-sena-text-muted hover:text-sena transition-colors duration-200">
+              <svg class="w-3 h-3 transition-transform duration-200 group-hover:rotate-180"
+                   id="svg-menu-programas"
+                   fill="none"
+                   stroke="currentColor"
+                   viewBox="0 0 24 24">
+                <path stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M19 9l-7 7-7-7">
+                </path>
+              </svg>
+            </button>
+
+          </div>
+
+          <!-- ZONA DE SEGURIDAD: Puente invisible que conecta el menú con el submenú -->
+          <div class="zona-seguridad hidden group-hover:block"></div>
+          
+          <!-- Submenú - CON SEPARACIÓN JUSTA pero navegable -->
+          <div class="absolute w-64 hidden bg-white rounded-xl overflow-hidden shadow-xl z-50 border border-gray-100 animate-fadeIn"
+               id="submenu-programas"
+               style="left: -2rem;">
+            
+            <!-- Flechita superior decorativa -->
+            <div class="absolute -top-2 left-4 w-4 h-4 bg-white transform rotate-45 border-t border-l border-gray-100"></div>
+            
+            <div class="relative bg-white">
+              
+              <!-- Divisor -->
+              <div class="border-t border-gray-100 mx-4"></div>
+              
+              <!-- Área  -->
+              <a href="#"
+                 class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-sena-soft hover:text-sena transition-all duration-200 group/item">
+                
+                <span class="w-8 h-8 bg-sena-soft/50 rounded-lg flex items-center justify-center text-sena group-hover/item:bg-sena group-hover/item:text-white transition-colors duration-200">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                  </svg>
+                </span>
+
+                <div>
+                  <p class="font-medium">Área</p>
+                  <p class="text-xs text-gray-500">Gestionar disciplinas técnicas</p>
+                </div>
+
+              </a>
+
+              <!-- Puedes añadir más áreas aquí, copiando el mismo patrón y recordando añadir los divisores necesarios -->
+
+            </div>
+          </div>
+
+        </div>
+        <!-- NUEVO: Fin del submenú de Programas -->
         
         <!-- Menú desplegable Tendencias Actuales -->
         <div class="relative group" id="menu-tendencias">
@@ -247,100 +344,172 @@ function nav_classes(string $target): string {
   <!-- Script para manejar menú fijo con click + hover -->
   <script>
     document.addEventListener('DOMContentLoaded', function() {
+      // --- Lógica para Tendencias (ya existente) ---
       const btnMenuTendencias = document.getElementById('btn-menu-tendencias');
       const menuTendencias = document.getElementById('menu-tendencias');
       const submenuTendencias = document.getElementById('submenu-tendencias');
-      const zonaSeguridad = document.querySelector('.zona-seguridad');
-      let clickActivo = false;
-      let hoverActivo = false;
+      
+      // NUEVO: Obtener elementos para Programas
+      const btnMenuProgramas = document.getElementById('btn-menu-programas');
+      const menuProgramas = document.getElementById('menu-programas');
+      const submenuProgramas = document.getElementById('submenu-programas');
+      
+      const zonaSeguridad = document.querySelector('.zona-seguridad'); // Nota: Esto solo selecciona el primero. Para que sea más preciso, deberías usar IDs o clases específicas. Lo dejamos así para que no se complique, pero funcionará si el HTML es consistente.
+      
+      let clickActivoTendencias = false;
+      let hoverActivoTendencias = false;
+      
+      // NUEVO: Estados para Programas
+      let clickActivoProgramas = false;
+      let hoverActivoProgramas = false;
+      
       let timeoutId = null;
 
-      if (!btnMenuTendencias || !menuTendencias || !submenuTendencias) return;
-
-      // Función para actualizar visibilidad del menú
-      function actualizarMenu() {
-        if (clickActivo || hoverActivo) {
+      // Función para actualizar visibilidad del menú de Tendencias
+      function actualizarMenuTendencias() {
+        if (clickActivoTendencias || hoverActivoTendencias) {
           menuTendencias.classList.add('menu-fijo');
         } else {
           menuTendencias.classList.remove('menu-fijo');
         }
       }
 
-      // Función para activar hover
-      function activarHover() {
+      // NUEVO: Función para actualizar visibilidad del menú de Programas
+      function actualizarMenuProgramas() {
+        if (clickActivoProgramas || hoverActivoProgramas) {
+          menuProgramas.classList.add('menu-fijo');
+        } else {
+          menuProgramas.classList.remove('menu-fijo');
+        }
+      }
+
+      // Función para activar hover (genérica, requiere el menú específico)
+      function activarHover(menu, setHover, actualizarFunc) {
         if (timeoutId) {
           clearTimeout(timeoutId);
           timeoutId = null;
         }
-        if (!clickActivo) {
-          hoverActivo = true;
-          actualizarMenu();
-        }
+        // Desactivar el click del otro menú si es necesario? Mejor mantenerlos independientes.
+        // if (!clickActivo) {
+          setHover(true);
+          actualizarFunc();
+        // }
       }
 
-      // Función para desactivar hover con delay
-      function desactivarHover() {
+      // Función para desactivar hover con delay (requiere elementos específicos)
+      function desactivarHover(menu, submenu, zona, setHover, actualizarFunc, clickActivo) {
         if (timeoutId) {
           clearTimeout(timeoutId);
         }
         timeoutId = setTimeout(() => {
-          if (!clickActivo && 
-              !menuTendencias.matches(':hover') && 
-              !submenuTendencias.matches(':hover') && 
-              !(zonaSeguridad && zonaSeguridad.matches(':hover'))) {
-            hoverActivo = false;
-            actualizarMenu();
+          // Comprueba si el mouse está sobre ALGÚN elemento relevante de ESTE menú
+          const estaSobreEsteMenu = (menu && menu.matches(':hover')) || 
+                                      (submenu && submenu.matches(':hover')) || 
+                                      (zona && zona.matches(':hover'));
+          
+          if (!clickActivo && !estaSobreEsteMenu) {
+            setHover(false);
+            actualizarFunc();
           }
           timeoutId = null;
         }, 100); // Reducido a 100ms para respuesta más rápida
       }
 
-      // Click en la flecha
-      btnMenuTendencias.addEventListener('click', function(e) {
-        e.preventDefault();
-        e.stopPropagation();
-        
-        clickActivo = !clickActivo;
-        
-        if (clickActivo) {
-          hoverActivo = false;
-          if (timeoutId) {
-            clearTimeout(timeoutId);
-            timeoutId = null;
+      // --- Eventos para Tendencias (adaptados) ---
+      if (btnMenuTendencias && menuTendencias && submenuTendencias) {
+        const zonaSeguridadTendencias = menuTendencias.querySelector('.zona-seguridad');
+
+        btnMenuTendencias.addEventListener('click', function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+          
+          clickActivoTendencias = !clickActivoTendencias;
+          
+          if (clickActivoTendencias) {
+            hoverActivoTendencias = false;
+            if (timeoutId) {
+              clearTimeout(timeoutId);
+              timeoutId = null;
+            }
           }
+          
+          actualizarMenuTendencias();
+        });
+
+        [menuTendencias, submenuTendencias, zonaSeguridadTendencias].forEach(element => {
+          if (element) {
+            element.addEventListener('mouseenter', () => activarHover(menuTendencias, (val) => hoverActivoTendencias = val, actualizarMenuTendencias));
+            element.addEventListener('mouseleave', () => desactivarHover(menuTendencias, submenuTendencias, zonaSeguridadTendencias, (val) => hoverActivoTendencias = val, actualizarMenuTendencias, clickActivoTendencias));
+          }
+        });
+
+        // Cerrar menú fijo al hacer click en enlaces
+        submenuTendencias.querySelectorAll('a').forEach(link => {
+          link.addEventListener('click', function() {
+            clickActivoTendencias = false;
+            hoverActivoTendencias = false;
+            actualizarMenuTendencias();
+          });
+        });
+      }
+
+      // --- NUEVO: Eventos para Programas (duplicado y adaptado) ---
+      if (btnMenuProgramas && menuProgramas && submenuProgramas) {
+        const zonaSeguridadProgramas = menuProgramas.querySelector('.zona-seguridad');
+
+        btnMenuProgramas.addEventListener('click', function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+          
+          clickActivoProgramas = !clickActivoProgramas;
+          
+          if (clickActivoProgramas) {
+            hoverActivoProgramas = false;
+            if (timeoutId) {
+              clearTimeout(timeoutId);
+              timeoutId = null;
+            }
+          }
+          
+          actualizarMenuProgramas();
+        });
+
+        [menuProgramas, submenuProgramas, zonaSeguridadProgramas].forEach(element => {
+          if (element) {
+            element.addEventListener('mouseenter', () => activarHover(menuProgramas, (val) => hoverActivoProgramas = val, actualizarMenuProgramas));
+            element.addEventListener('mouseleave', () => desactivarHover(menuProgramas, submenuProgramas, zonaSeguridadProgramas, (val) => hoverActivoProgramas = val, actualizarMenuProgramas, clickActivoProgramas));
+          }
+        });
+
+        // Cerrar menú fijo al hacer click en enlaces
+        submenuProgramas.querySelectorAll('a').forEach(link => {
+          link.addEventListener('click', function() {
+            clickActivoProgramas = false;
+            hoverActivoProgramas = false;
+            actualizarMenuProgramas();
+          });
+        });
+      }
+
+      // Cerrar menús fijos al hacer click fuera (mejorado para ambos)
+      document.addEventListener('click', function(e) {
+        // Para Tendencias
+        if (menuTendencias && !menuTendencias.contains(e.target) && 
+            !submenuTendencias.contains(e.target) && 
+            clickActivoTendencias) {
+          clickActivoTendencias = false;
+          actualizarMenuTendencias();
         }
         
-        actualizarMenu();
-      });
-
-      // Eventos de hover para todos los elementos
-      [menuTendencias, submenuTendencias, zonaSeguridad].forEach(element => {
-        if (element) {
-          element.addEventListener('mouseenter', activarHover);
-          element.addEventListener('mouseleave', desactivarHover);
+        // Para Programas
+        if (menuProgramas && !menuProgramas.contains(e.target) && 
+            !submenuProgramas.contains(e.target) && 
+            clickActivoProgramas) {
+          clickActivoProgramas = false;
+          actualizarMenuProgramas();
         }
       });
 
-      // Cerrar menú fijo al hacer click fuera
-      document.addEventListener('click', function(e) {
-        if (!menuTendencias.contains(e.target) && 
-            !submenuTendencias.contains(e.target) && 
-            !(zonaSeguridad && zonaSeguridad.contains(e.target)) && 
-            clickActivo) {
-          clickActivo = false;
-          actualizarMenu();
-        }
-      });
-
-      // Cerrar menú al hacer click en enlaces
-      const submenuLinks = submenuTendencias.querySelectorAll('a');
-      submenuLinks.forEach(link => {
-        link.addEventListener('click', function() {
-          clickActivo = false;
-          hoverActivo = false;
-          actualizarMenu();
-        });
-      });
     });
   </script>
 

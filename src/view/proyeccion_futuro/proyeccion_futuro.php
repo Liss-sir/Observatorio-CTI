@@ -522,6 +522,8 @@ include __DIR__ . '/modal_confirmacion_habilitar_pf.php';
     // ===== FUNCIONES PARA MODAL DE CREACIÓN =====
     function abrirModalCrear() {
       modalCrear.classList.remove('hidden');
+      // Forzar reflow para que la animación se ejecute
+      modalCrear.offsetHeight;
       document.body.style.overflow = 'hidden';
     }
 
@@ -567,6 +569,8 @@ include __DIR__ . '/modal_confirmacion_habilitar_pf.php';
       }
       
       modalEditar.classList.remove('hidden');
+      // Forzar reflow para que la animación se ejecute
+      modalEditar.offsetHeight;
       document.body.style.overflow = 'hidden';
     }
 
@@ -586,6 +590,8 @@ include __DIR__ . '/modal_confirmacion_habilitar_pf.php';
       }
       
       modalDeshabilitar.classList.remove('hidden');
+      // Forzar reflow para que la animación se ejecute
+      modalDeshabilitar.offsetHeight;
       document.body.style.overflow = 'hidden';
     }
 
@@ -658,6 +664,8 @@ include __DIR__ . '/modal_confirmacion_habilitar_pf.php';
       }
       
       modalHabilitar.classList.remove('hidden');
+      // Forzar reflow para que la animación se ejecute
+      modalHabilitar.offsetHeight;
       document.body.style.overflow = 'hidden';
     }
 

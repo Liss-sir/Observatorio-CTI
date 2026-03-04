@@ -6,7 +6,7 @@
   <!-- Modal panel -->
   <div class="fixed inset-0 overflow-y-auto">
     <div class="flex min-h-full items-center justify-center p-4">
-      <div class="relative w-full max-w-2xl transform overflow-hidden rounded-xl border border-sena-border bg-white shadow-xl transition-all">
+      <div class="relative w-full max-w-2xl transform overflow-hidden rounded-xl border border-sena-border bg-white shadow-xl transition-all animate-slideDownModal">
         
         <!-- Close button -->
         <button class="cerrar-modal absolute right-4 top-4 text-sena-text-soft hover:text-sena-text-main">
@@ -55,40 +55,43 @@
           <div class="mb-4 grid grid-cols-2 gap-4">
             <div>
               <label class="mb-1 block text-sm font-medium text-sena-text-main">Estado</label>
-              <select name="estado" 
-                      class="w-full rounded-lg border border-sena-border px-3 py-2 text-sm text-sena-text-main focus:border-sena focus:ring-2 focus:ring-sena/20">
-                <option value="vigente" selected>Vigente</option>
-                <option value="expirado">Expirado</option>
-              </select>
+              <div class="select-container">
+                <select name="estado" class="custom-select">
+                  <option value="vigente" selected>Vigente</option>
+                  <option value="expirado">Expirado</option>
+                </select>
+              </div>
             </div>
             <div>
               <label class="mb-1 block text-sm font-medium text-sena-text-main">Línea Tecnológica</label>
-              <select name="lineaTecnologica" 
-                      class="w-full rounded-lg border border-sena-border px-3 py-2 text-sm text-sena-text-main focus:border-sena focus:ring-2 focus:ring-sena/20">
-                <option value="" disabled>Seleccionar línea...</option>
-                <option value="1" selected>Tecnologias de la Informacion y las Comunicaciones</option>
-                <option value="2">Biotecnologia y Nanotecnologia</option>
-                <option value="3">Diseno e Innovacion</option>
-                <option value="4">Produccion y Transformacion</option>
-                <option value="5">Materiales e Industria</option>
-                <option value="6">Electronica y Automatizacion</option>
-                <option value="7">Servicios y Gestion Empresarial</option>
-              </select>
+              <div class="select-container">
+                <select name="lineaTecnologica" class="custom-select">
+                  <option value="" disabled>Seleccionar línea...</option>
+                  <option value="1" selected>Tecnologias de la Informacion y las Comunicaciones</option>
+                  <option value="2">Biotecnologia y Nanotecnologia</option>
+                  <option value="3">Diseno e Innovacion</option>
+                  <option value="4">Produccion y Transformacion</option>
+                  <option value="5">Materiales e Industria</option>
+                  <option value="6">Electronica y Automatizacion</option>
+                  <option value="7">Servicios y Gestion Empresarial</option>
+                </select>
+              </div>
             </div>
           </div>
 
           <!-- Empresa -->
           <div class="mb-4">
             <label class="mb-1 block text-sm font-medium text-sena-text-main">Empresa</label>
-            <select name="empresa" 
-                    class="w-full rounded-lg border border-sena-border px-3 py-2 text-sm text-sena-text-main focus:border-sena focus:ring-2 focus:ring-sena/20">
-              <option value="" disabled>Seleccionar empresa...</option>
-              <option value="1">BioTech Andina</option>
-              <option value="2" selected>Tech Solutions</option>
-              <option value="3">InnovaTech</option>
-              <option value="4">CloudNet Colombia</option>
-              <option value="5">DataSoft</option>
-            </select>
+            <div class="select-container">
+              <select name="empresa" class="custom-select">
+                <option value="" disabled>Seleccionar empresa...</option>
+                <option value="1">BioTech Andina</option>
+                <option value="2" selected>Tech Solutions</option>
+                <option value="3">InnovaTech</option>
+                <option value="4">CloudNet Colombia</option>
+                <option value="5">DataSoft</option>
+              </select>
+            </div>
           </div>
 
           <!-- Tecnologías Emergentes -->

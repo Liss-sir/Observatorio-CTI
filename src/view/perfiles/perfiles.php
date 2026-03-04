@@ -671,6 +671,8 @@ include __DIR__ . '/modal_creado_confirmacion.php';
       function abrirModal(modal) {
         if (modal) {
           modal.classList.remove('hidden');
+          // Forzar reflow para que la animación se ejecute
+          modal.offsetHeight;
           document.body.classList.add('overflow-hidden');
         }
       }
