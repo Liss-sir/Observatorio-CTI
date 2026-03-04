@@ -58,7 +58,7 @@ function nav_classes(string $target): string {
       <nav class="flex items-center gap-2 justify-self-center">
         <a href="../../view/landing/landing.php" class="<?= nav_classes('landing.php') ?>">Inicio</a>
         <a href="busqueda.html" class="<?= nav_classes('busqueda.html') ?>">Perfiles</a>
-        <a href="busqueda.html" class="<?= nav_classes('busqueda.html') ?>">Lineas Tecnologicas</a>
+        <a href="../../view/lineas_tecnologicas/lineas_tecnologicas.php" class="<?= nav_classes('lineas_tecnologicas.php') ?>">Lineas Tecnologicas</a>
         <a href="tecnologias-emergentes.html" class="<?= nav_classes('tecnologias-emergentes.html') ?>">Tecnologias Emergentes</a>
         <a href="tecnologias-emergentes.html" class="<?= nav_classes('tecnologias-emergentes.html') ?>">Gestión Perfiles</a>
         <a href="tecnologias-emergentes.html" class="<?= nav_classes('tecnologias-emergentes.html') ?>">Historial</a>
