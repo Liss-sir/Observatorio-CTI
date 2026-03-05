@@ -1,5 +1,5 @@
-<!-- modal_deshabilitar_perfiles.php -->
-<div id="modal-deshabilitar-perfil" class="hidden fixed inset-0 z-50 overflow-y-auto" aria-hidden="true">
+<!-- modal_dehabilitar_tendencia_act.php -->
+<div id="modal-deshabilitar-tendencias-act" class="hidden fixed inset-0 z-50 overflow-y-auto" aria-hidden="true">
   <!-- Overlay -->
   <div class="fixed inset-0 bg-black bg-opacity-80 transition-opacity"></div>
 
@@ -17,7 +17,7 @@
 
         <!-- Header -->
         <div class="border-b border-sena-border px-6 py-4">
-          <h3 class="text-lg font-semibold text-sena-text-main">Deshabilitar Perfil</h3>
+          <h3 class="text-lg font-semibold text-sena-text-main">Deshabilitar Tendencia Actual</h3>
         </div>
 
         <!-- Content -->

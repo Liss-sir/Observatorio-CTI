@@ -1,6 +1,6 @@
-<!-- modal_habilitar_perfiles.php -->
-<!-- Modal de confirmación para habilitar perfil -->
-<div id="modal-habilitar-perfil" class="hidden fixed inset-0 z-50 overflow-y-auto" aria-hidden="true">
+<!-- modal_habilitar_tecnologia_emergente.php -->
+<!-- Modal de confirmación para habilitar tendencia actual -->
+<div id="modal-habilitar-tendencia" class="hidden fixed inset-0 z-50 overflow-y-auto" aria-hidden="true">
   <!-- Overlay -->
   <div class="fixed inset-0 bg-black bg-opacity-80 transition-opacity"></div>
 
@@ -18,18 +18,18 @@
             </svg>
           </div>
           <div>
-            <h3 class="text-lg font-semibold text-sena-text-main">¿Habilitar perfil?</h3>
-            <p class="text-sm text-sena-text-soft">Esta acción activará el perfil nuevamente</p>
+            <h3 class="text-lg font-semibold text-sena-text-main">¿Habilitar tecnología emergente?</h3>
+            <p class="text-sm text-sena-text-soft">Esta acción activará la tecnología emergente nuevamente</p>
           </div>
         </div>
 
         <!-- Content -->
         <div class="px-6 py-5">
           <p class="text-sm text-sena-text-soft leading-relaxed">
-            ¿Estás seguro de que deseas habilitar el perfil <span class="font-semibold text-sena-text-main" id="nombre-perfil-habilitar">"Desarrollador Full Stack Senior"</span>?
+            ¿Estás seguro de que deseas habilitar la tecnología emergente <span class="font-semibold text-sena-text-main" id="nombre-tecnologia-habilitar">"Desarrollador Full Stack Senior"</span>?
           </p>
           <p class="text-xs text-sena-text-soft mt-3 bg-yellow-50 p-3 rounded-lg border border-yellow-200">
-            <span class="font-medium text-yellow-800">Información:</span> El perfil volverá a estar visible y disponible para su uso.
+            <span class="font-medium text-yellow-800">Información:</span> La tecnología emergente volverá a estar visible y disponible para su uso.
           </p>
         </div>
 
@@ -43,7 +43,7 @@
               <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <polyline points="20 6 9 17 4 12"></polyline>
               </svg>
-              Sí, habilitar perfil
+              Sí, habilitar tecnología emergente
             </span>
           </button>
         </div>
@@ -52,19 +52,3 @@
   </div>
 </div>
 
-<!-- Estilos necesarios (agrégalos al bloque <style> de tu página principal si no los tienes) -->
-<style>
-  @keyframes modalFadeIn {
-    from {
-      opacity: 0;
-      transform: scale(0.95) translateY(-10px);
-    }
-    to {
-      opacity: 1;
-      transform: scale(1) translateY(0);
-    }
-  }
-  .animate-modalFadeIn {
-    animation: modalFadeIn 0.3s ease-out;
-  }
-</style>

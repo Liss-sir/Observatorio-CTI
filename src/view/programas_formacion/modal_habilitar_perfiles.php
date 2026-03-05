@@ -2,7 +2,7 @@
 <!-- Modal de confirmación para habilitar perfil -->
 <div id="modal-habilitar-perfil" class="hidden fixed inset-0 z-50 overflow-y-auto" aria-hidden="true">
   <!-- Overlay -->
-  <div class="fixed inset-0 bg-black bg-opacity-80 transition-opacity"></div>
+  <div class="ffixed inset-0 bg-black bg-opacity-80 transition-opacity"></div>
 
   <div class="fixed inset-0 overflow-y-auto">
     <div class="flex min-h-full items-center justify-center p-4">

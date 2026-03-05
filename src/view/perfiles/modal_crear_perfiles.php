@@ -6,7 +6,7 @@
   <!-- Modal panel -->
   <div class="fixed inset-0 overflow-y-auto">
     <div class="flex min-h-full items-center justify-center p-4">
-      <div class="relative w-full max-w-2xl transform overflow-hidden rounded-xl border border-sena-border bg-white shadow-xl transition-all">
+      <div class="relative w-full max-w-2xl transform overflow-hidden rounded-xl border border-sena-border bg-white shadow-xl transition-all animate-slideDownModal">
         
         <!-- Close button -->
         <button class="cerrar-modal-crear absolute right-4 top-4 text-sena-text-soft hover:text-sena-text-main">
@@ -26,14 +26,14 @@
           <!-- Nombre -->
           <div class="mb-4">
             <label class="mb-1 block text-sm font-medium text-sena-text-main">Nombre</label>
-            <input type="text" name="nombre" required placeholder="Ej: Desarrollador Full Stack"
+            <input type="text" name="nombre"  placeholder="Ej: Desarrollador Full Stack"
                    class="w-full rounded-lg border border-sena-border px-3 py-2 text-sm text-sena-text-main placeholder-sena-text-soft focus:border-sena focus:ring-2 focus:ring-sena/20">
           </div>
 
           <!-- Descripción -->
           <div class="mb-4">
             <label class="mb-1 block text-sm font-medium text-sena-text-main">Descripción</label>
-            <textarea name="descripcion" rows="3" required placeholder="Describe las responsabilidades y requisitos del perfil..."
+            <textarea name="descripcion" rows="3"  placeholder="Describe las responsabilidades y requisitos del perfil..."
                       class="w-full rounded-lg border border-sena-border px-3 py-2 text-sm text-sena-text-main placeholder-sena-text-soft focus:border-sena focus:ring-2 focus:ring-sena/20"></textarea>
           </div>
 
@@ -41,12 +41,12 @@
           <div class="mb-4 grid grid-cols-2 gap-4">
             <div>
               <label class="mb-1 block text-sm font-medium text-sena-text-main">Fecha Creación</label>
-              <input type="date" name="fechaCreacion" required id="fecha-creacion-nuevo"
+              <input type="date" name="fechaCreacion"  id="fecha-creacion-nuevo"
                      class="w-full rounded-lg border border-sena-border px-3 py-2 text-sm text-sena-text-main focus:border-sena focus:ring-2 focus:ring-sena/20">
             </div>
             <div>
               <label class="mb-1 block text-sm font-medium text-sena-text-main">Fecha Expiración</label>
-              <input type="date" name="fechaExpiracion" required
+              <input type="date" name="fechaExpiracion" 
                      class="w-full rounded-lg border border-sena-border px-3 py-2 text-sm text-sena-text-main focus:border-sena focus:ring-2 focus:ring-sena/20">
             </div>
           </div>
@@ -63,7 +63,7 @@
             </div>
             <div>
               <label class="mb-1 block text-sm font-medium text-sena-text-main">Línea Tecnológica</label>
-              <select name="lineaTecnologica" required
+              <select name="lineaTecnologica" 
                       class="w-full rounded-lg border border-sena-border px-3 py-2 text-sm text-sena-text-main focus:border-sena focus:ring-2 focus:ring-sena/20">
                 <option value="" disabled selected>Seleccionar línea...</option>
                 <option value="1">Tecnologias de la Informacion y las Comunicaciones</option>
@@ -80,7 +80,7 @@
           <!-- Empresa -->
           <div class="mb-4">
             <label class="mb-1 block text-sm font-medium text-sena-text-main">Empresa</label>
-            <select name="empresa" required
+            <select name="empresa" 
                     class="w-full rounded-lg border border-sena-border px-3 py-2 text-sm text-sena-text-main focus:border-sena focus:ring-2 focus:ring-sena/20">
               <option value="" disabled selected>Seleccionar empresa...</option>
               <option value="1">BioTech Andina</option>

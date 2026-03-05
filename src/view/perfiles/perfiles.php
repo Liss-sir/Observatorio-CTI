@@ -7,6 +7,7 @@ include __DIR__ . '/modal_habilitar_perfiles.php';
 include __DIR__ . '/modal_habilitado_confirmacion.php';
 include __DIR__ . '/modal_confirmacion_deshabilitar_pefiles.php';
 include __DIR__ . '/modal_editar_confirmacion.php';
+include __DIR__ . '/modal_creado_confirmacion.php';
 ?>
 
 <!DOCTYPE html>
@@ -650,19 +651,28 @@ include __DIR__ . '/modal_editar_confirmacion.php';
       const modalEditadoConfirmacion = document.getElementById('modal-editado-confirmacion');
       const nombrePerfilEditadoSpan = document.getElementById('nombre-perfil-editado');
       const cerrarBtnsEditado = document.querySelectorAll('.cerrar-modal-editado');
+
+      // ===== MODAL CREADO CONFIRMACIÓN =====
+      const modalCreadoConfirmacion = document.getElementById('modal-creado-confirmacion');
+      const nombrePerfilCreadoSpan = document.getElementById('nombre-perfil-creado');
+      const cerrarBtnsCreado = document.querySelectorAll('.cerrar-modal-creado');
       
       // ===== TIMERS =====
       let timeoutDeshabilitado = null;
       let timeoutHabilitado = null;
       let timeoutEditado = null;
+      let timeoutCreado = null;
       let intervalContadorHabilitado = null;
       let intervalContadorDeshabilitado = null;
       let intervalContadorEditado = null;
+      let intervalContadorCreado = null;
       
       // ===== FUNCIÓN PARA ABRIR MODAL =====
       function abrirModal(modal) {
         if (modal) {
           modal.classList.remove('hidden');
+          // Forzar reflow para que la animación se ejecute
+          modal.offsetHeight;
           document.body.classList.add('overflow-hidden');
         }
       }
@@ -742,6 +752,30 @@ include __DIR__ . '/modal_editar_confirmacion.php';
           progressBar.style.width = '0%';
         }
         const contador = document.getElementById('contador-segundos-editado');
+        if (contador) {
+          contador.textContent = '3';
+        }
+      }
+      
+      // ===== FUNCIÓN PARA CERRAR MODAL CREADO =====
+      function cerrarModalCreado() {
+        if (modalCreadoConfirmacion) {
+          modalCreadoConfirmacion.classList.add('hidden');
+          document.body.classList.remove('overflow-hidden');
+        }
+        if (timeoutCreado) {
+          clearTimeout(timeoutCreado);
+          timeoutCreado = null;
+        }
+        if (intervalContadorCreado) {
+          clearInterval(intervalContadorCreado);
+          intervalContadorCreado = null;
+        }
+        const progressBar = document.getElementById('progress-bar-creado');
+        if (progressBar) {
+          progressBar.style.width = '0%';
+        }
+        const contador = document.getElementById('contador-segundos-creado');
         if (contador) {
           contador.textContent = '3';
         }
@@ -917,6 +951,62 @@ include __DIR__ . '/modal_editar_confirmacion.php';
           cerrarModalHabilitado();
         }, 3000);
       }
+
+      // ===== FUNCIÓN PARA MOSTRAR MODAL CREADO =====
+      function mostrarModalCreado(nombrePerfil) {
+        console.log('Mostrando modal creado para:', nombrePerfil);
+        
+        if (!modalCreadoConfirmacion) {
+          console.error('Modal creado no encontrado');
+          return;
+        }
+        
+        if (nombrePerfilCreadoSpan) {
+          nombrePerfilCreadoSpan.textContent = `"${nombrePerfil}"`;
+        }
+        
+        abrirModal(modalCreadoConfirmacion);
+        
+        // Resetear contador
+        let segundos = 3;
+        const contador = document.getElementById('contador-segundos-creado');
+        if (contador) {
+          contador.textContent = segundos;
+        }
+        
+        // Iniciar contador regresivo
+        if (intervalContadorCreado) {
+          clearInterval(intervalContadorCreado);
+        }
+        
+        intervalContadorCreado = setInterval(() => {
+          segundos--;
+          if (contador) {
+            contador.textContent = segundos;
+          }
+          if (segundos <= 0) {
+            clearInterval(intervalContadorCreado);
+            intervalContadorCreado = null;
+          }
+        }, 1000);
+        
+        // Animar barra de progreso
+        const progressBar = document.getElementById('progress-bar-creado');
+        if (progressBar) {
+          progressBar.style.width = '0%';
+          setTimeout(() => {
+            progressBar.style.width = '100%';
+          }, 50);
+        }
+        
+        if (timeoutCreado) {
+          clearTimeout(timeoutCreado);
+        }
+        
+        timeoutCreado = setTimeout(() => {
+          cerrarModalCreado();
+        }, 3000);
+      }
       
       // ===== EVENTOS MODAL CREAR =====
       if (btnNuevoPerfil) {
@@ -1036,6 +1126,13 @@ include __DIR__ . '/modal_editar_confirmacion.php';
         });
       });
       
+      // Cerrar modal creado manualmente
+      cerrarBtnsCreado.forEach(btn => {
+        btn.addEventListener('click', function() {
+          cerrarModalCreado();
+        });
+      });
+      
       // ===== CONFIRMAR DESHABILITAR =====
       if (btnConfirmarDeshabilitar) {
         btnConfirmarDeshabilitar.addEventListener('click', function(e) {
@@ -1099,7 +1196,7 @@ include __DIR__ . '/modal_editar_confirmacion.php';
       }
       
       // ===== CERRAR MODALES HACIENDO CLICK EN OVERLAY =====
-      [modalCrear, modalEditar, modalDeshabilitar, modalDeshabilitado, modalHabilitar, modalHabilitadoConfirmacion, modalEditadoConfirmacion].forEach(modal => {
+      [modalCrear, modalEditar, modalDeshabilitar, modalDeshabilitado, modalHabilitar, modalHabilitadoConfirmacion, modalEditadoConfirmacion, modalCreadoConfirmacion].forEach(modal => {
         if (modal) {
           modal.addEventListener('click', function(e) {
             if (e.target === modal || e.target.classList.contains('fixed')) {
@@ -1109,6 +1206,8 @@ include __DIR__ . '/modal_editar_confirmacion.php';
                 cerrarModalHabilitado();
               } else if (modal === modalEditadoConfirmacion) {
                 cerrarModalEditado();
+              } else if (modal === modalCreadoConfirmacion) {
+                cerrarModalCreado();
               } else {
                 cerrarModal(modal);
               }
@@ -1134,6 +1233,8 @@ include __DIR__ . '/modal_editar_confirmacion.php';
             cerrarModalHabilitado();
           } else if (modalEditadoConfirmacion && !modalEditadoConfirmacion.classList.contains('hidden')) {
             cerrarModalEditado();
+          } else if (modalCreadoConfirmacion && !modalCreadoConfirmacion.classList.contains('hidden')) {
+            cerrarModalCreado();
           }
         }
       });
@@ -1149,8 +1250,11 @@ include __DIR__ . '/modal_editar_confirmacion.php';
             selectedChips.push(chip.getAttribute('data-value'));
           });
 
+          // Obtener el nombre del perfil
+          const nombrePerfil = document.querySelector('#modal-crear-perfil input[name="nombre"]').value || "Perfil";
+
           var data = {
-            nombre: document.querySelector('#modal-crear-perfil input[name="nombre"]').value,
+            nombre: nombrePerfil,
             descripcion: document.querySelector('#modal-crear-perfil textarea[name="descripcion"]').value,
             fechaCreacion: document.querySelector('#modal-crear-perfil input[name="fechaCreacion"]').value,
             fechaExpiracion: document.querySelector('#modal-crear-perfil input[name="fechaExpiracion"]').value,
@@ -1161,8 +1265,12 @@ include __DIR__ . '/modal_editar_confirmacion.php';
           };
 
           console.log('Perfil creado:', data);
-          alert('Perfil creado exitosamente');
+          
+          // Cerrar modal de creación
           cerrarModal(modalCrear);
+          
+          // Mostrar modal de éxito de creación
+          mostrarModalCreado(nombrePerfil);
         });
       }
       
