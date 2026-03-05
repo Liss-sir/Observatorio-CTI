@@ -53,6 +53,19 @@ document.addEventListener('DOMContentLoaded', function() {
     const contadorSpanEditar = document.getElementById('contador-segundos-editado');
     const progressBarEditar = document.getElementById('progress-bar-editado');
     
+    // Elementos del modal de detalles
+    const modalDetalle = document.getElementById('modal-detalle-proyeccion-futuro');
+    const tarjetas = document.querySelectorAll('.tarjeta-tecnologia');
+    const botonesCerrarDetalle = document.querySelectorAll('.cerrar-modal-detalle');
+    
+    // Elementos del modal de detalles para actualizar contenido
+    const detalleTitulo = document.getElementById('detalle-titulo');
+    const detalleNombre = document.getElementById('detalle-nombre-proyeccion_futuro');
+    const detalleDescripcion = document.getElementById('detalle-descripcion-proyeccion_futuro');
+    const detalleEstado = document.getElementById('detalle-estado-proyeccion_futuro');
+    const detalleEstadoIndicador = document.getElementById('detalle-estado-indicador');
+    const detalleEstadoBadge = document.getElementById('detalle-estado-badge');
+    
     // Switches (para deshabilitar/habilitar)
     const switches = document.querySelectorAll('.switch-sena');
     
@@ -382,6 +395,55 @@ document.addEventListener('DOMContentLoaded', function() {
       }, 3000);
     }
 
+    // ===== FUNCIONES PARA MODAL DE DETALLES =====
+    function abrirModalDetalle(id, nombre, descripcion, estado, fecha) {
+        // Actualizar el título
+        if (detalleTitulo) {
+            detalleTitulo.textContent = `Detalle de ${nombre}`;
+        }
+        
+        // Actualizar nombre del área
+        if (detalleNombre) {
+            detalleNombre.textContent = nombre;
+        }
+        
+        // Actualizar descripción
+        if (detalleDescripcion) {
+            detalleDescripcion.textContent = descripcion;
+        }
+        
+        // Actualizar estado y estilo del badge
+        if (detalleEstado) {
+            const estadoTexto = estado === 'activo' ? 'Activo' : 'Inactivo';
+            detalleEstado.textContent = estadoTexto;
+            
+            if (detalleEstadoIndicador) {
+                if (estado === 'activo') {
+                    detalleEstadoIndicador.className = 'w-2 h-2 rounded-full bg-[#39A900] mr-2';
+                    if (detalleEstadoBadge) {
+                        detalleEstadoBadge.className = 'inline-flex items-center rounded-full px-3 py-1 text-xs font-medium bg-sena/10 text-sena';
+                    }
+                } else {
+                    detalleEstadoIndicador.className = 'w-2 h-2 rounded-full bg-sena-text-soft mr-2';
+                    if (detalleEstadoBadge) {
+                        detalleEstadoBadge.className = 'inline-flex items-center rounded-full px-3 py-1 text-xs font-medium bg-gray-100 text-sena-text-soft';
+                    }
+                }
+            }
+        }
+        
+        // Mostrar el modal
+        modalDetalle.classList.remove('hidden');
+        // Forzar reflow para la animación
+        modalDetalle.offsetHeight;
+        document.body.style.overflow = 'hidden';
+    }
+
+    function cerrarModalDetalle() {
+        modalDetalle.classList.add('hidden');
+        document.body.style.overflow = '';
+    }
+
     // ===== EVENT LISTENERS =====
 
     // Abrir modal de creación
@@ -396,6 +458,24 @@ document.addEventListener('DOMContentLoaded', function() {
         const id = this.getAttribute('data-id');
         abrirModalEditar(id);
       });
+    });
+
+    // Evento para las tarjetas (abrir modal de detalles)
+    tarjetas.forEach(tarjeta => {
+        tarjeta.addEventListener('click', function(e) {
+            // Prevenir que se active si se hace clic en botones específicos
+            if (e.target.closest('.btn-editar-proyeccion') || e.target.closest('.switch-sena')) {
+                return;
+            }
+            
+            const id = this.getAttribute('data-id');
+            const nombre = this.getAttribute('data-nombre');
+            const descripcion = this.getAttribute('data-descripcion');
+            const estado = this.getAttribute('data-estado') || 'activo'; // Por defecto activo si no se especifica
+            const fecha = this.getAttribute('data-fecha') || 'No especificada';
+            
+            abrirModalDetalle(id, nombre, descripcion, estado, fecha);
+        });
     });
 
     // Evento para los switches (abrir modal de deshabilitar o habilitar)
@@ -516,6 +596,14 @@ document.addEventListener('DOMContentLoaded', function() {
       boton.addEventListener('click', cerrarModalConfirmacionEditar);
     });
 
+    // Cerrar modal de detalles con los botones de cerrar
+    botonesCerrarDetalle.forEach(boton => {
+        boton.addEventListener('click', function(e) {
+            e.stopPropagation();
+            cerrarModalDetalle();
+        });
+    });
+
     // Cerrar modales al hacer clic en el overlay
     if (modalCrear) {
       modalCrear.addEventListener('click', function(e) {
@@ -581,6 +669,14 @@ document.addEventListener('DOMContentLoaded', function() {
       });
     }
 
+    if (modalDetalle) {
+        modalDetalle.addEventListener('click', function(e) {
+            if (e.target === modalDetalle || e.target.classList.contains('bg-black') || e.target.classList.contains('fixed')) {
+                cerrarModalDetalle();
+            }
+        });
+    }
+
     // Cerrar modales con tecla ESC
     document.addEventListener('keydown', function(e) {
       if (e.key === 'Escape') {
@@ -607,6 +703,9 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         if (modalConfirmacionEditar && !modalConfirmacionEditar.classList.contains('hidden')) {
           cerrarModalConfirmacionEditar();
+        }
+        if (modalDetalle && !modalDetalle.classList.contains('hidden')) {
+          cerrarModalDetalle();
         }
       }
     });
@@ -655,4 +754,4 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 300);
       });
     }
-  });
+});

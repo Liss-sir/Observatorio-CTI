@@ -8,6 +8,7 @@ include __DIR__ . '/modal_deshabilitar_proyeccion_futura.php';
 include __DIR__ . '/modal_confirmacion_deshabilitar_pf.php';
 include __DIR__ . '/modal_habilitar_proyeccion_futura.php';
 include __DIR__ . '/modal_confirmacion_habilitar_pf.php';
+include __DIR__ . '/modal_detalles.pf.php';
 ?>
 
 <!DOCTYPE html>
@@ -21,7 +22,18 @@ include __DIR__ . '/modal_confirmacion_habilitar_pf.php';
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="../../../assets/css/output.css">
   <link rel="stylesheet" href="../../assets/css/globals.css">
-
+  <style>
+    /* Estilos adicionales para las tarjetas */
+    .tarjeta-tecnologia {
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
+    
+    .tarjeta-tecnologia:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+    }
+  </style>
 </head>
 <body class="font-['Inter'] text-sena-text-main antialiased min-h-screen flex flex-col">
 
@@ -55,7 +67,12 @@ include __DIR__ . '/modal_confirmacion_habilitar_pf.php';
 
           <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
             <!-- Inteligencia Artificial -->
-            <div class="tarjeta-tecnologia border border-sena-border rounded-lg bg-white p-4 hover:border-sena/30 hover:shadow-sm transition-all" data-id="1" data-nombre="Inteligencia Artificial">
+            <div class="tarjeta-tecnologia border border-sena-border rounded-lg bg-white p-4 hover:border-sena/30 hover:shadow-sm transition-all cursor-pointer" 
+                 data-id="1" 
+                 data-nombre="Inteligencia Artificial"
+                 data-descripcion="Se proyecta que para 2028, la IA generará el 20% de todo el contenido digital y automatizará el 30% de las tareas empresariales. Esta tecnología está transformando sectores como salud, finanzas, educación y manufactura, permitiendo análisis predictivo y automatización inteligente."
+                 data-estado="activo"
+                 data-fecha="2 años">
               <div class="flex items-start justify-between mb-2">
                 <div class="w-10 h-10 bg-sena-soft rounded-lg flex items-center justify-center flex-shrink-0">
                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 text-sena">
@@ -84,7 +101,12 @@ include __DIR__ . '/modal_confirmacion_habilitar_pf.php';
             </div>
 
             <!-- Blockchain -->
-            <div class="tarjeta-tecnologia border border-sena-border rounded-lg bg-white p-4 hover:border-sena/30 hover:shadow-sm transition-all" data-id="2" data-nombre="Blockchain">
+            <div class="tarjeta-tecnologia border border-sena-border rounded-lg bg-white p-4 hover:border-sena/30 hover:shadow-sm transition-all cursor-pointer" 
+                 data-id="2" 
+                 data-nombre="Blockchain"
+                 data-descripcion="Se espera que para 2027, el 30% de las transacciones financieras globales utilicen tecnología blockchain para mayor seguridad y trazabilidad. Esta tecnología descentralizada está revolucionando la cadena de suministro, contratos inteligentes y la identidad digital."
+                 data-estado="activo"
+                 data-fecha="3 años">
               <div class="flex items-start justify-between mb-2">
                 <div class="w-10 h-10 bg-sena-soft rounded-lg flex items-center justify-center flex-shrink-0">
                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 text-sena">
@@ -113,7 +135,12 @@ include __DIR__ . '/modal_confirmacion_habilitar_pf.php';
             </div>
 
             <!-- Internet de las Cosas (IoT) -->
-            <div class="tarjeta-tecnologia border border-sena-border rounded-lg bg-white p-4 hover:border-sena/30 hover:shadow-sm transition-all" data-id="3" data-nombre="Internet de las Cosas (IoT)">
+            <div class="tarjeta-tecnologia border border-sena-border rounded-lg bg-white p-4 hover:border-sena/30 hover:shadow-sm transition-all cursor-pointer" 
+                 data-id="3" 
+                 data-nombre="Internet de las Cosas (IoT)"
+                 data-descripcion="Proyección indica que para 2028 habrá más de 75 mil millones de dispositivos IoT conectados, transformando industrias y hogares. Esta red de dispositivos interconectados permite la recopilación y análisis de datos en tiempo real para optimizar procesos y mejorar la calidad de vida."
+                 data-estado="inactivo"
+                 data-fecha="4 años">
               <div class="flex items-start justify-between mb-2">
                 <div class="w-10 h-10 bg-sena-soft rounded-lg flex items-center justify-center flex-shrink-0">
                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 text-sena">
@@ -142,7 +169,12 @@ include __DIR__ . '/modal_confirmacion_habilitar_pf.php';
             </div>
 
             <!-- Computacion en la Nube -->
-            <div class="tarjeta-tecnologia border border-sena-border rounded-lg bg-white p-4 hover:border-sena/30 hover:shadow-sm transition-all" data-id="4" data-nombre="Computación en la Nube">
+            <div class="tarjeta-tecnologia border border-sena-border rounded-lg bg-white p-4 hover:border-sena/30 hover:shadow-sm transition-all cursor-pointer" 
+                 data-id="4" 
+                 data-nombre="Computación en la Nube"
+                 data-descripcion="Se proyecta que para 2025, el 85% de las empresas migrarán completamente sus operaciones a entornos de nube híbrida. La computación en la nube ofrece escalabilidad, flexibilidad y reducción de costos, permitiendo a las empresas innovar más rápidamente."
+                 data-estado="activo"
+                 data-fecha="1 año">
               <div class="flex items-start justify-between mb-2">
                 <div class="w-10 h-10 bg-sena-soft rounded-lg flex items-center justify-center flex-shrink-0">
                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 text-sena">
@@ -171,7 +203,12 @@ include __DIR__ . '/modal_confirmacion_habilitar_pf.php';
             </div>
 
             <!-- Ciberseguridad Avanzada -->
-            <div class="tarjeta-tecnologia border border-sena-border rounded-lg bg-white p-4 hover:border-sena/30 hover:shadow-sm transition-all" data-id="5" data-nombre="Ciberseguridad Avanzada">
+            <div class="tarjeta-tecnologia border border-sena-border rounded-lg bg-white p-4 hover:border-sena/30 hover:shadow-sm transition-all cursor-pointer" 
+                 data-id="5" 
+                 data-nombre="Ciberseguridad Avanzada"
+                 data-descripcion="Para 2026, se estima que el gasto global en ciberseguridad alcanzará los $300 mil millones, impulsado por IA defensiva. Las organizaciones están adoptando enfoques de seguridad zero-trust y automatización de respuesta a incidentes."
+                 data-estado="activo"
+                 data-fecha="2 años">
               <div class="flex items-start justify-between mb-2">
                 <div class="w-10 h-10 bg-sena-soft rounded-lg flex items-center justify-center flex-shrink-0">
                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 text-sena">
@@ -200,7 +237,12 @@ include __DIR__ . '/modal_confirmacion_habilitar_pf.php';
             </div>
 
             <!-- Big Data y Analitica -->
-            <div class="tarjeta-tecnologia border border-sena-border rounded-lg bg-white p-4 hover:border-sena/30 hover:shadow-sm transition-all" data-id="6" data-nombre="Big Data y Analítica">
+            <div class="tarjeta-tecnologia border border-sena-border rounded-lg bg-white p-4 hover:border-sena/30 hover:shadow-sm transition-all cursor-pointer" 
+                 data-id="6" 
+                 data-nombre="Big Data y Analítica"
+                 data-descripcion="Se proyecta que para 2027, el mercado de big data alcanzará los $400 mil millones, con analítica predictiva en tiempo real. Las empresas utilizan big data para tomar decisiones basadas en datos y obtener ventajas competitivas."
+                 data-estado="activo"
+                 data-fecha="3 años">
               <div class="flex items-start justify-between mb-2">
                 <div class="w-10 h-10 bg-sena-soft rounded-lg flex items-center justify-center flex-shrink-0">
                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 text-sena">
@@ -229,7 +271,12 @@ include __DIR__ . '/modal_confirmacion_habilitar_pf.php';
             </div>
 
             <!-- Realidad Aumentada/Virtual -->
-            <div class="tarjeta-tecnologia border border-sena-border rounded-lg bg-white p-4 hover:border-sena/30 hover:shadow-sm transition-all" data-id="7" data-nombre="Realidad Aumentada/Virtual">
+            <div class="tarjeta-tecnologia border border-sena-border rounded-lg bg-white p-4 hover:border-sena/30 hover:shadow-sm transition-all cursor-pointer" 
+                 data-id="7" 
+                 data-nombre="Realidad Aumentada/Virtual"
+                 data-descripcion="Para 2029, se espera que 50 millones de personas trabajen en entornos de realidad mixta, revolucionando el teletrabajo. La AR/VR está transformando la educación, el entrenamiento profesional y el entretenimiento."
+                 data-estado="inactivo"
+                 data-fecha="5 años">
               <div class="flex items-start justify-between mb-2">
                 <div class="w-10 h-10 bg-sena-soft rounded-lg flex items-center justify-center flex-shrink-0">
                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 text-sena">
@@ -258,7 +305,12 @@ include __DIR__ . '/modal_confirmacion_habilitar_pf.php';
             </div>
 
             <!-- Robotica Colaborativa -->
-            <div class="tarjeta-tecnologia border border-sena-border rounded-lg bg-white p-4 hover:border-sena/30 hover:shadow-sm transition-all" data-id="8" data-nombre="Robótica Colaborativa">
+            <div class="tarjeta-tecnologia border border-sena-border rounded-lg bg-white p-4 hover:border-sena/30 hover:shadow-sm transition-all cursor-pointer" 
+                 data-id="8" 
+                 data-nombre="Robótica Colaborativa"
+                 data-descripcion="Se proyecta que para 2028, los robots colaborativos representarán el 40% de todas las instalaciones robóticas en industria. Los cobots trabajan junto a humanos, aumentando la productividad y seguridad en entornos de manufactura."
+                 data-estado="activo"
+                 data-fecha="2 años">
               <div class="flex items-start justify-between mb-2">
                 <div class="w-10 h-10 bg-sena-soft rounded-lg flex items-center justify-center flex-shrink-0">
                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 text-sena">
@@ -287,7 +339,12 @@ include __DIR__ . '/modal_confirmacion_habilitar_pf.php';
             </div>
 
             <!-- Manufactura Aditiva (Impresion 3D) -->
-            <div class="tarjeta-tecnologia border border-sena-border rounded-lg bg-white p-4 hover:border-sena/30 hover:shadow-sm transition-all" data-id="9" data-nombre="Manufactura Aditiva (Impresión 3D)">
+            <div class="tarjeta-tecnologia border border-sena-border rounded-lg bg-white p-4 hover:border-sena/30 hover:shadow-sm transition-all cursor-pointer" 
+                 data-id="9" 
+                 data-nombre="Manufactura Aditiva (Impresión 3D)"
+                 data-descripcion="Para 2028, se proyecta que el 60% de los productos de consumo masivo tendrán componentes fabricados con impresión 3D. La manufactura aditiva permite personalización masiva, reducción de desperdicios y producción bajo demanda."
+                 data-estado="activo"
+                 data-fecha="4 años">
               <div class="flex items-start justify-between mb-2">
                 <div class="w-10 h-10 bg-sena-soft rounded-lg flex items-center justify-center flex-shrink-0">
                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 text-sena">
@@ -316,7 +373,12 @@ include __DIR__ . '/modal_confirmacion_habilitar_pf.php';
             </div>
 
             <!-- Automatizacion de Procesos (RPA) -->
-            <div class="tarjeta-tecnologia border border-sena-border rounded-lg bg-white p-4 hover:border-sena/30 hover:shadow-sm transition-all" data-id="10" data-nombre="Automatización de Procesos (RPA)">
+            <div class="tarjeta-tecnologia border border-sena-border rounded-lg bg-white p-4 hover:border-sena/30 hover:shadow-sm transition-all cursor-pointer" 
+                 data-id="10" 
+                 data-nombre="Automatización de Procesos (RPA)"
+                 data-descripcion="Para 2027, se espera que el 90% de las tareas administrativas repetitivas estén automatizadas mediante RPA con IA integrada. La automatización robótica de procesos libera a los empleados para tareas de mayor valor agregado."
+                 data-estado="inactivo"
+                 data-fecha="3 años">
               <div class="flex items-start justify-between mb-2">
                 <div class="w-10 h-10 bg-sena-soft rounded-lg flex items-center justify-center flex-shrink-0">
                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 text-sena">
@@ -350,8 +412,7 @@ include __DIR__ . '/modal_confirmacion_habilitar_pf.php';
   </main>
 
   <!-- Script para la funcionalidad -->
-   <script src="../../assets/js/proyeccion_futuro/proyeccion_futuro.js"></script>
-
+  <script src="../../assets/js/proyeccion_futuro/proyeccion_futuro.js"></script>
 
 </body>
 </html>
