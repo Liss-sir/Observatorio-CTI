@@ -24,10 +24,10 @@ function nav_classes(string $target): string {
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Tecnologias Emergentes - SENA Observatorio Tecnologico</title>
 
-  <!-- 🌐 GOOGLE FONTS -->
+  <!-- GOOGLE FONTS -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@600;700;800&display=swap" rel="stylesheet" />
 
-  <!-- 🎨 Tailwind CSS Compilado -->
+  <!-- Tailwind CSS Compilado -->
   <link rel="stylesheet" href="../../../assets/css/output.css">
 
 </head>
