@@ -3,18 +3,111 @@ document.addEventListener("DOMContentLoaded", () => {
   const btnMisLineas = document.getElementById("btn-mis-lineas");
   const btnNuevaLinea = document.getElementById("btn-nueva-linea");
 
-  const tecnologiasDisponibles = [
-    "Inteligencia Artificial",
-    "Blockchain",
-    "Internet de las Cosas (IoT)",
-    "Computacion en la Nube",
-    "Ciberseguridad Avanzada",
-    "Big Data y Analitica",
-    "Realidad Aumentada/Virtual",
-    "Robotica Colaborativa",
-    "Manufactura Aditiva (Impresion 3D)",
-    "Automatizacion de Procesos (RPA)",
+  const focosDisponibles = [
+    "Manufactura Aditiva",
+    "Avances en tecnicas de mecanizado",
+    "Sistemas de Soldadura",
+    "Sistemas de Corte automatizado",
+    "Digitalizacion del mantenimiento",
+    "IA y Ciberseguridad",
+    "Construccion Modular y Sostenible",
+    "IoT y Robotica",
+    "Desarrollo de sistemas de control y automatizacion",
   ];
+
+  const areasDisponibles = [
+    "Industria y Manufactura",
+    "TIC e Infraestructura Digital",
+    "Construccion e Infraestructura",
+    "Automatizacion y Energia",
+    "Automotriz",
+    "Moda y Diseno",
+    "Multimedia y Audiovisual",
+  ];
+
+  const lineasPorArea = {
+    "Industria y Manufactura": [
+      "Mantenimiento Mecanico Industrial",
+      "Sistema de Manufactura con CNC",
+      "Soldadura",
+      "Electromecanica",
+      "Maderas",
+    ],
+    "TIC e Infraestructura Digital": [
+      "Informatica, diseno y desarrollo de software",
+      "Infraestructura TIC",
+      "Telecomunicaciones",
+    ],
+    "Construccion e Infraestructura": [
+      "Obras civiles",
+      "Construccion",
+      "Dibujo arquitectonico",
+      "Maquinaria Pesada",
+      "Redes de gas",
+    ],
+    "Automatizacion y Energia": [
+      "Mecatronica",
+      "Electronica",
+      "Instrumentacion y Control de Procesos",
+      "Refrigeracion y aire acondicionado",
+      "Sistemas de Control",
+      "Electricidad Industrial",
+      "Sistemas electricos domiciliarios",
+    ],
+    Automotriz: [
+      "Autotronica",
+      "Mantenimiento mecanico de automotores",
+      "Mecanica de motos",
+    ],
+    "Moda y Diseno": ["Confecciones", "Diseno de modas", "Marroquineria", "Calzado"],
+    "Multimedia y Audiovisual": ["Multimedia", "Audiovisuales"],
+  };
+
+  const focosPorLinea = {
+    "Mantenimiento Mecanico Industrial": [
+      "Digitalizacion del mantenimiento",
+      "Avances en tecnicas de mecanizado",
+    ],
+    "Sistema de Manufactura con CNC": [
+      "Avances en tecnicas de mecanizado",
+      "Manufactura Aditiva",
+    ],
+    Soldadura: ["Sistemas de Soldadura", "Sistemas de Corte automatizado"],
+    Electromecanica: ["IoT y Robotica", "Desarrollo de sistemas de control y automatizacion"],
+    "Informatica, diseno y desarrollo de software": ["IA y Ciberseguridad", "IoT y Robotica"],
+    "Infraestructura TIC": ["IA y Ciberseguridad", "Digitalizacion del mantenimiento"],
+    Telecomunicaciones: ["IA y Ciberseguridad", "IoT y Robotica"],
+    "Obras civiles": ["Construccion Modular y Sostenible"],
+    Construccion: ["Construccion Modular y Sostenible", "IoT y Robotica"],
+    "Dibujo arquitectonico": ["Construccion Modular y Sostenible"],
+    "Maquinaria Pesada": ["Digitalizacion del mantenimiento", "IoT y Robotica"],
+    "Redes de gas": ["Desarrollo de sistemas de control y automatizacion"],
+    Maderas: ["Manufactura Aditiva"],
+    Mecatronica: ["IoT y Robotica", "Desarrollo de sistemas de control y automatizacion"],
+    Electronica: ["IoT y Robotica", "Desarrollo de sistemas de control y automatizacion"],
+    "Instrumentacion y Control de Procesos": ["Desarrollo de sistemas de control y automatizacion"],
+    "Refrigeracion y aire acondicionado": ["Digitalizacion del mantenimiento"],
+    "Sistemas de Control": ["Desarrollo de sistemas de control y automatizacion"],
+    "Electricidad Industrial": ["Desarrollo de sistemas de control y automatizacion"],
+    "Sistemas electricos domiciliarios": ["IoT y Robotica"],
+    Autotronica: ["IA y Ciberseguridad", "IoT y Robotica"],
+    "Mantenimiento mecanico de automotores": ["Digitalizacion del mantenimiento", "IoT y Robotica"],
+    "Mecanica de motos": ["Digitalizacion del mantenimiento"],
+    Confecciones: ["Manufactura Aditiva"],
+    "Diseno de modas": ["Manufactura Aditiva"],
+    Marroquineria: ["Manufactura Aditiva"],
+    Calzado: ["Manufactura Aditiva"],
+    Multimedia: ["IA y Ciberseguridad"],
+    Audiovisuales: ["IA y Ciberseguridad"],
+  };
+
+  const etapasDisponibles = [
+    "Investigacion inicial",
+    "Desarrollo tecnologico",
+    "Implementacion piloto",
+    "Adopcion industrial",
+  ];
+  const proyeccionesDisponibles = ["5 años", "10 años", "Más de 10 años"];
 
   const estadoLineas = {};
   let lineaEnEdicion = null;
@@ -25,6 +118,125 @@ document.addEventListener("DOMContentLoaded", () => {
   let successInterval = null;
 
   const modals = crearModales();
+  aplicarEstiloFlechaSelect();
+
+  function aplicarEstiloFlechaSelect() {
+    if (!document.getElementById("linea-tec-select-arrow-style")) {
+      const style = document.createElement("style");
+      style.id = "linea-tec-select-arrow-style";
+      style.textContent = `
+        .linea-tec-select {
+          appearance: none;
+          -webkit-appearance: none;
+          -moz-appearance: none;
+          padding-right: 2.75rem !important;
+          background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none'%3E%3Cpath d='M5.5 7.5L10 12l4.5-4.5' stroke='%236B7280' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+          background-repeat: no-repeat;
+          background-position: right 0.85rem center;
+          background-size: 0.9rem;
+        }
+
+        .linea-tec-select::-ms-expand {
+          display: none;
+        }
+      `;
+      document.head.appendChild(style);
+    }
+
+    [modals.createModal, modals.editModal].forEach((modal) => {
+      modal.querySelectorAll("select").forEach((select) => {
+        select.classList.add("linea-tec-select");
+      });
+    });
+  }
+
+  function setSelectEnabled(select, enabled) {
+    select.disabled = !enabled;
+    select.classList.toggle("bg-gray-100", !enabled);
+    select.classList.toggle("cursor-not-allowed", !enabled);
+  }
+
+  function resetSelect(select, placeholder) {
+    select.innerHTML = `<option value="">${placeholder}</option>`;
+    select.value = "";
+  }
+
+  function fillSelect(select, values, placeholder) {
+    resetSelect(select, placeholder);
+    values.forEach((value) => {
+      const option = document.createElement("option");
+      option.value = value;
+      option.textContent = value;
+      select.appendChild(option);
+    });
+  }
+
+  function aplicarCadenaFiltros(form) {
+    const { area, linea, foco, etapa, proyeccion } = form;
+
+    fillSelect(area, areasDisponibles, "Seleccionar area...");
+    fillSelect(etapa, etapasDisponibles, "Seleccionar etapa...");
+    fillSelect(proyeccion, proyeccionesDisponibles, "Seleccionar proyeccion...");
+    resetSelect(linea, "Seleccionar linea tecnologica...");
+    resetSelect(foco, "Seleccionar foco de vigilancia...");
+
+    setSelectEnabled(linea, false);
+    setSelectEnabled(foco, false);
+    setSelectEnabled(etapa, false);
+    setSelectEnabled(proyeccion, false);
+
+    area.addEventListener("change", () => {
+      const lineas = lineasPorArea[area.value] || [];
+      fillSelect(linea, lineas, "Seleccionar linea tecnologica...");
+
+      setSelectEnabled(linea, lineas.length > 0);
+      resetSelect(foco, "Seleccionar foco de vigilancia...");
+      setSelectEnabled(foco, false);
+      setSelectEnabled(etapa, false);
+      setSelectEnabled(proyeccion, false);
+      etapa.value = "";
+      proyeccion.value = "";
+    });
+
+    linea.addEventListener("change", () => {
+      const focos = focosPorLinea[linea.value] || focosDisponibles;
+      fillSelect(foco, focos, "Seleccionar foco de vigilancia...");
+
+      const canUse = foco.options.length > 1;
+      setSelectEnabled(foco, canUse);
+      setSelectEnabled(etapa, false);
+      setSelectEnabled(proyeccion, false);
+      etapa.value = "";
+      proyeccion.value = "";
+    });
+
+    foco.addEventListener("change", () => {
+      const hasFoco = foco.value.trim() !== "";
+      setSelectEnabled(etapa, hasFoco);
+      setSelectEnabled(proyeccion, hasFoco);
+
+      if (!hasFoco) {
+        etapa.value = "";
+        proyeccion.value = "";
+      }
+    });
+  }
+
+  aplicarCadenaFiltros({
+    area: modals.createArea,
+    linea: modals.createLinea,
+    foco: modals.createFoco,
+    etapa: modals.createEtapa,
+    proyeccion: modals.createProyeccion,
+  });
+
+  aplicarCadenaFiltros({
+    area: modals.editArea,
+    linea: modals.editLinea,
+    foco: modals.editFoco,
+    etapa: modals.editEtapa,
+    proyeccion: modals.editProyeccion,
+  });
 
   function abrirModal(modal) {
     modal.classList.remove("hidden");
@@ -36,62 +248,6 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!document.querySelector(".linea-tec-modal:not(.hidden)")) {
       document.body.classList.remove("overflow-hidden");
     }
-  }
-
-  function renderChipsEditModal(selectedChips) {
-    modals.chipsContainer.innerHTML = "";
-    tecnologiasDisponibles.forEach((tecnologia) => {
-      const chip = document.createElement("button");
-      chip.type = "button";
-      chip.dataset.value = tecnologia;
-      chip.textContent = tecnologia;
-      chip.className =
-        "linea-chip rounded-full border px-3 py-1 text-xs transition-colors";
-
-      const isSelected = selectedChips.includes(tecnologia);
-      chip.classList.toggle("bg-sena", isSelected);
-      chip.classList.toggle("text-white", isSelected);
-      chip.classList.toggle("border-sena", isSelected);
-      chip.classList.toggle("bg-white", !isSelected);
-      chip.classList.toggle("text-sena-text-main", !isSelected);
-      chip.classList.toggle("border-sena-border", !isSelected);
-
-      chip.addEventListener("click", () => {
-        const selected = chip.classList.contains("bg-sena");
-        chip.classList.toggle("bg-sena", !selected);
-        chip.classList.toggle("text-white", !selected);
-        chip.classList.toggle("border-sena", !selected);
-        chip.classList.toggle("bg-white", selected);
-        chip.classList.toggle("text-sena-text-main", selected);
-        chip.classList.toggle("border-sena-border", selected);
-      });
-
-      modals.chipsContainer.appendChild(chip);
-    });
-  }
-
-  function renderChipsCreateModal() {
-    modals.createChipsContainer.innerHTML = "";
-    tecnologiasDisponibles.forEach((tecnologia) => {
-      const chip = document.createElement("button");
-      chip.type = "button";
-      chip.dataset.value = tecnologia;
-      chip.textContent = tecnologia;
-      chip.className =
-        "linea-chip-create rounded-full border border-sena-border bg-white text-sena-text-main px-3 py-1 text-xs transition-colors";
-
-      chip.addEventListener("click", () => {
-        const selected = chip.classList.contains("bg-sena");
-        chip.classList.toggle("bg-sena", !selected);
-        chip.classList.toggle("text-white", !selected);
-        chip.classList.toggle("border-sena", !selected);
-        chip.classList.toggle("bg-white", selected);
-        chip.classList.toggle("text-sena-text-main", selected);
-        chip.classList.toggle("border-sena-border", selected);
-      });
-
-      modals.createChipsContainer.appendChild(chip);
-    });
   }
 
   function setMisCreacionesButtonState(isActive) {
@@ -207,7 +363,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
     estadoLineas[nombreTecnologia] = {
       active: true,
-      chips: tecnologiasDisponibles.slice(0, 5),
+      area: areasDisponibles[0],
+      linea: (lineasPorArea[areasDisponibles[0]] || [""])[0],
+      foco: focosDisponibles[0],
+      etapa: etapasDisponibles[1],
+      proyeccion: proyeccionesDisponibles[0],
     };
 
     cardTopRow.classList.remove("items-start");
@@ -238,12 +398,23 @@ document.addEventListener("DOMContentLoaded", () => {
       const nombreActual = titleEl.textContent.trim();
       const estadoActual = estadoLineas[nombreActual] || {
         active: true,
-        chips: tecnologiasDisponibles.slice(0, 5),
+        area: areasDisponibles[0],
+        linea: (lineasPorArea[areasDisponibles[0]] || [""])[0],
+        foco: focosDisponibles[0],
+        etapa: etapasDisponibles[1],
+        proyeccion: proyeccionesDisponibles[0],
       };
       lineaEnEdicion = { card, titleEl, oldName: nombreActual };
 
       modals.editInput.value = titleEl.textContent.trim();
-      renderChipsEditModal(estadoActual.chips);
+      modals.editArea.value = estadoActual.area;
+      modals.editArea.dispatchEvent(new Event("change"));
+      modals.editLinea.value = estadoActual.linea;
+      modals.editLinea.dispatchEvent(new Event("change"));
+      modals.editFoco.value = estadoActual.foco;
+      modals.editFoco.dispatchEvent(new Event("change"));
+      modals.editEtapa.value = estadoActual.etapa;
+      modals.editProyeccion.value = estadoActual.proyeccion;
       abrirModal(modals.editModal);
     });
 
@@ -283,7 +454,12 @@ document.addEventListener("DOMContentLoaded", () => {
   if (btnNuevaLinea) {
     btnNuevaLinea.addEventListener("click", () => {
       modals.createForm.reset();
-      renderChipsCreateModal();
+      modals.createArea.value = "";
+      modals.createLinea.value = "";
+      modals.createFoco.value = "";
+      modals.createEtapa.value = "";
+      modals.createProyeccion.value = "";
+      modals.createArea.dispatchEvent(new Event("change"));
       abrirModal(modals.createModal);
     });
   }
@@ -371,15 +547,22 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    const chipsSeleccionados = Array.from(
-      modals.chipsContainer.querySelectorAll(".linea-chip.bg-sena")
-    ).map((chip) => chip.dataset.value);
-
-    const oldState = estadoLineas[lineaEnEdicion.oldName] || { active: true, chips: [] };
+    const oldState = estadoLineas[lineaEnEdicion.oldName] || {
+      active: true,
+      area: areasDisponibles[0],
+      linea: (lineasPorArea[areasDisponibles[0]] || [""])[0],
+      foco: focosDisponibles[0],
+      etapa: etapasDisponibles[1],
+      proyeccion: proyeccionesDisponibles[0],
+    };
     delete estadoLineas[lineaEnEdicion.oldName];
     estadoLineas[nuevoNombre] = {
       active: oldState.active,
-      chips: chipsSeleccionados,
+      area: modals.editArea.value,
+      linea: modals.editLinea.value,
+      foco: modals.editFoco.value,
+      etapa: modals.editEtapa.value,
+      proyeccion: modals.editProyeccion.value,
     };
 
     lineaEnEdicion.titleEl.textContent = nuevoNombre;
@@ -480,10 +663,43 @@ document.addEventListener("DOMContentLoaded", () => {
                 <label class="mb-1 block text-sm font-medium text-sena-text-main">Nombre</label>
                 <input id="linea-edit-input" type="text" class="w-full rounded-lg border border-sena-border px-3 py-2 text-sm text-sena-text-main focus:border-sena focus:ring-2 focus:ring-sena/20" required>
               </div>
-              <div class="mb-5">
-                <p class="mb-2 text-sm font-medium text-sena-text-main">Tecnologias Emergentes Relacionadas</p>
-                <div id="linea-edit-chips" class="flex flex-wrap gap-2"></div>
+
+              <div class="flex flex-col gap-4 mb-5">
+                <div>
+                  <label class="mb-1 block text-sm font-medium text-sena-text-main">Area</label>
+                  <select id="linea-edit-area" class="w-full rounded-lg border border-sena-border pl-3 pr-10 py-2 text-sm text-sena-text-main bg-white focus:border-sena focus:ring-2 focus:ring-sena/20" required>
+                    <option value="">Seleccionar area...</option>
+                    ${areasDisponibles.map((o) => `<option value="${o}">${o}</option>`).join("")}
+                  </select>
+                </div>
+                <div>
+                  <label class="mb-1 block text-sm font-medium text-sena-text-main">Linea tecnologica</label>
+                  <select id="linea-edit-linea" class="w-full rounded-lg border border-sena-border pl-3 pr-10 py-2 text-sm text-sena-text-main bg-white focus:border-sena focus:ring-2 focus:ring-sena/20" disabled required>
+                    <option value="">Seleccionar linea tecnologica...</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="mb-1 block text-sm font-medium text-sena-text-main">Foco de vigilancia</label>
+                  <select id="linea-edit-foco" class="w-full rounded-lg border border-sena-border pl-3 pr-10 py-2 text-sm text-sena-text-main bg-white focus:border-sena focus:ring-2 focus:ring-sena/20" disabled required>
+                    <option value="">Seleccionar foco de vigilancia...</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="mb-1 block text-sm font-medium text-sena-text-main">Etapa de Desarrollo o tendencia Actual</label>
+                  <select id="linea-edit-etapa" class="w-full rounded-lg border border-sena-border pl-3 pr-10 py-2 text-sm text-sena-text-main bg-white focus:border-sena focus:ring-2 focus:ring-sena/20" disabled required>
+                    <option value="">Seleccionar etapa...</option>
+                    ${etapasDisponibles.map((o) => `<option value="${o}">${o}</option>`).join("")}
+                  </select>
+                </div>
+                <div>
+                  <label class="mb-1 block text-sm font-medium text-sena-text-main">Proyeccion a Futuro</label>
+                  <select id="linea-edit-proyeccion" class="w-full rounded-lg border border-sena-border pl-3 pr-10 py-2 text-sm text-sena-text-main bg-white focus:border-sena focus:ring-2 focus:ring-sena/20" disabled required>
+                    <option value="">Seleccionar proyeccion...</option>
+                    ${proyeccionesDisponibles.map((o) => `<option value="${o}">${o}</option>`).join("")}
+                  </select>
+                </div>
               </div>
+
               <div class="border-t border-sena-border pt-4 flex justify-end gap-3">
                 <button type="button" class="linea-close-edit rounded-lg border border-sena-border px-4 py-2 text-sm font-medium text-sena-text-main hover:bg-sena-soft">Cancelar</button>
                 <button type="submit" class="rounded-lg bg-sena px-4 py-2 text-sm font-medium text-white hover:opacity-90">Guardar Cambios</button>
@@ -509,10 +725,43 @@ document.addEventListener("DOMContentLoaded", () => {
                 <label class="mb-1 block text-sm font-medium text-sena-text-main">Nombre</label>
                 <input id="linea-create-input" type="text" class="w-full rounded-lg border border-sena-border px-3 py-2 text-sm text-sena-text-main focus:border-sena focus:ring-2 focus:ring-sena/20" required>
               </div>
-              <div class="mb-5">
-                <p class="mb-2 text-sm font-medium text-sena-text-main">Tecnologias Emergentes Relacionadas</p>
-                <div id="linea-create-chips" class="flex flex-wrap gap-2"></div>
+
+              <div class="flex flex-col gap-4 mb-5">
+                <div>
+                  <label class="mb-1 block text-sm font-medium text-sena-text-main">Area</label>
+                  <select id="linea-create-area" class="w-full rounded-lg border border-sena-border pl-3 pr-10 py-2 text-sm text-sena-text-main bg-white focus:border-sena focus:ring-2 focus:ring-sena/20" required>
+                    <option value="">Seleccionar area...</option>
+                    ${areasDisponibles.map((o) => `<option value="${o}">${o}</option>`).join("")}
+                  </select>
+                </div>
+                <div>
+                  <label class="mb-1 block text-sm font-medium text-sena-text-main">Linea tecnologica</label>
+                  <select id="linea-create-linea" class="w-full rounded-lg border border-sena-border pl-3 pr-10 py-2 text-sm text-sena-text-main bg-white focus:border-sena focus:ring-2 focus:ring-sena/20" disabled required>
+                    <option value="">Seleccionar linea tecnologica...</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="mb-1 block text-sm font-medium text-sena-text-main">Foco de vigilancia</label>
+                  <select id="linea-create-foco" class="w-full rounded-lg border border-sena-border pl-3 pr-10 py-2 text-sm text-sena-text-main bg-white focus:border-sena focus:ring-2 focus:ring-sena/20" disabled required>
+                    <option value="">Seleccionar foco de vigilancia...</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="mb-1 block text-sm font-medium text-sena-text-main">Etapa de Desarrollo o tendencia Actual</label>
+                  <select id="linea-create-etapa" class="w-full rounded-lg border border-sena-border pl-3 pr-10 py-2 text-sm text-sena-text-main bg-white focus:border-sena focus:ring-2 focus:ring-sena/20" disabled required>
+                    <option value="">Seleccionar etapa...</option>
+                    ${etapasDisponibles.map((o) => `<option value="${o}">${o}</option>`).join("")}
+                  </select>
+                </div>
+                <div>
+                  <label class="mb-1 block text-sm font-medium text-sena-text-main">Proyeccion a Futuro</label>
+                  <select id="linea-create-proyeccion" class="w-full rounded-lg border border-sena-border pl-3 pr-10 py-2 text-sm text-sena-text-main bg-white focus:border-sena focus:ring-2 focus:ring-sena/20" disabled required>
+                    <option value="">Seleccionar proyeccion...</option>
+                    ${proyeccionesDisponibles.map((o) => `<option value="${o}">${o}</option>`).join("")}
+                  </select>
+                </div>
               </div>
+
               <div class="border-t border-sena-border pt-4 flex justify-end gap-3">
                 <button type="button" class="linea-close-create rounded-lg border border-sena-border px-4 py-2 text-sm font-medium text-sena-text-main hover:bg-sena-soft">Cancelar</button>
                 <button type="submit" class="rounded-lg bg-sena px-4 py-2 text-sm font-medium text-white hover:opacity-90">Crear Linea</button>
@@ -603,13 +852,21 @@ document.addEventListener("DOMContentLoaded", () => {
       createModal: document.getElementById("linea-modal-crear"),
       createForm: document.getElementById("linea-create-form"),
       createInput: document.getElementById("linea-create-input"),
-      createChipsContainer: document.getElementById("linea-create-chips"),
+      createArea: document.getElementById("linea-create-area"),
+      createLinea: document.getElementById("linea-create-linea"),
+      createFoco: document.getElementById("linea-create-foco"),
+      createEtapa: document.getElementById("linea-create-etapa"),
+      createProyeccion: document.getElementById("linea-create-proyeccion"),
       createClose: document.querySelectorAll(".linea-close-create"),
 
       editModal: document.getElementById("linea-modal-editar"),
       editForm: document.getElementById("linea-edit-form"),
       editInput: document.getElementById("linea-edit-input"),
-      chipsContainer: document.getElementById("linea-edit-chips"),
+      editArea: document.getElementById("linea-edit-area"),
+      editLinea: document.getElementById("linea-edit-linea"),
+      editFoco: document.getElementById("linea-edit-foco"),
+      editEtapa: document.getElementById("linea-edit-etapa"),
+      editProyeccion: document.getElementById("linea-edit-proyeccion"),
       editClose: document.querySelectorAll(".linea-close-edit"),
 
       successModal: document.getElementById("linea-modal-success"),
