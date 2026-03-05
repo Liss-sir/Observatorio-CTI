@@ -1,12 +1,12 @@
 <?php include __DIR__ . '../../../includes/header.php'; ?>
 
-<div class="p-6">
+<div class="max-w-[82rem] p-6">
     <!-- TITULO -->
     <div class="flex justify-between items-center mb-6">
         <div>
             <h1 class="text-2xl font-bold">Áreas</h1>
             <p class="text-gray-500 text-sm">
-                Gestión de las áreas organizacionales del sector productivo.
+                Gestión de las áreas de los programas de formacion.
             </p>
         </div>
         <button
