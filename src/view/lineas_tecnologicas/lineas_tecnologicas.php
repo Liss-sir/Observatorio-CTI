@@ -19,21 +19,32 @@ include __DIR__ . '../../../includes/header.php';
   <main class="flex-1">
     <div class="max-w-[80rem] mx-auto px-4 py-8 lg:px-8">
 
-      <!-- Page Header + Top Actions -->
-      <div class="mb-6 flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+      <!-- Page Header -->
+      <div class="mb-5">
         <div>
           <h1 class="font-['Montserrat'] text-2xl font-bold text-sena-text-main">Lineas Tecnologicas</h1>
           <p class="mt-2 text-sm text-sena-text-soft">Clasificacion de perfiles por areas tecnologicas del SENA</p>
         </div>
+      </div>
 
-        <div class="flex items-center gap-2 md:pt-0.5">
-          <button type="button" id="btn-mis-lineas" class="flex items-center gap-2 px-4 py-2 text-sm font-medium text-sena-text-main border border-sena-border rounded-lg bg-white whitespace-nowrap h-10 hover:bg-sena-soft transition-colors">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 text-sena-text-soft"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg>
-            Mis creaciones
-          </button>
-          <button type="button" id="btn-nueva-linea" class="flex items-center gap-2 px-5 py-2 text-sm font-medium text-white bg-sena rounded-lg whitespace-nowrap h-10 hover:opacity-90 transition-opacity">
+      <!-- Search + Main Action -->
+      <div class="mb-6">
+        <div class="flex flex-wrap items-center gap-2.5">
+          <div class="relative min-w-[260px] flex-1">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-sena-text-soft">
+              <circle cx="11" cy="11" r="8"></circle>
+              <path d="m21 21-4.3-4.3"></path>
+            </svg>
+            <input
+              type="search"
+              id="input-buscar-linea"
+              placeholder="Buscar lineas tecnologicas..."
+              class="h-10 w-full rounded-lg border border-sena-border bg-white pl-10 pr-3 text-sm text-sena-text-main placeholder:text-sena-text-soft focus:border-sena focus:outline-none focus:ring-2 focus:ring-sena/15"
+            >
+          </div>
+          <button type="button" id="btn-nueva-linea" class="flex h-10 items-center gap-2 rounded-lg bg-sena px-5 text-sm font-medium text-white whitespace-nowrap hover:opacity-90 transition-opacity">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><path d="M5 12h14"></path><path d="M12 5v14"></path></svg>
-            Nueva Linea
+            Nueva Linea Tecnológica
           </button>
         </div>
       </div>

@@ -1,6 +1,6 @@
 document.addEventListener("DOMContentLoaded", () => {
   const cards = document.querySelectorAll("main .grid > div.bg-white.rounded-xl");
-  const btnMisLineas = document.getElementById("btn-mis-lineas");
+  const inputBuscarLinea = document.getElementById("input-buscar-linea");
   const btnNuevaLinea = document.getElementById("btn-nueva-linea");
 
   const focosDisponibles = [
@@ -113,7 +113,6 @@ document.addEventListener("DOMContentLoaded", () => {
   let lineaEnEdicion = null;
   let lineaPendienteDeshabilitar = null;
   let lineaPendienteHabilitar = null;
-  let mostrandoMisCreaciones = false;
   let successTimeout = null;
   let successInterval = null;
 
@@ -250,30 +249,22 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  function setMisCreacionesButtonState(isActive) {
-    if (!btnMisLineas) {
-      return;
-    }
-
-    btnMisLineas.classList.toggle("bg-sena", isActive);
-    btnMisLineas.classList.toggle("text-white", isActive);
-    btnMisLineas.classList.toggle("border-sena", isActive);
-    btnMisLineas.classList.toggle("hover:bg-sena", isActive);
-    btnMisLineas.classList.toggle("text-sena-text-main", !isActive);
-    btnMisLineas.classList.toggle("border-sena-border", !isActive);
-    btnMisLineas.classList.toggle("bg-white", !isActive);
-    btnMisLineas.classList.toggle("hover:bg-sena-soft", !isActive);
-
-    const icon = btnMisLineas.querySelector("svg");
-    if (icon) {
-      icon.classList.toggle("text-white", isActive);
-      icon.classList.toggle("text-sena-text-soft", !isActive);
-    }
+  function normalizarTexto(value) {
+    return value
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .toLowerCase()
+      .trim();
   }
 
-  function aplicarFiltroMisCreaciones() {
-    cards.forEach((card, index) => {
-      card.style.display = !mostrandoMisCreaciones || index < 3 ? "flex" : "none";
+  function aplicarFiltroBusqueda() {
+    const termino = normalizarTexto(inputBuscarLinea?.value || "");
+
+    cards.forEach((card) => {
+      const titleEl = card.querySelector("h3");
+      const searchableText = normalizarTexto(titleEl?.textContent || "");
+      const visible = termino === "" || searchableText.includes(termino);
+      card.style.display = visible ? "flex" : "none";
     });
   }
 
@@ -443,12 +434,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
   cards.forEach(inicializarCard);
 
-  if (btnMisLineas) {
-    btnMisLineas.addEventListener("click", () => {
-      mostrandoMisCreaciones = !mostrandoMisCreaciones;
-      setMisCreacionesButtonState(mostrandoMisCreaciones);
-      aplicarFiltroMisCreaciones();
-    });
+  if (inputBuscarLinea) {
+    inputBuscarLinea.addEventListener("input", aplicarFiltroBusqueda);
   }
 
   if (btnNuevaLinea) {
