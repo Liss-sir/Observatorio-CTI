@@ -7,7 +7,7 @@ include __DIR__ . '../../../includes/header.php';
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Tecnologias Emergentes</title>
+  <title>Lineas Tecnologicas</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@600;700;800&display=swap" rel="stylesheet" />
@@ -19,9 +19,24 @@ include __DIR__ . '../../../includes/header.php';
   <main class="flex-1">
     <div class="max-w-[80rem] mx-auto px-4 py-8 lg:px-8">
 
-      <!-- Page Header -->
-      <h1 class="font-['Montserrat'] text-2xl font-bold text-sena-text-main">Tecnologias Emergentes</h1>
-      <p class="mt-2 text-sm text-sena-text-soft">Tecnologias de vanguardia asociadas a los perfiles registrados</p>
+      <!-- Page Header + Top Actions -->
+      <div class="mb-6 flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+        <div>
+          <h1 class="font-['Montserrat'] text-2xl font-bold text-sena-text-main">Lineas Tecnologicas</h1>
+          <p class="mt-2 text-sm text-sena-text-soft">Clasificacion de perfiles por areas tecnologicas del SENA</p>
+        </div>
+
+        <div class="flex items-center gap-2 md:pt-0.5">
+          <button type="button" id="btn-mis-lineas" class="flex items-center gap-2 px-4 py-2 text-sm font-medium text-sena-text-main border border-sena-border rounded-lg bg-white whitespace-nowrap h-10 hover:bg-sena-soft transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 text-sena-text-soft"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg>
+            Mis creaciones
+          </button>
+          <button type="button" id="btn-nueva-linea" class="flex items-center gap-2 px-5 py-2 text-sm font-medium text-white bg-sena rounded-lg whitespace-nowrap h-10 hover:opacity-90 transition-opacity">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><path d="M5 12h14"></path><path d="M12 5v14"></path></svg>
+            Nueva Linea
+          </button>
+        </div>
+      </div>
 
       <!-- Cards Grid -->
       <div class="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
@@ -204,6 +219,7 @@ include __DIR__ . '../../../includes/header.php';
     </div>
   </main>
 
+  <script src="../../assets/js/lineas_tecnologicas.js"></script>
 </body>
 </html>
 <?php include __DIR__ . '../../../includes/footer.php'; ?>
