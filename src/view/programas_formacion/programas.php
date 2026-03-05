@@ -4,6 +4,8 @@ include __DIR__ . '/modal_deshabilitar_perfiles.php';
 include __DIR__ . '/modal_habilitar_perfiles.php';           
 include __DIR__ . '/modal_habilitado_confirmacion.php';
 include __DIR__ . '/modal_confirmacion_deshabilitar_pefiles.php';
+include __DIR__ . '/modal_editar_programa.php';
+include __DIR__ . '/modal_crear_programa.php';
 
 // Simulación de datos (luego puedes traerlos de BD)
 $programas = [
@@ -84,7 +86,9 @@ $programas = [
             <p class="text-gray-500 text-sm">Programas de formacion disponibles en el SENA</p>
         </div>
 
-        <button class="bg-sena hover:bg-green-700 text-white px-4 py-2 rounded-lg shadow flex items-center gap-2">
+        <button
+            id="btn-crear-programa"
+            class="bg-sena hover:bg-green-700 text-white px-4 py-2 rounded-lg shadow flex items-center gap-2">
             <i data-lucide="plus" class="w-4 h-4"></i>
             Nuevo Programa
         </button>
@@ -117,7 +121,20 @@ $programas = [
                     </div>
 
                     <div class="flex gap-2 text-gray-400">
-                        <i data-lucide="edit" class="w-4 h-4 hover:text-blue-500 cursor-pointer"></i>
+                        <i 
+                        data-lucide="edit"
+                        class="w-4 h-4 hover:text-blue-500 cursor-pointer btn-editar-programa"
+
+                        data-codigo="<?= $programa['codigo'] ?>"
+                        data-cupos="<?= $programa['cupos'] ?>"
+                        data-nombre="<?= $programa['nombre'] ?>"
+                        data-nivel="<?= $programa['nivel'] ?>"
+                        data-modalidad="<?= $programa['modalidad'] ?>"
+                        data-fechainicio="<?= $programa['fecha_inicio'] ?>"
+                        data-fechafin="<?= $programa['fecha_fin'] ?>"
+
+                        ></i>
+
                         <i data-lucide="toggle-right" class="switch-sena active w-4 h-4 text-green-600 hover:text-green-700 cursor-pointer" title="Activo"></i>
                     </div>
 
@@ -164,8 +181,8 @@ $programas = [
                             <?= $programa['fin'] ?>
                         </span>
                     </div>
+                    <span>Area: Teleinformatica y telecomunicaciones</span>
                 </div>
-
             </div>
         <?php endforeach; ?>
 
@@ -178,7 +195,7 @@ $programas = [
     lucide.createIcons();
 </script>
 
-<script src="/observatorio/Observatorio-CTI/src/assets/js/programas.js"></script>
+<script src="../../assets/js/programas.js"></script>
 </body>
 </html>
 <?php include __DIR__ . '../../../includes/footer.php'; ?>

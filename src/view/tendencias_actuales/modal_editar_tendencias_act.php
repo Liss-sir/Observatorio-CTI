@@ -23,11 +23,19 @@
 
         <!-- Form -->
         <form id="form-editar-tendencia" class="px-6 py-4">
-          <!-- Nombre -->
+          <!-- área -->
           <div class="mb-4">
-            <label class="mb-1 block text-sm font-medium text-sena-text-main">Nombre del área</label>
-            <input type="text" name="nombre" id="nombre-tendencia" value="Inteligencia Artificial" required
-                   class="w-full rounded-lg border border-sena-border px-3 py-2 text-sm text-sena-text-main focus:border-sena focus:ring-2 focus:ring-sena/20">
+            <label class="mb-1 block text-sm font-medium text-sena-text-main">Área</label>
+            <div class="select-container">
+              <select name="area" class="custom-select">
+                <option value="" disabled selected>Selecciona un área</option>
+                <option value="Tecnologías de la información">Tecnologías de la información</option>
+                <option value="Desarrollo de software">Desarrollo de software</option>
+                <option value="Ciberseguridad">Ciberseguridad</option>
+                <option value="Inteligencia artificial">Inteligencia artificial</option>
+                <option value="Big Data">Big Data</option>
+              </select>
+            </div>
           </div>
 
           <!-- Descripción -->
@@ -52,122 +60,3 @@
   </div>
 </div>
 
-<!-- Incluir este script al final del body o en un archivo separado -->
-<script>
-  document.addEventListener('DOMContentLoaded', function() {
-    // Variables para el modal
-    const modalEditar = document.getElementById('modal-editar-tendencia');
-    const cerrarModalBtns = document.querySelectorAll('.cerrar-modal-editar');
-    
-    // Función para abrir modal
-    function abrirModalEditar() {
-      if (modalEditar) {
-        modalEditar.classList.remove('hidden');
-        document.body.classList.add('overflow-hidden');
-      }
-    }
-    
-    // Función para cerrar modal
-    function cerrarModalEditar() {
-      if (modalEditar) {
-        modalEditar.classList.add('hidden');
-        document.body.classList.remove('overflow-hidden');
-      }
-    }
-    
-    // Asignar evento a los botones de editar en las tarjetas
-    document.querySelectorAll('button[title="Editar tendencia"]').forEach(btn => {
-      btn.addEventListener('click', function(e) {
-        e.preventDefault();
-        e.stopPropagation();
-        
-        // Obtener datos de la tarjeta
-        const card = this.closest('.border');
-        const nombreTendencia = card.querySelector('h3').textContent;
-        const descripcionTendencia = card.querySelector('p.text-xs').textContent;
-        
-        // Obtener el estado del switch
-        const switchEl = card.querySelector('.switch-sena');
-        const estadoTendencia = switchEl.classList.contains('active') ? 'activo' : 'inactivo';
-        
-        // Llenar el formulario con los datos
-        document.getElementById('nombre-tendencia').value = nombreTendencia;
-        document.getElementById('descripcion-tendencia').value = descripcionTendencia;
-        
-        // Abrir modal
-        abrirModalEditar();
-      });
-    });
-    
-    // Cerrar modal con botones
-    cerrarModalBtns.forEach(btn => {
-      btn.addEventListener('click', function() {
-        cerrarModalEditar();
-      });
-    });
-    
-    // Cerrar modal haciendo clic en overlay
-    if (modalEditar) {
-      modalEditar.addEventListener('click', function(e) {
-        if (e.target === modalEditar || e.target.classList.contains('fixed')) {
-          cerrarModalEditar();
-        }
-      });
-    }
-    
-    // Cerrar con tecla ESC
-    document.addEventListener('keydown', function(e) {
-      if (e.key === 'Escape' && modalEditar && !modalEditar.classList.contains('hidden')) {
-        cerrarModalEditar();
-      }
-    });
-    
-    // Manejar envío del formulario
-    const formEditar = document.getElementById('form-editar-tendencia');
-    if (formEditar) {
-      formEditar.addEventListener('submit', function(e) {
-        e.preventDefault();
-        
-        // Recopilar datos del formulario
-        const data = {
-          nombre: document.getElementById('nombre-tendencia').value,
-          descripcion: document.getElementById('descripcion-tendencia').value,
-          fechaCreacion: document.getElementById('fecha-creacion').value,
-          fechaExpiracion: document.getElementById('fecha-expiracion').value,
-          estado: document.getElementById('estado-tendencia').value,
-          lineaTecnologica: document.getElementById('linea-tecnologica').value
-        };
-        
-        console.log('Datos de tendencia actualizados:', data);
-        
-        // Actualizar la tarjeta correspondiente (opcional)
-        // Buscar la tarjeta que estaba siendo editada
-        const nombreAnterior = data.nombre;
-        const tarjetas = document.querySelectorAll('.border h3');
-        tarjetas.forEach(h3 => {
-          if (h3.textContent === nombreAnterior) {
-            const card = h3.closest('.border');
-            card.querySelector('h3').textContent = data.nombre;
-            card.querySelector('p.text-xs').textContent = data.descripcion;
-            
-            // Actualizar estado del switch
-            const switchEl = card.querySelector('.switch-sena');
-            if (data.estado === 'activo') {
-              switchEl.classList.add('active');
-              switchEl.setAttribute('title', 'Activo');
-            } else {
-              switchEl.classList.remove('active');
-              switchEl.setAttribute('title', 'Inactivo');
-            }
-          }
-        });
-        
-        // Cerrar modal
-        cerrarModalEditar();
-        
-        // Mostrar mensaje de éxito (opcional)
-        alert('Tendencia actualizada correctamente');
-      });
-    }
-  });
-</script>

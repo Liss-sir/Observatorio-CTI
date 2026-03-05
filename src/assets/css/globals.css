@@ -34,7 +34,7 @@
   transform: translateX(12px);
 }
 
-/* Animación de entrada para las cards */
+    /* Animación de entrada para las cards */
     @keyframes slideInUp {
       from {
         opacity: 0;
@@ -61,6 +61,8 @@
     .tarjeta-tecnologia:nth-child(8) { animation-delay: 0.8s; }
     .tarjeta-tecnologia:nth-child(9) { animation-delay: 0.9s; }
     .tarjeta-tecnologia:nth-child(10) { animation-delay: 1s; }
+    .tarjeta-tecnologia:nth-child(11) { animation-delay: 1.1s; }
+    .tarjeta-tecnologia:nth-child(12) { animation-delay: 1.2s; }
 
 /* Animación para el modal de confirmación */
 @keyframes modalFadeIn {
