@@ -140,7 +140,7 @@ function nav_classes(string $target): string {
       <a href="../../view/landing/landing.php" class="flex items-center justify-self-start">
         <div class="flex items-center gap-3 pr-4 mr-4">
           <div class="flex items-center gap-3">
-            <img src="../../assets/img/logo-tecnnova.jpeg" alt="logo-tecnnova" class="h-16 w-auto block">
+            <img src="../../assets/img/logo-tecnnova.png" alt="logo-tecnnova" class="h-16 w-auto block">
             <span class="block w-px h-7 bg-sena-border" aria-hidden="true"></span>
             <img src="../../assets/img/logo-sena-verde-complementario-png-2022.png" alt="logo-sena-verde" class="h-7 w-auto block">
           </div>
@@ -164,7 +164,7 @@ function nav_classes(string $target): string {
           <!-- Contenedor con hover unificado -->
           <div class="flex items-center rounded-md hover:bg-sena-soft transition-colors duration-200">
 
-            <a href="#"
+            <a href="../../view/programas_formacion/programas.php"
                class="px-3 py-2 rounded-l-md text-sm font-medium text-sena-text-muted hover:text-sena transition-colors duration-200">
               Programas Formación
             </a>

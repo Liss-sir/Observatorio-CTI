@@ -54,7 +54,7 @@ echo
             <div class="mt-2 text-xs text-sena-text-soft">Subdirección de Centro</div>
             <a class="mt-3 inline-flex items-center gap-1.5 text-xs text-sena-text-soft hover:text-sena transition-colors" href="mailto:sandra@sena.edu.co">
               <svg class="w-3 h-3 stroke-current stroke-2 fill-none" viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M22 7l-10 7L2 7"/></svg>
-              sandra@sena.edu.co
+              sgarciag@sena.edu.co
             </a>
           </div>
         </div>
@@ -89,13 +89,13 @@ echo
             </a>
           </div>
            <div class="bg-white border border-gray-200 rounded-2xl shadow-sm hover:shadow-lg transition-all duration-300 hover:-translate-y-1 p-8 text-center min-h-[260px] animate delay-2">
-            <img class="w-20 h-20 rounded-full object-cover border-2 border-gray-200 mx-auto mb-4 hover:border-sena-strong transition-all duration-300 hover:scale-105" src="../../assets/sebas.jpg" alt="Foto de Sebastián" />
+            <img class="w-20 h-20 rounded-full object-cover border-2 border-gray-200 mx-auto mb-4 hover:border-sena-strong transition-all duration-300 hover:scale-105" src="../../assets/img/creadores_img/sennova_creador.jpeg" alt="Foto de Juan Carlos" />
             <div class="font-['Plus_Jakarta_Sans'] font-bold text-base">Juan Carlos Garcia Buitrago</div>
-            <span class="inline-flex justify-center items-center mt-1.5 px-4 py-1.5 rounded-full text-xs font-semibold bg-sena-soft text-sena whitespace-nowrap">Coordinado Sennova</span>
-            <div class="mt-2 text-xs text-sena-text-soft">Ingeniero en Sistemas</div>
-            <a class="mt-3 inline-flex items-center gap-1.5 text-xs text-sena-text-soft hover:text-sena transition-colors" href="mailto:sebas@sena.edu.co">
+            <span class="inline-flex justify-center items-center mt-1.5 px-4 py-1.5 rounded-full text-xs font-semibold bg-sena-soft text-sena whitespace-nowrap">Coordinador Sennova</span>
+            <div class="mt-2 text-xs text-sena-text-soft">Lider Sistema de Innovación y Competitividad-CDITI</div>
+            <a class="mt-3 inline-flex items-center gap-1.5 text-xs text-sena-text-soft hover:text-sena transition-colors" href="mailto:jcgarcia@sena.edu.co">
               <svg class="w-3 h-3 stroke-current stroke-2 fill-none" viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M22 7l-10 7L2 7"/></svg>
-              sebas@sena.edu.co
+               jcgarcia@sena.edu.co 
             </a>
           </div>
         </div>

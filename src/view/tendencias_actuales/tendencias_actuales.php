@@ -107,7 +107,7 @@ include __DIR__ . '/modal_detalle_tendencia_act.php';
 
           <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
             <!-- Inteligencia Artificial -->
-            <div class="border border-sena-border rounded-lg bg-white p-4 hover:border-sena/30 hover:shadow-sm transition-all cursor-pointer" data-id="1">
+            <div class="border border-sena-border rounded-lg bg-white p-4 hover:border-sena/30 hover:shadow-sm transition-all cursor-pointer tarjeta-tecnologia" data-id="1">
               <div class="flex items-start justify-between mb-2">
                 <div class="w-10 h-10 bg-sena-soft rounded-lg flex items-center justify-center flex-shrink-0">
                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 text-sena">
@@ -128,7 +128,7 @@ include __DIR__ . '/modal_detalle_tendencia_act.php';
             </div>
 
             <!-- Blockchain -->
-            <div class="border border-sena-border rounded-lg bg-white p-4 hover:border-sena/30 hover:shadow-sm transition-all cursor-pointer" data-id="2">
+            <div class="border border-sena-border rounded-lg bg-white p-4 hover:border-sena/30 hover:shadow-sm transition-all cursor-pointer tarjeta-tecnologia" data-id="2">
               <div class="flex items-start justify-between mb-2">
                 <div class="w-10 h-10 bg-sena-soft rounded-lg flex items-center justify-center flex-shrink-0">
                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 text-sena">
@@ -149,7 +149,7 @@ include __DIR__ . '/modal_detalle_tendencia_act.php';
             </div>
 
             <!-- Internet de las Cosas (IoT) -->
-            <div class="border border-sena-border rounded-lg bg-white p-4 hover:border-sena/30 hover:shadow-sm transition-all cursor-pointer" data-id="3">
+            <div class="border border-sena-border rounded-lg bg-white p-4 hover:border-sena/30 hover:shadow-sm transition-all cursor-pointer tarjeta-tecnologia" data-id="3">
               <div class="flex items-start justify-between mb-2">
                 <div class="w-10 h-10 bg-sena-soft rounded-lg flex items-center justify-center flex-shrink-0">
                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 text-sena">
@@ -170,7 +170,7 @@ include __DIR__ . '/modal_detalle_tendencia_act.php';
             </div>
 
             <!-- Computacion en la Nube -->
-            <div class="border border-sena-border rounded-lg bg-white p-4 hover:border-sena/30 hover:shadow-sm transition-all cursor-pointer" data-id="4">
+            <div class="border border-sena-border rounded-lg bg-white p-4 hover:border-sena/30 hover:shadow-sm transition-all cursor-pointer tarjeta-tecnologia" data-id="4">
               <div class="flex items-start justify-between mb-2">
                 <div class="w-10 h-10 bg-sena-soft rounded-lg flex items-center justify-center flex-shrink-0">
                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 text-sena">
@@ -191,7 +191,7 @@ include __DIR__ . '/modal_detalle_tendencia_act.php';
             </div>
 
             <!-- Ciberseguridad Avanzada -->
-            <div class="border border-sena-border rounded-lg bg-white p-4 hover:border-sena/30 hover:shadow-sm transition-all cursor-pointer" data-id="5">
+            <div class="border border-sena-border rounded-lg bg-white p-4 hover:border-sena/30 hover:shadow-sm transition-all cursor-pointer tarjeta-tecnologia" data-id="5">
               <div class="flex items-start justify-between mb-2">
                 <div class="w-10 h-10 bg-sena-soft rounded-lg flex items-center justify-center flex-shrink-0">
                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 text-sena">
@@ -212,7 +212,7 @@ include __DIR__ . '/modal_detalle_tendencia_act.php';
             </div>
 
             <!-- Big Data y Analitica -->
-            <div class="border border-sena-border rounded-lg bg-white p-4 hover:border-sena/30 hover:shadow-sm transition-all cursor-pointer" data-id="6">
+            <div class="border border-sena-border rounded-lg bg-white p-4 hover:border-sena/30 hover:shadow-sm transition-all cursor-pointer tarjeta-tecnologia" data-id="6">
               <div class="flex items-start justify-between mb-2">
                 <div class="w-10 h-10 bg-sena-soft rounded-lg flex items-center justify-center flex-shrink-0">
                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 text-sena">
@@ -233,7 +233,7 @@ include __DIR__ . '/modal_detalle_tendencia_act.php';
             </div>
 
             <!-- Realidad Aumentada/Virtual -->
-            <div class="border border-sena-border rounded-lg bg-white p-4 hover:border-sena/30 hover:shadow-sm transition-all cursor-pointer" data-id="7">
+            <div class="border border-sena-border rounded-lg bg-white p-4 hover:border-sena/30 hover:shadow-sm transition-all cursor-pointer tarjeta-tecnologia" data-id="7">
               <div class="flex items-start justify-between mb-2">
                 <div class="w-10 h-10 bg-sena-soft rounded-lg flex items-center justify-center flex-shrink-0">
                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 text-sena">
@@ -254,7 +254,7 @@ include __DIR__ . '/modal_detalle_tendencia_act.php';
             </div>
 
             <!-- Robotica Colaborativa -->
-            <div class="border border-sena-border rounded-lg bg-white p-4 hover:border-sena/30 hover:shadow-sm transition-all cursor-pointer" data-id="8">
+            <div class="border border-sena-border rounded-lg bg-white p-4 hover:border-sena/30 hover:shadow-sm transition-all cursor-pointer tarjeta-tecnologia" data-id="8">
               <div class="flex items-start justify-between mb-2">
                 <div class="w-10 h-10 bg-sena-soft rounded-lg flex items-center justify-center flex-shrink-0">
                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 text-sena">
@@ -275,7 +275,7 @@ include __DIR__ . '/modal_detalle_tendencia_act.php';
             </div>
 
             <!-- Manufactura Aditiva (Impresion 3D) -->
-            <div class="border border-sena-border rounded-lg bg-white p-4 hover:border-sena/30 hover:shadow-sm transition-all cursor-pointer" data-id="9">
+            <div class="border border-sena-border rounded-lg bg-white p-4 hover:border-sena/30 hover:shadow-sm transition-all cursor-pointer tarjeta-tecnologia" data-id="9">
               <div class="flex items-start justify-between mb-2">
                 <div class="w-10 h-10 bg-sena-soft rounded-lg flex items-center justify-center flex-shrink-0">
                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 text-sena">
@@ -296,7 +296,7 @@ include __DIR__ . '/modal_detalle_tendencia_act.php';
             </div>
 
             <!-- Automatizacion de Procesos (RPA) -->
-            <div class="border border-sena-border rounded-lg bg-white p-4 hover:border-sena/30 hover:shadow-sm transition-all cursor-pointer" data-id="10">
+            <div class="border border-sena-border rounded-lg bg-white p-4 hover:border-sena/30 hover:shadow-sm transition-all cursor-pointer tarjeta-tecnologia" data-id="10">
               <div class="flex items-start justify-between mb-2">
                 <div class="w-10 h-10 bg-sena-soft rounded-lg flex items-center justify-center flex-shrink-0">
                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 text-sena">

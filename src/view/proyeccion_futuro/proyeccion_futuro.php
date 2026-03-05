@@ -149,7 +149,7 @@ include __DIR__ . '/modal_confirmacion_habilitar_pf.php';
 
           <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
             <!-- Inteligencia Artificial -->
-            <div class="border border-sena-border rounded-lg bg-white p-4 hover:border-sena/30 hover:shadow-sm transition-all" data-id="1" data-nombre="Inteligencia Artificial">
+            <div class="border border-sena-border rounded-lg bg-white p-4 hover:border-sena/30 hover:shadow-sm transition-all tarjeta-tecnologia" data-id="1" data-nombre="Inteligencia Artificial">
               <div class="flex items-start justify-between mb-2">
                 <div class="w-10 h-10 bg-sena-soft rounded-lg flex items-center justify-center flex-shrink-0">
                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 text-sena">
@@ -178,7 +178,7 @@ include __DIR__ . '/modal_confirmacion_habilitar_pf.php';
             </div>
 
             <!-- Blockchain -->
-            <div class="border border-sena-border rounded-lg bg-white p-4 hover:border-sena/30 hover:shadow-sm transition-all" data-id="2" data-nombre="Blockchain">
+            <div class="border border-sena-border rounded-lg bg-white p-4 hover:border-sena/30 hover:shadow-sm transition-all tarjeta-tecnologia" data-id="2" data-nombre="Blockchain">
               <div class="flex items-start justify-between mb-2">
                 <div class="w-10 h-10 bg-sena-soft rounded-lg flex items-center justify-center flex-shrink-0">
                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 text-sena">
@@ -207,7 +207,7 @@ include __DIR__ . '/modal_confirmacion_habilitar_pf.php';
             </div>
 
             <!-- Internet de las Cosas (IoT) -->
-            <div class="border border-sena-border rounded-lg bg-white p-4 hover:border-sena/30 hover:shadow-sm transition-all" data-id="3" data-nombre="Internet de las Cosas (IoT)">
+            <div class="border border-sena-border rounded-lg bg-white p-4 hover:border-sena/30 hover:shadow-sm transition-all tarjeta-tecnologia" data-id="3" data-nombre="Internet de las Cosas (IoT)">
               <div class="flex items-start justify-between mb-2">
                 <div class="w-10 h-10 bg-sena-soft rounded-lg flex items-center justify-center flex-shrink-0">
                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 text-sena">
@@ -236,7 +236,7 @@ include __DIR__ . '/modal_confirmacion_habilitar_pf.php';
             </div>
 
             <!-- Computacion en la Nube -->
-            <div class="border border-sena-border rounded-lg bg-white p-4 hover:border-sena/30 hover:shadow-sm transition-all" data-id="4" data-nombre="Computación en la Nube">
+            <div class="border border-sena-border rounded-lg bg-white p-4 hover:border-sena/30 hover:shadow-sm transition-all tarjeta-tecnologia" data-id="4" data-nombre="Computación en la Nube">
               <div class="flex items-start justify-between mb-2">
                 <div class="w-10 h-10 bg-sena-soft rounded-lg flex items-center justify-center flex-shrink-0">
                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 text-sena">
@@ -265,7 +265,7 @@ include __DIR__ . '/modal_confirmacion_habilitar_pf.php';
             </div>
 
             <!-- Ciberseguridad Avanzada -->
-            <div class="border border-sena-border rounded-lg bg-white p-4 hover:border-sena/30 hover:shadow-sm transition-all" data-id="5" data-nombre="Ciberseguridad Avanzada">
+            <div class="border border-sena-border rounded-lg bg-white p-4 hover:border-sena/30 hover:shadow-sm transition-all tarjeta-tecnologia" data-id="5" data-nombre="Ciberseguridad Avanzada">
               <div class="flex items-start justify-between mb-2">
                 <div class="w-10 h-10 bg-sena-soft rounded-lg flex items-center justify-center flex-shrink-0">
                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 text-sena">
@@ -294,7 +294,7 @@ include __DIR__ . '/modal_confirmacion_habilitar_pf.php';
             </div>
 
             <!-- Big Data y Analitica -->
-            <div class="border border-sena-border rounded-lg bg-white p-4 hover:border-sena/30 hover:shadow-sm transition-all" data-id="6" data-nombre="Big Data y Analítica">
+            <div class="border border-sena-border rounded-lg bg-white p-4 hover:border-sena/30 hover:shadow-sm transition-all tarjeta-tecnologia" data-id="6" data-nombre="Big Data y Analítica">
               <div class="flex items-start justify-between mb-2">
                 <div class="w-10 h-10 bg-sena-soft rounded-lg flex items-center justify-center flex-shrink-0">
                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 text-sena">
@@ -323,7 +323,7 @@ include __DIR__ . '/modal_confirmacion_habilitar_pf.php';
             </div>
 
             <!-- Realidad Aumentada/Virtual -->
-            <div class="border border-sena-border rounded-lg bg-white p-4 hover:border-sena/30 hover:shadow-sm transition-all" data-id="7" data-nombre="Realidad Aumentada/Virtual">
+            <div class="border border-sena-border rounded-lg bg-white p-4 hover:border-sena/30 hover:shadow-sm transition-all tarjeta-tecnologia" data-id="7" data-nombre="Realidad Aumentada/Virtual">
               <div class="flex items-start justify-between mb-2">
                 <div class="w-10 h-10 bg-sena-soft rounded-lg flex items-center justify-center flex-shrink-0">
                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 text-sena">
@@ -352,7 +352,7 @@ include __DIR__ . '/modal_confirmacion_habilitar_pf.php';
             </div>
 
             <!-- Robotica Colaborativa -->
-            <div class="border border-sena-border rounded-lg bg-white p-4 hover:border-sena/30 hover:shadow-sm transition-all" data-id="8" data-nombre="Robótica Colaborativa">
+            <div class="border border-sena-border rounded-lg bg-white p-4 hover:border-sena/30 hover:shadow-sm transition-all tarjeta-tecnologia" data-id="8" data-nombre="Robótica Colaborativa">
               <div class="flex items-start justify-between mb-2">
                 <div class="w-10 h-10 bg-sena-soft rounded-lg flex items-center justify-center flex-shrink-0">
                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 text-sena">
@@ -381,7 +381,7 @@ include __DIR__ . '/modal_confirmacion_habilitar_pf.php';
             </div>
 
             <!-- Manufactura Aditiva (Impresion 3D) -->
-            <div class="border border-sena-border rounded-lg bg-white p-4 hover:border-sena/30 hover:shadow-sm transition-all" data-id="9" data-nombre="Manufactura Aditiva (Impresión 3D)">
+            <div class="border border-sena-border rounded-lg bg-white p-4 hover:border-sena/30 hover:shadow-sm transition-all tarjeta-tecnologia" data-id="9" data-nombre="Manufactura Aditiva (Impresión 3D)">
               <div class="flex items-start justify-between mb-2">
                 <div class="w-10 h-10 bg-sena-soft rounded-lg flex items-center justify-center flex-shrink-0">
                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 text-sena">
@@ -410,7 +410,7 @@ include __DIR__ . '/modal_confirmacion_habilitar_pf.php';
             </div>
 
             <!-- Automatizacion de Procesos (RPA) -->
-            <div class="border border-sena-border rounded-lg bg-white p-4 hover:border-sena/30 hover:shadow-sm transition-all" data-id="10" data-nombre="Automatización de Procesos (RPA)">
+            <div class="border border-sena-border rounded-lg bg-white p-4 hover:border-sena/30 hover:shadow-sm transition-all tarjeta-tecnologia" data-id="10" data-nombre="Automatización de Procesos (RPA)">
               <div class="flex items-start justify-between mb-2">
                 <div class="w-10 h-10 bg-sena-soft rounded-lg flex items-center justify-center flex-shrink-0">
                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 text-sena">
