@@ -24,8 +24,12 @@
                 <!-- AREA -->
                 <div>
                     <label class="text-sm">Área</label>
-                    <select id="areaPrograma"
-                    class="w-full mt-1 px-3 py-2 border rounded-lg bg-gray-100">
+                    <select id="areaPrograma" class="w-full mt-1 px-3 py-2 border rounded-lg bg-gray-100">
+                        <option value="">Seleccione un área</option>
+                        <option value="1">Sistemas</option>
+                        <option value="2">Electrónica</option>
+                        <option value="3">Administración</option>
+                        <option value="4">Contabilidad</option>
                     </select>
                 </div>
 
@@ -67,15 +71,21 @@
 
                 <div>
                     <label class="text-sm">Nivel de Formación</label>
-                    <select id="nivelNuevoPrograma"
-                    class="w-full mt-1 px-3 py-2 border rounded-lg bg-gray-100">
+                    <select id="nivelNuevoPrograma" class="w-full mt-1 px-3 py-2 border rounded-lg bg-gray-100">
+                        <option value="">Seleccione nivel</option>
+                        <option value="1">Técnico</option>
+                        <option value="2">Tecnólogo</option>
+                        <option value="3">Especialización</option>
                     </select>
                 </div>
 
                 <div>
                     <label class="text-sm">Modalidad</label>
-                    <select id="modalidadNuevoPrograma"
-                    class="w-full mt-1 px-3 py-2 border rounded-lg bg-gray-100">
+                    <select id="modalidadNuevoPrograma" class="w-full mt-1 px-3 py-2 border rounded-lg bg-gray-100">
+                        <option value="">Seleccione modalidad</option>
+                        <option value="Presencial">Presencial</option>
+                        <option value="Virtual">Virtual</option>
+                        <option value="Mixta">Mixta</option>
                     </select>
                 </div>
 
@@ -112,7 +122,7 @@
         </button>
 
         <button
-            id="btn-crear-programa"
+            id="btn-guardar-nuevo-programa"
             class="px-4 py-2 bg-[#39A900] text-white rounded-lg">
             Crear Programa
         </button>

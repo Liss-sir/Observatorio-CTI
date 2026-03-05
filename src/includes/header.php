@@ -204,7 +204,7 @@ function nav_classes(string $target): string {
               <div class="border-t border-gray-100 mx-4"></div>
               
               <!-- Área  -->
-              <a href="#"
+              <a href="../../view/areas/areas.php"
                  class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-sena-soft hover:text-sena transition-all duration-200 group/item">
                 
                 <span class="w-8 h-8 bg-sena-soft/50 rounded-lg flex items-center justify-center text-sena group-hover/item:bg-sena group-hover/item:text-white transition-colors duration-200">

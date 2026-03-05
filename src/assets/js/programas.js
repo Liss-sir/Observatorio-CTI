@@ -8,15 +8,13 @@ document.addEventListener("DOMContentLoaded", function () {
     
     // ===== MODALES PARA HABILITAR =====
     const modalHabilitar = document.getElementById('modal-habilitar-perfil');
-    const modalHabilitadoConfirmacion = document.getElementById('modal-habilitado-confirmacion'); // <-- CORREGIDO
-    const btnConfirmarHabilitar = document.getElementById('btn-confirmar-habilitar'); // <-- CORREGIDO (era 'modal-habilitado-confirmacion')
+    const btnConfirmarHabilitar = document.getElementById('modal-habilitado-confirmacion');   
     const nombrePerfilHabilitarSpan = document.getElementById('nombre-perfil-habilitar');
     const nombrePerfilHabilitadoExitoSpan = document.getElementById('nombre-perfil-habilitado-exito');
 
-    // ===== MODALES PROGRAMA DE ACION ======
+    // ===== MODALES PROGRAMA DE FORMACION ======
+    const btnCrearPrograma = document.getElementById("btn-abrir-crear-programa");
     const modalCrear = document.getElementById("modal-crear-programa");
-    const btnCrearPrograma = document.getElementById('btn-crear-programa');
-    const modalEditar = document.getElementById("modal-editar-programa");
 
     // ===== TIMERS =====
     let timeoutDeshabilitado = null;
@@ -28,9 +26,7 @@ document.addEventListener("DOMContentLoaded", function () {
     console.log('Modal Deshabilitar:', modalDeshabilitar);
     console.log('Modal Habilitar:', modalHabilitar);
     console.log('Modal Deshabilitado:', modalDeshabilitado);
-    console.log('Modal Habilitado Confirmación:', modalHabilitadoConfirmacion);
-    console.log('Modal Crear:', modalCrear);
-    console.log('Botón Crear:', btnCrearPrograma);
+    console.log('Modal Habilitado:', btnConfirmarHabilitar);
 
     const buscador = document.getElementById("buscador");
     const cards = document.querySelectorAll(".programa-card");
@@ -54,39 +50,27 @@ document.addEventListener("DOMContentLoaded", function () {
     function abrirModal(modal) {
         if (modal) {
             modal.classList.remove('hidden');
-            modal.removeAttribute('aria-hidden');  // Quita aria-hidden cuando está visible
             document.body.classList.add('overflow-hidden');
-            
-            // Mueve el foco al primer elemento interactivo dentro del modal
-            const focusable = modal.querySelector('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
-            if (focusable) {
-                focusable.focus();
-            }
-            console.log('Modal abierto:', modal.id);
         }
     }
-
+    
     // ===== FUNCIÓN PARA CERRAR MODAL =====
     function cerrarModal(modal) {
         if (modal) {
             modal.classList.add('hidden');
-            modal.setAttribute('aria-hidden', 'true'); // Vuelve a poner aria-hidden al ocultarlo
             document.body.classList.remove('overflow-hidden');
-            console.log('Modal cerrado:', modal.id);
         }
     }
     
     // ===== CERRAR MODALES CON BOTONES =====
-    document.querySelectorAll('.cerrar-modal-deshabilitar, .cerrar-modal-habilitado-confirmacion, .cerrar-modal-habilitar, .cerrar-modal-crear, .cerrar-modal-editar').forEach(btn => {
+    document.querySelectorAll('.cerrar-modal-deshabilitar, .cerrar-modal-habilitado-confirmacion,.cerrar-modal-habilitar').forEach(btn => {
         btn.addEventListener('click', function(e) {
             e.preventDefault();
             e.stopPropagation();
             cerrarModal(modalDeshabilitar);
             cerrarModal(modalHabilitar);
             cerrarModal(modalDeshabilitado);
-            cerrarModal(modalHabilitadoConfirmacion);
-            cerrarModal(modalCrear);
-            cerrarModal(modalEditar);
+            cerrarModal(btnConfirmarHabilitar);
         });
     });
 
@@ -253,7 +237,9 @@ document.addEventListener("DOMContentLoaded", function () {
     // ===== MANEJAR CLICKS EN SWITCHES =====
     function inicializarSwitches() {
         document.querySelectorAll('.switch-sena').forEach(switchEl => {
+            // Remover eventos anteriores
             switchEl.removeEventListener('click', handleSwitchClick);
+            // Agregar nuevo evento
             switchEl.addEventListener('click', handleSwitchClick);
         });
     }
@@ -264,6 +250,7 @@ document.addEventListener("DOMContentLoaded", function () {
         
         const switchEl = this;
         
+        // Obtener el nombre del perfil
         const cardPerfil = switchEl.closest('.border');
         let nombrePerfil = "Perfil";
         
@@ -274,12 +261,15 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         }
         
+        // Verificar el estado ACTUAL del switch
         const estaActivo = switchEl.classList.contains('active');
         
         console.log('Switch clickeado - Estado:', estaActivo ? 'ACTIVO' : 'INACTIVO', 'Perfil:', nombrePerfil);
         
         if (estaActivo) {
+            // Switch ACTIVO → DESHABILITAR
             if (modalDeshabilitar) {
+                // Actualizar el texto del perfil en el modal
                 const perfilSpan = modalDeshabilitar.querySelector('span.font-medium.text-sena-text-main, span.font-medium');
                 if (perfilSpan) {
                     perfilSpan.textContent = `"${nombrePerfil}"`;
@@ -291,7 +281,9 @@ document.addEventListener("DOMContentLoaded", function () {
                 abrirModal(modalDeshabilitar);
             }
         } else {
+            // Switch INACTIVO → HABILITAR
             if (modalHabilitar) {
+                // Actualizar el texto del perfil en el modal de habilitar
                 if (nombrePerfilHabilitarSpan) {
                     nombrePerfilHabilitarSpan.textContent = `"${nombrePerfil}"`;
                 } else {
@@ -309,6 +301,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
+    // Inicializar switches
     inicializarSwitches();
 
     // ===== CONFIRMAR DESHABILITAR =====
@@ -321,12 +314,14 @@ document.addEventListener("DOMContentLoaded", function () {
             
             console.log('Confirmando deshabilitar - Perfil:', nombrePerfil);
             
+            // Cambiar el estado del switch
             let switchEncontrado = false;
             document.querySelectorAll('.switch-sena').forEach(switchEl => {
                 const cardPerfil = switchEl.closest('.border');
                 if (cardPerfil) {
                     const nombreElement = cardPerfil.querySelector('.font-semibold.text-gray-800');
                     if (nombreElement && nombreElement.textContent.trim() === nombrePerfil) {
+                        // Cambiar a inactivo
                         switchEl.classList.remove('active');
                         switchEl.setAttribute('title', 'Inactivo');
                         switchEl.setAttribute('data-lucide', 'toggle-left');
@@ -342,8 +337,13 @@ document.addEventListener("DOMContentLoaded", function () {
                 console.log('No se encontró el switch para:', nombrePerfil);
             }
             
+            // Reinicializar iconos de Lucide
             lucide.createIcons();
+            
+            // Cerrar modal de confirmación
             cerrarModal(modalDeshabilitar);
+            
+            // Mostrar modal de éxito
             mostrarModalDeshabilitado(nombrePerfil);
         });
     }
@@ -358,12 +358,14 @@ document.addEventListener("DOMContentLoaded", function () {
             
             console.log('Confirmando habilitar - Perfil:', nombrePerfil);
             
+            // Cambiar el estado del switch
             let switchEncontrado = false;
             document.querySelectorAll('.switch-sena').forEach(switchEl => {
                 const cardPerfil = switchEl.closest('.border');
                 if (cardPerfil) {
                     const nombreElement = cardPerfil.querySelector('.font-semibold.text-gray-800');
                     if (nombreElement && nombreElement.textContent.trim() === nombrePerfil) {
+                        // Cambiar a activo
                         switchEl.classList.add('active');
                         switchEl.setAttribute('title', 'Activo');
                         switchEl.setAttribute('data-lucide', 'toggle-right');
@@ -379,87 +381,97 @@ document.addEventListener("DOMContentLoaded", function () {
                 console.log('No se encontró el switch para:', nombrePerfil);
             }
             
+            // Reinicializar iconos de Lucide
             lucide.createIcons();
+            
+            // Cerrar modal de confirmación
             cerrarModal(modalHabilitar);
+            
+            // Mostrar modal de éxito
             mostrarModalHabilitado(nombrePerfil);
         });
     }
 
-    // ===== MODAL EDITAR PROGRAMA =====
+    //modal editar programa de formacion
     document.querySelectorAll(".btn-editar-programa").forEach(btn => {
         btn.addEventListener("click", function(e) {
             e.preventDefault();
             e.stopPropagation();
             
-            document.getElementById("codigoPrograma").value = this.dataset.codigo || '';
-            document.getElementById("cuposPrograma").value = this.dataset.cupos || '';
-            document.getElementById("nombrePrograma").value = this.dataset.nombre || '';
-            document.getElementById("nivelFormacion").value = this.dataset.nivel || '';
-            document.getElementById("modalidadPrograma").value = this.dataset.modalidad || '';
-            document.getElementById("fechaInicio").value = this.dataset.fechainicio || '';
-            document.getElementById("fechaFin").value = this.dataset.fechafin || '';
+            // Obtener los datos del programa desde los atributos data-
+            const codigo = this.dataset.codigo;
+            const cupos = this.dataset.cupos;
+            const nombre = this.dataset.nombre;
+            const nivel = this.dataset.nivel;
+            const modalidad = this.dataset.modalidad;
+            const fechaInicio = this.dataset.fechainicio;
+            const fechaFin = this.dataset.fechafin;
             
-            abrirModal(modalEditar);
+            // Llenar el formulario del modal
+            document.getElementById("codigoPrograma").value = codigo || '';
+            document.getElementById("cuposPrograma").value = cupos || '';
+            document.getElementById("nombrePrograma").value = nombre || '';
+            document.getElementById("nivelFormacion").value = nivel || '';
+            document.getElementById("modalidadPrograma").value = modalidad || '';
+            document.getElementById("fechaInicio").value = fechaInicio || '';
+            document.getElementById("fechaFin").value = fechaFin || '';
+            
+            // Abrir el modal
+            document.getElementById("modal-editar-programa").classList.remove("hidden");
         });
     });
 
-    // ===== MODAL CREAR PROGRAMA =====
+    //funcion para cerrar el modal
+    function cerrarModalEditarPrograma() {
+    document
+        .getElementById("modal-editar-programa")
+        .classList.add("hidden");
+    }
+
+    document.querySelectorAll(".cerrar-modal-editar").forEach(btn => {
+        btn.addEventListener("click", cerrarModalEditarPrograma);
+    });
+
+    /* CERRAR MODAL */
+    document.querySelectorAll(".cerrar-modal-crear").forEach(btn=>{
+        btn.addEventListener("click",()=>{
+            modalCrear.classList.add("hidden");
+        });
+    });
+
+    // CREAR PROGRAMA DE FORMACION
     if (btnCrearPrograma) {
         btnCrearPrograma.addEventListener('click', (e) => {
             e.preventDefault();
             e.stopPropagation();
-            console.log('Click en botón crear programa');
-            
-            // Limpiar formulario
             if (modalCrear) {
-                const inputs = modalCrear.querySelectorAll('input, select');
-                inputs.forEach(input => {
-                    if (input.type !== 'select-one') {
-                        input.value = '';
-                    } else {
-                        input.selectedIndex = 0;
-                    }
-                });
-                abrirModal(modalCrear);
+                modalCrear.classList.remove('hidden');
             }
         });
-    } else {
-        console.error('ERROR: No se encontró el botón con ID "btn-crear-programa"');
     }
 
-    // ===== GUARDAR NUEVO PROGRAMA =====
+    // Cerrar modal crear
+    document.querySelectorAll('.cerrar-modal-crear').forEach(btn => {
+        btn.addEventListener('click', () => {
+            if (modalCrear) {
+                modalCrear.classList.add('hidden');
+            }
+        });
+    });
+
+    // Guardar nuevo programa
     const btnGuardarNuevo = document.getElementById('btn-guardar-nuevo-programa');
     if (btnGuardarNuevo) {
         btnGuardarNuevo.addEventListener('click', async () => {
-            // Validar campos requeridos
-            const campos = {
-                area: document.getElementById("areaPrograma")?.value,
-                codigo: document.getElementById("codigoNuevoPrograma")?.value,
-                cupos: document.getElementById("cuposNuevoPrograma")?.value,
-                nombre: document.getElementById("nombreNuevoPrograma")?.value,
-                nivel: document.getElementById("nivelNuevoPrograma")?.value,
-                modalidad: document.getElementById("modalidadNuevoPrograma")?.value,
-                fechaInicio: document.getElementById("fechaInicioNuevoPrograma")?.value,
-                fechaFin: document.getElementById("fechaFinNuevoPrograma")?.value
-            };
-            
-            // Verificar campos vacíos
-            for (let [key, value] of Object.entries(campos)) {
-                if (!value) {
-                    alert(`El campo ${key} es requerido`);
-                    return;
-                }
-            }
-            
             const datos = {
-                id_area: campos.area,
-                codigo_programa: campos.codigo,
-                nombre_programa: campos.nombre,
-                id_nivel: campos.nivel,
-                modalidad: campos.modalidad,
-                fecha_creacion: campos.fechaInicio,
-                fecha_fin: campos.fechaFin,
-                cupos: campos.cupos
+                id_area: document.getElementById("areaPrograma").value,
+                codigo_programa: document.getElementById("codigoNuevoPrograma").value,
+                nombre_programa: document.getElementById("nombreNuevoPrograma").value,
+                id_nivel: document.getElementById("nivelNuevoPrograma").value,
+                modalidad: document.getElementById("modalidadNuevoPrograma").value,
+                fecha_creacion: document.getElementById("fechaInicioNuevoPrograma").value,
+                fecha_fin: document.getElementById("fechaFinNuevoPrograma").value,
+                cupos: document.getElementById("cuposNuevoPrograma").value // Agregué cupos que faltaba
             };
 
             try {
@@ -474,7 +486,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 const resultado = await response.json();
                 if (resultado.success) {
                     alert(resultado.message);
-                    cerrarModal(modalCrear);
+                    modalCrear.classList.add("hidden");
                     location.reload();
                 } else {
                     alert(resultado.error);
@@ -486,18 +498,14 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
     
-    // ===== OBSERVER PARA NUEVOS ELEMENTOS =====
+    // Re-inicializar switches cuando se cambie el DOM (por si se agregan nuevos)
     const observer = new MutationObserver(function() {
         inicializarSwitches();
-        lucide.createIcons();
     });
     
-    const contenedor = document.getElementById('contenedorProgramas');
-    if (contenedor) {
-        observer.observe(contenedor, {
-            childList: true,
-            subtree: true
-        });
-    }
+    observer.observe(document.getElementById('contenedorProgramas'), {
+        childList: true,
+        subtree: true
+    });
 
 });
