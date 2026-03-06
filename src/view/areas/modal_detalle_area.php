@@ -1,6 +1,6 @@
 <!-- modal_detalle_tendencia_act.php -->
 <!-- Modal para ver detalle de tendencia actual -->
-<div id="modal-detalle-tendencia" class="hidden fixed inset-0 z-50 overflow-y-auto" aria-hidden="true">
+<div id="modal-detalle-area" class="hidden fixed inset-0 z-50 overflow-y-auto" aria-hidden="true">
 <link rel="stylesheet" href="../../../assets/css/output.css">
 <link rel="stylesheet" href="../../assets/css/globals.css">
   <!-- Overlay -->

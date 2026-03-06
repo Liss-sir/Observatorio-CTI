@@ -1,12 +1,11 @@
 <!-- modal_confirmacion_crear_tendencia_actual -->
 <!-- Modal de éxito - Perfil creado correctamente (desaparece en 3 segundos) -->
-<div id="modal_creado_area" class="hidden fixed inset-0 z-50 overflow-y-auto" aria-hidden="true">
-<link rel="stylesheet" href="../../../assets/css/output.css">
+<div id="modal-creado-area" class="hidden fixed inset-0 z-50 overflow-y-auto" aria-hidden="true">
+<link rel="stylesheet" href="../../../assets/css/output.css">    
 <link rel="stylesheet" href="../../assets/css/globals.css">
   <!-- Overlay -->
   <div class="fixed inset-0 bg-black bg-opacity-80 transition-opacity"></div>
 
-  <div class="fixed inset-0 overflow-y-auto">
     <div class="flex min-h-full items-center justify-center p-4">
       <div class="relative w-full max-w-md transform overflow-hidden rounded-xl border border-sena-border bg-white shadow-2xl transition-all animate-modalFadeIn">
 
@@ -30,7 +29,7 @@
         <!-- Content -->
         <div class="px-6 py-5">
           <p class="text-sm text-sena-text-soft leading-relaxed">
-            El area<span class="font-semibold" style="color: #39A900;" id="nombre-tendencia-creada">"Desarrollador Full Stack Senior"</span> ha sido creada correctamente.
+            El area<span class="font-semibold" style="color: #39A900;" id="nombre-area-creado">"Desarrollador Full Stack Senior"</span> ha sido creada correctamente.
           </p>
           <div class="mt-4 flex items-center gap-2 text-xs text-sena-text-soft">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -57,5 +56,4 @@
         </div>
       </div>
     </div>
-  </div>
 </div>
