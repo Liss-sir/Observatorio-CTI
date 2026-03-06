@@ -17,7 +17,7 @@
             </svg>
           </div>
           <div>
-            <h3 class="text-lg font-semibold text-sena-text-main">¡Perfil Deshabilitado!</h3>
+            <h3 class="text-lg font-semibold text-sena-text-main">¡Programa Deshabilitado!</h3>
             <p class="text-sm text-sena-text-soft">La operación se realizó correctamente</p>
           </div>
         </div>
@@ -25,7 +25,7 @@
         <!-- Content -->
         <div class="px-6 py-5">
           <p class="text-sm text-sena-text-soft leading-relaxed">
-            El perfil <span class="font-semibold text-sena-text-main" id="nombre-perfil-deshabilitado">"Desarrollador Full Stack Senior"</span> ha sido deshabilitado correctamente.
+            El programa de formacion <span class="font-semibold text-sena-text-main" id="nombre-perfil-deshabilitado">"Desarrollador Full Stack Senior"</span> ha sido deshabilitado correctamente.
           </p>
           
           <!-- Contador de segundos (NUEVO) -->
