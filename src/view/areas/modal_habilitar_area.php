@@ -1,6 +1,6 @@
 <!-- modal_habilitar_tendencia_act.php -->
 <!-- Modal de confirmación para habilitar tendencia actual -->
-<div id="modal-habilitar-tendencia" class="hidden fixed inset-0 z-50 overflow-y-auto" aria-hidden="true">
+<div id="modal-habilitar-area" class="hidden fixed inset-0 z-50 overflow-y-auto" aria-hidden="true">
   <!-- Overlay -->
   <div class="fixed inset-0 bg-black bg-opacity-80 transition-opacity"></div>
 

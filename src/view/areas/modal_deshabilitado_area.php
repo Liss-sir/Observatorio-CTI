@@ -27,7 +27,7 @@
         <!-- Content -->
         <div class="px-6 py-5">
           <p class="text-sm text-sena-text-soft leading-relaxed">
-            El area <span class="font-semibold text-sena-text-main" id="nombre-tendencia-act-deshabilitado">"Desarrollador Full Stack Senior"</span> ha sido deshabilitada correctamente.
+            El area <span class="font-semibold text-sena-text-main" id="nombre-area-deshabilitado">"Desarrollador Full Stack Senior"</span> ha sido deshabilitada correctamente.
           </p>
           
           <!-- Contador de segundos (NUEVO) -->
