@@ -195,7 +195,7 @@ $programas = [
     lucide.createIcons();
 </script>
 
-<script src="/observatorio/Observatorio-CTI/src/assets/js/programas.js"></script>
+<script src="../../assets/js/programas.js"></script>
 </body>
 </html>
 <?php include __DIR__ . '../../../includes/footer.php'; ?>
