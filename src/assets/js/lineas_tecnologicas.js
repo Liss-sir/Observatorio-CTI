@@ -1,7 +1,16 @@
+
 document.addEventListener("DOMContentLoaded", () => {
-  const cards = document.querySelectorAll("main .grid > div.bg-white.rounded-xl");
+  let cards = Array.from(document.querySelectorAll("main .grid > div.bg-white.rounded-xl"));
+  const cardsGrid = document.querySelector("main .grid");
   const inputBuscarLinea = document.getElementById("input-buscar-linea");
   const btnNuevaLinea = document.getElementById("btn-nueva-linea");
+  const btnDetalleEditar = document.getElementById("btn-detalle-editar");
+  const btnDetalleDeshabilitar = document.getElementById("btn-detalle-deshabilitar");
+  const detalleTitulo = document.getElementById("detalle-linea-titulo");
+  const detalleBadgeEstado = document.getElementById("detalle-badge-estado");
+  const detalleEstadoTitulo = document.getElementById("detalle-estado-titulo");
+  const detalleEstadoTexto = document.getElementById("detalle-estado-texto");
+  const STORAGE_KEY = "observatorio_lineas_tecnologicas_v1";
 
   const focosDisponibles = [
     "Manufactura Aditiva",
@@ -115,6 +124,7 @@ document.addEventListener("DOMContentLoaded", () => {
   let lineaPendienteHabilitar = null;
   let successTimeout = null;
   let successInterval = null;
+  let detalleActivo = true;
 
   const modals = crearModales();
   aplicarEstiloFlechaSelect();
@@ -268,6 +278,163 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  function getStorageLineas() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      const parsed = raw ? JSON.parse(raw) : {};
+      return parsed && typeof parsed === "object" ? parsed : {};
+    } catch (error) {
+      return {};
+    }
+  }
+
+  function setStorageLineas(value) {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(value));
+    } catch (error) {
+      // Ignore storage failures to avoid blocking UI behavior.
+    }
+  }
+
+  function parseCardResumen(card) {
+    const resumen = card.querySelector("h3 + p");
+    const text = (resumen?.textContent || "").replace(/\s+/g, " ").trim();
+    const match = text.match(/(\d+)\s+vigentes?\s*[·\-]\s*(\d+)\s+lineas?/i);
+
+    if (!match) {
+      return { vigentes: 0, totalLineas: 0 };
+    }
+
+    return {
+      vigentes: Number.parseInt(match[1], 10) || 0,
+      totalLineas: Number.parseInt(match[2], 10) || 0,
+    };
+  }
+
+  function parseCardPerfiles(card) {
+    const counter = card.querySelector(".linea-tec-controls span") || card.querySelector(".flex.justify-between.items-start span");
+    const text = (counter?.textContent || "").trim();
+    const match = text.match(/(\d+)/);
+    return match ? Number.parseInt(match[1], 10) || 0 : 0;
+  }
+
+  function parseCardTecnologias(card) {
+    return Array.from(card.querySelectorAll(".flex.flex-wrap.gap-2 span"))
+      .map((chip) => chip.textContent.trim())
+      .filter(Boolean);
+  }
+
+  function actualizarLinkDetalle(card, nombre) {
+    if (!card) {
+      return;
+    }
+
+    const link = card.querySelector("a");
+    if (!link) {
+      return;
+    }
+
+    link.href = `detalles_lineas_tecnologicas.php?linea=${encodeURIComponent(nombre)}`;
+  }
+
+  function construirRegistroLinea(nombre, card) {
+    const state = estadoLineas[nombre] || {};
+    const resumen = parseCardResumen(card);
+
+    return {
+      nombre,
+      active: state.active !== false,
+      area: state.area || "",
+      linea: state.linea || "",
+      foco: state.foco || "",
+      etapa: state.etapa || "",
+      proyeccion: state.proyeccion || "",
+      perfiles: parseCardPerfiles(card),
+      vigentes: resumen.vigentes,
+      totalLineas: resumen.totalLineas,
+      tecnologias: parseCardTecnologias(card),
+      descripcion: `Linea tecnologica ${nombre} registrada en el Observatorio CTI.`,
+      fechaActualizacion: new Date().toISOString(),
+    };
+  }
+
+  function guardarRegistroLinea(nombre, card) {
+    if (!nombre || !card) {
+      return;
+    }
+
+    const data = getStorageLineas();
+    data[nombre] = construirRegistroLinea(nombre, card);
+    setStorageLineas(data);
+  }
+
+  function eliminarRegistroLinea(nombre) {
+    if (!nombre) {
+      return;
+    }
+
+    const data = getStorageLineas();
+    if (data[nombre]) {
+      delete data[nombre];
+      setStorageLineas(data);
+    }
+  }
+
+  function guardarTodasLasLineas() {
+    cards.forEach((card) => {
+      const titleEl = card.querySelector("h3");
+      const nombre = titleEl?.textContent.trim();
+      if (nombre) {
+        actualizarLinkDetalle(card, nombre);
+        guardarRegistroLinea(nombre, card);
+      }
+    });
+  }
+
+  function crearCardLinea(nombre, state) {
+    if (!cardsGrid) {
+      return null;
+    }
+
+    const card = document.createElement("div");
+    const estadoActivo = state.active !== false;
+    const estadoTexto = estadoActivo ? "0 vigentes" : "0 vigentes";
+    const lineaTexto = state.linea ? "1 linea" : "0 lineas";
+    const chips = [state.foco, state.area].filter(Boolean).slice(0, 2);
+
+    card.className = "bg-white border border-sena-border rounded-xl p-6 flex flex-col gap-3";
+    card.innerHTML = `
+      <div class="flex justify-between items-start">
+        <div class="w-11 h-11 bg-sena-soft rounded-xl flex items-center justify-center">
+          <svg class="w-5 h-5 text-sena-strong" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 0 1 6 3.75h2.25A2.25 2.25 0 0 1 10.5 6v2.25a2.25 2.25 0 0 1-2.25 2.25H6a2.25 2.25 0 0 1-2.25-2.25V6ZM3.75 15.75A2.25 2.25 0 0 1 6 13.5h2.25a2.25 2.25 0 0 1 2.25 2.25V18a2.25 2.25 0 0 1-2.25 2.25H6A2.25 2.25 0 0 1 3.75 18v-2.25ZM13.5 6a2.25 2.25 0 0 1 2.25-2.25H18A2.25 2.25 0 0 1 20.25 6v2.25A2.25 2.25 0 0 1 18 10.5h-2.25a2.25 2.25 0 0 1-2.25-2.25V6ZM13.5 15.75a2.25 2.25 0 0 1 2.25-2.25H18a2.25 2.25 0 0 1 2.25 2.25V18A2.25 2.25 0 0 1 18 20.25h-2.25a2.25 2.25 0 0 1-2.25-2.25v-2.25Z" />
+          </svg>
+        </div>
+        <span class="text-sm text-sena-text-soft">0 perfiles</span>
+      </div>
+      <h3 class="font-['Montserrat'] text-base font-semibold text-sena-text-main leading-snug"></h3>
+      <p class="text-sm text-sena-text-soft">${estadoTexto} &middot; ${lineaTexto}</p>
+      <div class="flex flex-wrap gap-2"></div>
+      <a href="#" class="text-sm text-sena-strong font-medium mt-auto inline-flex items-center gap-1 hover:underline">Ver perfiles &rarr;</a>
+    `;
+
+    card.querySelector("h3").textContent = nombre;
+    const chipsWrap = card.querySelector(".flex.flex-wrap.gap-2");
+
+    chips.forEach((chipText) => {
+      const chip = document.createElement("span");
+      chip.className = "text-xs text-sena-strong bg-sena-soft rounded-full px-2.5 py-0.5";
+      chip.textContent = chipText;
+      chipsWrap.appendChild(chip);
+    });
+
+    cardsGrid.appendChild(card);
+    cards.push(card);
+    inicializarCard(card, cards.length - 1);
+    actualizarLinkDetalle(card, nombre);
+    return card;
+  }
+
   function setSwitchState(switchBtn, isActive) {
     switchBtn.dataset.active = isActive ? "true" : "false";
     switchBtn.setAttribute("aria-pressed", isActive ? "true" : "false");
@@ -335,6 +502,119 @@ document.addEventListener("DOMContentLoaded", () => {
     successTimeout = setTimeout(() => {
       cerrarAlertaFinal();
     }, seconds * 1000);
+  }
+
+  function actualizarEstadoDetalleUI(isActive) {
+    if (!btnDetalleDeshabilitar) {
+      return;
+    }
+
+    detalleActivo = isActive;
+
+    if (isActive) {
+      btnDetalleDeshabilitar.textContent = "Desactivar";
+      btnDetalleDeshabilitar.className =
+        "px-6 py-2.5 text-sm font-semibold text-white bg-[#E1A14A] rounded-xl whitespace-nowrap hover:bg-[#cf903a] transition-colors";
+
+      if (detalleBadgeEstado) {
+        detalleBadgeEstado.className =
+          "inline-flex items-center gap-1.5 text-[13px] font-medium text-[hsl(105,100%,33%)] bg-[hsl(105,40%,92%)] rounded-full px-4 py-1.5";
+        detalleBadgeEstado.innerHTML = `
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-3.5 h-3.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+          </svg>
+          Vigente
+        `;
+      }
+
+      if (detalleEstadoTitulo) {
+        detalleEstadoTitulo.textContent = "Perfil Vigente";
+        detalleEstadoTitulo.className = "text-[15px] font-bold text-[hsl(105,100%,33%)] leading-tight";
+      }
+
+      if (detalleEstadoTexto) {
+        detalleEstadoTexto.textContent = "Este perfil se encuentra activo";
+        detalleEstadoTexto.className = "text-[13px] text-[hsl(150,5%,45%)] mt-0.5";
+      }
+      return;
+    }
+
+    btnDetalleDeshabilitar.textContent = "Habilitar";
+    btnDetalleDeshabilitar.className =
+      "px-6 py-2.5 text-sm font-semibold text-white bg-[#39A900] rounded-xl whitespace-nowrap hover:opacity-90 transition-opacity";
+
+    if (detalleBadgeEstado) {
+      detalleBadgeEstado.className =
+        "inline-flex items-center gap-1.5 text-[13px] font-medium text-[#A05A00] bg-[#FFF4E5] rounded-full px-4 py-1.5";
+      detalleBadgeEstado.innerHTML = `
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-3.5 h-3.5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="m15.75 9-6 6m0-6 6 6" />
+        </svg>
+        Deshabilitado
+      `;
+    }
+
+    if (detalleEstadoTitulo) {
+      detalleEstadoTitulo.textContent = "Perfil Deshabilitado";
+      detalleEstadoTitulo.className = "text-[15px] font-bold text-[#A05A00] leading-tight";
+    }
+
+    if (detalleEstadoTexto) {
+      detalleEstadoTexto.textContent = "Este perfil se encuentra inactivo";
+      detalleEstadoTexto.className = "text-[13px] text-[hsl(150,5%,45%)] mt-0.5";
+    }
+  }
+
+  function inicializarAccionesDetalle() {
+    if (!btnDetalleEditar && !btnDetalleDeshabilitar) {
+      return;
+    }
+
+    actualizarEstadoDetalleUI(detalleActivo);
+
+    if (btnDetalleEditar) {
+      btnDetalleEditar.addEventListener("click", () => {
+        const nombreActual = (detalleTitulo?.textContent || "Linea Tecnologica").trim();
+        const estadoActual = estadoLineas[nombreActual] || {
+          active: detalleActivo,
+          area: areasDisponibles[0],
+          linea: (lineasPorArea[areasDisponibles[0]] || [""])[0],
+          foco: focosDisponibles[0],
+          etapa: etapasDisponibles[1],
+          proyeccion: proyeccionesDisponibles[0],
+        };
+
+        lineaEnEdicion = { card: null, titleEl: detalleTitulo, oldName: nombreActual, isDetalle: true };
+
+        modals.editInput.value = nombreActual;
+        modals.editArea.value = estadoActual.area;
+        modals.editArea.dispatchEvent(new Event("change"));
+        modals.editLinea.value = estadoActual.linea;
+        modals.editLinea.dispatchEvent(new Event("change"));
+        modals.editFoco.value = estadoActual.foco;
+        modals.editFoco.dispatchEvent(new Event("change"));
+        modals.editEtapa.value = estadoActual.etapa;
+        modals.editProyeccion.value = estadoActual.proyeccion;
+        abrirModal(modals.editModal);
+      });
+    }
+
+    if (btnDetalleDeshabilitar) {
+      btnDetalleDeshabilitar.addEventListener("click", () => {
+        const nombreActual = (detalleTitulo?.textContent || "Linea Tecnologica").trim();
+
+        if (detalleActivo) {
+          lineaPendienteDeshabilitar = { switchBtn: null, nombre: nombreActual, isDetalle: true };
+          modals.disableText.textContent = `Estas seguro de deshabilitar "${nombreActual}"? El registro no se eliminara, solo se marcara como inactivo.`;
+          abrirModal(modals.disableModal);
+          return;
+        }
+
+        lineaPendienteHabilitar = { switchBtn: null, nombre: nombreActual, isDetalle: true };
+        modals.enableText.textContent = `Estas seguro de que deseas habilitar la linea "${nombreActual}"?`;
+        abrirModal(modals.enableModal);
+      });
+    }
   }
 
   function inicializarCard(card, index) {
@@ -430,9 +710,13 @@ document.addEventListener("DOMContentLoaded", () => {
     controlsContainer.appendChild(switchEstadoBtn);
     controlsContainer.appendChild(perfilCounter);
     cardTopRow.appendChild(controlsContainer);
+
+    actualizarLinkDetalle(card, nombreTecnologia);
   }
 
   cards.forEach(inicializarCard);
+  guardarTodasLasLineas();
+  inicializarAccionesDetalle();
 
   if (inputBuscarLinea) {
     inputBuscarLinea.addEventListener("input", aplicarFiltroBusqueda);
@@ -459,6 +743,22 @@ document.addEventListener("DOMContentLoaded", () => {
     event.preventDefault();
 
     const nombreNuevaLinea = modals.createInput.value.trim() || "Nueva Linea";
+    const nuevaState = {
+      active: true,
+      area: modals.createArea.value,
+      linea: modals.createLinea.value,
+      foco: modals.createFoco.value,
+      etapa: modals.createEtapa.value,
+      proyeccion: modals.createProyeccion.value,
+    };
+
+    estadoLineas[nombreNuevaLinea] = nuevaState;
+    const nuevaCard = crearCardLinea(nombreNuevaLinea, nuevaState);
+    if (nuevaCard) {
+      guardarRegistroLinea(nombreNuevaLinea, nuevaCard);
+      aplicarFiltroBusqueda();
+    }
+
     cerrarModal(modals.createModal);
     mostrarAlertaFinal({
       title: "Linea Creada",
@@ -477,10 +777,23 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    setSwitchState(lineaPendienteDeshabilitar.switchBtn, false);
+    if (lineaPendienteDeshabilitar.switchBtn) {
+      setSwitchState(lineaPendienteDeshabilitar.switchBtn, false);
+    }
+
+    if (lineaPendienteDeshabilitar.isDetalle) {
+      actualizarEstadoDetalleUI(false);
+    }
 
     if (estadoLineas[lineaPendienteDeshabilitar.nombre]) {
       estadoLineas[lineaPendienteDeshabilitar.nombre].active = false;
+    }
+
+    const card = lineaPendienteDeshabilitar.switchBtn
+      ? lineaPendienteDeshabilitar.switchBtn.closest("div.bg-white.rounded-xl")
+      : null;
+    if (card) {
+      guardarRegistroLinea(lineaPendienteDeshabilitar.nombre, card);
     }
 
     cerrarModal(modals.disableModal);
@@ -502,10 +815,23 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    setSwitchState(lineaPendienteHabilitar.switchBtn, true);
+    if (lineaPendienteHabilitar.switchBtn) {
+      setSwitchState(lineaPendienteHabilitar.switchBtn, true);
+    }
+
+    if (lineaPendienteHabilitar.isDetalle) {
+      actualizarEstadoDetalleUI(true);
+    }
 
     if (estadoLineas[lineaPendienteHabilitar.nombre]) {
       estadoLineas[lineaPendienteHabilitar.nombre].active = true;
+    }
+
+    const card = lineaPendienteHabilitar.switchBtn
+      ? lineaPendienteHabilitar.switchBtn.closest("div.bg-white.rounded-xl")
+      : null;
+    if (card) {
+      guardarRegistroLinea(lineaPendienteHabilitar.nombre, card);
     }
 
     cerrarModal(modals.enableModal);
@@ -553,6 +879,14 @@ document.addEventListener("DOMContentLoaded", () => {
     };
 
     lineaEnEdicion.titleEl.textContent = nuevoNombre;
+    actualizarLinkDetalle(lineaEnEdicion.card, nuevoNombre);
+
+    if (lineaEnEdicion.isDetalle) {
+      estadoLineas[nuevoNombre].active = detalleActivo;
+    }
+
+    eliminarRegistroLinea(lineaEnEdicion.oldName);
+    guardarRegistroLinea(nuevoNombre, lineaEnEdicion.card);
     cerrarModal(modals.editModal);
     mostrarAlertaFinal({
       title: "Linea Editada",
