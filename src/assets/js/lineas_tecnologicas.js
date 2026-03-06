@@ -3,6 +3,8 @@ document.addEventListener("DOMContentLoaded", () => {
   let cards = Array.from(document.querySelectorAll("main .grid > div.bg-white.rounded-xl"));
   const cardsGrid = document.querySelector("main .grid");
   const inputBuscarLinea = document.getElementById("input-buscar-linea");
+  const lineasEncontradasCount = document.getElementById("lineas-encontradas-count");
+  const lineasEncontradasLabel = document.getElementById("lineas-encontradas-label");
   const btnNuevaLinea = document.getElementById("btn-nueva-linea");
   const btnDetalleEditar = document.getElementById("btn-detalle-editar");
   const btnDetalleDeshabilitar = document.getElementById("btn-detalle-deshabilitar");
@@ -12,111 +14,82 @@ document.addEventListener("DOMContentLoaded", () => {
   const detalleEstadoTexto = document.getElementById("detalle-estado-texto");
   const STORAGE_KEY = "observatorio_lineas_tecnologicas_v1";
 
-  const focosDisponibles = [
-    "Manufactura Aditiva",
-    "Avances en tecnicas de mecanizado",
-    "Sistemas de Soldadura",
-    "Sistemas de Corte automatizado",
-    "Digitalizacion del mantenimiento",
-    "IA y Ciberseguridad",
-    "Construccion Modular y Sostenible",
-    "IoT y Robotica",
-    "Desarrollo de sistemas de control y automatizacion",
+  const tendenciasEmergentesDisponibles = [
+    "Manufactura aditiva",
+    "Avances en técnicas de mecanizado",
+    "Sistemas de soldadura",
+    "Sistemas de corte automatizado",
+    "Digitalización del mantenimiento",
+    "IA y ciberseguridad",
+    "Construcción modular y sostenible",
+    "IoT y robótica",
+    "Desarrollo de sistemas de control y automatización",
   ];
-
-  const areasDisponibles = [
-    "Industria y Manufactura",
-    "TIC e Infraestructura Digital",
-    "Construccion e Infraestructura",
-    "Automatizacion y Energia",
-    "Automotriz",
-    "Moda y Diseno",
-    "Multimedia y Audiovisual",
-  ];
-
-  const lineasPorArea = {
-    "Industria y Manufactura": [
-      "Mantenimiento Mecanico Industrial",
-      "Sistema de Manufactura con CNC",
-      "Soldadura",
-      "Electromecanica",
-      "Maderas",
-    ],
-    "TIC e Infraestructura Digital": [
-      "Informatica, diseno y desarrollo de software",
-      "Infraestructura TIC",
-      "Telecomunicaciones",
-    ],
-    "Construccion e Infraestructura": [
-      "Obras civiles",
-      "Construccion",
-      "Dibujo arquitectonico",
-      "Maquinaria Pesada",
-      "Redes de gas",
-    ],
-    "Automatizacion y Energia": [
-      "Mecatronica",
-      "Electronica",
-      "Instrumentacion y Control de Procesos",
-      "Refrigeracion y aire acondicionado",
-      "Sistemas de Control",
-      "Electricidad Industrial",
-      "Sistemas electricos domiciliarios",
-    ],
-    Automotriz: [
-      "Autotronica",
-      "Mantenimiento mecanico de automotores",
-      "Mecanica de motos",
-    ],
-    "Moda y Diseno": ["Confecciones", "Diseno de modas", "Marroquineria", "Calzado"],
-    "Multimedia y Audiovisual": ["Multimedia", "Audiovisuales"],
-  };
-
-  const focosPorLinea = {
-    "Mantenimiento Mecanico Industrial": [
-      "Digitalizacion del mantenimiento",
-      "Avances en tecnicas de mecanizado",
-    ],
-    "Sistema de Manufactura con CNC": [
-      "Avances en tecnicas de mecanizado",
-      "Manufactura Aditiva",
-    ],
-    Soldadura: ["Sistemas de Soldadura", "Sistemas de Corte automatizado"],
-    Electromecanica: ["IoT y Robotica", "Desarrollo de sistemas de control y automatizacion"],
-    "Informatica, diseno y desarrollo de software": ["IA y Ciberseguridad", "IoT y Robotica"],
-    "Infraestructura TIC": ["IA y Ciberseguridad", "Digitalizacion del mantenimiento"],
-    Telecomunicaciones: ["IA y Ciberseguridad", "IoT y Robotica"],
-    "Obras civiles": ["Construccion Modular y Sostenible"],
-    Construccion: ["Construccion Modular y Sostenible", "IoT y Robotica"],
-    "Dibujo arquitectonico": ["Construccion Modular y Sostenible"],
-    "Maquinaria Pesada": ["Digitalizacion del mantenimiento", "IoT y Robotica"],
-    "Redes de gas": ["Desarrollo de sistemas de control y automatizacion"],
-    Maderas: ["Manufactura Aditiva"],
-    Mecatronica: ["IoT y Robotica", "Desarrollo de sistemas de control y automatizacion"],
-    Electronica: ["IoT y Robotica", "Desarrollo de sistemas de control y automatizacion"],
-    "Instrumentacion y Control de Procesos": ["Desarrollo de sistemas de control y automatizacion"],
-    "Refrigeracion y aire acondicionado": ["Digitalizacion del mantenimiento"],
-    "Sistemas de Control": ["Desarrollo de sistemas de control y automatizacion"],
-    "Electricidad Industrial": ["Desarrollo de sistemas de control y automatizacion"],
-    "Sistemas electricos domiciliarios": ["IoT y Robotica"],
-    Autotronica: ["IA y Ciberseguridad", "IoT y Robotica"],
-    "Mantenimiento mecanico de automotores": ["Digitalizacion del mantenimiento", "IoT y Robotica"],
-    "Mecanica de motos": ["Digitalizacion del mantenimiento"],
-    Confecciones: ["Manufactura Aditiva"],
-    "Diseno de modas": ["Manufactura Aditiva"],
-    Marroquineria: ["Manufactura Aditiva"],
-    Calzado: ["Manufactura Aditiva"],
-    Multimedia: ["IA y Ciberseguridad"],
-    Audiovisuales: ["IA y Ciberseguridad"],
-  };
 
   const etapasDisponibles = [
-    "Investigacion inicial",
-    "Desarrollo tecnologico",
-    "Implementacion piloto",
-    "Adopcion industrial",
+    "Investigación inicial",
+    "Desarrollo tecnológico",
+    "Implementación piloto",
+    "Adopción industrial",
   ];
   const proyeccionesDisponibles = ["5 años", "10 años", "Más de 10 años"];
+
+  const estadosInicialesPorNombre = {
+    "Computacion en la Nube": {
+      active: true,
+      tendencia: "Digitalización del mantenimiento",
+      etapa: "Implementación piloto",
+      proyeccion: "5 años",
+    },
+    "Ciberseguridad Avanzada": {
+      active: true,
+      tendencia: "IA y ciberseguridad",
+      etapa: "Desarrollo tecnológico",
+      proyeccion: "5 años",
+    },
+    "Big Data y Analitica": {
+      active: true,
+      tendencia: "IA y ciberseguridad",
+      etapa: "Investigación inicial",
+      proyeccion: "10 años",
+    },
+    "Inteligencia Artificial": {
+      active: true,
+      tendencia: "IA y ciberseguridad",
+      etapa: "Desarrollo tecnológico",
+      proyeccion: "5 años",
+    },
+    Blockchain: {
+      active: true,
+      tendencia: "IA y ciberseguridad",
+      etapa: "Investigación inicial",
+      proyeccion: "Más de 10 años",
+    },
+    "Internet de las Cosas (IoT)": {
+      active: true,
+      tendencia: "IoT y robótica",
+      etapa: "Implementación piloto",
+      proyeccion: "5 años",
+    },
+    "Manufactura Aditiva (Impresion 3D)": {
+      active: true,
+      tendencia: "Manufactura aditiva",
+      etapa: "Implementación piloto",
+      proyeccion: "10 años",
+    },
+    "Realidad Aumentada/Virtual": {
+      active: true,
+      tendencia: "IA y ciberseguridad",
+      etapa: "Investigación inicial",
+      proyeccion: "Más de 10 años",
+    },
+    "Robotica Colaborativa": {
+      active: true,
+      tendencia: "IoT y robótica",
+      etapa: "Desarrollo tecnológico",
+      proyeccion: "10 años",
+    },
+  };
 
   const estadoLineas = {};
   let lineaEnEdicion = null;
@@ -180,72 +153,13 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  function aplicarCadenaFiltros(form) {
-    const { area, linea, foco, etapa, proyeccion } = form;
+  fillSelect(modals.createTendencia, tendenciasEmergentesDisponibles, "Seleccionar tendencia tecnologica emergente...");
+  fillSelect(modals.createEtapa, etapasDisponibles, "Seleccionar etapa...");
+  fillSelect(modals.createProyeccion, proyeccionesDisponibles, "Seleccionar proyeccion...");
 
-    fillSelect(area, areasDisponibles, "Seleccionar area...");
-    fillSelect(etapa, etapasDisponibles, "Seleccionar etapa...");
-    fillSelect(proyeccion, proyeccionesDisponibles, "Seleccionar proyeccion...");
-    resetSelect(linea, "Seleccionar linea tecnologica...");
-    resetSelect(foco, "Seleccionar foco de vigilancia...");
-
-    setSelectEnabled(linea, false);
-    setSelectEnabled(foco, false);
-    setSelectEnabled(etapa, false);
-    setSelectEnabled(proyeccion, false);
-
-    area.addEventListener("change", () => {
-      const lineas = lineasPorArea[area.value] || [];
-      fillSelect(linea, lineas, "Seleccionar linea tecnologica...");
-
-      setSelectEnabled(linea, lineas.length > 0);
-      resetSelect(foco, "Seleccionar foco de vigilancia...");
-      setSelectEnabled(foco, false);
-      setSelectEnabled(etapa, false);
-      setSelectEnabled(proyeccion, false);
-      etapa.value = "";
-      proyeccion.value = "";
-    });
-
-    linea.addEventListener("change", () => {
-      const focos = focosPorLinea[linea.value] || focosDisponibles;
-      fillSelect(foco, focos, "Seleccionar foco de vigilancia...");
-
-      const canUse = foco.options.length > 1;
-      setSelectEnabled(foco, canUse);
-      setSelectEnabled(etapa, false);
-      setSelectEnabled(proyeccion, false);
-      etapa.value = "";
-      proyeccion.value = "";
-    });
-
-    foco.addEventListener("change", () => {
-      const hasFoco = foco.value.trim() !== "";
-      setSelectEnabled(etapa, hasFoco);
-      setSelectEnabled(proyeccion, hasFoco);
-
-      if (!hasFoco) {
-        etapa.value = "";
-        proyeccion.value = "";
-      }
-    });
-  }
-
-  aplicarCadenaFiltros({
-    area: modals.createArea,
-    linea: modals.createLinea,
-    foco: modals.createFoco,
-    etapa: modals.createEtapa,
-    proyeccion: modals.createProyeccion,
-  });
-
-  aplicarCadenaFiltros({
-    area: modals.editArea,
-    linea: modals.editLinea,
-    foco: modals.editFoco,
-    etapa: modals.editEtapa,
-    proyeccion: modals.editProyeccion,
-  });
+  fillSelect(modals.editTendencia, tendenciasEmergentesDisponibles, "Seleccionar tendencia tecnologica emergente...");
+  fillSelect(modals.editEtapa, etapasDisponibles, "Seleccionar etapa...");
+  fillSelect(modals.editProyeccion, proyeccionesDisponibles, "Seleccionar proyeccion...");
 
   function abrirModal(modal) {
     modal.classList.remove("hidden");
@@ -269,13 +183,24 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function aplicarFiltroBusqueda() {
     const termino = normalizarTexto(inputBuscarLinea?.value || "");
+    let visibles = 0;
 
     cards.forEach((card) => {
       const titleEl = card.querySelector("h3");
       const searchableText = normalizarTexto(titleEl?.textContent || "");
       const visible = termino === "" || searchableText.includes(termino);
       card.style.display = visible ? "flex" : "none";
+      if (visible) {
+        visibles += 1;
+      }
     });
+
+    if (lineasEncontradasCount) {
+      lineasEncontradasCount.textContent = String(visibles);
+    }
+    if (lineasEncontradasLabel) {
+      lineasEncontradasLabel.textContent = visibles === 1 ? "linea encontrada" : "lineas encontradas";
+    }
   }
 
   function getStorageLineas() {
@@ -344,9 +269,7 @@ document.addEventListener("DOMContentLoaded", () => {
     return {
       nombre,
       active: state.active !== false,
-      area: state.area || "",
-      linea: state.linea || "",
-      foco: state.foco || "",
+      tendencia: state.tendencia || "",
       etapa: state.etapa || "",
       proyeccion: state.proyeccion || "",
       perfiles: parseCardPerfiles(card),
@@ -356,6 +279,156 @@ document.addEventListener("DOMContentLoaded", () => {
       descripcion: `Linea tecnologica ${nombre} registrada en el Observatorio CTI.`,
       fechaActualizacion: new Date().toISOString(),
     };
+  }
+
+  function getDefaultStateForNombre(nombre) {
+    return (
+      estadosInicialesPorNombre[nombre] || {
+        active: true,
+        tendencia: tendenciasEmergentesDisponibles[0] || "",
+        etapa: etapasDisponibles[1] || etapasDisponibles[0] || "",
+        proyeccion: proyeccionesDisponibles[0] || "",
+      }
+    );
+  }
+
+  function getLineaFromQuery() {
+    try {
+      const params = new URLSearchParams(window.location.search);
+      return (params.get("linea") || "").trim();
+    } catch (error) {
+      return "";
+    }
+  }
+
+  function findRegistroByNombre(data, nombreBuscado) {
+    if (!nombreBuscado || !data || typeof data !== "object") {
+      return null;
+    }
+
+    if (data[nombreBuscado]) {
+      return data[nombreBuscado];
+    }
+
+    const normalizadoObjetivo = normalizarTexto(nombreBuscado);
+    const key = Object.keys(data).find((k) => normalizarTexto(k) === normalizadoObjetivo);
+    return key ? data[key] : null;
+  }
+
+  function formatFechaDetalle(value) {
+    if (!value) {
+      return "Sin registro";
+    }
+
+    const fecha = new Date(value);
+    if (Number.isNaN(fecha.getTime())) {
+      return "Sin registro";
+    }
+
+    return fecha.toLocaleDateString("es-CO", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
+  }
+
+  function setTextById(id, value, fallback = "No registrado") {
+    const el = document.getElementById(id);
+    if (!el) {
+      return;
+    }
+
+    const hasValue = typeof value === "string" && value.trim() !== "";
+    el.textContent = hasValue ? value.trim() : fallback;
+  }
+
+  function crearDescripcionDetalle(registro) {
+    const partes = [];
+
+    if (registro.tendencia) {
+      partes.push(`La tendencia tecnologica emergente asociada es ${registro.tendencia}.`);
+    }
+    if (registro.etapa) {
+      partes.push(`Actualmente se ubica en la etapa ${registro.etapa}.`);
+    }
+    if (registro.proyeccion) {
+      partes.push(`La proyeccion estimada es ${registro.proyeccion}.`);
+    }
+
+    return partes.join(" ") || `Linea tecnologica ${registro.nombre || ""} registrada en el Observatorio CTI.`.trim();
+  }
+
+  function guardarRegistroDetalle(nombre) {
+    if (!nombre) {
+      return;
+    }
+
+    const state = estadoLineas[nombre] || getDefaultStateForNombre(nombre);
+    const data = getStorageLineas();
+    const existente = data[nombre] || {};
+
+    const registro = {
+      nombre,
+      active: state.active !== false,
+      tendencia: state.tendencia || "",
+      etapa: state.etapa || "",
+      proyeccion: state.proyeccion || "",
+      perfiles: Number.isFinite(existente.perfiles) ? existente.perfiles : 0,
+      vigentes: Number.isFinite(existente.vigentes) ? existente.vigentes : 0,
+      totalLineas: Number.isFinite(existente.totalLineas) ? existente.totalLineas : 1,
+      tecnologias: Array.isArray(existente.tecnologias) ? existente.tecnologias : [state.tendencia].filter(Boolean),
+      descripcion: crearDescripcionDetalle({ nombre, ...state }),
+      fechaActualizacion: new Date().toISOString(),
+    };
+
+    data[nombre] = registro;
+    setStorageLineas(data);
+  }
+
+  function inicializarDetalleDesdeStorage() {
+    if (!detalleTitulo) {
+      return;
+    }
+
+    const nombreDesdeQuery = getLineaFromQuery();
+    const nombreBase = nombreDesdeQuery || (detalleTitulo.textContent || "").trim() || "Linea Tecnologica";
+    const data = getStorageLineas();
+    const registro = findRegistroByNombre(data, nombreBase);
+    const baseState = registro || {
+      nombre: nombreBase,
+      ...getDefaultStateForNombre(nombreBase),
+      descripcion: "",
+    };
+
+    const nombreFinal = (baseState.nombre || nombreBase || "Linea Tecnologica").trim();
+    detalleTitulo.textContent = nombreFinal;
+
+    estadoLineas[nombreFinal] = {
+      active: baseState.active !== false,
+      tendencia: baseState.tendencia || "",
+      etapa: baseState.etapa || "",
+      proyeccion: baseState.proyeccion || "",
+    };
+
+    if (nombreFinal !== nombreBase && estadoLineas[nombreBase]) {
+      delete estadoLineas[nombreBase];
+    }
+
+    setTextById("detalle-tendencia-badge", baseState.tendencia, "Tendencia tecnologica emergente");
+    setTextById("detalle-nombre-linea-texto", nombreFinal, "No registrada");
+    setTextById("detalle-tendencia-texto", baseState.tendencia);
+    setTextById("detalle-etapa-texto", baseState.etapa);
+    setTextById("detalle-proyeccion-texto", baseState.proyeccion);
+    setTextById("detalle-fecha-actualizacion", formatFechaDetalle(baseState.fechaActualizacion), "Sin registro");
+    setTextById("detalle-tendencia-tag-texto", baseState.tendencia, "Tendencia emergente");
+    setTextById("detalle-etapa-tag-texto", baseState.etapa, "Etapa");
+    setTextById("detalle-proyeccion-tag-texto", baseState.proyeccion, "Proyeccion");
+
+    const descripcion = baseState.descripcion || crearDescripcionDetalle({ nombre: nombreFinal, ...baseState });
+    setTextById("detalle-descripcion", descripcion, "Informacion de contexto de la linea tecnologica.");
+
+    detalleActivo = baseState.active !== false;
+    guardarRegistroDetalle(nombreFinal);
   }
 
   function guardarRegistroLinea(nombre, card) {
@@ -399,10 +472,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const card = document.createElement("div");
     const estadoActivo = state.active !== false;
     const estadoTexto = estadoActivo ? "0 vigentes" : "0 vigentes";
-    const lineaTexto = state.linea ? "1 linea" : "0 lineas";
-    const chips = [state.foco, state.area].filter(Boolean).slice(0, 2);
+    const chips = [state.tendencia, state.etapa].filter(Boolean).slice(0, 2);
 
-    card.className = "bg-white border border-sena-border rounded-xl p-6 flex flex-col gap-3";
+    card.className = "tarjeta-tecnologia bg-white border border-sena-border rounded-xl p-6 flex flex-col gap-3";
     card.innerHTML = `
       <div class="flex justify-between items-start">
         <div class="w-11 h-11 bg-sena-soft rounded-xl flex items-center justify-center">
@@ -413,7 +485,7 @@ document.addEventListener("DOMContentLoaded", () => {
         <span class="text-sm text-sena-text-soft">0 perfiles</span>
       </div>
       <h3 class="font-['Montserrat'] text-base font-semibold text-sena-text-main leading-snug"></h3>
-      <p class="text-sm text-sena-text-soft">${estadoTexto} &middot; ${lineaTexto}</p>
+      <p class="text-sm text-sena-text-soft">${estadoTexto} &middot; 1 linea</p>
       <div class="flex flex-wrap gap-2"></div>
       <a href="#" class="text-sm text-sena-strong font-medium mt-auto inline-flex items-center gap-1 hover:underline">Ver perfiles &rarr;</a>
     `;
@@ -443,8 +515,49 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const thumb = switchBtn.querySelector("span");
     if (thumb) {
-      thumb.style.transform = isActive ? "translateX(12px)" : "translateX(0)";
+      // Support both legacy absolute thumb and inline flex thumb switches.
+      if (thumb.classList.contains("absolute")) {
+        const travel = Math.max(switchBtn.clientWidth - thumb.clientWidth - 4, 0);
+        thumb.style.transform = isActive ? `translateX(${travel}px)` : "translateX(0)";
+      } else {
+        thumb.style.transform = "";
+        switchBtn.classList.toggle("justify-end", isActive);
+        switchBtn.classList.toggle("justify-start", !isActive);
+      }
     }
+  }
+
+  function abrirModalEdicionLinea(card, titleEl) {
+    const nombreActual = titleEl.textContent.trim();
+    const estadoActual = estadoLineas[nombreActual] || {
+      active: true,
+      tendencia: tendenciasEmergentesDisponibles[0],
+      etapa: etapasDisponibles[1],
+      proyeccion: proyeccionesDisponibles[0],
+    };
+
+    lineaEnEdicion = { card, titleEl, oldName: nombreActual };
+
+    modals.editInput.value = nombreActual;
+    modals.editTendencia.value = estadoActual.tendencia;
+    modals.editEtapa.value = estadoActual.etapa;
+    modals.editProyeccion.value = estadoActual.proyeccion;
+    abrirModal(modals.editModal);
+  }
+
+  function manejarToggleLinea(switchBtn, titleEl) {
+    const isActive = switchBtn.dataset.active === "true";
+
+    if (isActive) {
+      lineaPendienteDeshabilitar = { switchBtn, nombre: titleEl.textContent.trim() };
+      modals.disableText.textContent = `Estas seguro de deshabilitar "${lineaPendienteDeshabilitar.nombre}"? El registro no se eliminara, solo se marcara como inactivo.`;
+      abrirModal(modals.disableModal);
+      return;
+    }
+
+    lineaPendienteHabilitar = { switchBtn, nombre: titleEl.textContent.trim() };
+    modals.enableText.textContent = `Estas seguro de que deseas habilitar la linea "${lineaPendienteHabilitar.nombre}"?`;
+    abrirModal(modals.enableModal);
   }
 
   function cerrarAlertaFinal() {
@@ -512,42 +625,49 @@ document.addEventListener("DOMContentLoaded", () => {
     detalleActivo = isActive;
 
     if (isActive) {
-      btnDetalleDeshabilitar.textContent = "Desactivar";
+      btnDetalleDeshabilitar.innerHTML = `
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-3.5 h-3.5"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><path d="M15 2v2"/><path d="M15 20v2"/><path d="M2 15h2"/><path d="M2 9h2"/><path d="M20 15h2"/><path d="M20 9h2"/><path d="M9 2v2"/><path d="M9 20v2"/></svg>
+        Desactivar
+      `;
       btnDetalleDeshabilitar.className =
-        "px-6 py-2.5 text-sm font-semibold text-white bg-[#E1A14A] rounded-xl whitespace-nowrap hover:bg-[#cf903a] transition-colors";
+        "inline-flex items-center gap-2 px-4 py-2 text-sm font-medium border border-[#e65100] rounded-lg bg-white text-[#e65100] hover:bg-[#e65100]/5 transition-colors";
 
       if (detalleBadgeEstado) {
         detalleBadgeEstado.className =
-          "inline-flex items-center gap-1.5 text-[13px] font-medium text-[hsl(105,100%,33%)] bg-[hsl(105,40%,92%)] rounded-full px-4 py-1.5";
+          "inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium bg-sena/10 text-sena";
         detalleBadgeEstado.innerHTML = `
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-3.5 h-3.5">
-            <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-3 h-3">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+            <path stroke-linecap="round" stroke-linejoin="round" d="m9 11 3 3L22 4" />
           </svg>
           Vigente
         `;
       }
 
       if (detalleEstadoTitulo) {
-        detalleEstadoTitulo.textContent = "Perfil Vigente";
-        detalleEstadoTitulo.className = "text-[15px] font-bold text-[hsl(105,100%,33%)] leading-tight";
+        detalleEstadoTitulo.textContent = "Linea Vigente";
+        detalleEstadoTitulo.className = "text-sm font-semibold text-sena";
       }
 
       if (detalleEstadoTexto) {
-        detalleEstadoTexto.textContent = "Este perfil se encuentra activo";
-        detalleEstadoTexto.className = "text-[13px] text-[hsl(150,5%,45%)] mt-0.5";
+        detalleEstadoTexto.textContent = "Esta linea se encuentra activa";
+        detalleEstadoTexto.className = "text-xs text-sena-text-soft";
       }
       return;
     }
 
-    btnDetalleDeshabilitar.textContent = "Habilitar";
+    btnDetalleDeshabilitar.innerHTML = `
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-3.5 h-3.5"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><path d="M15 2v2"/><path d="M15 20v2"/><path d="M2 15h2"/><path d="M2 9h2"/><path d="M20 15h2"/><path d="M20 9h2"/><path d="M9 2v2"/><path d="M9 20v2"/></svg>
+      Habilitar
+    `;
     btnDetalleDeshabilitar.className =
-      "px-6 py-2.5 text-sm font-semibold text-white bg-[#39A900] rounded-xl whitespace-nowrap hover:opacity-90 transition-opacity";
+      "inline-flex items-center gap-2 px-4 py-2 text-sm font-medium border border-[#39A900] rounded-lg bg-white text-[#39A900] hover:bg-[#39A900]/5 transition-colors";
 
     if (detalleBadgeEstado) {
       detalleBadgeEstado.className =
-        "inline-flex items-center gap-1.5 text-[13px] font-medium text-[#A05A00] bg-[#FFF4E5] rounded-full px-4 py-1.5";
+        "inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium bg-[#FFF4E5] text-[#A05A00]";
       detalleBadgeEstado.innerHTML = `
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-3.5 h-3.5">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-3 h-3">
           <path stroke-linecap="round" stroke-linejoin="round" d="m15.75 9-6 6m0-6 6 6" />
         </svg>
         Deshabilitado
@@ -555,13 +675,13 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     if (detalleEstadoTitulo) {
-      detalleEstadoTitulo.textContent = "Perfil Deshabilitado";
-      detalleEstadoTitulo.className = "text-[15px] font-bold text-[#A05A00] leading-tight";
+      detalleEstadoTitulo.textContent = "Linea Deshabilitada";
+      detalleEstadoTitulo.className = "text-sm font-semibold text-[#A05A00]";
     }
 
     if (detalleEstadoTexto) {
-      detalleEstadoTexto.textContent = "Este perfil se encuentra inactivo";
-      detalleEstadoTexto.className = "text-[13px] text-[hsl(150,5%,45%)] mt-0.5";
+      detalleEstadoTexto.textContent = "Esta linea se encuentra inactiva";
+      detalleEstadoTexto.className = "text-xs text-sena-text-soft";
     }
   }
 
@@ -577,9 +697,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const nombreActual = (detalleTitulo?.textContent || "Linea Tecnologica").trim();
         const estadoActual = estadoLineas[nombreActual] || {
           active: detalleActivo,
-          area: areasDisponibles[0],
-          linea: (lineasPorArea[areasDisponibles[0]] || [""])[0],
-          foco: focosDisponibles[0],
+          tendencia: tendenciasEmergentesDisponibles[0],
           etapa: etapasDisponibles[1],
           proyeccion: proyeccionesDisponibles[0],
         };
@@ -587,12 +705,7 @@ document.addEventListener("DOMContentLoaded", () => {
         lineaEnEdicion = { card: null, titleEl: detalleTitulo, oldName: nombreActual, isDetalle: true };
 
         modals.editInput.value = nombreActual;
-        modals.editArea.value = estadoActual.area;
-        modals.editArea.dispatchEvent(new Event("change"));
-        modals.editLinea.value = estadoActual.linea;
-        modals.editLinea.dispatchEvent(new Event("change"));
-        modals.editFoco.value = estadoActual.foco;
-        modals.editFoco.dispatchEvent(new Event("change"));
+        modals.editTendencia.value = estadoActual.tendencia;
         modals.editEtapa.value = estadoActual.etapa;
         modals.editProyeccion.value = estadoActual.proyeccion;
         abrirModal(modals.editModal);
@@ -623,23 +736,50 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     const cardTopRow = card.querySelector(".flex.justify-between.items-start");
-    const perfilCounter = cardTopRow?.querySelector("span");
     const titleEl = card.querySelector("h3");
+    const hasInlineActions =
+      cardTopRow?.querySelector('button[aria-label="Editar linea"]') &&
+      cardTopRow?.querySelector('button[aria-label="Cambiar estado"]');
 
-    if (!cardTopRow || !perfilCounter || !titleEl) {
+    if (!cardTopRow || !titleEl) {
       return;
     }
 
     const nombreTecnologia = titleEl.textContent.trim() || `Linea ${index + 1}`;
 
-    estadoLineas[nombreTecnologia] = {
-      active: true,
-      area: areasDisponibles[0],
-      linea: (lineasPorArea[areasDisponibles[0]] || [""])[0],
-      foco: focosDisponibles[0],
-      etapa: etapasDisponibles[1],
-      proyeccion: proyeccionesDisponibles[0],
-    };
+    const estadoInicial = getDefaultStateForNombre(nombreTecnologia);
+    estadoLineas[nombreTecnologia] = { ...estadoInicial };
+
+    // If actions are already rendered in HTML, don't inject a second controls block.
+    if (hasInlineActions) {
+      const editarBtnInline = cardTopRow.querySelector('button[aria-label="Editar linea"]');
+      const switchBtnInline = cardTopRow.querySelector('button[aria-label="Cambiar estado"]');
+
+      if (switchBtnInline) {
+        const isActive = estadoLineas[nombreTecnologia]?.active !== false;
+        setSwitchState(switchBtnInline, isActive);
+      }
+
+      if (editarBtnInline && !editarBtnInline.dataset.bound) {
+        editarBtnInline.addEventListener("click", () => abrirModalEdicionLinea(card, titleEl));
+        editarBtnInline.dataset.bound = "true";
+      }
+
+      if (switchBtnInline && !switchBtnInline.dataset.bound) {
+        switchBtnInline.addEventListener("click", () => manejarToggleLinea(switchBtnInline, titleEl));
+        switchBtnInline.dataset.bound = "true";
+      }
+
+      actualizarLinkDetalle(card, nombreTecnologia);
+      return;
+    }
+
+    const perfilCounter = cardTopRow.querySelector(":scope > span");
+
+    if (!perfilCounter) {
+      actualizarLinkDetalle(card, nombreTecnologia);
+      return;
+    }
 
     cardTopRow.classList.remove("items-start");
     cardTopRow.classList.add("items-center");
@@ -647,16 +787,16 @@ document.addEventListener("DOMContentLoaded", () => {
     const editarBtn = document.createElement("button");
     editarBtn.type = "button";
     editarBtn.className =
-      "w-8 h-8 rounded-md flex items-center justify-center text-sena-text-soft hover:bg-sena-soft hover:text-sena-text-main transition-colors";
+      "p-1.5 rounded-lg text-sena-text-soft hover:bg-sena-soft hover:text-sena transition-colors";
     editarBtn.setAttribute("aria-label", `Editar ${nombreTecnologia}`);
     editarBtn.title = "Editar";
     editarBtn.innerHTML =
-      '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>';
+      '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/></svg>';
 
     const switchEstadoBtn = document.createElement("button");
     switchEstadoBtn.type = "button";
     switchEstadoBtn.className =
-      "linea-tec-switch relative w-8 h-5 rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-sena/20";
+      "linea-tec-switch relative w-9 h-5 rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-sena/20";
     switchEstadoBtn.setAttribute("aria-label", `Cambiar estado de ${nombreTecnologia}`);
 
     const switchThumb = document.createElement("span");
@@ -665,47 +805,11 @@ document.addEventListener("DOMContentLoaded", () => {
     switchEstadoBtn.appendChild(switchThumb);
     setSwitchState(switchEstadoBtn, true);
 
-    editarBtn.addEventListener("click", () => {
-      const nombreActual = titleEl.textContent.trim();
-      const estadoActual = estadoLineas[nombreActual] || {
-        active: true,
-        area: areasDisponibles[0],
-        linea: (lineasPorArea[areasDisponibles[0]] || [""])[0],
-        foco: focosDisponibles[0],
-        etapa: etapasDisponibles[1],
-        proyeccion: proyeccionesDisponibles[0],
-      };
-      lineaEnEdicion = { card, titleEl, oldName: nombreActual };
-
-      modals.editInput.value = titleEl.textContent.trim();
-      modals.editArea.value = estadoActual.area;
-      modals.editArea.dispatchEvent(new Event("change"));
-      modals.editLinea.value = estadoActual.linea;
-      modals.editLinea.dispatchEvent(new Event("change"));
-      modals.editFoco.value = estadoActual.foco;
-      modals.editFoco.dispatchEvent(new Event("change"));
-      modals.editEtapa.value = estadoActual.etapa;
-      modals.editProyeccion.value = estadoActual.proyeccion;
-      abrirModal(modals.editModal);
-    });
-
-    switchEstadoBtn.addEventListener("click", () => {
-      const isActive = switchEstadoBtn.dataset.active === "true";
-
-      if (isActive) {
-        lineaPendienteDeshabilitar = { switchBtn: switchEstadoBtn, nombre: titleEl.textContent.trim() };
-        modals.disableText.textContent = `Estas seguro de deshabilitar \"${lineaPendienteDeshabilitar.nombre}\"? El registro no se eliminara, solo se marcara como inactivo.`;
-        abrirModal(modals.disableModal);
-        return;
-      }
-
-      lineaPendienteHabilitar = { switchBtn: switchEstadoBtn, nombre: titleEl.textContent.trim() };
-      modals.enableText.textContent = `Estas seguro de que deseas habilitar la linea \"${lineaPendienteHabilitar.nombre}\"?`;
-      abrirModal(modals.enableModal);
-    });
+    editarBtn.addEventListener("click", () => abrirModalEdicionLinea(card, titleEl));
+    switchEstadoBtn.addEventListener("click", () => manejarToggleLinea(switchEstadoBtn, titleEl));
 
     const controlsContainer = document.createElement("div");
-    controlsContainer.className = "linea-tec-controls flex items-center gap-2";
+    controlsContainer.className = "linea-tec-controls flex items-center gap-1";
     controlsContainer.appendChild(editarBtn);
     controlsContainer.appendChild(switchEstadoBtn);
     controlsContainer.appendChild(perfilCounter);
@@ -716,21 +820,21 @@ document.addEventListener("DOMContentLoaded", () => {
 
   cards.forEach(inicializarCard);
   guardarTodasLasLineas();
+  inicializarDetalleDesdeStorage();
   inicializarAccionesDetalle();
 
   if (inputBuscarLinea) {
     inputBuscarLinea.addEventListener("input", aplicarFiltroBusqueda);
   }
 
+  aplicarFiltroBusqueda();
+
   if (btnNuevaLinea) {
     btnNuevaLinea.addEventListener("click", () => {
       modals.createForm.reset();
-      modals.createArea.value = "";
-      modals.createLinea.value = "";
-      modals.createFoco.value = "";
+      modals.createTendencia.value = "";
       modals.createEtapa.value = "";
       modals.createProyeccion.value = "";
-      modals.createArea.dispatchEvent(new Event("change"));
       abrirModal(modals.createModal);
     });
   }
@@ -745,9 +849,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const nombreNuevaLinea = modals.createInput.value.trim() || "Nueva Linea";
     const nuevaState = {
       active: true,
-      area: modals.createArea.value,
-      linea: modals.createLinea.value,
-      foco: modals.createFoco.value,
+      tendencia: modals.createTendencia.value,
       etapa: modals.createEtapa.value,
       proyeccion: modals.createProyeccion.value,
     };
@@ -783,6 +885,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (lineaPendienteDeshabilitar.isDetalle) {
       actualizarEstadoDetalleUI(false);
+      guardarRegistroDetalle(lineaPendienteDeshabilitar.nombre);
     }
 
     if (estadoLineas[lineaPendienteDeshabilitar.nombre]) {
@@ -821,6 +924,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (lineaPendienteHabilitar.isDetalle) {
       actualizarEstadoDetalleUI(true);
+      guardarRegistroDetalle(lineaPendienteHabilitar.nombre);
     }
 
     if (estadoLineas[lineaPendienteHabilitar.nombre]) {
@@ -862,18 +966,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const oldState = estadoLineas[lineaEnEdicion.oldName] || {
       active: true,
-      area: areasDisponibles[0],
-      linea: (lineasPorArea[areasDisponibles[0]] || [""])[0],
-      foco: focosDisponibles[0],
+      tendencia: tendenciasEmergentesDisponibles[0],
       etapa: etapasDisponibles[1],
       proyeccion: proyeccionesDisponibles[0],
     };
     delete estadoLineas[lineaEnEdicion.oldName];
     estadoLineas[nuevoNombre] = {
       active: oldState.active,
-      area: modals.editArea.value,
-      linea: modals.editLinea.value,
-      foco: modals.editFoco.value,
+      tendencia: modals.editTendencia.value,
       etapa: modals.editEtapa.value,
       proyeccion: modals.editProyeccion.value,
     };
@@ -883,6 +983,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (lineaEnEdicion.isDetalle) {
       estadoLineas[nuevoNombre].active = detalleActivo;
+      guardarRegistroDetalle(nuevoNombre);
+      inicializarDetalleDesdeStorage();
     }
 
     eliminarRegistroLinea(lineaEnEdicion.oldName);
@@ -987,34 +1089,22 @@ document.addEventListener("DOMContentLoaded", () => {
 
               <div class="flex flex-col gap-4 mb-5">
                 <div>
-                  <label class="mb-1 block text-sm font-medium text-sena-text-main">Area</label>
-                  <select id="linea-edit-area" class="w-full rounded-lg border border-sena-border pl-3 pr-10 py-2 text-sm text-sena-text-main bg-white focus:border-sena focus:ring-2 focus:ring-sena/20" required>
-                    <option value="">Seleccionar area...</option>
-                    ${areasDisponibles.map((o) => `<option value="${o}">${o}</option>`).join("")}
-                  </select>
-                </div>
-                <div>
-                  <label class="mb-1 block text-sm font-medium text-sena-text-main">Linea tecnologica</label>
-                  <select id="linea-edit-linea" class="w-full rounded-lg border border-sena-border pl-3 pr-10 py-2 text-sm text-sena-text-main bg-white focus:border-sena focus:ring-2 focus:ring-sena/20" disabled required>
-                    <option value="">Seleccionar linea tecnologica...</option>
-                  </select>
-                </div>
-                <div>
-                  <label class="mb-1 block text-sm font-medium text-sena-text-main">Foco de vigilancia</label>
-                  <select id="linea-edit-foco" class="w-full rounded-lg border border-sena-border pl-3 pr-10 py-2 text-sm text-sena-text-main bg-white focus:border-sena focus:ring-2 focus:ring-sena/20" disabled required>
-                    <option value="">Seleccionar foco de vigilancia...</option>
-                  </select>
-                </div>
-                <div>
                   <label class="mb-1 block text-sm font-medium text-sena-text-main">Etapa de Desarrollo o tendencia Actual</label>
-                  <select id="linea-edit-etapa" class="w-full rounded-lg border border-sena-border pl-3 pr-10 py-2 text-sm text-sena-text-main bg-white focus:border-sena focus:ring-2 focus:ring-sena/20" disabled required>
+                  <select id="linea-edit-etapa" class="w-full rounded-lg border border-sena-border pl-3 pr-10 py-2 text-sm text-sena-text-main bg-white focus:border-sena focus:ring-2 focus:ring-sena/20" required>
                     <option value="">Seleccionar etapa...</option>
                     ${etapasDisponibles.map((o) => `<option value="${o}">${o}</option>`).join("")}
                   </select>
                 </div>
                 <div>
+                  <label class="mb-1 block text-sm font-medium text-sena-text-main">Tendencias Tecnologicas Emergentes</label>
+                  <select id="linea-edit-tendencia" class="w-full rounded-lg border border-sena-border pl-3 pr-10 py-2 text-sm text-sena-text-main bg-white focus:border-sena focus:ring-2 focus:ring-sena/20" required>
+                    <option value="">Seleccionar tendencia tecnologica emergente...</option>
+                    ${tendenciasEmergentesDisponibles.map((o) => `<option value="${o}">${o}</option>`).join("")}
+                  </select>
+                </div>
+                <div>
                   <label class="mb-1 block text-sm font-medium text-sena-text-main">Proyeccion a Futuro</label>
-                  <select id="linea-edit-proyeccion" class="w-full rounded-lg border border-sena-border pl-3 pr-10 py-2 text-sm text-sena-text-main bg-white focus:border-sena focus:ring-2 focus:ring-sena/20" disabled required>
+                  <select id="linea-edit-proyeccion" class="w-full rounded-lg border border-sena-border pl-3 pr-10 py-2 text-sm text-sena-text-main bg-white focus:border-sena focus:ring-2 focus:ring-sena/20" required>
                     <option value="">Seleccionar proyeccion...</option>
                     ${proyeccionesDisponibles.map((o) => `<option value="${o}">${o}</option>`).join("")}
                   </select>
@@ -1049,34 +1139,22 @@ document.addEventListener("DOMContentLoaded", () => {
 
               <div class="flex flex-col gap-4 mb-5">
                 <div>
-                  <label class="mb-1 block text-sm font-medium text-sena-text-main">Area</label>
-                  <select id="linea-create-area" class="w-full rounded-lg border border-sena-border pl-3 pr-10 py-2 text-sm text-sena-text-main bg-white focus:border-sena focus:ring-2 focus:ring-sena/20" required>
-                    <option value="">Seleccionar area...</option>
-                    ${areasDisponibles.map((o) => `<option value="${o}">${o}</option>`).join("")}
-                  </select>
-                </div>
-                <div>
-                  <label class="mb-1 block text-sm font-medium text-sena-text-main">Linea tecnologica</label>
-                  <select id="linea-create-linea" class="w-full rounded-lg border border-sena-border pl-3 pr-10 py-2 text-sm text-sena-text-main bg-white focus:border-sena focus:ring-2 focus:ring-sena/20" disabled required>
-                    <option value="">Seleccionar linea tecnologica...</option>
-                  </select>
-                </div>
-                <div>
-                  <label class="mb-1 block text-sm font-medium text-sena-text-main">Foco de vigilancia</label>
-                  <select id="linea-create-foco" class="w-full rounded-lg border border-sena-border pl-3 pr-10 py-2 text-sm text-sena-text-main bg-white focus:border-sena focus:ring-2 focus:ring-sena/20" disabled required>
-                    <option value="">Seleccionar foco de vigilancia...</option>
-                  </select>
-                </div>
-                <div>
                   <label class="mb-1 block text-sm font-medium text-sena-text-main">Etapa de Desarrollo o tendencia Actual</label>
-                  <select id="linea-create-etapa" class="w-full rounded-lg border border-sena-border pl-3 pr-10 py-2 text-sm text-sena-text-main bg-white focus:border-sena focus:ring-2 focus:ring-sena/20" disabled required>
+                  <select id="linea-create-etapa" class="w-full rounded-lg border border-sena-border pl-3 pr-10 py-2 text-sm text-sena-text-main bg-white focus:border-sena focus:ring-2 focus:ring-sena/20" required>
                     <option value="">Seleccionar etapa...</option>
                     ${etapasDisponibles.map((o) => `<option value="${o}">${o}</option>`).join("")}
                   </select>
                 </div>
                 <div>
+                  <label class="mb-1 block text-sm font-medium text-sena-text-main">Tendencias Tecnologicas Emergentes</label>
+                  <select id="linea-create-tendencia" class="w-full rounded-lg border border-sena-border pl-3 pr-10 py-2 text-sm text-sena-text-main bg-white focus:border-sena focus:ring-2 focus:ring-sena/20" required>
+                    <option value="">Seleccionar tendencia tecnologica emergente...</option>
+                    ${tendenciasEmergentesDisponibles.map((o) => `<option value="${o}">${o}</option>`).join("")}
+                  </select>
+                </div>
+                <div>
                   <label class="mb-1 block text-sm font-medium text-sena-text-main">Proyeccion a Futuro</label>
-                  <select id="linea-create-proyeccion" class="w-full rounded-lg border border-sena-border pl-3 pr-10 py-2 text-sm text-sena-text-main bg-white focus:border-sena focus:ring-2 focus:ring-sena/20" disabled required>
+                  <select id="linea-create-proyeccion" class="w-full rounded-lg border border-sena-border pl-3 pr-10 py-2 text-sm text-sena-text-main bg-white focus:border-sena focus:ring-2 focus:ring-sena/20" required>
                     <option value="">Seleccionar proyeccion...</option>
                     ${proyeccionesDisponibles.map((o) => `<option value="${o}">${o}</option>`).join("")}
                   </select>
@@ -1173,9 +1251,7 @@ document.addEventListener("DOMContentLoaded", () => {
       createModal: document.getElementById("linea-modal-crear"),
       createForm: document.getElementById("linea-create-form"),
       createInput: document.getElementById("linea-create-input"),
-      createArea: document.getElementById("linea-create-area"),
-      createLinea: document.getElementById("linea-create-linea"),
-      createFoco: document.getElementById("linea-create-foco"),
+      createTendencia: document.getElementById("linea-create-tendencia"),
       createEtapa: document.getElementById("linea-create-etapa"),
       createProyeccion: document.getElementById("linea-create-proyeccion"),
       createClose: document.querySelectorAll(".linea-close-create"),
@@ -1183,9 +1259,7 @@ document.addEventListener("DOMContentLoaded", () => {
       editModal: document.getElementById("linea-modal-editar"),
       editForm: document.getElementById("linea-edit-form"),
       editInput: document.getElementById("linea-edit-input"),
-      editArea: document.getElementById("linea-edit-area"),
-      editLinea: document.getElementById("linea-edit-linea"),
-      editFoco: document.getElementById("linea-edit-foco"),
+      editTendencia: document.getElementById("linea-edit-tendencia"),
       editEtapa: document.getElementById("linea-edit-etapa"),
       editProyeccion: document.getElementById("linea-edit-proyeccion"),
       editClose: document.querySelectorAll(".linea-close-edit"),
