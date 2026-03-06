@@ -320,7 +320,11 @@ function nav_classes(string $target): string {
 
         </div>
 
-        <a href="busqueda.html" class="<?= nav_classes('busqueda.html') ?>">Lineas Tecnologicas</a>
+        <a href="../../view/lineas_tecnologicas/lineas_tecnologicas.php"
+               class="px-3 py-2 rounded-l-md text-sm font-medium text-sena-text-muted hover:text-sena transition-colors duration-200">
+              Lineas Tecnologicas
+            </a>
+
         <a href="gestion-perfiles.html" class="<?= nav_classes('gestion-perfiles.html') ?>">Gestión Perfiles</a>
         <a href="historial.html" class="<?= nav_classes('historial.html') ?>">Historial</a>
       </nav>
