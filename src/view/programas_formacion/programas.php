@@ -116,7 +116,7 @@ $programas = [
 
                 <!-- Top -->
                 <div class="flex justify-between items-start mb-3">
-                    <div class="bg-green-100 p-2 rounded-lg">
+                    <div class="bg-sena-soft p-2 rounded-lg">
                         <i data-lucide="graduation-cap" class="w-5 h-5 text-green-600"></i>
                     </div>
 
