@@ -144,11 +144,6 @@ function nav_classes(string $target): string {
             <span class="block w-px h-7 bg-sena-border" aria-hidden="true"></span>
             <img src="../../assets/img/logo-sena-verde-complementario-png-2022.png" alt="logo-sena-verde" class="h-7 w-auto block">
           </div>
-          <div>
-            <p class="font-[Montserrat] text-sm font-bold leading-tight">
-              SENA
-            </p>
-          </div>
         </div>
       </a>
 
@@ -326,6 +321,7 @@ function nav_classes(string $target): string {
             </a>
 
         <a href="gestion-perfiles.html" class="<?= nav_classes('gestion-perfiles.html') ?>">Gestión Perfiles</a>
+        <a href="sugerencias.html" class="<?= nav_classes('sugerencias.html') ?>">Sugerencias</a>
         <a href="historial.html" class="<?= nav_classes('historial.html') ?>">Historial</a>
       </nav>
 
