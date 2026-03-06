@@ -17,7 +17,7 @@
 
         <!-- Header -->
         <div class="border-b border-sena-border px-6 py-4">
-          <h3 class="text-lg font-semibold text-sena-text-main">Deshabilitar Perfil</h3>
+          <h3 class="text-lg font-semibold text-sena-text-main">Deshabilitar Programa</h3>
         </div>
 
         <!-- Content -->
