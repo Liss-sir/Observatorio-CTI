@@ -45,3 +45,13 @@
   align-items: center;
   gap: 1rem;
 }
+
+.landing-page {
+  font-family: 'Inter', sans-serif;
+}
+
+.landing-page h1,
+.landing-page h2,
+.landing-page h3 {
+  font-family: 'Montserrat', sans-serif;
+}
