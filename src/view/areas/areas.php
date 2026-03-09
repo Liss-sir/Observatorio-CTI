@@ -1,6 +1,5 @@
 <?php include __DIR__ . '../../../includes/header.php';?>
 
-
 <main class="flex-1">
     <link rel="stylesheet" href="../../../assets/css/output.css">
     <link rel="stylesheet" href="../../assets/css/globals.css">
