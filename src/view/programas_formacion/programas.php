@@ -74,6 +74,8 @@ $programas = [
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="../../../assets/css/output.css">
+    <link rel="stylesheet" href="../../assets/css/globals.css">
 </head>
 <body class="bg-gray-100">
 
@@ -86,23 +88,21 @@ $programas = [
             <p class="text-gray-500 text-sm">Programas de formacion disponibles en el SENA</p>
         </div>
 
-        <button
-            id="btn-abrir-crear-programa"
-            class="bg-sena hover:bg-green-700 text-white px-4 py-2 rounded-lg shadow flex items-center gap-2">
-            <i data-lucide="plus" class="w-4 h-4"></i>
-            Nuevo Programa
-        </button>
+        
     </div>
 
     <!-- Buscador -->
-    <div class="mb-6 relative">
-        <i data-lucide="search" class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4"></i>
-        <input 
-            type="text" 
-            id="buscador"
-            placeholder="Buscar por nombre o codigo..."
-            class="w-full md:w-1/3 pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-200"
-        >
+    <div class="flex items-center gap-3 mb-6">
+        <div class="relative flex-1">
+          <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-sena-text-soft pointer-events-none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+          <input type="text" id="buscador" class="w-full h-10 pl-10 pr-3 text-sm border border-sena-border rounded-lg bg-white text-sena-text-main placeholder:text-sena-text-soft focus:border-sena focus:ring-2 focus:ring-sena/15 outline-none transition-all" placeholder="Buscar por nombre o codigo">
+        </div>
+        <button
+            id="btn-abrir-crear-programa"
+            class="flex items-center gap-2 px-5 py-2 text-sm font-medium text-white bg-sena rounded-lg whitespace-nowrap h-10 hover:opacity-90 transition-opacity animate-button-in">
+            <i data-lucide="plus" class="w-4 h-4"></i>
+            Nuevo Programa
+        </button>
     </div>
 
     <!-- Cards -->
@@ -121,24 +121,25 @@ $programas = [
                     </div>
 
                     <div class="flex gap-2 text-gray-400">
-                        <i 
-                        data-lucide="edit"
-                        class="w-4 h-4 hover:text-blue-500 cursor-pointer btn-editar-programa"
+                        <button class="btn-editar-programa p-1.5 rounded-lg text-sena-text-soft hover:bg-sena-soft hover:text-sena transition-colors" 
+                                data-codigo="<?= $programa['codigo'] ?>"
+                                data-cupos="<?= $programa['cupos'] ?>"
+                                data-nombre="<?= $programa['nombre'] ?>"
+                                data-nivel="<?= $programa['nivel'] ?>"
+                                data-modalidad="<?= $programa['modalidad'] ?>"
+                                data-fechainicio="<?= $programa['fecha_inicio'] ?>"
+                                data-fechafin="<?= $programa['fecha_fin'] ?>">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4">
+                            <path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/>
+                            </svg>
+                        </button>
 
-                        data-codigo="<?= $programa['codigo'] ?>"
-                        data-cupos="<?= $programa['cupos'] ?>"
-                        data-nombre="<?= $programa['nombre'] ?>"
-                        data-nivel="<?= $programa['nivel'] ?>"
-                        data-modalidad="<?= $programa['modalidad'] ?>"
-                        data-fechainicio="<?= $programa['fecha_inicio'] ?>"
-                        data-fechafin="<?= $programa['fecha_fin'] ?>"
+                        <!-- Contenedor para el switch que mantiene la clase y el evento -->
+                        <div class="switch-sena active cursor-pointer" title="Activo">
+                            <i data-lucide="toggle-right" class="w-4 h-4 text-green-600 hover:text-green-700"></i>
+                        </div>
+                         </div>
 
-                        ></i>
-
-                        <i data-lucide="toggle-right" class="switch-sena active w-4 h-4 text-green-600 hover:text-green-700 cursor-pointer" title="Activo"></i>
-                    </div>
-
-                    
                 </div>
 
                 <!-- Etiquetas -->
@@ -169,8 +170,11 @@ $programas = [
                     
                     <div class="flex items-center gap-2 flex-wrap">
                         <i data-lucide="users" class="w-3 h-3"></i>
-                        <span><?= $programa['cupos'] ?> cupos</span>
-
+                        <span class="flex items-center"><?= $programa['cupos'] ?> cupos</span>
+                        <span class="text-gray-300 mx-2">|</span>                        
+                        <span class="flex items-center">Area: Teleinformatica y telecomunicaciones</span>
+                    </div>
+                    <div class="flex items-center gap-2 flex-wrap">
                         <span class="flex items-center gap-1">
                             <i data-lucide="calendar" class="w-3 h-3"></i>
                             <?= $programa['inicio'] ?>
@@ -181,7 +185,6 @@ $programas = [
                             <?= $programa['fin'] ?>
                         </span>
                     </div>
-                    <span>Area: Teleinformatica y telecomunicaciones</span>
                 </div>
             </div>
         <?php endforeach; ?>

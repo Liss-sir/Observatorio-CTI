@@ -17,16 +17,6 @@
             <label class="block text-sm font-medium">Descripción</label>
             <textarea id="descripcion-area" rows="4" class="w-full border rounded-lg px-3 py-2" required></textarea>
           </div>
-          <div class="grid grid-cols-2 gap-4 mb-4">
-            <div>
-              <label class="block text-sm font-medium">Fecha creación</label>
-              <input type="date" id="fecha-creacion" class="w-full border rounded-lg px-3 py-2">
-            </div>
-            <div>
-              <label class="block text-sm font-medium">Fecha expiración</label>
-              <input type="date" id="fecha-expiracion" class="w-full border rounded-lg px-3 py-2">
-            </div>
-          </div>
           <div class="flex justify-end gap-3 border-t pt-4">
             <button type="button" class="cerrar-modal-editar border px-4 py-2 rounded-lg">Cancelar</button>
             <button type="submit" class="bg-sena text-white px-4 py-2 rounded-lg">Guardar Cambios</button>

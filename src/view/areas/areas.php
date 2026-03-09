@@ -1,6 +1,5 @@
 <?php include __DIR__ . '../../../includes/header.php';?>
 
-
 <main class="flex-1">
 <link rel="stylesheet" href="../../../assets/css/output.css">
 <link rel="stylesheet" href="../../assets/css/globals.css">
@@ -14,18 +13,18 @@
                 Gestión de las áreas de los programas de formación.
             </p>
         </div>
+    </div>
+
+    <!-- BUSCADOR -->
+    <div class="flex items-center gap-3 mb-6">
+        <div class="relative flex-1">
+          <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-sena-text-soft pointer-events-none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+          <input type="text" class="w-full h-10 pl-10 pr-3 text-sm border border-sena-border rounded-lg bg-white text-sena-text-main placeholder:text-sena-text-soft focus:border-sena focus:ring-2 focus:ring-sena/15 outline-none transition-all" placeholder="Buscar tendencias...">
+        </div>
         <button id="btn-crear-area" class="flex items-center gap-2 px-5 py-2 text-sm font-medium text-white bg-sena rounded-lg whitespace-nowrap h-10 hover:opacity-90 transition-opacity animate-button-in">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
             Crear Área
         </button>
-    </div>
-
-    <!-- BUSCADOR -->
-    <div class="mb-4">
-        <div class="relative w-[420px]">
-            <input type="text" placeholder="Buscar áreas..." class="w-full border rounded-lg py-2 px-4 pl-10 focus:border-sena focus:ring-2 focus:ring-sena/15 outline-none transition-all">
-            <i data-lucide="search" class="absolute left-3 top-2.5 w-4 h-4 text-gray-400"></i>
-        </div>
     </div>
 
     <p class="text-sm text-gray-500 mb-4">9 áreas encontradas</p>
