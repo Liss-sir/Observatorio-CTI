@@ -298,22 +298,6 @@ document.addEventListener('DOMContentLoaded', function() {
             if (descripcionInput) descripcionInput.value = descripcionArea;
             if (estadoSelect) estadoSelect.value = estadoArea;
             
-            // Fechas de ejemplo
-            const today = new Date();
-            const fechaCreacion = new Date(today);
-            fechaCreacion.setMonth(today.getMonth() - 3);
-            const fechaCreacionInput = document.getElementById('fecha-creacion');
-            if (fechaCreacionInput) {
-                fechaCreacionInput.value = fechaCreacion.toISOString().split('T')[0];
-            }
-            
-            const fechaExpiracion = new Date(today);
-            fechaExpiracion.setMonth(today.getMonth() + 6);
-            const fechaExpiracionInput = document.getElementById('fecha-expiracion');
-            if (fechaExpiracionInput) {
-                fechaExpiracionInput.value = fechaExpiracion.toISOString().split('T')[0];
-            }
-            
             if (modalEditar) {
                 modalEditar.setAttribute('data-card-id', card.getAttribute('data-id'));
             }
