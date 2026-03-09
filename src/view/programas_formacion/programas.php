@@ -185,6 +185,7 @@ $programas = [
                             <?= $programa['fin'] ?>
                         </span>
                     </div>
+                    <span>Area: Teleinformatica y telecomunicaciones</span>
                 </div>
             </div>
         <?php endforeach; ?>
@@ -198,7 +199,7 @@ $programas = [
     lucide.createIcons();
 </script>
 
-<script src="/observatorio/Observatorio-CTI/src/assets/js/programas.js"></script>
+<script src="../../assets/js/programas.js"></script>
 </body>
 </html>
 <?php include __DIR__ . '../../../includes/footer.php'; ?>
