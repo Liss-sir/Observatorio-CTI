@@ -1,80 +1,64 @@
 document.addEventListener("DOMContentLoaded", function () {
 
-    // ===== MODALES PARA DESHABILITAR =====
+    // ========== ELEMENTOS DEL DOM ==========
+    // Modales
     const modalDeshabilitar = document.getElementById('modal-deshabilitar-perfil');
     const modalDeshabilitado = document.getElementById('modal-deshabilitado-perfil');
-    const btnConfirmarDeshabilitar = document.getElementById('btn-confirmar-deshabilitar');
-    const nombrePerfilDeshabilitadoSpan = document.getElementById('nombre-perfil-deshabilitado');
-    
-    // ===== MODALES PARA HABILITAR =====
     const modalHabilitar = document.getElementById('modal-habilitar-perfil');
-    const btnConfirmarHabilitar = document.getElementById('modal-habilitado-confirmacion');   
+    const modalHabilitadoConfirmacion = document.getElementById('modal-habilitado-confirmacion');
+    const modalCrear = document.getElementById("modal-crear-programa");
+    const modalEditar = document.getElementById("modal-editar-programa");
+
+    // Botones de confirmación
+    const btnConfirmarDeshabilitar = document.getElementById('btn-confirmar-deshabilitar');
+    const btnConfirmarHabilitar = document.getElementById('btn-confirmar-habilitar');
+    const btnGuardarNuevo = document.getElementById('btn-guardar-nuevo-programa');
+    const btnGuardarEdicion = document.getElementById('btn-guardar-edicion');
+    const btnCrearPrograma = document.getElementById('btn-abrir-crear-programa');
+
+    // Elementos de texto en modales
+    const nombrePerfilDeshabilitadoSpan = document.getElementById('nombre-perfil-deshabilitado');
     const nombrePerfilHabilitarSpan = document.getElementById('nombre-perfil-habilitar');
     const nombrePerfilHabilitadoExitoSpan = document.getElementById('nombre-perfil-habilitado-exito');
 
-    // ===== MODALES PROGRAMA DE FORMACION ======
-    const btnCrearPrograma = document.getElementById("btn-abrir-crear-programa");
-    const modalCrear = document.getElementById("modal-crear-programa");
+    // Búsqueda
+    const buscador = document.getElementById("buscador");
+    const contenedorProgramas = document.getElementById("contenedorProgramas");
 
-    // ===== TIMERS =====
+    const API = "../../controllers/";
+
+    // ========== VARIABLES PARA TIMERS ==========
     let timeoutDeshabilitado = null;
     let timeoutHabilitado = null;
-    let intervalContadorHabilitado = null;
     let intervalContadorDeshabilitado = null;
+    let intervalContadorHabilitado = null;
 
-    // Verificar que los modales existen
-    console.log('Modal Deshabilitar:', modalDeshabilitar);
-    console.log('Modal Habilitar:', modalHabilitar);
-    console.log('Modal Deshabilitado:', modalDeshabilitado);
-    console.log('Modal Habilitado:', btnConfirmarHabilitar);
-
-    const buscador = document.getElementById("buscador");
-    const cards = document.querySelectorAll(".programa-card");
-
-    if (buscador) {
-        buscador.addEventListener("keyup", function () {
-            const texto = this.value.toLowerCase();
-            cards.forEach(card => {
-                const nombre = card.dataset.nombre;
-                const codigo = card.dataset.codigo;
-                if (nombre.includes(texto) || codigo.includes(texto)) {
-                    card.style.display = "block";
-                } else {
-                    card.style.display = "none";
-                }
-            });
-        });
-    }
-
-    // ===== FUNCIÓN PARA ABRIR MODAL =====
+    // ========== FUNCIONES AUXILIARES ==========
     function abrirModal(modal) {
         if (modal) {
             modal.classList.remove('hidden');
             document.body.classList.add('overflow-hidden');
         }
     }
-    
-    // ===== FUNCIÓN PARA CERRAR MODAL =====
+
     function cerrarModal(modal) {
         if (modal) {
             modal.classList.add('hidden');
             document.body.classList.remove('overflow-hidden');
         }
     }
-    
-    // ===== CERRAR MODALES CON BOTONES =====
-    document.querySelectorAll('.cerrar-modal-deshabilitar, .cerrar-modal-habilitado-confirmacion,.cerrar-modal-habilitar').forEach(btn => {
-        btn.addEventListener('click', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            cerrarModal(modalDeshabilitar);
-            cerrarModal(modalHabilitar);
-            cerrarModal(modalDeshabilitado);
-            cerrarModal(btnConfirmarHabilitar);
+
+    // Cerrar modal haciendo clic en el fondo oscuro
+    document.querySelectorAll('.fixed.inset-0.bg-black').forEach(overlay => {
+        overlay.addEventListener('click', function(e) {
+            if (e.target === this) {
+                const modal = this.closest('.fixed.inset-0.z-50');
+                if (modal) cerrarModal(modal);
+            }
         });
     });
 
-    // ===== FUNCIÓN PARA CERRAR MODAL DESHABILITADO =====
+    // ========== FUNCIONES PARA MODALES DE CONFIRMACIÓN (DESHABILITAR/HABILITAR) ==========
     function cerrarModalDeshabilitado() {
         if (modalDeshabilitado) {
             modalDeshabilitado.classList.add('hidden');
@@ -89,16 +73,11 @@ document.addEventListener("DOMContentLoaded", function () {
             intervalContadorDeshabilitado = null;
         }
         const progressBar = document.getElementById('progress-bar-deshabilitado');
-        if (progressBar) {
-            progressBar.style.width = '0%';
-        }
+        if (progressBar) progressBar.style.width = '0%';
         const contador = document.getElementById('contador-segundos-deshabilitado');
-        if (contador) {
-            contador.textContent = '3';
-        }
+        if (contador) contador.textContent = '6';
     }
 
-    // ===== FUNCIÓN PARA CERRAR MODAL HABILITADO =====
     function cerrarModalHabilitado() {
         if (modalHabilitadoConfirmacion) {
             modalHabilitadoConfirmacion.classList.add('hidden');
@@ -113,292 +92,337 @@ document.addEventListener("DOMContentLoaded", function () {
             intervalContadorHabilitado = null;
         }
         const progressBar = document.getElementById('progress-bar-habilitado');
-        if (progressBar) {
-            progressBar.style.width = '0%';
-        }
+        if (progressBar) progressBar.style.width = '0%';
         const contador = document.getElementById('contador-segundos');
-        if (contador) {
-            contador.textContent = '3';
-        }
+        if (contador) contador.textContent = '6';
     }
 
-    // ===== FUNCIÓN PARA MOSTRAR MODAL DESHABILITADO =====
     function mostrarModalDeshabilitado(nombrePerfil) {
-        console.log('Mostrando modal deshabilitado para:', nombrePerfil);
-        
-        if (!modalDeshabilitado) {
-            console.error('Modal deshabilitado no encontrado');
-            return;
-        }
-        
+        if (!modalDeshabilitado) return;
         if (nombrePerfilDeshabilitadoSpan) {
             nombrePerfilDeshabilitadoSpan.textContent = `"${nombrePerfil}"`;
         }
-        
         abrirModal(modalDeshabilitado);
-        
-        // Resetear contador
+
         let segundos = 6;
         const contador = document.getElementById('contador-segundos-deshabilitado');
-        if (contador) {
-            contador.textContent = segundos;
-        }
-        
-        // Iniciar contador regresivo
-        if (intervalContadorDeshabilitado) {
-            clearInterval(intervalContadorDeshabilitado);
-        }
-        
+        if (contador) contador.textContent = segundos;
+
+        if (intervalContadorDeshabilitado) clearInterval(intervalContadorDeshabilitado);
         intervalContadorDeshabilitado = setInterval(() => {
             segundos--;
-            if (contador) {
-                contador.textContent = segundos;
-            }
+            if (contador) contador.textContent = segundos;
             if (segundos <= 0) {
                 clearInterval(intervalContadorDeshabilitado);
                 intervalContadorDeshabilitado = null;
             }
         }, 1000);
-        
-        // Animar barra de progreso
+
         const progressBar = document.getElementById('progress-bar-deshabilitado');
         if (progressBar) {
             progressBar.style.width = '0%';
-            setTimeout(() => {
-                progressBar.style.width = '100%';
-            }, 50);
+            setTimeout(() => progressBar.style.width = '100%', 50);
         }
-        
-        if (timeoutDeshabilitado) {
-            clearTimeout(timeoutDeshabilitado);
-        }
-        
-        timeoutDeshabilitado = setTimeout(() => {
-            cerrarModalDeshabilitado();
-        }, 6000);
+
+        if (timeoutDeshabilitado) clearTimeout(timeoutDeshabilitado);
+        timeoutDeshabilitado = setTimeout(cerrarModalDeshabilitado, 6000);
     }
 
-    // ===== FUNCIÓN PARA MOSTRAR MODAL HABILITADO =====
     function mostrarModalHabilitado(nombrePerfil) {
-        console.log('Mostrando modal habilitado para:', nombrePerfil);
-        
-        if (!modalHabilitadoConfirmacion) {
-            console.error('Modal habilitado no encontrado');
-            return;
-        }
-        
+        if (!modalHabilitadoConfirmacion) return;
         if (nombrePerfilHabilitadoExitoSpan) {
             nombrePerfilHabilitadoExitoSpan.textContent = `"${nombrePerfil}"`;
         }
-        
         abrirModal(modalHabilitadoConfirmacion);
-        
-        // Resetear contador
+
         let segundos = 6;
         const contador = document.getElementById('contador-segundos');
-        if (contador) {
-            contador.textContent = segundos;
-        }
-        
-        // Iniciar contador regresivo
-        if (intervalContadorHabilitado) {
-            clearInterval(intervalContadorHabilitado);
-        }
-        
+        if (contador) contador.textContent = segundos;
+
+        if (intervalContadorHabilitado) clearInterval(intervalContadorHabilitado);
         intervalContadorHabilitado = setInterval(() => {
             segundos--;
-            if (contador) {
-                contador.textContent = segundos;
-            }
+            if (contador) contador.textContent = segundos;
             if (segundos <= 0) {
                 clearInterval(intervalContadorHabilitado);
                 intervalContadorHabilitado = null;
             }
         }, 1000);
-        
-        // Animar barra de progreso
+
         const progressBar = document.getElementById('progress-bar-habilitado');
         if (progressBar) {
             progressBar.style.width = '0%';
-            setTimeout(() => {
-                progressBar.style.width = '100%';
-            }, 50);
+            setTimeout(() => progressBar.style.width = '100%', 50);
         }
-        
-        if (timeoutHabilitado) {
-            clearTimeout(timeoutHabilitado);
-        }
-        
-        timeoutHabilitado = setTimeout(() => {
-            cerrarModalHabilitado();
-        }, 6000);
+
+        if (timeoutHabilitado) clearTimeout(timeoutHabilitado);
+        timeoutHabilitado = setTimeout(cerrarModalHabilitado, 6000);
     }
 
-    // ===== MANEJAR CLICKS EN SWITCHES =====
-    function inicializarSwitches() {
-        document.querySelectorAll('.switch-sena').forEach(switchEl => {
-            // Remover eventos anteriores
-            switchEl.removeEventListener('click', handleSwitchClick);
-            // Agregar nuevo evento
-            switchEl.addEventListener('click', handleSwitchClick);
+    // ========== BÚSQUEDA EN TIEMPO REAL ==========
+    if (buscador && contenedorProgramas) {
+        buscador.addEventListener("keyup", function () {
+            const texto = this.value.toLowerCase();
+            const cards = contenedorProgramas.querySelectorAll(".programa-card");
+            cards.forEach(card => {
+                const nombre = card.dataset.nombre ? card.dataset.nombre.toLowerCase() : '';
+                const codigo = card.dataset.codigo ? card.dataset.codigo.toLowerCase() : '';
+                if (nombre.includes(texto) || codigo.includes(texto)) {
+                    card.style.display = "block";
+                } else {
+                    card.style.display = "none";
+                }
+            });
         });
     }
 
-    function handleSwitchClick(e) {
+    // ========== MANEJADOR DE SWITCHES (TOGGLE) ==========
+    function manejadorSwitch(e) {
         e.preventDefault();
         e.stopPropagation();
-        
-        const switchEl = this;
-        
-        // Obtener el nombre del perfil
-        const cardPerfil = switchEl.closest('.border');
-        let nombrePerfil = "Perfil";
-        
-        if (cardPerfil) {
-            const nombreElement = cardPerfil.querySelector('.font-semibold.text-gray-800');
-            if (nombreElement) {
-                nombrePerfil = nombreElement.textContent.trim();
-            }
-        }
-        
-        // Verificar el estado ACTUAL del switch
-        const estaActivo = switchEl.classList.contains('active');
-        
-        console.log('Switch clickeado - Estado:', estaActivo ? 'ACTIVO' : 'INACTIVO', 'Perfil:', nombrePerfil);
-        
-        if (estaActivo) {
-            // Switch ACTIVO → DESHABILITAR
-            if (modalDeshabilitar) {
-                // Actualizar el texto del perfil en el modal
-                const perfilSpan = modalDeshabilitar.querySelector('span.font-medium.text-sena-text-main, span.font-medium');
-                if (perfilSpan) {
-                    perfilSpan.textContent = `"${nombrePerfil}"`;
-                }
-                
-                if (btnConfirmarDeshabilitar) {
-                    btnConfirmarDeshabilitar.setAttribute('data-nombre-perfil', nombrePerfil);
-                }
-                abrirModal(modalDeshabilitar);
-            }
+
+        const card = this.closest('.programa-card, .border');
+        if (!card) return;
+
+        const nombrePrograma = card.querySelector('.font-semibold')?.textContent || 'Programa';
+        const id = card.getAttribute('data-id');
+        if (!id) return;
+
+        if (this.classList.contains('active')) {
+            // Quiere desactivar
+            const spanNombre = modalDeshabilitar?.querySelector('span.font-medium');
+            if (spanNombre) spanNombre.textContent = `"${nombrePrograma}"`;
+            if (modalDeshabilitar) modalDeshabilitar.setAttribute('data-switch-id', id);
+            abrirModal(modalDeshabilitar);
         } else {
-            // Switch INACTIVO → HABILITAR
+            // Quiere activar
+            const spanNombre = modalHabilitar?.querySelector('span.font-semibold');
+            if (spanNombre) spanNombre.textContent = `"${nombrePrograma}"`;
             if (modalHabilitar) {
-                // Actualizar el texto del perfil en el modal de habilitar
-                if (nombrePerfilHabilitarSpan) {
-                    nombrePerfilHabilitarSpan.textContent = `"${nombrePerfil}"`;
-                } else {
-                    const perfilSpanHabilitar = modalHabilitar.querySelector('span.font-medium');
-                    if (perfilSpanHabilitar) {
-                        perfilSpanHabilitar.textContent = `"${nombrePerfil}"`;
-                    }
-                }
-                
-                if (btnConfirmarHabilitar) {
-                    btnConfirmarHabilitar.setAttribute('data-nombre-perfil', nombrePerfil);
-                }
-                abrirModal(modalHabilitar);
+                modalHabilitar.setAttribute('data-switch-id', id);
+                modalHabilitar.setAttribute('data-nombre-programa', nombrePrograma);
             }
+            abrirModal(modalHabilitar);
         }
     }
 
-    // Inicializar switches
+    function inicializarSwitches() {
+        document.querySelectorAll('.switch-sena').forEach(switchEl => {
+            // Eliminar eventos previos para evitar duplicados
+            switchEl.removeEventListener('click', manejadorSwitch);
+            switchEl.addEventListener('click', manejadorSwitch);
+        });
+    }
+
+    // Inicializar switches al cargar la página
     inicializarSwitches();
 
-    // ===== CONFIRMAR DESHABILITAR =====
-    if (btnConfirmarDeshabilitar) {
-        btnConfirmarDeshabilitar.addEventListener('click', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            
-            const nombrePerfil = this.getAttribute('data-nombre-perfil') || "Perfil";
-            
-            console.log('Confirmando deshabilitar - Perfil:', nombrePerfil);
-            
-            // Cambiar el estado del switch
-            let switchEncontrado = false;
-            document.querySelectorAll('.switch-sena').forEach(switchEl => {
-                const cardPerfil = switchEl.closest('.border');
-                if (cardPerfil) {
-                    const nombreElement = cardPerfil.querySelector('.font-semibold.text-gray-800');
-                    if (nombreElement && nombreElement.textContent.trim() === nombrePerfil) {
-                        // Cambiar a inactivo
-                        switchEl.classList.remove('active');
-                        switchEl.setAttribute('title', 'Inactivo');
-                        switchEl.setAttribute('data-lucide', 'toggle-left');
-                        switchEl.classList.remove('text-green-600', 'hover:text-green-700');
-                        switchEl.classList.add('text-gray-400', 'hover:text-gray-500');
-                        console.log('Switch cambiado a gris para:', nombrePerfil);
-                        switchEncontrado = true;
-                    }
-                }
-            });
-            
-            if (!switchEncontrado) {
-                console.log('No se encontró el switch para:', nombrePerfil);
-            }
-            
-            // Reinicializar iconos de Lucide
-            lucide.createIcons();
-            
-            // Cerrar modal de confirmación
-            cerrarModal(modalDeshabilitar);
-            
-            // Mostrar modal de éxito
-            mostrarModalDeshabilitado(nombrePerfil);
+    // Observar cambios en el contenedor para inicializar nuevos switches (ej. después de recargar vía AJAX)
+    if (contenedorProgramas) {
+        const observer = new MutationObserver(function(mutations) {
+            inicializarSwitches();
         });
-    }
-    
-    // ===== CONFIRMAR HABILITAR =====
-    if (btnConfirmarHabilitar) {
-        btnConfirmarHabilitar.addEventListener('click', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            
-            const nombrePerfil = this.getAttribute('data-nombre-perfil') || "Perfil";
-            
-            console.log('Confirmando habilitar - Perfil:', nombrePerfil);
-            
-            // Cambiar el estado del switch
-            let switchEncontrado = false;
-            document.querySelectorAll('.switch-sena').forEach(switchEl => {
-                const cardPerfil = switchEl.closest('.border');
-                if (cardPerfil) {
-                    const nombreElement = cardPerfil.querySelector('.font-semibold.text-gray-800');
-                    if (nombreElement && nombreElement.textContent.trim() === nombrePerfil) {
-                        // Cambiar a activo
-                        switchEl.classList.add('active');
-                        switchEl.setAttribute('title', 'Activo');
-                        switchEl.setAttribute('data-lucide', 'toggle-right');
-                        switchEl.classList.remove('text-gray-400', 'hover:text-gray-500');
-                        switchEl.classList.add('text-green-600', 'hover:text-green-700');
-                        console.log('Switch cambiado a verde para:', nombrePerfil);
-                        switchEncontrado = true;
-                    }
-                }
-            });
-            
-            if (!switchEncontrado) {
-                console.log('No se encontró el switch para:', nombrePerfil);
-            }
-            
-            // Reinicializar iconos de Lucide
-            lucide.createIcons();
-            
-            // Cerrar modal de confirmación
-            cerrarModal(modalHabilitar);
-            
-            // Mostrar modal de éxito
-            mostrarModalHabilitado(nombrePerfil);
+        observer.observe(contenedorProgramas, {
+            childList: true,
+            subtree: true
         });
     }
 
-    //modal editar programa de formacion
+    // ========== CONFIRMAR DESHABILITAR ==========
+    if (btnConfirmarDeshabilitar && modalDeshabilitar) {
+        btnConfirmarDeshabilitar.addEventListener('click', async function(e) {
+            e.preventDefault();
+
+            const switchId = modalDeshabilitar.getAttribute('data-switch-id');
+            const nombrePrograma = modalDeshabilitar.querySelector('span.font-medium')?.textContent || 'Programa';
+
+            // Cambiar visualmente el switch a inactivo
+            if (switchId) {
+                const card = document.querySelector(`[data-id="${switchId}"]`);
+                if (card) {
+                    const switchEl = card.querySelector('.switch-sena');
+                    if (switchEl) {
+                        switchEl.classList.remove('active');
+                        switchEl.setAttribute('title', 'Inactivo');
+                    }
+                }
+            }
+
+            // Llamar al servidor para desactivar
+            console.log("ID programa:", switchId);
+            try {
+                const response = await fetch(`${API}ProgramaFormacionController.php?accion=desactivar&id_programa=${switchId}`, {
+                    method: 'GET' // o POST según el controlador (usa GET en el switch final)
+                });
+                const resultado = await response.json();
+                if (!resultado.success) {
+                    alert(resultado.error || 'Error al desactivar el programa');
+                    // Revertir cambio visual si falla
+                    if (switchId) {
+                        const card = document.querySelector(`[data-id="${switchId}"]`);
+                        if (card) {
+                            const switchEl = card.querySelector('.switch-sena');
+                            if (switchEl) {
+                                switchEl.classList.add('active');
+                                switchEl.setAttribute('title', 'Activo');
+                            }
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error(error);
+                alert('Error de conexión al desactivar');
+            }
+
+            cerrarModal(modalDeshabilitar);
+            mostrarModalDeshabilitado(nombrePrograma);
+        });
+    }
+
+    // ========== CONFIRMAR HABILITAR ==========
+    if (btnConfirmarHabilitar && modalHabilitar) {
+        btnConfirmarHabilitar.addEventListener('click', async function(e) {
+            e.preventDefault();
+
+            const switchId = modalHabilitar.getAttribute('data-switch-id');
+            const nombrePrograma = modalHabilitar.getAttribute('data-nombre-programa') || 'Programa';
+
+            // Cambiar visualmente el switch a activo
+            if (switchId) {
+                const card = document.querySelector(`[data-id="${switchId}"]`);
+                if (card) {
+                    const switchEl = card.querySelector('.switch-sena');
+                    if (switchEl) {
+                        switchEl.classList.add('active');
+                        switchEl.setAttribute('title', 'Activo');
+                    }
+                }
+            }
+
+            // Llamar al servidor para activar
+            try {
+                const response = await fetch(`${API}ProgramaFormacionController.php?accion=activar&id_programa=${switchId}`, {
+                    method: 'GET'
+                });
+                const resultado = await response.json();
+                if (!resultado.success) {
+                    alert(resultado.error || 'Error al activar el programa');
+                    // Revertir cambio visual si falla
+                    if (switchId) {
+                        const card = document.querySelector(`[data-id="${switchId}"]`);
+                        if (card) {
+                            const switchEl = card.querySelector('.switch-sena');
+                            if (switchEl) {
+                                switchEl.classList.remove('active');
+                                switchEl.setAttribute('title', 'Inactivo');
+                            }
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error(error);
+                alert('Error de conexión al activar');
+            }
+
+            cerrarModal(modalHabilitar);
+            mostrarModalHabilitado(nombrePrograma);
+        });
+    }
+
+
+    // abrir modal
+    if (btnCrearPrograma && modalCrear) {
+        btnCrearPrograma.addEventListener("click", () => {
+            modalCrear.classList.remove("hidden");
+        });
+    }
+
+    // cerrar modal
+    document.querySelectorAll(".cerrar-modal-crear").forEach(btn => {
+        btn.addEventListener("click", () => {
+            modalCrear.classList.add("hidden");
+        });
+    });
+
+    // ========== CREAR NUEVO PROGRAMA ==========
+    if (btnGuardarNuevo && modalCrear) {
+        btnGuardarNuevo.addEventListener('click', async function(e) {
+            e.preventDefault();
+
+            const areaSeleccionada = document.getElementById("areaPrograma").value;
+            const codigo = document.getElementById("codigoNuevoPrograma").value;
+            const nombre = document.getElementById("nombreNuevoPrograma").value;
+            const nivel = document.getElementById("nivelNuevoPrograma").value;
+            const fechaInicio = document.getElementById("fechaInicioNuevoPrograma").value;
+            const fechaFin = document.getElementById("fechaFinNuevoPrograma").value;
+            const cupos = document.getElementById("cuposNuevoPrograma").value;
+            const descripcion = document.getElementById("descripcionNuevoPrograma").value;
+
+            // Recoger datos del formulario
+            const datos = {
+                id_area: document.getElementById("areaPrograma")?.value,
+                codigo_programa: document.getElementById("codigoNuevoPrograma")?.value,
+                nombre_programa: document.getElementById("nombreNuevoPrograma")?.value,
+                id_nivel: document.getElementById("nivelNuevoPrograma")?.value,
+                modalidad: document.getElementById("modalidadNuevoPrograma")?.value,
+                fecha_creacion: document.getElementById("fechaInicioNuevoPrograma")?.value,
+                fecha_fin: document.getElementById("fechaFinNuevoPrograma")?.value,
+                cupos: document.getElementById("cuposNuevoPrograma")?.value,
+                descripcion: document.getElementById("descripcionNuevoPrograma")?.value || ''
+            };
+
+            // Validación básica
+            for (let key in datos) {
+                if (!datos[key] && key !== 'descripcion') {
+                    alert(`El campo ${key} es obligatorio`);
+                    return;
+                }
+            }
+
+            try {
+                const response = await fetch(`${API}ProgramaFormacionController.php?accion=crear`, {
+                    method: "POST",
+                    headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    id_area: areaSeleccionada,
+                    codigo_programa: codigo,
+                    nombre_programa: nombre,
+                    id_nivel: nivel,
+                    fecha_creacion: fechaInicio,
+                    fecha_fin: fechaFin,
+                    cupos: cupos,
+                    descripcion: descripcion
+                })
+                });
+
+                const resultado = await response.json();
+
+                if (resultado.success) {
+                    alert(resultado.message);
+                    cerrarModal(modalCrear);
+                    location.reload();
+                } else {
+                    alert(resultado.error || 'Error al crear el programa');
+                }
+
+            } catch (error) {
+                console.error(error);
+                alert("Error de conexión al crear el programa");
+            }
+        });
+    }
+
+    // ========== EDITAR PROGRAMA ==========
+    // Abrir modal de edición y cargar datos
     document.querySelectorAll(".btn-editar-programa").forEach(btn => {
         btn.addEventListener("click", function(e) {
             e.preventDefault();
             e.stopPropagation();
-            
-            // Obtener los datos del programa desde los atributos data-
+
+            // Obtener datos desde atributos data-
+            const id = this.dataset.id;
             const codigo = this.dataset.codigo;
             const cupos = this.dataset.cupos;
             const nombre = this.dataset.nombre;
@@ -406,106 +430,111 @@ document.addEventListener("DOMContentLoaded", function () {
             const modalidad = this.dataset.modalidad;
             const fechaInicio = this.dataset.fechainicio;
             const fechaFin = this.dataset.fechafin;
-            
-            // Llenar el formulario del modal
-            document.getElementById("codigoPrograma").value = codigo || '';
-            document.getElementById("cuposPrograma").value = cupos || '';
-            document.getElementById("nombrePrograma").value = nombre || '';
-            document.getElementById("nivelFormacion").value = nivel || '';
-            document.getElementById("modalidadPrograma").value = modalidad || '';
-            document.getElementById("fechaInicio").value = fechaInicio || '';
-            document.getElementById("fechaFin").value = fechaFin || '';
-            
-            // Abrir el modal
-            document.getElementById("modal-editar-programa").classList.remove("hidden");
+            const descripcion = this.dataset.descripcion || '';
+            const area = this.dataset.area;
+
+            // Llenar campos del modal de edición
+            if (document.getElementById("idProgramaEditar")) {
+                document.getElementById("idProgramaEditar").value = id || '';
+            }
+            if (document.getElementById("areaProgramaEditar")) {
+                document.getElementById("areaProgramaEditar").value = area || '';
+            }
+            if (document.getElementById("codigoProgramaEditar")) {
+                document.getElementById("codigoProgramaEditar").value = codigo || '';
+            }
+            if (document.getElementById("cuposProgramaEditar")) {
+                document.getElementById("cuposProgramaEditar").value = cupos || '';
+            }
+            if (document.getElementById("nombreProgramaEditar")) {
+                document.getElementById("nombreProgramaEditar").value = nombre || '';
+            }
+            if (document.getElementById("nivelFormacionEditar")) {
+                document.getElementById("nivelFormacionEditar").value = nivel || '';
+            }
+            if (document.getElementById("modalidadProgramaEditar")) {
+                document.getElementById("modalidadProgramaEditar").value = modalidad || '';
+            }
+            if (document.getElementById("fechaInicioEditar")) {
+                document.getElementById("fechaInicioEditar").value = fechaInicio || '';
+            }
+            if (document.getElementById("fechaFinEditar")) {
+                document.getElementById("fechaFinEditar").value = fechaFin || '';
+            }
+            if (document.getElementById("descripcionProgramaEditar")) {
+                document.getElementById("descripcionProgramaEditar").value = descripcion;
+            }
+
+            // Abrir modal
+            if (modalEditar) modalEditar.classList.remove("hidden");
         });
     });
 
-    //funcion para cerrar el modal
-    function cerrarModalEditarPrograma() {
-    document
-        .getElementById("modal-editar-programa")
-        .classList.add("hidden");
-    }
-
-    document.querySelectorAll(".cerrar-modal-editar").forEach(btn => {
-        btn.addEventListener("click", cerrarModalEditarPrograma);
-    });
-
-    /* CERRAR MODAL */
-    document.querySelectorAll(".cerrar-modal-crear").forEach(btn=>{
-        btn.addEventListener("click",()=>{
-            modalCrear.classList.add("hidden");
-        });
-    });
-
-    // CREAR PROGRAMA DE FORMACION
-    if (btnCrearPrograma) {
-        btnCrearPrograma.addEventListener('click', (e) => {
+    // Guardar cambios de edición
+    if (btnGuardarEdicion && modalEditar) {
+        btnGuardarEdicion.addEventListener('click', async function(e) {
             e.preventDefault();
-            e.stopPropagation();
-            if (modalCrear) {
-                modalCrear.classList.remove('hidden');
-            }
-        });
-    }
 
-    // Cerrar modal crear
-    document.querySelectorAll('.cerrar-modal-crear').forEach(btn => {
-        btn.addEventListener('click', () => {
-            if (modalCrear) {
-                modalCrear.classList.add('hidden');
-            }
-        });
-    });
-
-    // Guardar nuevo programa
-    const btnGuardarNuevo = document.getElementById('btn-guardar-nuevo-programa');
-    if (btnGuardarNuevo) {
-        btnGuardarNuevo.addEventListener('click', async () => {
             const datos = {
-                id_area: document.getElementById("areaPrograma").value,
-                codigo_programa: document.getElementById("codigoNuevoPrograma").value,
-                nombre_programa: document.getElementById("nombreNuevoPrograma").value,
-                id_nivel: document.getElementById("nivelNuevoPrograma").value,
-                modalidad: document.getElementById("modalidadNuevoPrograma").value,
-                fecha_creacion: document.getElementById("fechaInicioNuevoPrograma").value,
-                fecha_fin: document.getElementById("fechaFinNuevoPrograma").value,
-                cupos: document.getElementById("cuposNuevoPrograma").value // Agregué cupos que faltaba
+                id_programa: document.getElementById("idProgramaEditar")?.value,
+                id_area: document.getElementById("areaProgramaEditar")?.value,
+                codigo_programa: document.getElementById("codigoProgramaEditar")?.value,
+                nombre_programa: document.getElementById("nombreProgramaEditar")?.value,
+                id_nivel: document.getElementById("nivelFormacionEditar")?.value,
+                modalidad: document.getElementById("modalidadProgramaEditar")?.value,
+                fecha_creacion: document.getElementById("fechaInicioEditar")?.value,
+                fecha_fin: document.getElementById("fechaFinEditar")?.value,
+                cupos: document.getElementById("cuposProgramaEditar")?.value,
+                descripcion: document.getElementById("descripcionProgramaEditar")?.value || ''
             };
 
+            // Validar campos obligatorios
+            for (let key in datos) {
+                if (!datos[key] && key !== 'descripcion') {
+                    alert(`El campo ${key} es obligatorio`);
+                    return;
+                }
+            }
+
             try {
-                const response = await fetch("/src/controllers/ProgramaFormacionController.php?accion=crear", {
+                const response = await fetch(`${API}ProgramaFormacionController.php?accion=actualizar`, {
                     method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
+                    headers: { "Content-Type": "application/json" },
                     body: JSON.stringify(datos)
                 });
 
                 const resultado = await response.json();
                 if (resultado.success) {
                     alert(resultado.message);
-                    modalCrear.classList.add("hidden");
-                    location.reload();
+                    cerrarModal(modalEditar);
+                    location.reload(); // O actualizar la card
                 } else {
-                    alert(resultado.error);
+                    alert(resultado.error || 'Error al actualizar');
                 }
             } catch (error) {
                 console.error(error);
-                alert("Error al crear el programa");
+                alert("Error de conexión al actualizar");
             }
         });
     }
-    
-    // Re-inicializar switches cuando se cambie el DOM (por si se agregan nuevos)
-    const observer = new MutationObserver(function() {
-        inicializarSwitches();
+
+    // ========== CERRAR MODALES CON BOTONES ==========
+    document.querySelectorAll('.cerrar-modal-deshabilitar, .cerrar-modal-habilitado-confirmacion, .cerrar-modal-habilitar, .cerrar-modal-crear, .cerrar-modal-editar').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            // Cerrar el modal correspondiente (el más cercano)
+            const modal = this.closest('.fixed.inset-0.z-50');
+            if (modal) cerrarModal(modal);
+        });
     });
-    
-    observer.observe(document.getElementById('contenedorProgramas'), {
-        childList: true,
-        subtree: true
+
+    // Cerrar modales de confirmación automáticos con el botón "Cerrar"
+    document.querySelectorAll('#modal-deshabilitado-perfil .cerrar-modal, #modal-habilitado-confirmacion .cerrar-modal').forEach(btn => {
+        btn.addEventListener('click', function() {
+            cerrarModalDeshabilitado();
+            cerrarModalHabilitado();
+        });
     });
 
 });

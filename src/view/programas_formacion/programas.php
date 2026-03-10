@@ -3,7 +3,7 @@ include __DIR__ . '../../../includes/header.php';
 include __DIR__ . '/modal_deshabilitar_perfiles.php';
 include __DIR__ . '/modal_habilitar_perfiles.php';           
 include __DIR__ . '/modal_habilitado_confirmacion.php';
-include __DIR__ . '/modal_confirmacion_deshabilitar_pefiles.php';
+include __DIR__ . '/modal_confirmacion_deshabilitar_perfiles.php';
 include __DIR__ . '/modal_editar_programa.php';
 include __DIR__ . '/modal_crear_programa.php';
 
@@ -110,6 +110,7 @@ $programas = [
 
         <?php foreach($programas as $programa): ?>
             <div class="bg-white border p-5 rounded-xl shadow hover:shadow-md transition programa-card"
+                data-id="<?= $programa['codigo'] ?>"
                 data-nombre="<?= strtolower($programa['nombre']) ?>"
                 data-codigo="<?= strtolower($programa['codigo']) ?>"
             >
@@ -120,25 +121,16 @@ $programas = [
                         <i data-lucide="graduation-cap" class="w-5 h-5 text-green-600"></i>
                     </div>
 
-                    <div class="flex gap-2 text-gray-400">
-                        <button class="btn-editar-programa p-1.5 rounded-lg text-sena-text-soft hover:bg-sena-soft hover:text-sena transition-colors" 
-                                data-codigo="<?= $programa['codigo'] ?>"
-                                data-cupos="<?= $programa['cupos'] ?>"
-                                data-nombre="<?= $programa['nombre'] ?>"
-                                data-nivel="<?= $programa['nivel'] ?>"
-                                data-modalidad="<?= $programa['modalidad'] ?>"
-                                data-fechainicio="<?= $programa['fecha_inicio'] ?>"
-                                data-fechafin="<?= $programa['fecha_fin'] ?>">
+                    <div class="flex items-center gap-1">
+                        <button class="btn-editar-programa p-1.5 rounded-lg text-sena-text-soft hover:bg-sena-soft hover:text-sena transition-colors">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4">
                             <path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/>
                             </svg>
                         </button>
 
                         <!-- Contenedor para el switch que mantiene la clase y el evento -->
-                        <div class="switch-sena active cursor-pointer" title="Activo">
-                            <i data-lucide="toggle-right" class="w-4 h-4 text-green-600 hover:text-green-700"></i>
-                        </div>
-                         </div>
+                        <div class="switch-sena active cursor-pointer" title="Activo"></div>
+                    </div>
 
                 </div>
 
@@ -149,7 +141,7 @@ $programas = [
                         <?= $programa['codigo'] ?>
                     </span>
                     
-                    <span class="text-xs px-2 py-1 rounded-full bg-green-100 text-green-700 flex items-center gap-1">
+                    <span class="text-xs px-2 py-1 rounded-full bg-sena-soft text-green-700 flex items-center gap-1">
                         <i data-lucide="layers" class="w-3 h-3"></i>
                         <?= $programa['nivel'] ?>
                     </span>
@@ -185,7 +177,6 @@ $programas = [
                             <?= $programa['fin'] ?>
                         </span>
                     </div>
-                    <span>Area: Teleinformatica y telecomunicaciones</span>
                 </div>
             </div>
         <?php endforeach; ?>
@@ -199,7 +190,7 @@ $programas = [
     lucide.createIcons();
 </script>
 
-<script src="../../assets/js/programas.js"></script>
+<script src="/observatorio/Observatorio-CTI/src/assets/js/programas.js"></script>
 </body>
 </html>
 <?php include __DIR__ . '../../../includes/footer.php'; ?>

@@ -359,13 +359,42 @@ document.addEventListener('DOMContentLoaded', function() {
             e.preventDefault();
             
             const switchId = modalDeshabilitar.getAttribute('data-switch-id');
-            const nombreArea = modalDeshabilitar.querySelector('span.font-medium').textContent.replace(/"/g, '');
+            if (!switchId) {
+                console.error('No se encontró switchId');
+                return;
+            }
+            
+            const nombreArea = modalDeshabilitar.querySelector('span.font-medium')?.textContent.replace(/"/g, '') || 'Área';
             
             document.querySelectorAll('.border').forEach(card => {
                 if (card.getAttribute('data-id') === switchId) {
                     const switchEl = card.querySelector('.switch-sena');
-                    switchEl.classList.remove('active');
-                    switchEl.setAttribute('title', 'Inactivo');
+                    if (switchEl) {
+                        // Cambiar clases de estado
+                        switchEl.classList.remove('active');
+                        switchEl.setAttribute('title', 'Inactivo');
+                        
+                        // Si el switch es un <i> con data-lucide, actualizar el ícono
+                        if (switchEl.tagName === 'I' && switchEl.hasAttribute('data-lucide')) {
+                            switchEl.setAttribute('data-lucide', 'toggle-left');
+                            // Cambiar colores (opcional, según tu CSS)
+                            switchEl.classList.remove('text-green-600', 'hover:text-green-700');
+                            switchEl.classList.add('text-gray-400', 'hover:text-gray-500');
+                        } else {
+                            // Si es un contenedor, buscar el ícono dentro
+                            const icon = switchEl.querySelector('[data-lucide]');
+                            if (icon) {
+                                icon.setAttribute('data-lucide', 'toggle-left');
+                                icon.classList.remove('text-green-600', 'hover:text-green-700');
+                                icon.classList.add('text-gray-400', 'hover:text-gray-500');
+                            }
+                        }
+                        
+                        // Refrescar Lucide
+                        if (typeof lucide !== 'undefined') {
+                            lucide.createIcons();
+                        }
+                    }
                 }
             });
             
@@ -389,7 +418,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     switchEl.setAttribute('title', 'Activo');
                 }
             });
-            
+
             cerrarModal(modalHabilitar);
             mostrarModalHabilitado(nombreArea);
         });
