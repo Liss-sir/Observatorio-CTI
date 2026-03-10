@@ -8,7 +8,7 @@ document.addEventListener("DOMContentLoaded", function () {
     
     // ===== MODALES PARA HABILITAR =====
     const modalHabilitar = document.getElementById('modal-habilitar-perfil');
-    const btnConfirmarHabilitar = document.getElementById('modal-habilitado-confirmacion');   
+    const btnConfirmarHabilitar = document.getElementById('btn-confirmar-habilitar');   
     const nombrePerfilHabilitarSpan = document.getElementById('nombre-perfil-habilitar');
     const nombrePerfilHabilitadoExitoSpan = document.getElementById('nombre-perfil-habilitado-exito');
 
@@ -234,161 +234,82 @@ document.addEventListener("DOMContentLoaded", function () {
         }, 6000);
     }
 
-    // ===== MANEJAR CLICKS EN SWITCHES =====
-    function inicializarSwitches() {
-        document.querySelectorAll('.switch-sena').forEach(switchEl => {
-            // Remover eventos anteriores
-            switchEl.removeEventListener('click', handleSwitchClick);
-            // Agregar nuevo evento
-            switchEl.addEventListener('click', handleSwitchClick);
-        });
-    }
+    // ===== EVENTOS PARA SWITCHES =====
+    document.querySelectorAll('.switch-sena').forEach(switchEl => {
+        switchEl.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
 
-    function handleSwitchClick(e) {
-        e.preventDefault();
-        e.stopPropagation();
-        
-        const switchEl = this;
-        
-        // Obtener el nombre del perfil
-        const cardPerfil = switchEl.closest('.border');
-        let nombrePerfil = "Perfil";
-        
-        if (cardPerfil) {
-            const nombreElement = cardPerfil.querySelector('.font-semibold.text-gray-800');
-            if (nombreElement) {
-                nombrePerfil = nombreElement.textContent.trim();
-            }
-        }
-        
-        // Verificar el estado ACTUAL del switch
-        const estaActivo = switchEl.classList.contains('active');
-        
-        console.log('Switch clickeado - Estado:', estaActivo ? 'ACTIVO' : 'INACTIVO', 'Perfil:', nombrePerfil);
-        
-        if (estaActivo) {
-            // Switch ACTIVO → DESHABILITAR
-            if (modalDeshabilitar) {
-                // Actualizar el texto del perfil en el modal
-                const perfilSpan = modalDeshabilitar.querySelector('span.font-medium.text-sena-text-main, span.font-medium');
-                if (perfilSpan) {
-                    perfilSpan.textContent = `"${nombrePerfil}"`;
-                }
-                
-                if (btnConfirmarDeshabilitar) {
-                    btnConfirmarDeshabilitar.setAttribute('data-nombre-perfil', nombrePerfil);
-                }
+            const card = this.closest('.border');
+            const nombrePrograma = card.querySelector('.font-semibold').textContent;
+
+            // GUARDAR EL ID DEL CARD
+            const id = card.getAttribute('data-id');
+
+            if (this.classList.contains('active')) {
+
+                const spanNombre = modalDeshabilitar.querySelector('span.font-medium');
+                if (spanNombre) spanNombre.textContent = `"${nombrePrograma}"`;
+
+                modalDeshabilitar.setAttribute('data-switch-id', id);
                 abrirModal(modalDeshabilitar);
-            }
-        } else {
-            // Switch INACTIVO → HABILITAR
-            if (modalHabilitar) {
-                // Actualizar el texto del perfil en el modal de habilitar
-                if (nombrePerfilHabilitarSpan) {
-                    nombrePerfilHabilitarSpan.textContent = `"${nombrePerfil}"`;
-                } else {
-                    const perfilSpanHabilitar = modalHabilitar.querySelector('span.font-medium');
-                    if (perfilSpanHabilitar) {
-                        perfilSpanHabilitar.textContent = `"${nombrePerfil}"`;
-                    }
-                }
-                
-                if (btnConfirmarHabilitar) {
-                    btnConfirmarHabilitar.setAttribute('data-nombre-perfil', nombrePerfil);
-                }
+
+            } else {
+
+                const spanNombre = modalHabilitar.querySelector('span.font-semibold');
+                if (spanNombre) spanNombre.textContent = `"${nombrePrograma}"`;
+
+                modalHabilitar.setAttribute('data-switch-id', id);
+                modalHabilitar.setAttribute('data-nombre-programa', nombrePrograma);
+
                 abrirModal(modalHabilitar);
             }
-        }
-    }
-
-    // Inicializar switches
-    inicializarSwitches();
+        });
+    });
 
     // ===== CONFIRMAR DESHABILITAR =====
     if (btnConfirmarDeshabilitar) {
         btnConfirmarDeshabilitar.addEventListener('click', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            
-            const nombrePerfil = this.getAttribute('data-nombre-perfil') || "Perfil";
-            
-            console.log('Confirmando deshabilitar - Perfil:', nombrePerfil);
-            
-            // Cambiar el estado del switch
-            let switchEncontrado = false;
-            document.querySelectorAll('.switch-sena').forEach(switchEl => {
-                const cardPerfil = switchEl.closest('.border');
-                if (cardPerfil) {
-                    const nombreElement = cardPerfil.querySelector('.font-semibold.text-gray-800');
-                    if (nombreElement && nombreElement.textContent.trim() === nombrePerfil) {
-                        // Cambiar a inactivo
-                        switchEl.classList.remove('active');
-                        switchEl.setAttribute('title', 'Inactivo');
-                        switchEl.setAttribute('data-lucide', 'toggle-left');
-                        switchEl.classList.remove('text-green-600', 'hover:text-green-700');
-                        switchEl.classList.add('text-gray-400', 'hover:text-gray-500');
-                        console.log('Switch cambiado a gris para:', nombrePerfil);
-                        switchEncontrado = true;
-                    }
+        e.preventDefault();
+
+        const switchId = modalDeshabilitar.getAttribute('data-switch-id');
+
+        document.querySelectorAll('.border').forEach(card => {
+            if (card.getAttribute('data-id') === switchId) {
+
+                const switchEl = card.querySelector('.switch-sena');
+
+                if (switchEl) {
+                    switchEl.classList.remove('active');
+                    switchEl.setAttribute('title', 'Inactivo');
                 }
-            });
-            
-            if (!switchEncontrado) {
-                console.log('No se encontró el switch para:', nombrePerfil);
             }
-            
-            // Reinicializar iconos de Lucide
-            lucide.createIcons();
-            
-            // Cerrar modal de confirmación
-            cerrarModal(modalDeshabilitar);
-            
-            // Mostrar modal de éxito
-            mostrarModalDeshabilitado(nombrePerfil);
         });
+
+        cerrarModal(modalDeshabilitar);
+    });
     }
-    
+
     // ===== CONFIRMAR HABILITAR =====
     if (btnConfirmarHabilitar) {
         btnConfirmarHabilitar.addEventListener('click', function(e) {
             e.preventDefault();
-            e.stopPropagation();
-            
-            const nombrePerfil = this.getAttribute('data-nombre-perfil') || "Perfil";
-            
-            console.log('Confirmando habilitar - Perfil:', nombrePerfil);
-            
-            // Cambiar el estado del switch
-            let switchEncontrado = false;
-            document.querySelectorAll('.switch-sena').forEach(switchEl => {
-                const cardPerfil = switchEl.closest('.border');
-                if (cardPerfil) {
-                    const nombreElement = cardPerfil.querySelector('.font-semibold.text-gray-800');
-                    if (nombreElement && nombreElement.textContent.trim() === nombrePerfil) {
-                        // Cambiar a activo
+
+            const switchId = modalHabilitar.getAttribute('data-switch-id');
+
+            document.querySelectorAll('.border').forEach(card => {
+                if (card.getAttribute('data-id') === switchId) {
+
+                    const switchEl = card.querySelector('.switch-sena');
+
+                    if (switchEl) {
                         switchEl.classList.add('active');
                         switchEl.setAttribute('title', 'Activo');
-                        switchEl.setAttribute('data-lucide', 'toggle-right');
-                        switchEl.classList.remove('text-gray-400', 'hover:text-gray-500');
-                        switchEl.classList.add('text-green-600', 'hover:text-green-700');
-                        console.log('Switch cambiado a verde para:', nombrePerfil);
-                        switchEncontrado = true;
                     }
                 }
             });
-            
-            if (!switchEncontrado) {
-                console.log('No se encontró el switch para:', nombrePerfil);
-            }
-            
-            // Reinicializar iconos de Lucide
-            lucide.createIcons();
-            
-            // Cerrar modal de confirmación
+
             cerrarModal(modalHabilitar);
-            
-            // Mostrar modal de éxito
-            mostrarModalHabilitado(nombrePerfil);
         });
     }
 
