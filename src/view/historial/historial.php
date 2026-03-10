@@ -39,12 +39,19 @@ include __DIR__ . '../../../includes/header.php';
     <div class="max-w-[80rem] mx-auto px-4 py-8 lg:px-8">
       
       <!-- Título -->
+<<<<<<< HEAD
       <div class="flex items-center gap-3 mb-6">
         <div class="w-10 h-10 shrink-0 rounded-full border border-sena-border flex items-center justify-center bg-white">
           <svg class="w-[17px] h-[17px] text-sena-text-soft" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" d="M3 12a9 9 0 1 0 3-6.708" />
             <path stroke-linecap="round" stroke-linejoin="round" d="M3 3v6h6" />
             <path stroke-linecap="round" stroke-linejoin="round" d="M12 7v5l3 2" />
+=======
+      <div class="flex items-start gap-3 mb-6">
+        <div class="w-10 h-10 rounded-full border border-sena-border flex items-center justify-center bg-white mt-0.5">
+          <svg class="w-5 h-5 text-sena-text-soft" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+>>>>>>> 134e7da (feat(historial):history view preview)
           </svg>
         </div>
         <div>
