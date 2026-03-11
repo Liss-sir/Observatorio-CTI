@@ -11,9 +11,10 @@ echo <<<'HTML'
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Observatorio de Perfiles Tecnológicos</title>
 
-  <!-- Tailwind -->
+  <!-- Tailwind and Style-->
   <link rel="stylesheet" href="../../../assets/css/output.css">
   <link rel="stylesheet" href="../../assets/css/landing/landing.css">
+  <link rel="stylesheet" href="../../assets/css/globals.css">
 
   <!-- Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@600;700;800&display=swap" rel="stylesheet" />
@@ -82,7 +83,7 @@ echo <<<'HTML'
 
       <div class="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <!-- Card 1 -->
-        <article class="group cursor-pointer rounded-xl border border-sena-border bg-white p-4 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-sena-strong hover:shadow-lg">
+        <article class="tarjeta-tecnologia group cursor-pointer rounded-xl border border-sena-border bg-white p-4 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-sena-strong hover:shadow-lg">
           <div class="flex items-center justify-between">
             <span class="rounded-full bg-sena-soft px-2.5 py-0.5 text-[10px] font-extrabold text-sena-strong">
               Tecnologías de
@@ -114,7 +115,7 @@ echo <<<'HTML'
         </article>
 
         <!-- Card 2 -->
-        <article class="group cursor-pointer rounded-xl border border-sena-border bg-white p-4 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-sena-strong hover:shadow-lg">
+        <article class="tarjeta-tecnologia group cursor-pointer rounded-xl border border-sena-border bg-white p-4 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-sena-strong hover:shadow-lg">
           <div class="flex items-center justify-between">
             <span class="rounded-full bg-sena-soft px-2.5 py-0.5 text-[10px] font-extrabold text-sena-strong">Tecnologías de</span>
             <span class="rounded-full bg-sena-soft px-2 py-0.5 text-[10px] font-extrabold text-sena-strong">Vigente</span>
@@ -142,7 +143,7 @@ echo <<<'HTML'
         </article>
 
         <!-- Card 3 -->
-        <article class="group cursor-pointer rounded-xl border border-sena-border bg-white p-4 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-sena-strong hover:shadow-lg">
+        <article class="tarjeta-tecnologia group cursor-pointer rounded-xl border border-sena-border bg-white p-4 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-sena-strong hover:shadow-lg">
           <div class="flex items-center justify-between">
             <span class="rounded-full bg-sena-soft px-2.5 py-0.5 text-[10px] font-extrabold text-sena-strong">Tecnologías de</span>
             <span class="rounded-full bg-sena-soft px-2 py-0.5 text-[10px] font-extrabold text-sena-strong">Vigente</span>
@@ -170,7 +171,7 @@ echo <<<'HTML'
         </article>
 
         <!-- Card 4 -->
-        <article class="group cursor-pointer rounded-xl border border-sena-border bg-white p-4 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-sena-strong hover:shadow-lg">
+        <article class="tarjeta-tecnologia group cursor-pointer rounded-xl border border-sena-border bg-white p-4 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-sena-strong hover:shadow-lg">
           <div class="flex items-center justify-between">
             <span class="rounded-full bg-sena-soft px-2.5 py-0.5 text-[10px] font-extrabold text-sena-strong">Tecnologías de</span>
             <span class="rounded-full bg-sena-soft px-2 py-0.5 text-[10px] font-extrabold text-sena-strong">Vigente</span>
@@ -210,7 +211,7 @@ echo <<<'HTML'
 
       <div class="mt-5 grid w-full grid-cols-1 gap-4 md:grid-cols-4">
         <!-- TIC -->
-        <article class="group cursor-pointer rounded-xl border border-sena-border bg-white p-5 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-sena-strong hover:shadow-md">
+        <article class="tarjeta-tecnologia group cursor-pointer rounded-xl border border-sena-border bg-white p-5 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-sena-strong hover:shadow-md">
           <div class="flex h-full items-center gap-4">
             <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-sena-soft text-sm font-extrabold text-sena-strong transition-colors duration-200 group-hover:bg-sena-strong">
               TIC
@@ -225,7 +226,7 @@ echo <<<'HTML'
         </article>
 
         <!-- BIO -->
-        <article class="group cursor-pointer rounded-xl border border-sena-border bg-white p-5 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-sena-strong hover:shadow-md">
+        <article class="tarjeta-tecnologia group cursor-pointer rounded-xl border border-sena-border bg-white p-5 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-sena-strong hover:shadow-md">
           <div class="flex h-full items-center gap-4">
             <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-sena-soft text-sm font-extrabold text-sena-strong transition-colors duration-200 group-hover:bg-sena-strong">
               BIO
@@ -238,7 +239,7 @@ echo <<<'HTML'
         </article>
 
         <!-- DIS -->
-        <article class="group cursor-pointer rounded-xl border border-sena-border bg-white p-5 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-sena-strong hover:shadow-md">
+        <article class="tarjeta-tecnologia group cursor-pointer rounded-xl border border-sena-border bg-white p-5 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-sena-strong hover:shadow-md">
           <div class="flex h-full items-center gap-4">
             <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-sena-soft text-sm font-extrabold text-sena-strong transition-colors duration-200 group-hover:bg-sena-strong">
               DIS
@@ -251,7 +252,7 @@ echo <<<'HTML'
         </article>
 
         <!-- PRO -->
-        <article class="group cursor-pointer rounded-xl border border-sena-border bg-white p-5 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-sena-strong hover:shadow-md">
+        <article class="tarjeta-tecnologia group cursor-pointer rounded-xl border border-sena-border bg-white p-5 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-sena-strong hover:shadow-md">
           <div class="flex h-full items-center gap-4">
             <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-sena-soft text-sm font-extrabold text-sena-strong transition-colors duration-200 group-hover:bg-sena-strong">
               PRO
@@ -275,7 +276,7 @@ echo <<<'HTML'
 
       <div class="mt-5 grid grid-cols-2 gap-4 md:grid-cols-5">
         <!-- item 1 -->
-        <div class="group cursor-pointer rounded-xl border border-sena-border bg-white p-5 text-center shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-sena-strong hover:shadow-md">
+        <div class="tarjeta-tecnologia group cursor-pointer rounded-xl border border-sena-border bg-white p-5 text-center shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-sena-strong hover:shadow-md">
           <div class="mx-auto flex h-10 w-10 items-center justify-center rounded-full bg-sena-soft text-sena-strong transition-colors duration-200 group-hover:bg-sena-strong">
             <i data-lucide="sparkles" class="h-4 w-4"></i>
           </div>
@@ -284,7 +285,7 @@ echo <<<'HTML'
         </div>
 
         <!-- item 2 -->
-        <div class="group cursor-pointer rounded-xl border border-sena-border bg-white p-5 text-center shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-sena-strong hover:shadow-md">
+        <div class="tarjeta-tecnologia group cursor-pointer rounded-xl border border-sena-border bg-white p-5 text-center shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-sena-strong hover:shadow-md">
           <div class="mx-auto flex h-10 w-10 items-center justify-center rounded-full bg-sena-soft text-sena-strong transition-colors duration-200 group-hover:bg-sena-strong">
             <i data-lucide="link" class="h-4 w-4"></i>
           </div>
@@ -293,7 +294,7 @@ echo <<<'HTML'
         </div>
 
         <!-- item 3 -->
-        <div class="group cursor-pointer rounded-xl border border-sena-border bg-white p-5 text-center shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-sena-strong hover:shadow-md">
+        <div class="tarjeta-tecnologia group cursor-pointer rounded-xl border border-sena-border bg-white p-5 text-center shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-sena-strong hover:shadow-md">
           <div class="mx-auto flex h-10 w-10 items-center justify-center rounded-full bg-sena-soft text-sena-strong transition-colors duration-200 group-hover:bg-sena-strong">
             <i data-lucide="wifi" class="h-4 w-4"></i>
           </div>
@@ -302,7 +303,7 @@ echo <<<'HTML'
         </div>
 
         <!-- item 4 -->
-        <div class="group cursor-pointer rounded-xl border border-sena-border bg-white p-5 text-center shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-sena-strong hover:shadow-md">
+        <div class="tarjeta-tecnologia group cursor-pointer rounded-xl border border-sena-border bg-white p-5 text-center shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-sena-strong hover:shadow-md">
           <div class="mx-auto flex h-10 w-10 items-center justify-center rounded-full bg-sena-soft text-sena-strong transition-colors duration-200 group-hover:bg-sena-strong">
             <i data-lucide="cloud" class="h-4 w-4"></i>
           </div>
@@ -311,7 +312,7 @@ echo <<<'HTML'
         </div>
 
         <!-- item 5 -->
-        <div class="group cursor-pointer rounded-xl border border-sena-border bg-white p-5 text-center shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-sena-strong hover:shadow-md">
+        <div class="tarjeta-tecnologia group cursor-pointer rounded-xl border border-sena-border bg-white p-5 text-center shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-sena-strong hover:shadow-md">
           <div class="mx-auto flex h-10 w-10 items-center justify-center rounded-full bg-sena-soft text-sena-strong transition-colors duration-200 group-hover:bg-sena-strong">
             <i data-lucide="shield" class="h-4 w-4"></i>
           </div>
