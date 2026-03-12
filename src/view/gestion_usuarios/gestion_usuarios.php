@@ -26,35 +26,39 @@ include __DIR__ . '../../../includes/header.php';
 
     <!-- CARDS -->
     <div class="grid grid-cols-3 gap-4 mb-6">
-
-        <div class="rounded-lg border-2 border-emerald-500 bg-emerald-50 p-4">
-            <p id="total-usuarios" class="text-2xl font-bold text-gray-900">
-            0
-            </p>
-            <p class="text-sm text-gray-500">
-            Total usuarios
-            </p>
+        <div id="card-todos"
+          onclick="filtrarUsuarios('todos')"
+          class="card-dashboard cursor-pointer p-6 rounded-xl shadow border border-gray rounded-xl p-6 flex flex-col items-start">
+          <span id="total-usuarios" class="text-3xl font-bold">
+              0
+          </span>
+          <span class="text-sm text-gray-700 tracking-wide">
+              TOTAL USUARIOS
+          </span>
         </div>
 
-        <div class="rounded-lg border border-gray-200 bg-white p-4">
-            <p id="usuarios-activos" class="text-2xl font-bold text-gray-900">
-            0
-            </p>
-            <p class="text-sm text-gray-500">
-            Activos
-            </p>
+        <div id="card-activos" 
+          onclick="filtrarUsuarios('activos')" 
+          class="card-dashboard cursor-pointer p-6 rounded-xl shadow border border-gray rounded-xl p-6 flex flex-col items-start">
+          <span id="usuarios-activos" class="text-3xl font-bold">
+              0
+          </span>
+          <span class="text-sm text-gray-700 tracking-wide">
+              ACTIVOS
+          </span>
         </div>
 
-        <div class="rounded-lg border border-gray-200 bg-white p-4">
-            <p id="usuarios-inactivos" class="text-2xl font-bold text-gray-900">
+        <div id="card-inactivos" 
+          onclick="filtrarUsuarios('inactivos')" 
+          class="card-dashboard cursor-pointer p-6 rounded-xl shadow border border-gray rounded-xl p-6 flex flex-col items-start">
+          <span id="usuarios-inactivos" class="text-3xl font-bold">
             0
-            </p>
-            <p class="text-sm text-gray-500">
-            Inactivos
-            </p>
+          </span>
+          <span class="text-sm text-gray-700 tracking-wide">
+              INACTIVOS
+          </span>
         </div>
-
-    </div>
+      </div>
 
     <!-- BUSCADOR -->
     <div class="flex-1 items-center gap-3 mb-6">
@@ -104,10 +108,16 @@ include __DIR__ . '../../../includes/header.php';
       </table>
     </div>
   </div>
+
+<?php include 'modal-deshabilitar-usuario.php'; ?>
+<?php include 'modal-habilitar-usuario.php'; ?>
+<?php include 'modal-habilitado-usuario.php'; ?>
+<?php include 'modal-deshabilitado-usuario.php'; ?>
+<?php include 'modal-detalle-usuario.php'; ?>
   <!-- JS -->
 <script src="../../assets/js/usuarios.js"></script>
 </body>
+
 </html>
-<?php include 'modal_deshabilitar_usuario.php'; ?>
-<?php include 'modal_habilitar_usuario.php'; ?>
+
 <?php include __DIR__ . '../../../includes/footer.php'; ?>
