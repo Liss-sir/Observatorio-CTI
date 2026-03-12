@@ -107,8 +107,12 @@ class ProgramaFormacionModel {
             return $ok ? (int)$this->conn->lastInsertId() : false;
 
         } catch (Exception $e) {
-            return false;
-        }
+            echo json_encode([
+        "success" => false,
+        "error" => $e->getMessage()
+        ]);
+        exit;
+    }
     }
 
     // Update program exist

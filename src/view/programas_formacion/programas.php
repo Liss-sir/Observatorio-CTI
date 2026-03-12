@@ -77,8 +77,8 @@ $programas = [
     <link rel="stylesheet" href="../../../assets/css/output.css">
     <link rel="stylesheet" href="../../assets/css/globals.css">
 </head>
-<body class="bg-gray-100">
 
+<body class="bg-gray-100">
 <div class="max-w-[82rem] mx-auto px-4 py-8 lg:px-8">
 
     <!-- Header -->

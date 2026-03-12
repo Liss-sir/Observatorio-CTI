@@ -170,7 +170,7 @@ class UsuarioController {
 
 /* ================= ROUTER ================= */
 
-$accion = $_GET['accion'] ?? null;
+$accion = $_REQUEST['accion'] ?? null;
 $id = $_GET['id_usuario'] ?? null;
 
 // Verificar que la conexión existe
