@@ -11,6 +11,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const btnConfirmarHabilitar = document.getElementById('btn-confirmar-habilitar');   
     const nombrePerfilHabilitarSpan = document.getElementById('nombre-perfil-habilitar');
     const nombrePerfilHabilitadoExitoSpan = document.getElementById('nombre-perfil-habilitado-exito');
+    const modalHabilitadoConfirmacion = document.getElementById('modal-habilitado-confirmacion');
 
     // ===== MODALES PROGRAMA DE FORMACION ======
     const btnCrearPrograma = document.getElementById("btn-abrir-crear-programa");
