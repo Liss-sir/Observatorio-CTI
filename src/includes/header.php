@@ -314,14 +314,9 @@ function nav_classes(string $target): string {
           </div>
 
         </div>
-
-        <a href="../../view/lineas_tecnologicas/lineas_tecnologicas.php"
-               class="px-3 py-2 rounded-l-md text-sm font-medium text-sena-text-muted hover:text-sena transition-colors duration-200">
-              Lineas Tecnologicas
-            </a>
-
+        <a href="../../view/lineas_tecnologicas/lineas_tecnologicas.php" class="<?= nav_classes('lineas_tecnologicas.php') ?>">Líneas Tecnológicas</a>
         <a href="gestion-perfiles.html" class="<?= nav_classes('gestion-perfiles.html') ?>">Gestión Perfiles</a>
-        <a href="sugerencias.html" class="<?= nav_classes('sugerencias.html') ?>">Sugerencias</a>
+        <a href="../../view/sugerencias/sugerencias.php" class="<?= nav_classes('sugerencias.php') ?>">Sugerencias</a>
         <a href="historial.html" class="<?= nav_classes('historial.html') ?>">Historial</a>
       </nav>
 
