@@ -327,7 +327,7 @@ function nav_classes(string $target): string {
 
         <a href="../../view/gestion_usuarios/gestion_usuarios.php" class="<?= nav_classes('gestion_usuarios.php') ?>">Gestión Perfiles</a>
         <a href="sugerencias.html" class="<?= nav_classes('sugerencias.html') ?>">Sugerencias</a>
-        <a href="historial.html" class="<?= nav_classes('historial.html') ?>">Historial</a>
+        <a href="../../view/historial/historial.php" class="<?= nav_classes('historial.php') ?>">Historial</a>
       </nav>
 
       <!-- BOTONES -->

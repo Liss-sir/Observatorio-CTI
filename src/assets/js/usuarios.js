@@ -315,7 +315,7 @@ document.addEventListener("DOMContentLoaded", () => {
         abrirModal(modalDeshabilitado);
         
         // Resetear contador
-        let segundos = 6;
+        let segundos = 3;
         const contador = document.getElementById('contador-segundos-deshabilitado');
         if (contador) {
             contador.textContent = segundos;
@@ -352,7 +352,7 @@ document.addEventListener("DOMContentLoaded", () => {
         
         timeoutDeshabilitado = setTimeout(() => {
             cerrarModalDeshabilitado();
-        }, 6000);
+        }, 3000);
     }
 
     // ===== FUNCIÓN PARA MOSTRAR MODAL HABILITADO =====
@@ -371,7 +371,7 @@ document.addEventListener("DOMContentLoaded", () => {
         abrirModal(modalHabilitado);
         
         // Resetear contador
-        let segundos = 6;
+        let segundos = 3;
         const contador = document.getElementById('contador-segundos');
         if (contador) {
             contador.textContent = segundos;
@@ -408,7 +408,7 @@ document.addEventListener("DOMContentLoaded", () => {
         
         timeoutHabilitado = setTimeout(() => {
             cerrarModalHabilitado();
-        }, 6000);
+        }, 3000);
   }
 
   // ===== FUNCIÓN PARA CERRAR MODAL DESHABILITADO =====

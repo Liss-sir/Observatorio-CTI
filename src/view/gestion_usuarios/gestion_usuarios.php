@@ -62,11 +62,14 @@ include __DIR__ . '../../../includes/header.php';
 
     <!-- BUSCADOR -->
     <div class="flex-1 items-center gap-3 mb-6">
+      <div class="relative flex-1">
+      <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-sena-text-soft pointer-events-none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
       <input
         type="text"
         placeholder="Buscar usuario por nombre, email o empresa..."
         class="w-full rounded-lg border border-gray-200 bg-white py-2 pl-10 pr-4 text-sm focus:border-emerald-500 focus:outline-none"
       />
+      </div>
     </div>
 
     <!-- FILTRO -->
