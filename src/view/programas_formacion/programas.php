@@ -76,6 +76,8 @@ $programas = [
     <script src="https://unpkg.com/lucide@latest"></script>
     <link rel="stylesheet" href="../../../assets/css/output.css">
     <link rel="stylesheet" href="../../assets/css/globals.css">
+    <link rel="stylesheet" href="../../../assets/css/output.css">
+    <link rel="stylesheet" href="../../assets/css/globals.css">
 </head>
 
 <body class="bg-gray-100">
@@ -97,8 +99,18 @@ $programas = [
           <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-sena-text-soft pointer-events-none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
           <input type="text" id="buscador" class="w-full h-10 pl-10 pr-3 text-sm border border-sena-border rounded-lg bg-white text-sena-text-main placeholder:text-sena-text-soft focus:border-sena focus:ring-2 focus:ring-sena/15 outline-none transition-all" placeholder="Buscar por nombre o codigo">
         </div>
+        
+    </div>
+
+    <!-- Buscador -->
+    <div class="flex items-center gap-3 mb-6">
+        <div class="relative flex-1">
+          <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-sena-text-soft pointer-events-none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+          <input type="text" id="buscador" class="w-full h-10 pl-10 pr-3 text-sm border border-sena-border rounded-lg bg-white text-sena-text-main placeholder:text-sena-text-soft focus:border-sena focus:ring-2 focus:ring-sena/15 outline-none transition-all" placeholder="Buscar por nombre o codigo">
+        </div>
         <button
             id="btn-abrir-crear-programa"
+            class="flex items-center gap-2 px-5 py-2 text-sm font-medium text-white bg-sena rounded-lg whitespace-nowrap h-10 hover:opacity-90 transition-opacity animate-button-in">
             class="flex items-center gap-2 px-5 py-2 text-sm font-medium text-white bg-sena rounded-lg whitespace-nowrap h-10 hover:opacity-90 transition-opacity animate-button-in">
             <i data-lucide="plus" class="w-4 h-4"></i>
             Nuevo Programa
@@ -167,6 +179,11 @@ $programas = [
                         <span class="flex items-center">Area: Teleinformatica y telecomunicaciones</span>
                     </div>
                     <div class="flex items-center gap-2 flex-wrap">
+                        <span class="flex items-center"><?= $programa['cupos'] ?> cupos</span>
+                        <span class="text-gray-300 mx-2">|</span>                        
+                        <span class="flex items-center">Area: Teleinformatica y telecomunicaciones</span>
+                    </div>
+                    <div class="flex items-center gap-2 flex-wrap">
                         <span class="flex items-center gap-1">
                             <i data-lucide="calendar" class="w-3 h-3"></i>
                             <?= $programa['inicio'] ?>
@@ -177,7 +194,6 @@ $programas = [
                             <?= $programa['fin'] ?>
                         </span>
                     </div>
-                    <span>Area: Teleinformatica y telecomunicaciones</span>
                 </div>
             </div>
         <?php endforeach; ?>
@@ -191,7 +207,7 @@ $programas = [
     lucide.createIcons();
 </script>
 
-<script src="/observatorio/Observatorio-CTI/src/assets/js/programas.js"></script>
+<script src="../../assets/js/programas.js"></script>
 </body>
 </html>
 <?php include __DIR__ . '../../../includes/footer.php'; ?>

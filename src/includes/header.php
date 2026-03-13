@@ -144,11 +144,6 @@ function nav_classes(string $target): string {
             <span class="block w-px h-7 bg-sena-border" aria-hidden="true"></span>
             <img src="../../assets/img/logo-sena-verde-complementario-png-2022.png" alt="logo-sena-verde" class="h-7 w-auto block">
           </div>
-          <div>
-            <p class="font-[Montserrat] text-sm font-bold leading-tight">
-              SENA
-            </p>
-          </div>
         </div>
       </a>
 
@@ -319,14 +314,9 @@ function nav_classes(string $target): string {
           </div>
 
         </div>
-
-        <a href="../../view/lineas_tecnologicas/lineas_tecnologicas.php"
-               class="px-3 py-2 rounded-l-md text-sm font-medium text-sena-text-muted hover:text-sena transition-colors duration-200">
-              Lineas Tecnologicas
-          </a>
-
+        <a href="../../view/lineas_tecnologicas/lineas_tecnologicas.php" class="<?= nav_classes('lineas_tecnologicas.php') ?>">Líneas Tecnológicas</a>
         <a href="../../view/gestion_usuarios/gestion_usuarios.php" class="<?= nav_classes('gestion_usuarios.php') ?>">Gestión Perfiles</a>
-        <a href="sugerencias.html" class="<?= nav_classes('sugerencias.html') ?>">Sugerencias</a>
+        <a href="../../view/sugerencias/sugerencias.php" class="<?= nav_classes('sugerencias.php') ?>">Sugerencias</a>
         <a href="../../view/historial/historial.php" class="<?= nav_classes('historial.php') ?>">Historial</a>
       </nav>
 

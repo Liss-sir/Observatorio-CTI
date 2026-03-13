@@ -77,6 +77,7 @@ echo <<<'HTML'
         </div>
 
         <a class="inline-flex items-center gap-2 text-sm font-bold text-sena-strong" href="#">
+        <a class="inline-flex items-center gap-2 text-sm font-bold text-sena-strong" href="#">
           Ver todos <i data-lucide="arrow-right" class="h-4 w-4"></i>
         </a>
       </div>
@@ -85,6 +86,7 @@ echo <<<'HTML'
         <!-- Card 1 -->
         <article class="tarjeta-tecnologia group cursor-pointer rounded-xl border border-sena-border bg-white p-4 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-sena-strong hover:shadow-lg">
           <div class="flex items-center justify-between">
+            <span class="rounded-full bg-sena-soft px-2.5 py-0.5 text-[10px] font-extrabold text-sena-strong">
             <span class="rounded-full bg-sena-soft px-2.5 py-0.5 text-[10px] font-extrabold text-sena-strong">
               Tecnologías de
             </span>
@@ -98,6 +100,7 @@ echo <<<'HTML'
           </h3>
 
           <p class="mt-1 text-xs font-semibold text-sena-text-muted transition-colors duration-200">
+          <p class="mt-1 text-xs font-semibold text-sena-text-muted transition-colors duration-200">
             Se requiere profesional con experiencia en desarrollo de aplicaciones web complejas…
           </p>
 
@@ -107,6 +110,7 @@ echo <<<'HTML'
           </div>
 
           <div class="mt-4 flex items-center justify-between border-t border-sena-border pt-3">
+            <div class="text-xs font-bold text-sena-text-muted transition-colors duration-200">
             <div class="text-xs font-bold text-sena-text-muted transition-colors duration-200">
               TechColombia S.A.S.
             </div>
@@ -118,6 +122,7 @@ echo <<<'HTML'
         <article class="tarjeta-tecnologia group cursor-pointer rounded-xl border border-sena-border bg-white p-4 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-sena-strong hover:shadow-lg">
           <div class="flex items-center justify-between">
             <span class="rounded-full bg-sena-soft px-2.5 py-0.5 text-[10px] font-extrabold text-sena-strong">Tecnologías de</span>
+            <span class="rounded-full bg-sena-soft px-2.5 py-0.5 text-[10px] font-extrabold text-sena-strong">Tecnologías de</span>
             <span class="rounded-full bg-sena-soft px-2 py-0.5 text-[10px] font-extrabold text-sena-strong">Vigente</span>
           </div>
 
@@ -125,6 +130,7 @@ echo <<<'HTML'
             Especialista en Inteligencia Artificial
           </h3>
 
+          <p class="mt-1 text-xs font-semibold text-sena-text-muted transition-colors duration-200">
           <p class="mt-1 text-xs font-semibold text-sena-text-muted transition-colors duration-200">
             Perfil orientado a profesionales con experiencia en machine learning, deep…
           </p>
@@ -136,6 +142,7 @@ echo <<<'HTML'
 
           <div class="mt-4 flex items-center justify-between border-t border-sena-border pt-3">
             <div class="text-xs font-bold text-sena-text-muted transition-colors duration-200">
+            <div class="text-xs font-bold text-sena-text-muted transition-colors duration-200">
               InnoSoft Ltda.
             </div>
             <!-- <i data-lucide="eye" class="h-4 w-4 text-sena-text-muted transition-colors duration-200"></i> -->
@@ -146,6 +153,7 @@ echo <<<'HTML'
         <article class="tarjeta-tecnologia group cursor-pointer rounded-xl border border-sena-border bg-white p-4 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-sena-strong hover:shadow-lg">
           <div class="flex items-center justify-between">
             <span class="rounded-full bg-sena-soft px-2.5 py-0.5 text-[10px] font-extrabold text-sena-strong">Tecnologías de</span>
+            <span class="rounded-full bg-sena-soft px-2.5 py-0.5 text-[10px] font-extrabold text-sena-strong">Tecnologías de</span>
             <span class="rounded-full bg-sena-soft px-2 py-0.5 text-[10px] font-extrabold text-sena-strong">Vigente</span>
           </div>
 
@@ -153,6 +161,7 @@ echo <<<'HTML'
             Analista de Ciberseguridad
           </h3>
 
+          <p class="mt-1 text-xs font-semibold text-sena-text-muted transition-colors duration-200">
           <p class="mt-1 text-xs font-semibold text-sena-text-muted transition-colors duration-200">
             Se busca profesional para identificar vulnerabilidades, gestionar incidentes de…
           </p>
@@ -182,6 +191,7 @@ echo <<<'HTML'
           </h3>
 
           <p class="mt-1 text-xs font-semibold text-sena-text-muted transition-colors duration-200">
+          <p class="mt-1 text-xs font-semibold text-sena-text-muted transition-colors duration-200">
             Profesional especializado en la creación y mantenimiento de pipelines de datos,…
           </p>
 
@@ -191,6 +201,7 @@ echo <<<'HTML'
           </div>
 
           <div class="mt-4 flex items-center justify-between border-t border-sena-border pt-3">
+            <div class="text-xs font-bold text-sena-text-muted transition-colors duration-200">
             <div class="text-xs font-bold text-sena-text-muted transition-colors duration-200">
               CloudNet Colombia
             </div>
@@ -214,6 +225,7 @@ echo <<<'HTML'
         <article class="tarjeta-tecnologia group cursor-pointer rounded-xl border border-sena-border bg-white p-5 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-sena-strong hover:shadow-md">
           <div class="flex h-full items-center gap-4">
             <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-sena-soft text-sm font-extrabold text-sena-strong transition-colors duration-200 group-hover:bg-sena-strong">
+            <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-sena-soft text-sm font-extrabold text-sena-strong transition-colors duration-200 group-hover:bg-sena-strong">
               TIC
             </div>
             <div class="min-w-0">
@@ -229,6 +241,7 @@ echo <<<'HTML'
         <article class="tarjeta-tecnologia group cursor-pointer rounded-xl border border-sena-border bg-white p-5 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-sena-strong hover:shadow-md">
           <div class="flex h-full items-center gap-4">
             <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-sena-soft text-sm font-extrabold text-sena-strong transition-colors duration-200 group-hover:bg-sena-strong">
+            <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-sena-soft text-sm font-extrabold text-sena-strong transition-colors duration-200 group-hover:bg-sena-strong">
               BIO
             </div>
             <div class="min-w-0">
@@ -242,6 +255,7 @@ echo <<<'HTML'
         <article class="tarjeta-tecnologia group cursor-pointer rounded-xl border border-sena-border bg-white p-5 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-sena-strong hover:shadow-md">
           <div class="flex h-full items-center gap-4">
             <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-sena-soft text-sm font-extrabold text-sena-strong transition-colors duration-200 group-hover:bg-sena-strong">
+            <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-sena-soft text-sm font-extrabold text-sena-strong transition-colors duration-200 group-hover:bg-sena-strong">
               DIS
             </div>
             <div class="min-w-0">
@@ -254,6 +268,7 @@ echo <<<'HTML'
         <!-- PRO -->
         <article class="tarjeta-tecnologia group cursor-pointer rounded-xl border border-sena-border bg-white p-5 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-sena-strong hover:shadow-md">
           <div class="flex h-full items-center gap-4">
+            <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-sena-soft text-sm font-extrabold text-sena-strong transition-colors duration-200 group-hover:bg-sena-strong">
             <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-sena-soft text-sm font-extrabold text-sena-strong transition-colors duration-200 group-hover:bg-sena-strong">
               PRO
             </div>

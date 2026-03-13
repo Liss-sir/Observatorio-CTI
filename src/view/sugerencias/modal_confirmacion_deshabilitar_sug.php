@@ -1,5 +1,5 @@
-<!-- modal_deshabilitar_perfiles.php -->
-<div id="modal-deshabilitado-usuario" class="hidden fixed inset-0 z-50 overflow-y-auto" aria-hidden="true">
+<!-- modal_confirmacion_deshabilitar_sug.php -->
+<div id="modal-deshabilitado-sugerencia" class="hidden fixed inset-0 z-50 overflow-y-auto" aria-hidden="true">
   <!-- Overlay con opacidad suave -->
   <div class="fixed inset-0 bg-black bg-opacity-80 transition-opacity"></div>
 
@@ -17,7 +17,7 @@
             </svg>
           </div>
           <div>
-            <h3 class="text-lg font-semibold text-sena-text-main">¡Usuario Deshabilitado!</h3>
+            <h3 class="text-lg font-semibold text-sena-text-main">¡Sugerencia Deshabilitada!</h3>
             <p class="text-sm text-sena-text-soft">La operación se realizó correctamente</p>
           </div>
         </div>
@@ -25,7 +25,7 @@
         <!-- Content -->
         <div class="px-6 py-5">
           <p class="text-sm text-sena-text-soft leading-relaxed">
-            El usuario <span class="font-semibold text-sena-text-main" id="nombre-perfil-deshabilitado">Usuario</span> ha sido deshabilitado correctamente.
+            La proyección a futuro <span class="font-semibold text-sena-text-main" id="nombre-proyeccion-futuro-deshabilitado">"Desarrollador Full Stack Senior"</span> ha sido deshabilitada correctamente.
           </p>
           
           <!-- Contador de segundos (NUEVO) -->
@@ -38,6 +38,7 @@
           </div>
         </div>
 
+        <!-- Barra de progreso con color SENA (cambiada a 6 segundos) -->
         <div class="h-1.5 bg-gray-100 w-full rounded-b-xl overflow-hidden">
           <div id="progress-bar-deshabilitado" class="h-1 bg-[#39A900] transition-all duration-[3000ms] ease-linear" style="width: 0%;"></div>
         </div>
