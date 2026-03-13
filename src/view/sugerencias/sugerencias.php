@@ -1,4 +1,7 @@
 <?php
+// Temporal: fijamos un ID de usuario por defecto ya que no hay login
+$id_usuario_actual = 1; // ID de usuario fijo para pruebas
+
 include __DIR__ . '../../../includes/header.php';
 include __DIR__ . '/modal_crear_sugerencia.php';
 include __DIR__ . '/modal_confirmar_crear_sugerencia.php';
@@ -190,9 +193,152 @@ include __DIR__ . '/modal_confirmacion_habilitar_sug.php';
     .switch-sena.active::after {
       transform: translateX(16px);
     }
+
+    /* Loader */
+    .loader {
+      border: 3px solid #f3f3f3;
+      border-radius: 50%;
+      border-top: 3px solid #39A900;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+      margin: 20px auto;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    /* Toast Container */
+    #toast-container {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      pointer-events: none;
+    }
+
+    /* Toast Compact - Solo para validaciones */
+    .toast-validation {
+      pointer-events: auto;
+      min-width: 300px;
+      max-width: 340px;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 10px 25px -10px rgba(0, 0, 0, 0.3);
+      overflow: hidden;
+      animation: toastFadeIn 0.25s ease-out forwards;
+      border-left: 4px solid;
+      transform-origin: right;
+    }
+
+    @keyframes toastFadeIn {
+      0% {
+        opacity: 0;
+        transform: translateX(30px);
+      }
+      100% {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    @keyframes toastFadeOut {
+      0% {
+        opacity: 1;
+        transform: translateX(0);
+      }
+      100% {
+        opacity: 0;
+        transform: translateX(30px);
+      }
+    }
+
+    .toast-validation.exit {
+      animation: toastFadeOut 0.2s ease-in forwards;
+    }
+
+    .toast-contenido {
+      display: flex;
+      align-items: center;
+      padding: 14px 18px;
+      gap: 14px;
+    }
+
+    .toast-icono-wrapper {
+      flex-shrink: 0;
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0, 0, 0, 0.04);
+    }
+
+    .toast-icono {
+      width: 20px;
+      height: 20px;
+    }
+
+    .toast-icono svg {
+      width: 100%;
+      height: 100%;
+    }
+
+    .toast-mensaje-wrapper {
+      flex: 1;
+    }
+
+    .toast-titulo {
+      font-size: 14px;
+      font-weight: 600;
+      color: #1f2937;
+      margin-bottom: 2px;
+    }
+
+    .toast-mensaje {
+      font-size: 13px;
+      color: #6b7280;
+      line-height: 1.4;
+    }
+
+    /* Solo mostramos warning y error para validaciones */
+    .toast-validation.warning {
+      border-left-color: #f59e0b;
+      background: linear-gradient(135deg, #fffaf0 0%, #ffffff 100%);
+    }
+    .toast-validation.warning .toast-icono-wrapper {
+      background: rgba(245, 158, 11, 0.1);
+    }
+    .toast-validation.warning .toast-icono svg {
+      color: #f59e0b;
+    }
+
+    .toast-validation.error {
+      border-left-color: #ef4444;
+      background: linear-gradient(135deg, #fff5f5 0%, #ffffff 100%);
+    }
+    .toast-validation.error .toast-icono-wrapper {
+      background: rgba(239, 68, 68, 0.1);
+    }
+    .toast-validation.error .toast-icono svg {
+      color: #ef4444;
+    }
   </style>
 </head>
 <body class="font-['Inter'] text-sena-text-main antialiased min-h-screen flex flex-col">
+
+  <!-- Toast Container -->
+  <div id="toast-container"></div>
 
   <!-- ===== MAIN CONTENT ===== -->
   <main class="flex-1">
@@ -229,7 +375,7 @@ include __DIR__ . '/modal_confirmacion_habilitar_sug.php';
               <line x1="9" y1="21" x2="9" y2="9"></line>
             </svg>
             Todos
-            <span class="contador-badge" id="contador-todos">8</span>
+            <span class="contador-badge" id="contador-todos">0</span>
           </button>
           <button class="filtro-btn" data-filtro="activos">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -237,7 +383,7 @@ include __DIR__ . '/modal_confirmacion_habilitar_sug.php';
               <path d="M12 16v-4M12 8h.01"></path>
             </svg>
             Activos
-            <span class="contador-badge" id="contador-activos">7</span>
+            <span class="contador-badge" id="contador-activos">0</span>
           </button>
           <button class="filtro-btn" data-filtro="inactivos">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -246,7 +392,7 @@ include __DIR__ . '/modal_confirmacion_habilitar_sug.php';
               <line x1="12" y1="16" x2="12.01" y2="16"></line>
             </svg>
             Inactivos
-            <span class="contador-badge" id="contador-inactivos">1</span>
+            <span class="contador-badge" id="contador-inactivos">0</span>
           </button>
         </div>
       </div>
@@ -257,355 +403,20 @@ include __DIR__ . '/modal_confirmacion_habilitar_sug.php';
         <div class="flex-1 min-w-0">
           <!-- Contador de resultados actualizado -->
           <div class="resultados-count">
-            <span class="resultados-badge" id="resultados-count">8 líneas tecnológicas sugeridas</span>
+            <span class="resultados-badge" id="resultados-count">Cargando sugerencias...</span>
             <span class="text-xs text-sena-text-soft" id="filtro-activo">Mostrando todos</span>
           </div>
 
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-3" id="tarjetas-container">
-            <!-- Línea Tecnológica 1 -->
-            <div class="tarjeta-tecnologia border border-sena-border rounded-lg bg-white p-4 hover:border-sena/30 hover:shadow-sm transition-all cursor-pointer" 
-                 data-id="1" 
-                 data-nombre="Transformación Digital y Automatización"
-                 data-descripcion="Las empresas regionales requieren modernizar sus procesos operativos para mantener competitividad global. La automatización digital reduce costos operativos en un 30-40%, mejora la eficiencia y permite a los colaboradores enfocarse en tareas de mayor valor agregado."
-                 data-estado="activo"
-                 data-fecha="2025-2026">
-              <div class="flex items-start justify-between mb-2">
-                <div class="w-10 h-10 bg-sena-soft rounded-lg flex items-center justify-center flex-shrink-0">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5 text-sena">
-                    <path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/>
-                    <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
-                    <line x1="12" x2="12.01" y1="17" y2="17"/>
-                  </svg>
-                </div>
-                <div class="flex items-center gap-1">
-                  <button class="btn-editar-proyeccion p-1.5 rounded-lg text-sena-text-soft hover:bg-sena-soft hover:text-sena transition-colors" title="Editar sugerencia" data-id="1" data-nombre="Transformación Digital y Automatización" data-descripcion="Las empresas regionales requieren modernizar sus procesos operativos para mantener competitividad global. La automatización digital reduce costos operativos en un 30-40%, mejora la eficiencia y permite a los colaboradores enfocarse en tareas de mayor valor agregado.">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4">
-                      <path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/>
-                    </svg>
-                  </button>
-                  <div class="switch-sena active" title="Activo" data-id="1" data-nombre="Transformación Digital y Automatización"></div>
-                </div>
-              </div>
-              <h3 class="font-['Montserrat'] text-sm font-semibold text-sena-text-main mb-1">Transformación Digital y Automatización</h3>
-              <p class="text-xs text-sena-text-soft line-clamp-2">Implementación de soluciones digitales para automatizar procesos empresariales.</p>
-              <hr class="my-3 mt-2 border-sena-border">
-              <div class="flex items-center justify-end gap-2 mt-2 text-xs text-sena-text-soft">
-                <div class="flex items-center gap-1">
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-3 h-3">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
-                  </svg>
-                  <span>Juan López</span>
-                </div>
-                <div class="flex items-center gap-1">
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-3 h-3">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" />
-                  </svg>
-                  <span>15 Feb 2025</span>
-                </div>
-              </div>
-            </div>
+          <!-- Loader -->
+          <div id="loader" class="loader"></div>
 
-            <!-- Línea Tecnológica 2 -->
-            <div class="tarjeta-tecnologia border border-sena-border rounded-lg bg-white p-4 hover:border-sena/30 hover:shadow-sm transition-all cursor-pointer" 
-                 data-id="2" 
-                 data-nombre="Ciberseguridad y Protección de Datos"
-                 data-descripcion="Con el aumento de ataques cibernéticos, las organizaciones deben fortalecer sus defensas. La implementación de ciberseguridad integral protege activos digitales, garantiza cumplimiento normativo y genera confianza en clientes y socios comerciales."
-                 data-estado="activo"
-                 data-fecha="2025-2026">
-              <div class="flex items-start justify-between mb-2">
-                <div class="w-10 h-10 bg-sena-soft rounded-lg flex items-center justify-center flex-shrink-0">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5 text-sena">
-                    <path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/>
-                    <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
-                    <line x1="12" x2="12.01" y1="17" y2="17"/>
-                  </svg>
-                </div>
-                <div class="flex items-center gap-1">
-                  <button class="btn-editar-proyeccion p-1.5 rounded-lg text-sena-text-soft hover:bg-sena-soft hover:text-sena transition-colors" title="Editar sugerencia" data-id="2" data-nombre="Ciberseguridad y Protección de Datos" data-descripcion="Con el aumento de ataques cibernéticos, las organizaciones deben fortalecer sus defensas. La implementación de ciberseguridad integral protege activos digitales, garantiza cumplimiento normativo y genera confianza en clientes y socios comerciales.">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4">
-                      <path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/>
-                    </svg>
-                  </button>
-                  <div class="switch-sena active" title="Activo" data-id="2" data-nombre="Ciberseguridad y Protección de Datos"></div>
-                </div>
-              </div>
-              <h3 class="font-['Montserrat'] text-sm font-semibold text-sena-text-main mb-1">Ciberseguridad y Protección de Datos</h3>
-              <p class="text-xs text-sena-text-soft line-clamp-2">Desarrollo de estrategias integrales de ciberseguridad y protección de datos.</p>
-              <hr class="my-3 mt-2 border-sena-border">
-              <div class="flex items-center justify-end gap-2 mt-2 text-xs text-sena-text-soft">
-                <div class="flex items-center gap-1">
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-3 h-3">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
-                  </svg>
-                  <span>María García</span>
-                </div>
-                <div class="flex items-center gap-1">
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-3 h-3">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" />
-                  </svg>
-                  <span>23 Feb 2025</span>
-                </div>
-              </div>
-            </div>
-
-            <!-- Línea Tecnológica 3 -->
-            <div class="tarjeta-tecnologia border border-sena-border rounded-lg bg-white p-4 hover:border-sena/30 hover:shadow-sm transition-all cursor-pointer" 
-                 data-id="3" 
-                 data-nombre="Internet de las Cosas e Industria 4.0"
-                 data-descripcion="La manufactura regional necesita adoptar soluciones inteligentes para optimizar producción. IoT e Industria 4.0 permiten monitoreo en tiempo real, reducen desperdicios en un 20-25% y mejoran la calidad de productos."
-                 data-estado="activo"
-                 data-fecha="2025-2026">
-              <div class="flex items-start justify-between mb-2">
-                <div class="w-10 h-10 bg-sena-soft rounded-lg flex items-center justify-center flex-shrink-0">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5 text-sena">
-                    <path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/>
-                    <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
-                    <line x1="12" x2="12.01" y1="17" y2="17"/>
-                  </svg>
-                </div>
-                <div class="flex items-center gap-1">
-                  <button class="btn-editar-proyeccion p-1.5 rounded-lg text-sena-text-soft hover:bg-sena-soft hover:text-sena transition-colors" title="Editar sugerencia" data-id="3" data-nombre="Internet de las Cosas e Industria 4.0" data-descripcion="La manufactura regional necesita adoptar soluciones inteligentes para optimizar producción. IoT e Industria 4.0 permiten monitoreo en tiempo real, reducen desperdicios en un 20-25% y mejoran la calidad de productos.">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4">
-                      <path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/>
-                    </svg>
-                  </button>
-                  <div class="switch-sena active" title="Activo" data-id="3" data-nombre="Internet de las Cosas e Industria 4.0"></div>
-                </div>
-              </div>
-              <h3 class="font-['Montserrat'] text-sm font-semibold text-sena-text-main mb-1">Internet de las Cosas e Industria 4.0</h3>
-              <p class="text-xs text-sena-text-soft line-clamp-2">Desarrollo de soluciones IoT para manufactura inteligente y optimización de procesos.</p>
-              <hr class="my-3 mt-2 border-sena-border">
-              <div class="flex items-center justify-end gap-2 mt-2 text-xs text-sena-text-soft">
-                <div class="flex items-center gap-1">
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-3 h-3">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
-                  </svg>
-                  <span>Carlos Rodríguez</span>
-                </div>
-                <div class="flex items-center gap-1">
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-3 h-3">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" />
-                  </svg>
-                  <span>18 Mar 2025</span>
-                </div>
-              </div>
-            </div>
-
-            <!-- Línea Tecnológica 4 -->
-            <div class="tarjeta-tecnologia border border-sena-border rounded-lg bg-white p-4 hover:border-sena/30 hover:shadow-sm transition-all cursor-pointer" 
-                 data-id="4" 
-                 data-nombre="Computación en la Nube y Edge Computing"
-                 data-descripcion="Las pequeñas y medianas empresas requieren infraestructura escalable sin inversión en hardware. La nube ofrece flexibilidad, reduce costos iniciales de TI en un 50% y facilita la expansión de operaciones."
-                 data-estado="activo"
-                 data-fecha="2024-2025">
-              <div class="flex items-start justify-between mb-2">
-                <div class="w-10 h-10 bg-sena-soft rounded-lg flex items-center justify-center flex-shrink-0">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5 text-sena">
-                    <path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/>
-                    <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
-                    <line x1="12" x2="12.01" y1="17" y2="17"/>
-                  </svg>
-                </div>
-                <div class="flex items-center gap-1">
-                  <button class="btn-editar-proyeccion p-1.5 rounded-lg text-sena-text-soft hover:bg-sena-soft hover:text-sena transition-colors" title="Editar sugerencia" data-id="4" data-nombre="Computación en la Nube y Edge Computing" data-descripcion="Las pequeñas y medianas empresas requieren infraestructura escalable sin inversión en hardware. La nube ofrece flexibilidad, reduce costos iniciales de TI en un 50% y facilita la expansión de operaciones.">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4">
-                      <path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/>
-                    </svg>
-                  </button>
-                  <div class="switch-sena active" title="Activo" data-id="4" data-nombre="Computación en la Nube y Edge Computing"></div>
-                </div>
-              </div>
-              <h3 class="font-['Montserrat'] text-sm font-semibold text-sena-text-main mb-1">Computación en la Nube y Edge Computing</h3>
-              <p class="text-xs text-sena-text-soft line-clamp-2">Implementación de infraestructuras cloud y edge computing para procesamiento distribuido.</p>
-              <hr class="my-3 mt-2 border-sena-border">
-              <div class="flex items-center justify-end gap-2 mt-2 text-xs text-sena-text-soft">
-                <div class="flex items-center gap-1">
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-3 h-3">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
-                  </svg>
-                  <span>Ana Martínez</span>
-                </div>
-                <div class="flex items-center gap-1">
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-3 h-3">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" />
-                  </svg>
-                  <span>05 Feb 2025</span>
-                </div>
-              </div>
-            </div>
-
-            <!-- Línea Tecnológica 5 -->
-            <div class="tarjeta-tecnologia border border-sena-border rounded-lg bg-white p-4 hover:border-sena/30 hover:shadow-sm transition-all cursor-pointer" 
-                 data-id="5" 
-                 data-nombre="Análisis de Datos y Big Data"
-                 data-descripcion="Los datos son el activo más valioso para las organizaciones modernas. Capacidad de análisis de datos permite tomar decisiones informadas, identificar oportunidades de mercado y predecir tendencias con precisión."
-                 data-estado="activo"
-                 data-fecha="2025-2026">
-              <div class="flex items-start justify-between mb-2">
-                <div class="w-10 h-10 bg-sena-soft rounded-lg flex items-center justify-center flex-shrink-0">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5 text-sena">
-                    <path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/>
-                    <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
-                    <line x1="12" x2="12.01" y1="17" y2="17"/>
-                  </svg>
-                </div>
-                <div class="flex items-center gap-1">
-                  <button class="btn-editar-proyeccion p-1.5 rounded-lg text-sena-text-soft hover:bg-sena-soft hover:text-sena transition-colors" title="Editar sugerencia" data-id="5" data-nombre="Análisis de Datos y Big Data" data-descripcion="Los datos son el activo más valioso para las organizaciones modernas. Capacidad de análisis de datos permite tomar decisiones informadas, identificar oportunidades de mercado y predecir tendencias con precisión.">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4">
-                      <path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/>
-                    </svg>
-                  </button>
-                  <div class="switch-sena active" title="Activo" data-id="5" data-nombre="Análisis de Datos y Big Data"></div>
-                </div>
-              </div>
-              <h3 class="font-['Montserrat'] text-sm font-semibold text-sena-text-main mb-1">Análisis de Datos y Big Data</h3>
-              <p class="text-xs text-sena-text-soft line-clamp-2">Desarrollo de soluciones para gestión y análisis de grandes volúmenes de datos.</p>
-              <hr class="my-3 mt-2 border-sena-border">
-              <div class="flex items-center justify-end gap-2 mt-2 text-xs text-sena-text-soft">
-                <div class="flex items-center gap-1">
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-3 h-3">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
-                  </svg>
-                  <span>Pedro Sánchez</span>
-                </div>
-                <div class="flex items-center gap-1">
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-3 h-3">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" />
-                  </svg>
-                  <span>28 Jan 2025</span>
-                </div>
-              </div>
-            </div>
-
-            <!-- Línea Tecnológica 6 -->
-            <div class="tarjeta-tecnologia border border-sena-border rounded-lg bg-white p-4 hover:border-sena/30 hover:shadow-sm transition-all cursor-pointer" 
-                 data-id="6" 
-                 data-nombre="Desarrollo Web y Aplicaciones Modernas"
-                 data-descripcion="La transformación digital requiere plataformas digitales robustas y escalables. Aplicaciones web modernas mejoran la experiencia de clientes, amplían alcance de mercado y generan nuevas fuentes de ingresos."
-                 data-estado="activo"
-                 data-fecha="2024-2025">
-              <div class="flex items-start justify-between mb-2">
-                <div class="w-10 h-10 bg-sena-soft rounded-lg flex items-center justify-center flex-shrink-0">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5 text-sena">
-                    <path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/>
-                    <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
-                    <line x1="12" x2="12.01" y1="17" y2="17"/>
-                  </svg>
-                </div>
-                <div class="flex items-center gap-1">
-                  <button class="btn-editar-proyeccion p-1.5 rounded-lg text-sena-text-soft hover:bg-sena-soft hover:text-sena transition-colors" title="Editar sugerencia" data-id="6" data-nombre="Desarrollo Web y Aplicaciones Modernas" data-descripcion="La transformación digital requiere plataformas digitales robustas y escalables. Aplicaciones web modernas mejoran la experiencia de clientes, amplían alcance de mercado y generan nuevas fuentes de ingresos.">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4">
-                      <path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/>
-                    </svg>
-                  </button>
-                  <div class="switch-sena active" title="Activo" data-id="6" data-nombre="Desarrollo Web y Aplicaciones Modernas"></div>
-                </div>
-              </div>
-              <h3 class="font-['Montserrat'] text-sm font-semibold text-sena-text-main mb-1">Desarrollo Web y Aplicaciones Modernas</h3>
-              <p class="text-xs text-sena-text-soft line-clamp-2">Creación de aplicaciones web y móviles utilizando frameworks modernos.</p>
-              <hr class="my-3 mt-2 border-sena-border">
-              <div class="flex items-center justify-end gap-2 mt-2 text-xs text-sena-text-soft">
-                <div class="flex items-center gap-1">
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-3 h-3">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
-                  </svg>
-                  <span>Laura Fernández</span>
-                </div>
-                <div class="flex items-center gap-1">
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-3 h-3">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" />
-                  </svg>
-                  <span>10 Mar 2025</span>
-                </div>
-              </div>
-            </div>
-
-            <!-- Línea Tecnológica 7 -->
-            <div class="tarjeta-tecnologia border border-sena-border rounded-lg bg-white p-4 hover:border-sena/30 hover:shadow-sm transition-all cursor-pointer" 
-                 data-id="7" 
-                 data-nombre="Realidad Aumentada y Virtual"
-                 data-descripcion="La educación y capacitación industrial se transforman con experiencias inmersivas. AR/VR reduce tiempo de aprendizaje en un 40%, mejora retención de conocimiento y crea experiencias de usuario diferenciadas."
-                 data-estado="inactivo"
-                 data-fecha="2026-2027">
-              <div class="flex items-start justify-between mb-2">
-                <div class="w-10 h-10 bg-sena-soft rounded-lg flex items-center justify-center flex-shrink-0">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5 text-sena">
-                    <path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/>
-                    <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
-                    <line x1="12" x2="12.01" y1="17" y2="17"/>
-                  </svg>
-                </div>
-                <div class="flex items-center gap-1">
-                  <button class="btn-editar-proyeccion p-1.5 rounded-lg text-sena-text-soft hover:bg-sena-soft hover:text-sena transition-colors" title="Editar sugerencia" data-id="7" data-nombre="Realidad Aumentada y Virtual" data-descripcion="La educación y capacitación industrial se transforman con experiencias inmersivas. AR/VR reduce tiempo de aprendizaje en un 40%, mejora retención de conocimiento y crea experiencias de usuario diferenciadas.">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4">
-                      <path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/>
-                    </svg>
-                  </button>
-                  <div class="switch-sena" title="Inactivo" data-id="7" data-nombre="Realidad Aumentada y Virtual"></div>
-                </div>
-              </div>
-              <h3 class="font-['Montserrat'] text-sm font-semibold text-sena-text-main mb-1">Realidad Aumentada y Virtual</h3>
-              <p class="text-xs text-sena-text-soft line-clamp-2">Desarrollo de experiencias inmersivas con tecnologías AR/VR.</p>
-              <hr class="my-3 mt-2 border-sena-border">
-              <div class="flex items-center justify-end gap-2 mt-2 text-xs text-sena-text-soft">
-                <div class="flex items-center gap-1">
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-3 h-3">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
-                  </svg>
-                  <span>Miguel Torres</span>
-                </div>
-                <div class="flex items-center gap-1">
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-3 h-3">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" />
-                  </svg>
-                  <span>01 Apr 2025</span>
-                </div>
-              </div>
-            </div>
-
-            <!-- Línea Tecnológica 8 -->
-            <div class="tarjeta-tecnologia border border-sena-border rounded-lg bg-white p-4 hover:border-sena/30 hover:shadow-sm transition-all cursor-pointer" 
-                 data-id="8" 
-                 data-nombre="Sostenibilidad y Tecnología Verde"
-                 data-descripcion="La sostenibilidad es requisito para acceso a mercados internacionales. Tecnología verde mejora imagen corporativa, reduce costos operativos y cumple con regulaciones ambientales cada vez más exigentes."
-                 data-estado="activo"
-                 data-fecha="2025-2026">
-              <div class="flex items-start justify-between mb-2">
-                <div class="w-10 h-10 bg-sena-soft rounded-lg flex items-center justify-center flex-shrink-0">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5 text-sena">
-                    <path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/>
-                    <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
-                    <line x1="12" x2="12.01" y1="17" y2="17"/>
-                  </svg>
-                </div>
-                <div class="flex items-center gap-1">
-                  <button class="btn-editar-proyeccion p-1.5 rounded-lg text-sena-text-soft hover:bg-sena-soft hover:text-sena transition-colors" title="Editar sugerencia" data-id="8" data-nombre="Sostenibilidad y Tecnología Verde" data-descripcion="La sostenibilidad es requisito para acceso a mercados internacionales. Tecnología verde mejora imagen corporativa, reduce costos operativos y cumple con regulaciones ambientales cada vez más exigentes.">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4">
-                      <path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/>
-                    </svg>
-                  </button>
-                  <div class="switch-sena active" title="Activo" data-id="8" data-nombre="Sostenibilidad y Tecnología Verde"></div>
-                </div>
-              </div>
-              <h3 class="font-['Montserrat'] text-sm font-semibold text-sena-text-main mb-1">Sostenibilidad y Tecnología Verde</h3>
-              <p class="text-xs text-sena-text-soft line-clamp-2">Implementación de soluciones tecnológicas para sostenibilidad ambiental.</p>
-              <hr class="my-3 mt-2 border-sena-border">
-              <div class="flex items-center justify-end gap-2 mt-2 text-xs text-sena-text-soft">
-                <div class="flex items-center gap-1">
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-3 h-3">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
-                  </svg>
-                  <span>Isabel Ruiz</span>
-                </div>
-                <div class="flex items-center gap-1">
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-3 h-3">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" />
-                  </svg>
-                  <span>12 Feb 2025</span>
-                </div>
-              </div>
-            </div>
+          <!-- Mensaje de error -->
+          <div id="error-mensaje" class="hidden text-center py-8 text-red-600 bg-red-50 rounded-lg">
+            Error al cargar las sugerencias. Por favor, intenta de nuevo.
           </div>
+
+          <!-- Tarjetas container - Sin estilos de grid cuando está vacío -->
+          <div id="tarjetas-container"></div>
         </div>
       </div>
     </div>
@@ -614,9 +425,16 @@ include __DIR__ . '/modal_confirmacion_habilitar_sug.php';
   <!-- Script para la funcionalidad del filtro bonito y modales -->
   <script>
     document.addEventListener('DOMContentLoaded', function() {
-      // Funcionalidad del filtro
-      const filtroBtns = document.querySelectorAll('.filtro-btn');
-      const tarjetas = document.querySelectorAll('.tarjeta-tecnologia');
+      // Variables globales
+      const API_URL = '../../controllers/SugerenciasController.php';
+      const idUsuarioActual = <?php echo $id_usuario_actual; ?>;
+      
+      let todasLasTarjetas = []; // Almacenar todas las sugerencias
+      
+      // Elementos del DOM
+      const tarjetasContainer = document.getElementById('tarjetas-container');
+      const loader = document.getElementById('loader');
+      const errorMensaje = document.getElementById('error-mensaje');
       const resultadosCount = document.getElementById('resultados-count');
       const filtroActivo = document.getElementById('filtro-activo');
       const contadorTodos = document.getElementById('contador-todos');
@@ -629,6 +447,7 @@ include __DIR__ . '/modal_confirmacion_habilitar_sug.php';
       const btnCerrarModal = document.querySelectorAll('.cerrar-modal-crear');
       const formCrear = document.getElementById('form-nueva-proyeccion-futuro');
       const inputTitulo = document.getElementById('input-titulo-sugerencia');
+      const inputContenido = document.querySelector('#modal-crear-sugerencia textarea[name="descripcion"]');
 
       // Funcionalidad del modal de éxito (crear)
       const modalExito = document.getElementById('modal-creado-confirmacion-proyeccion-futura');
@@ -677,12 +496,12 @@ include __DIR__ . '/modal_confirmacion_habilitar_sug.php';
       const contadorSegundosHabilitado = document.getElementById('contador-segundos');
       const progressBarHabilitado = document.getElementById('progress-bar-habilitado');
 
-      const switches = document.querySelectorAll('.switch-sena');
-
+      let switches = [];
       let idDeshabilitando = null;
       let nombreDeshabilitando = null;
       let idHabilitando = null;
       let nombreHabilitando = null;
+      let idEditando = null;
       
       let timeoutExito;
       let intervaloContador;
@@ -692,6 +511,577 @@ include __DIR__ . '/modal_confirmacion_habilitar_sug.php';
       let intervaloContadorDeshabilitado;
       let timeoutExitoHabilitado;
       let intervaloContadorHabilitado;
+
+      // ==================== FUNCIÓN PARA MOSTRAR TOAST DE VALIDACIÓN ====================
+      function mostrarToastValidacion(mensaje, tipo = 'warning') {
+        const toastContainer = document.getElementById('toast-container');
+        
+        // Definir títulos según el tipo
+        const titulo = tipo === 'warning' ? 'Campo requerido' : 'Error';
+        
+        // Crear elemento toast
+        const toastId = 'toast-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+        const toast = document.createElement('div');
+        toast.id = toastId;
+        toast.className = `toast-validation ${tipo}`;
+        
+        // Iconos según tipo
+        const iconos = {
+          warning: `
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="12" y1="8" x2="12" y2="12"></line>
+              <line x1="12" y1="16" x2="12.01" y2="16"></line>
+            </svg>
+          `,
+          error: `
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          `
+        };
+
+        toast.innerHTML = `
+          <div class="toast-contenido">
+            <div class="toast-icono-wrapper">
+              <div class="toast-icono">
+                ${iconos[tipo]}
+              </div>
+            </div>
+            <div class="toast-mensaje-wrapper">
+              <div class="toast-titulo">${titulo}</div>
+              <div class="toast-mensaje">${mensaje}</div>
+            </div>
+          </div>
+        `;
+
+        toastContainer.appendChild(toast);
+
+        // Auto cerrar después de 3 segundos
+        setTimeout(() => {
+          const toastElement = document.getElementById(toastId);
+          if (toastElement) {
+            toastElement.classList.add('exit');
+            setTimeout(() => {
+              if (toastElement.parentNode) {
+                toastElement.remove();
+              }
+            }, 200);
+          }
+        }, 3000);
+      }
+
+      // ==================== FUNCIONES API ====================
+
+      // Cargar sugerencias desde la base de datos
+      async function cargarSugerencias() {
+        try {
+          loader.classList.remove('hidden');
+          errorMensaje.classList.add('hidden');
+          tarjetasContainer.innerHTML = '';
+
+          const response = await fetch(`${API_URL}?accion=listarTodas`);
+          const data = await response.json();
+
+          // Verificar el formato de la respuesta
+          if (data.status === 'success' || data.success === true) {
+            // Si viene como data.data o directamente data
+            const sugerencias = data.data || data;
+            todasLasTarjetas = Array.isArray(sugerencias) ? sugerencias : [];
+            renderizarTarjetas(todasLasTarjetas);
+            actualizarContadores(todasLasTarjetas);
+          } else {
+            console.error('Error en la respuesta:', data);
+            throw new Error('Error al cargar las sugerencias');
+          }
+        } catch (error) {
+          console.error('Error:', error);
+          errorMensaje.classList.remove('hidden');
+          tarjetasContainer.innerHTML = '';
+          mostrarToastValidacion('Error al cargar las sugerencias', 'error');
+        } finally {
+          loader.classList.add('hidden');
+        }
+      }
+
+      // Renderizar tarjetas en el DOM
+      function renderizarTarjetas(sugerencias) {
+        if (!sugerencias || sugerencias.length === 0) {
+          // Empty state independiente, sin estilos de grid
+          tarjetasContainer.innerHTML = `
+            <div class="w-full flex flex-col items-center justify-center py-20 px-4 bg-white border border-gray-200 rounded-xl">
+              <div class="w-20 h-20 mb-5 bg-sena-soft rounded-2xl flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10 text-sena" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/>
+                  <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
+                  <line x1="12" x2="12.01" y1="17" y2="17"/>
+                </svg>
+              </div>
+              <h3 class="font-['Montserrat'] text-lg font-semibold text-sena-text-main mb-2">No hay sugerencias</h3>
+              <p class="text-sm text-sena-text-soft text-center max-w-sm mb-6">
+                Comienza creando tu primera sugerencia innovadora para fortalecer el desarrollo tecnológico de Risaralda.
+              </p>
+              <button id="btn-crear-desde-empty" class="flex items-center gap-2 px-5 py-2.5 text-sm font-medium text-white bg-sena rounded-lg hover:opacity-90 transition-opacity shadow-sm">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M5 12h14"/>
+                  <path d="M12 5v14"/>
+                </svg>
+                Crear primera sugerencia
+              </button>
+            </div>
+          `;
+
+          // Agregar evento al botón del empty state
+          const btnCrearEmpty = document.getElementById('btn-crear-desde-empty');
+          if (btnCrearEmpty && modalCrear) {
+            btnCrearEmpty.addEventListener('click', function() {
+              modalCrear.classList.remove('hidden');
+              document.body.style.overflow = 'hidden';
+            });
+          }
+          return;
+        }
+
+        // Si hay sugerencias, usamos el grid
+        tarjetasContainer.className = 'grid grid-cols-1 md:grid-cols-3 gap-3';
+        tarjetasContainer.innerHTML = sugerencias.map(s => crearTarjetaHTML(s)).join('');
+        
+        // Actualizar referencia a los switches después de renderizar
+        switches = document.querySelectorAll('.switch-sena');
+        asignarEventosASwitches();
+        
+        // Actualizar referencia a los botones de editar
+        const nuevosBtnsEditar = document.querySelectorAll('.btn-editar-proyeccion');
+        nuevosBtnsEditar.forEach(btn => {
+          btn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            abrirModalEditar(this);
+          });
+        });
+      }
+
+      // Crear HTML de una tarjeta
+      function crearTarjetaHTML(s) {
+        // Validar que la fecha exista
+        let fecha = 'Fecha no disponible';
+        if (s.fecha_creacion) {
+          try {
+            fecha = new Date(s.fecha_creacion).toLocaleDateString('es-ES', {
+              day: '2-digit',
+              month: '2-digit',
+              year: 'numeric'
+            });
+          } catch (e) {
+            fecha = 'Fecha inválida';
+          }
+        }
+        
+        const estadoClass = s.estado == 1 ? 'active' : '';
+        const estadoTitle = s.estado == 1 ? 'Activo' : 'Inactivo';
+        
+        // Limitar longitud del título y contenido
+        const tituloCorto = s.titulo && s.titulo.length > 50 ? s.titulo.substring(0, 50) + '...' : (s.titulo || 'Sin título');
+        const contenidoCorto = s.contenido && s.contenido.length > 80 ? s.contenido.substring(0, 80) + '...' : (s.contenido || 'Sin contenido');
+
+        // Escapar caracteres especiales para atributos HTML
+        const tituloEscapado = (s.titulo || '').replace(/"/g, '&quot;');
+        const contenidoEscapado = (s.contenido || '').replace(/"/g, '&quot;');
+
+        return `
+          <div class="tarjeta-tecnologia border border-sena-border rounded-lg bg-white p-4 hover:border-sena/30 hover:shadow-sm transition-all cursor-pointer" 
+               data-id="${s.id_sugerencia}" 
+               data-nombre="${tituloEscapado}"
+               data-descripcion="${contenidoEscapado}"
+               data-estado="${s.estado == 1 ? 'activo' : 'inactivo'}"
+               data-fecha="${fecha}">
+            <div class="flex items-start justify-between mb-2">
+              <div class="w-10 h-10 bg-sena-soft rounded-lg flex items-center justify-center flex-shrink-0">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5 text-sena">
+                  <path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/>
+                  <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
+                  <line x1="12" x2="12.01" y1="17" y2="17"/>
+                </svg>
+              </div>
+              <div class="flex items-center gap-1">
+                <button class="btn-editar-proyeccion p-1.5 rounded-lg text-sena-text-soft hover:bg-sena-soft hover:text-sena transition-colors" 
+                        title="Editar sugerencia" 
+                        data-id="${s.id_sugerencia}" 
+                        data-nombre="${tituloEscapado}" 
+                        data-descripcion="${contenidoEscapado}">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4">
+                    <path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/>
+                  </svg>
+                </button>
+                <div class="switch-sena ${estadoClass}" title="${estadoTitle}" data-id="${s.id_sugerencia}" data-nombre="${tituloEscapado}"></div>
+              </div>
+            </div>
+            <h3 class="font-['Montserrat'] text-sm font-semibold text-sena-text-main mb-1">${tituloCorto}</h3>
+            <p class="text-xs text-sena-text-soft line-clamp-2">${contenidoCorto}</p>
+            <hr class="my-3 mt-2 border-sena-border">
+            <div class="flex items-center justify-end gap-2 mt-2 text-xs text-sena-text-soft">
+              <div class="flex items-center gap-1">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-3 h-3">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
+                </svg>
+                <span>${s.representante_legal || s.nombre_empresa || 'Usuario'}</span>
+              </div>
+              <div class="flex items-center gap-1">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-3 h-3">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" />
+                </svg>
+                <span>${fecha}</span>
+              </div>
+            </div>
+          </div>
+        `;
+      }
+
+      // Asignar eventos a los switches
+      function asignarEventosASwitches() {
+        switches.forEach(switchEl => {
+          switchEl.addEventListener('click', function(e) {
+            e.stopPropagation();
+            
+            const id = this.dataset.id;
+            const nombre = this.dataset.nombre;
+            
+            if (this.classList.contains('active')) {
+              // Está activo -> deshabilitar
+              abrirModalDeshabilitar(id, nombre);
+            } else {
+              // Está inactivo -> habilitar
+              abrirModalHabilitar(id, nombre);
+            }
+          });
+        });
+      }
+
+      // Actualizar contadores
+      function actualizarContadores(sugerencias) {
+        const activos = sugerencias.filter(s => s.estado == 1).length;
+        const inactivos = sugerencias.filter(s => s.estado == 0).length;
+        
+        contadorTodos.textContent = sugerencias.length;
+        contadorActivos.textContent = activos;
+        contadorInactivos.textContent = inactivos;
+        
+        // Aplicar filtro actual
+        const filtroActual = document.querySelector('.filtro-btn.active')?.dataset.filtro || 'todos';
+        filtrarTarjetas(filtroActual);
+      }
+
+      // Filtrar tarjetas según estado
+      function filtrarTarjetas(filtro) {
+        const tarjetas = document.querySelectorAll('.tarjeta-tecnologia');
+        let visibleCount = 0;
+        
+        tarjetas.forEach(tarjeta => {
+          const estado = tarjeta.dataset.estado;
+          let mostrar = false;
+          
+          if (filtro === 'todos') {
+            mostrar = true;
+          } else if (filtro === 'activos' && estado === 'activo') {
+            mostrar = true;
+          } else if (filtro === 'inactivos' && estado === 'inactivo') {
+            mostrar = true;
+          }
+          
+          if (mostrar) {
+            tarjeta.style.display = 'block';
+            visibleCount++;
+          } else {
+            tarjeta.style.display = 'none';
+          }
+        });
+        
+        resultadosCount.textContent = `${visibleCount} sugerencia${visibleCount !== 1 ? 's' : ''}`;
+        const filtroTexto = filtro === 'todos' ? 'todos' : filtro === 'activos' ? 'activos' : 'inactivos';
+        filtroActivo.textContent = `Mostrando ${filtroTexto}`;
+      }
+
+      // ==================== FUNCIONES CRUD ====================
+
+      // Crear nueva sugerencia
+      async function crearSugerencia(titulo, contenido) {
+        try {
+          const response = await fetch(`${API_URL}?accion=crear`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              id_usuario: idUsuarioActual,
+              titulo: titulo,
+              contenido: contenido,
+              estado: 1
+            })
+          });
+
+          const data = await response.json();
+          
+          if (data.success) {
+            await cargarSugerencias(); // Recargar lista
+            return { success: true, id: data.id_sugerencia };
+          } else {
+            return { success: false, error: data.error || 'Error al crear' };
+          }
+        } catch (error) {
+          console.error('Error al crear:', error);
+          return { success: false, error: 'Error de conexión' };
+        }
+      }
+
+      // Actualizar sugerencia
+      async function actualizarSugerencia(id, titulo, contenido) {
+        try {
+          const response = await fetch(`${API_URL}?accion=actualizar`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              id_sugerencia: id,
+              titulo: titulo,
+              contenido: contenido
+            })
+          });
+
+          const data = await response.json();
+          
+          if (data.success) {
+            await cargarSugerencias(); // Recargar lista
+            return { success: true };
+          } else {
+            return { success: false, error: data.error || 'Error al actualizar' };
+          }
+        } catch (error) {
+          console.error('Error al actualizar:', error);
+          return { success: false, error: 'Error de conexión' };
+        }
+      }
+
+      // Cambiar estado (activar/desactivar)
+      async function cambiarEstado(id, accion) {
+        try {
+          const response = await fetch(`${API_URL}?accion=${accion}&id_sugerencia=${id}`, {
+            method: 'POST'
+          });
+
+          const data = await response.json();
+          
+          if (data.success) {
+            await cargarSugerencias(); // Recargar lista
+            return { success: true };
+          } else {
+            return { success: false, error: data.error || `Error al ${accion}` };
+          }
+        } catch (error) {
+          console.error('Error al cambiar estado:', error);
+          return { success: false, error: 'Error de conexión' };
+        }
+      }
+
+      // ==================== FUNCIONES DE MODALES ====================
+
+      // Abrir modal de crear
+      if (btnAbrirModal && modalCrear) {
+        btnAbrirModal.addEventListener('click', function() {
+          modalCrear.classList.remove('hidden');
+          document.body.style.overflow = 'hidden';
+        });
+      }
+
+      // Abrir modal de editar
+      function abrirModalEditar(btn) {
+        const id = btn.dataset.id;
+        const nombre = btn.dataset.nombre;
+        const descripcion = btn.dataset.descripcion;
+        
+        idEditando = id;
+        
+        if (inputTituloEditar) {
+          inputTituloEditar.value = nombre;
+        }
+        if (textareaDescripcionEditar) {
+          textareaDescripcionEditar.value = descripcion;
+        }
+        
+        if (formEditar) {
+          formEditar.dataset.editandoId = id;
+        }
+        
+        modalEditar.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+      }
+
+      // Abrir modal de deshabilitar
+      function abrirModalDeshabilitar(id, nombre) {
+        idDeshabilitando = id;
+        nombreDeshabilitando = nombre;
+        
+        if (nombreSugerenciaDeshabilitar) {
+          nombreSugerenciaDeshabilitar.textContent = `"${nombre}"`;
+        }
+        
+        modalDeshabilitar.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+      }
+
+      // Abrir modal de habilitar
+      function abrirModalHabilitar(id, nombre) {
+        idHabilitando = id;
+        nombreHabilitando = nombre;
+        
+        if (nombreSugerenciaHabilitar) {
+          nombreSugerenciaHabilitar.textContent = `"${nombre}"`;
+        }
+        
+        modalHabilitar.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+      }
+
+      // Cerrar modal de crear y editar
+      btnCerrarModal.forEach(btn => {
+        btn.addEventListener('click', function() {
+          if (modalCrear && !modalCrear.classList.contains('hidden')) {
+            modalCrear.classList.add('hidden');
+          }
+          if (modalEditar && !modalEditar.classList.contains('hidden')) {
+            modalEditar.classList.add('hidden');
+            idEditando = null;
+          }
+          document.body.style.overflow = '';
+        });
+      });
+
+      // Cerrar modal de deshabilitar
+      btnCerrarDeshabilitar.forEach(btn => {
+        btn.addEventListener('click', function() {
+          modalDeshabilitar.classList.add('hidden');
+          document.body.style.overflow = '';
+          idDeshabilitando = null;
+          nombreDeshabilitando = null;
+        });
+      });
+
+      // Cerrar modal de habilitar
+      btnCerrarHabilitar.forEach(btn => {
+        btn.addEventListener('click', function() {
+          modalHabilitar.classList.add('hidden');
+          document.body.style.overflow = '';
+          idHabilitando = null;
+          nombreHabilitando = null;
+        });
+      });
+
+      // Confirmar deshabilitar
+      if (btnConfirmarDeshabilitar) {
+        btnConfirmarDeshabilitar.addEventListener('click', async function() {
+          if (idDeshabilitando && nombreDeshabilitando) {
+            const resultado = await cambiarEstado(idDeshabilitando, 'desactivar');
+            
+            if (resultado.success) {
+              modalDeshabilitar.classList.add('hidden');
+              abrirModalDeshabilitadoExito(nombreDeshabilitando);
+              // NO mostramos toast de éxito
+            } else {
+              mostrarToastValidacion('Ocurrió un error al deshabilitar la sugerencia: ' + resultado.error, 'error');
+            }
+            
+            idDeshabilitando = null;
+            nombreDeshabilitando = null;
+          }
+        });
+      }
+
+      // Confirmar habilitar
+      if (btnConfirmarHabilitar) {
+        btnConfirmarHabilitar.addEventListener('click', async function() {
+          if (idHabilitando && nombreHabilitando) {
+            const resultado = await cambiarEstado(idHabilitando, 'activar');
+            
+            if (resultado.success) {
+              modalHabilitar.classList.add('hidden');
+              abrirModalHabilitadoExito(nombreHabilitando);
+              // NO mostramos toast de éxito
+            } else {
+              mostrarToastValidacion('Ocurrió un error al habilitar la sugerencia: ' + resultado.error, 'error');
+            }
+            
+            idHabilitando = null;
+            nombreHabilitando = null;
+          }
+        });
+      }
+
+      // Manejar envío del formulario de crear
+      if (formCrear) {
+        formCrear.addEventListener('submit', async function(e) {
+          e.preventDefault();
+          
+          const titulo = inputTitulo ? inputTitulo.value.trim() : '';
+          const contenido = inputContenido ? inputContenido.value.trim() : '';
+          
+          if (!titulo) {
+            mostrarToastValidacion('Por favor ingresa un título para la sugerencia', 'warning');
+            return;
+          }
+          
+          if (!contenido) {
+            mostrarToastValidacion('Por favor ingresa una descripción para la sugerencia', 'warning');
+            return;
+          }
+          
+          const resultado = await crearSugerencia(titulo, contenido);
+          
+          if (resultado.success) {
+            modalCrear.classList.add('hidden');
+            formCrear.reset();
+            abrirModalExito(titulo);
+            // NO mostramos toast de éxito
+          } else {
+            mostrarToastValidacion('Error al crear: ' + resultado.error, 'error');
+          }
+        });
+      }
+
+      // Manejar envío del formulario de editar
+      if (formEditar) {
+        formEditar.addEventListener('submit', async function(e) {
+          e.preventDefault();
+          
+          const titulo = inputTituloEditar ? inputTituloEditar.value.trim() : '';
+          const descripcion = textareaDescripcionEditar ? textareaDescripcionEditar.value.trim() : '';
+          const id = this.dataset.editandoId;
+          
+          if (!titulo) {
+            mostrarToastValidacion('Por favor ingresa un título para la sugerencia', 'warning');
+            return;
+          }
+          
+          if (!descripcion) {
+            mostrarToastValidacion('Por favor ingresa una descripción para la sugerencia', 'warning');
+            return;
+          }
+          
+          const resultado = await actualizarSugerencia(id, titulo, descripcion);
+          
+          if (resultado.success) {
+            modalEditar.classList.add('hidden');
+            formEditar.reset();
+            delete formEditar.dataset.editandoId;
+            abrirModalEditadoExito(titulo);
+            // NO mostramos toast de éxito
+          } else {
+            mostrarToastValidacion('Error al actualizar: ' + resultado.error, 'error');
+          }
+        });
+      }
+
+      // ==================== FUNCIONES DE MODALES DE ÉXITO ====================
 
       // Función para cerrar modal de éxito (crear)
       function cerrarModalExito() {
@@ -812,8 +1202,6 @@ include __DIR__ . '/modal_confirmacion_habilitar_sug.php';
 
       // Función para abrir modal de éxito (deshabilitar)
       function abrirModalDeshabilitadoExito(nombre) {
-        console.log('Abriendo modal de éxito deshabilitado con nombre:', nombre);
-        
         if (!modalDeshabilitadoExito) {
           console.error('Modal de éxito deshabilitado no encontrado');
           return;
@@ -863,14 +1251,12 @@ include __DIR__ . '/modal_confirmacion_habilitar_sug.php';
           if (intervaloContadorHabilitado) clearInterval(intervaloContadorHabilitado);
           
           if (progressBarHabilitado) progressBarHabilitado.style.width = '0%';
-          if (contadorSegundosHabilitado) contadorSegundosHabilitado.textContent = '6';
+          if (contadorSegundosHabilitado) contadorSegundosHabilitado.textContent = '3';
         }
       }
 
       // Función para abrir modal de éxito (habilitar)
       function abrirModalHabilitadoExito(nombre) {
-        console.log('Abriendo modal de éxito habilitado con nombre:', nombre);
-        
         if (!modalHabilitadoExito) {
           console.error('Modal de éxito habilitado no encontrado');
           return;
@@ -883,7 +1269,7 @@ include __DIR__ . '/modal_confirmacion_habilitar_sug.php';
         modalHabilitadoExito.classList.remove('hidden');
         document.body.style.overflow = 'hidden';
         
-        let segundos = 6;
+        let segundos = 3;
         if (contadorSegundosHabilitado) contadorSegundosHabilitado.textContent = segundos;
         if (progressBarHabilitado) {
           progressBarHabilitado.style.width = '0%';
@@ -907,182 +1293,8 @@ include __DIR__ . '/modal_confirmacion_habilitar_sug.php';
         if (timeoutExitoHabilitado) clearTimeout(timeoutExitoHabilitado);
         timeoutExitoHabilitado = setTimeout(() => {
           cerrarModalHabilitadoExito();
-        }, 6000);
+        }, 3000);
       }
-
-      // Abrir modal de crear
-      if (btnAbrirModal && modalCrear) {
-        btnAbrirModal.addEventListener('click', function() {
-          modalCrear.classList.remove('hidden');
-          document.body.style.overflow = 'hidden';
-        });
-      }
-
-      // Abrir modal de editar
-      btnsEditar.forEach(btn => {
-        btn.addEventListener('click', function(e) {
-          e.stopPropagation();
-          const id = this.dataset.id;
-          const nombre = this.dataset.nombre;
-          const descripcion = this.dataset.descripcion;
-          
-          console.log('Editando:', id, nombre);
-          
-          if (inputTituloEditar) {
-            inputTituloEditar.value = nombre;
-          }
-          if (textareaDescripcionEditar) {
-            textareaDescripcionEditar.value = descripcion;
-          }
-          
-          if (formEditar) {
-            formEditar.dataset.editandoId = id;
-          }
-          
-          modalEditar.classList.remove('hidden');
-          document.body.style.overflow = 'hidden';
-        });
-      });
-
-      // Abrir modal de deshabilitar (click en switch activo)
-      // Abrir modal de habilitar (click en switch inactivo)
-      switches.forEach(switchEl => {
-        switchEl.addEventListener('click', function(e) {
-          e.stopPropagation();
-          
-          const id = this.dataset.id;
-          const nombre = this.dataset.nombre;
-          
-          if (this.classList.contains('active')) {
-            // Está activo -> deshabilitar
-            console.log('Deshabilitando:', id, nombre);
-            
-            idDeshabilitando = id;
-            nombreDeshabilitando = nombre;
-            
-            if (nombreSugerenciaDeshabilitar) {
-              nombreSugerenciaDeshabilitar.textContent = `"${nombre}"`;
-            }
-            
-            modalDeshabilitar.classList.remove('hidden');
-            document.body.style.overflow = 'hidden';
-          } else {
-            // Está inactivo -> habilitar
-            console.log('Habilitando:', id, nombre);
-            
-            idHabilitando = id;
-            nombreHabilitando = nombre;
-            
-            if (nombreSugerenciaHabilitar) {
-              nombreSugerenciaHabilitar.textContent = `"${nombre}"`;
-            }
-            
-            modalHabilitar.classList.remove('hidden');
-            document.body.style.overflow = 'hidden';
-          }
-        });
-      });
-
-      // Cerrar modal de deshabilitar
-      btnCerrarDeshabilitar.forEach(btn => {
-        btn.addEventListener('click', function() {
-          modalDeshabilitar.classList.add('hidden');
-          document.body.style.overflow = '';
-          idDeshabilitando = null;
-          nombreDeshabilitando = null;
-        });
-      });
-
-      // Cerrar modal de habilitar
-      btnCerrarHabilitar.forEach(btn => {
-        btn.addEventListener('click', function() {
-          modalHabilitar.classList.add('hidden');
-          document.body.style.overflow = '';
-          idHabilitando = null;
-          nombreHabilitando = null;
-        });
-      });
-
-      // Confirmar deshabilitar
-      if (btnConfirmarDeshabilitar) {
-        btnConfirmarDeshabilitar.addEventListener('click', function() {
-          if (idDeshabilitando && nombreDeshabilitando) {
-            console.log('Confirmando deshabilitar ID:', idDeshabilitando);
-            
-            // Cambiar el switch a inactivo
-            const switchEl = document.querySelector(`.switch-sena[data-id="${idDeshabilitando}"]`);
-            if (switchEl) {
-              switchEl.classList.remove('active');
-              switchEl.title = 'Inactivo';
-            }
-            
-            // Actualizar el estado en la tarjeta
-            const tarjeta = document.querySelector(`.tarjeta-tecnologia[data-id="${idDeshabilitando}"]`);
-            if (tarjeta) {
-              tarjeta.dataset.estado = 'inactivo';
-            }
-            
-            // Actualizar contadores
-            actualizarContadores();
-            
-            // Cerrar modal de deshabilitar
-            modalDeshabilitar.classList.add('hidden');
-            
-            // Abrir modal de éxito (deshabilitado)
-            abrirModalDeshabilitadoExito(nombreDeshabilitando);
-            
-            idDeshabilitando = null;
-            nombreDeshabilitando = null;
-          }
-        });
-      }
-
-      // Confirmar habilitar
-      if (btnConfirmarHabilitar) {
-        btnConfirmarHabilitar.addEventListener('click', function() {
-          if (idHabilitando && nombreHabilitando) {
-            console.log('Confirmando habilitar ID:', idHabilitando);
-            
-            // Cambiar el switch a activo
-            const switchEl = document.querySelector(`.switch-sena[data-id="${idHabilitando}"]`);
-            if (switchEl) {
-              switchEl.classList.add('active');
-              switchEl.title = 'Activo';
-            }
-            
-            // Actualizar el estado en la tarjeta
-            const tarjeta = document.querySelector(`.tarjeta-tecnologia[data-id="${idHabilitando}"]`);
-            if (tarjeta) {
-              tarjeta.dataset.estado = 'activo';
-            }
-            
-            // Actualizar contadores
-            actualizarContadores();
-            
-            // Cerrar modal de habilitar
-            modalHabilitar.classList.add('hidden');
-            
-            // Abrir modal de éxito (habilitado)
-            abrirModalHabilitadoExito(nombreHabilitando);
-            
-            idHabilitando = null;
-            nombreHabilitando = null;
-          }
-        });
-      }
-
-      // Cerrar modal de crear y editar
-      document.querySelectorAll('.cerrar-modal-crear').forEach(btn => {
-        btn.addEventListener('click', function() {
-          if (modalCrear && !modalCrear.classList.contains('hidden')) {
-            modalCrear.classList.add('hidden');
-          }
-          if (modalEditar && !modalEditar.classList.contains('hidden')) {
-            modalEditar.classList.add('hidden');
-          }
-          document.body.style.overflow = '';
-        });
-      });
 
       // Cerrar modal de éxito (crear)
       btnCerrarExito.forEach(btn => {
@@ -1160,96 +1372,8 @@ include __DIR__ . '/modal_confirmacion_habilitar_sug.php';
         }
       });
 
-      // Manejar envío del formulario de crear
-      if (formCrear) {
-        formCrear.addEventListener('submit', function(e) {
-          e.preventDefault();
-          
-          const titulo = inputTitulo ? inputTitulo.value.trim() : 'Nueva Sugerencia';
-          if (!titulo) {
-            alert('Por favor ingresa un título para la sugerencia');
-            return;
-          }
-          
-          modalCrear.classList.add('hidden');
-          console.log('Formulario de crear enviado con título:', titulo);
-          formCrear.reset();
-          abrirModalExito(titulo);
-        });
-      }
-
-      // Manejar envío del formulario de editar
-      if (formEditar) {
-        formEditar.addEventListener('submit', function(e) {
-          e.preventDefault();
-          
-          const titulo = inputTituloEditar ? inputTituloEditar.value.trim() : '';
-          const descripcion = textareaDescripcionEditar ? textareaDescripcionEditar.value.trim() : '';
-          
-          if (!titulo) {
-            alert('Por favor ingresa un título para la sugerencia');
-            return;
-          }
-          
-          const id = this.dataset.editandoId;
-          
-          modalEditar.classList.add('hidden');
-          console.log('Formulario de editar enviado - ID:', id, 'Título:', titulo, 'Descripción:', descripcion);
-          
-          formEditar.reset();
-          delete formEditar.dataset.editandoId;
-          
-          abrirModalEditadoExito(titulo);
-        });
-      }
-
-      // Calcular contadores iniciales
-      function actualizarContadores() {
-        let activos = 0;
-        let inactivos = 0;
-        
-        tarjetas.forEach(tarjeta => {
-          if (tarjeta.dataset.estado === 'activo') {
-            activos++;
-          } else if (tarjeta.dataset.estado === 'inactivo') {
-            inactivos++;
-          }
-        });
-        
-        if (contadorTodos) contadorTodos.textContent = activos + inactivos;
-        if (contadorActivos) contadorActivos.textContent = activos;
-        if (contadorInactivos) contadorInactivos.textContent = inactivos;
-      }
-
-      function filtrarTarjetas(filtro) {
-        let visibleCount = 0;
-        
-        tarjetas.forEach(tarjeta => {
-          const estado = tarjeta.dataset.estado;
-          let mostrar = false;
-          
-          if (filtro === 'todos') {
-            mostrar = true;
-          } else if (filtro === 'activos' && estado === 'activo') {
-            mostrar = true;
-          } else if (filtro === 'inactivos' && estado === 'inactivo') {
-            mostrar = true;
-          }
-          
-          if (mostrar) {
-            tarjeta.style.display = 'block';
-            visibleCount++;
-          } else {
-            tarjeta.style.display = 'none';
-          }
-        });
-        
-        if (resultadosCount) resultadosCount.textContent = `${visibleCount} líneas tecnológicas sugeridas`;
-        
-        const filtroTexto = filtro === 'todos' ? 'todos' : filtro === 'activos' ? 'activos' : 'inactivos';
-        if (filtroActivo) filtroActivo.textContent = `Mostrando ${filtroTexto}`;
-      }
-
+      // Filtros
+      const filtroBtns = document.querySelectorAll('.filtro-btn');
       filtroBtns.forEach(btn => {
         btn.addEventListener('click', function() {
           filtroBtns.forEach(b => b.classList.remove('active'));
@@ -1259,8 +1383,8 @@ include __DIR__ . '/modal_confirmacion_habilitar_sug.php';
         });
       });
 
-      actualizarContadores();
-      filtrarTarjetas('todos');
+      // Cargar sugerencias al iniciar
+      cargarSugerencias();
     });
   </script>
 

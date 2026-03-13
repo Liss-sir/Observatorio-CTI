@@ -26,14 +26,20 @@
           <!-- Título -->
           <div class="mb-4">
             <label class="mb-1 block text-sm font-medium text-sena-text-main">Título</label>
-            <input type="text" name="titulo" placeholder="Ingresa el título de la sugerencia..."
+            <input type="text" 
+                   id="input-titulo-sugerencia"
+                   name="titulo" 
+                   placeholder="Ingresa el título de la sugerencia..."
                    class="w-full rounded-lg border border-sena-border px-3 py-2 text-sm text-sena-text-main placeholder-sena-text-soft focus:border-sena focus:ring-2 focus:ring-sena/20">
           </div>
 
           <!-- Descripción -->
           <div class="mb-4">
             <label class="mb-1 block text-sm font-medium text-sena-text-main">Descripción</label>
-            <textarea name="descripcion" rows="4" placeholder="Describe la sugerencia..."
+            <textarea name="descripcion" 
+                      id="textarea-contenido-sugerencia"
+                      rows="4" 
+                      placeholder="Describe la sugerencia..."
                       class="w-full rounded-lg border border-sena-border px-3 py-2 text-sm text-sena-text-main placeholder-sena-text-soft focus:border-sena focus:ring-2 focus:ring-sena/20"></textarea>
           </div>
 
@@ -51,4 +57,3 @@
     </div>
   </div>
 </div>
-
