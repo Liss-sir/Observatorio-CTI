@@ -1,7 +1,4 @@
 document.addEventListener("DOMContentLoaded", function () {
-    // ===== RUTA BASE =====
-    const RUTA_CONTROLLERS = '../../src/controllers/';
-
     // ===== REFERENCIAS A MODALES =====
     const modalDeshabilitar = document.getElementById('modal-deshabilitar-perfil');
     const modalDeshabilitado = document.getElementById('modal-deshabilitado-perfil');
@@ -18,6 +15,9 @@ document.addEventListener("DOMContentLoaded", function () {
     const modalCrear = document.getElementById("modal-crear-programa");
     const modalEditar = document.getElementById("modal-editar-programa");
 
+    const AREA_URL = '../../controllers/AreaController.php';
+    const PRO_URL = '../../controllers/ProgramaFormacionController.php';
+
     // ===== TIMERS =====
     let timeoutDeshabilitado = null, timeoutHabilitado = null;
     let intervalContadorHabilitado = null, intervalContadorDeshabilitado = null;
@@ -25,11 +25,11 @@ document.addEventListener("DOMContentLoaded", function () {
     // ===== CARGAR ÁREAS =====
     async function cargarAreas() {
         try {
-            const response = await fetch(RUTA_CONTROLLERS + 'AreaController.php?accion=paraSelect');
+            const response = await fetch(`${AREA_URL}?accion=paraSelect`);
             const result = await response.json();
             return (result.success && result.data) ? result.data : [];
         } catch (error) {
-            console.error('Error áreas:', error);
+            console.error('Error areas:', error);
             return [];
         }
     }
@@ -44,7 +44,7 @@ document.addEventListener("DOMContentLoaded", function () {
         
         try {
             const areas = await cargarAreas();
-            select.innerHTML = '<option value="">Seleccione un área</option>';
+            select.innerHTML = '<option value="">Seleccione un area</option>';
             
             areas.forEach(area => {
                 const option = document.createElement('option');
@@ -70,7 +70,7 @@ document.addEventListener("DOMContentLoaded", function () {
         contenedor.innerHTML = '<div class="col-span-3 text-center py-10"><p>Cargando...</p></div>';
         
         try {
-            const response = await fetch(RUTA_CONTROLLERS + 'ProgramaFormacionController.php?accion=listarTodas');
+            const response = await fetch(`${PRO_URL}?accion=listarTodas`);
             const result = await response.json();
             
             if (result.status === 'success' && result.data) {
@@ -99,7 +99,6 @@ document.addEventListener("DOMContentLoaded", function () {
             card.className = 'bg-white border p-5 rounded-xl shadow programa-card';
             card.setAttribute('data-id', programa.id_programa);
             
-            // ✅ CORRECCIÓN: String() antes de toLowerCase()
             const nombreStr = String(programa.nombre_programa || '');
             const codigoStr = String(programa.codigo_programa || '');
             
@@ -144,6 +143,7 @@ document.addEventListener("DOMContentLoaded", function () {
         });
         
         if (typeof lucide !== 'undefined') lucide.createIcons();
+        
         inicializarSwitches();
         inicializarBotonesEditar();
     }
@@ -158,10 +158,10 @@ document.addEventListener("DOMContentLoaded", function () {
     // ===== INICIALIZAR SWITCHES =====
     function inicializarSwitches() {
         document.querySelectorAll('.switch-sena').forEach(switchEl => {
-            const newSwitch = switchEl.cloneNode(true);
-            switchEl.parentNode.replaceChild(newSwitch, switchEl);
+            if (switchEl.dataset.inicializado === 'true') return;
+            switchEl.dataset.inicializado = 'true';
             
-            newSwitch.addEventListener('click', function(e) {
+            switchEl.addEventListener('click', function(e) {
                 e.preventDefault();
                 e.stopPropagation();
                 
@@ -186,6 +186,9 @@ document.addEventListener("DOMContentLoaded", function () {
     // ===== INICIALIZAR BOTONES EDITAR =====
     function inicializarBotonesEditar() {
         document.querySelectorAll(".btn-editar-programa").forEach(btn => {
+            if (btn.dataset.inicializado === 'true') return;
+            btn.dataset.inicializado = 'true';
+            
             btn.addEventListener("click", function(e) {
                 e.preventDefault();
                 e.stopPropagation();
@@ -225,11 +228,11 @@ document.addEventListener("DOMContentLoaded", function () {
             
             timeoutBusqueda = setTimeout(async () => {
                 try {
-                    const response = await fetch(`${RUTA_CONTROLLERS}ProgramaFormacionController.php?accion=buscar&q=${encodeURIComponent(texto)}`);
+                    const response = await fetch(`${PRO_URL}?accion=buscar&q=${encodeURIComponent(texto)}`);
                     const result = await response.json();
                     if (result.success && result.data) renderizarProgramas(result.data);
                 } catch (error) {
-                    console.error('Error búsqueda:', error);
+                    console.error('Error busqueda:', error);
                 }
             }, 300);
         });
@@ -278,7 +281,7 @@ document.addEventListener("DOMContentLoaded", function () {
             if (!switchId) return;
             
             try {
-                const response = await fetch(`${RUTA_CONTROLLERS}ProgramaFormacionController.php?accion=desactivar&id_programa=${switchId}`, { method: 'POST' });
+                const response = await fetch(`${PRO_URL}?accion=desactivar&id_programa=${switchId}`, { method: 'POST' });
                 const result = await response.json();
                 
                 if (result.success) {
@@ -295,7 +298,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 }
             } catch (error) {
                 console.error(error);
-                alert('Error de conexión');
+                alert('Error de conexion');
             }
         });
     }
@@ -308,7 +311,7 @@ document.addEventListener("DOMContentLoaded", function () {
             if (!switchId) return;
             
             try {
-                const response = await fetch(`${RUTA_CONTROLLERS}ProgramaFormacionController.php?accion=activar&id_programa=${switchId}`, { method: 'POST' });
+                const response = await fetch(`${PRO_URL}?accion=activar&id_programa=${switchId}`, { method: 'POST' });
                 const result = await response.json();
                 
                 if (result.success) {
@@ -323,9 +326,10 @@ document.addEventListener("DOMContentLoaded", function () {
                 } else {
                     alert(result.error || 'Error');
                 }
+                
             } catch (error) {
                 console.error(error);
-                alert('Error de conexión');
+                alert('Error de conexion');
             }
         });
     }
@@ -351,7 +355,7 @@ document.addEventListener("DOMContentLoaded", function () {
             }
 
             try {
-                const response = await fetch(`${RUTA_CONTROLLERS}ProgramaFormacionController.php?accion=crear`, {
+                const response = await fetch(`${PRO_URL}p?accion=crear`, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify(datos)
@@ -392,7 +396,7 @@ document.addEventListener("DOMContentLoaded", function () {
             }
 
             try {
-                const response = await fetch(`${RUTA_CONTROLLERS}ProgramaFormacionController.php?accion=actualizar`, {
+                const response = await fetch(`${PRO_URL}?accion=actualizar`, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify(datos)
@@ -491,16 +495,8 @@ document.addEventListener("DOMContentLoaded", function () {
         const c = document.getElementById('contador-segundos'); if (c) c.textContent = '6';
     }
 
-    // ===== OBSERVER =====
-    const observer = new MutationObserver(() => {
-        inicializarSwitches();
-        inicializarBotonesEditar();
-    });
-    const cont = document.getElementById('contenedorProgramas');
-    if (cont) observer.observe(cont, { childList: true, subtree: true });
-
     // ===== INICIALIZAR =====
-    console.log('✅ programas.js cargado correctamente');
+    console.log('programas.js cargado correctamente');
     llenarSelectAreas('areaPrograma');
     llenarSelectAreas('areaProgramaEditar');
     cargarProgramas();
