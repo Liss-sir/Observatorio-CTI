@@ -82,6 +82,23 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
+    // ===== OBTENER NOMBRE NIVEL =====
+    function getNombreNivel(idNivel) {
+        const niveles = {
+            '1': 'Técnico',
+            '2': 'Tecnólogo',
+            '3': 'Especialización',
+            '4': 'Curso'
+        };
+        return niveles[idNivel] || 'N/A';
+    }
+
+   // ===== OBTENER COLOR NIVEL =====
+    function getColorNivel(idNivel) {
+        // Verde un poco más intenso que bg-sena-soft para diferenciar
+        return 'bg-green-100 text-green-800';
+    }
+
     // ===== RENDERIZAR PROGRAMAS =====
     function renderizarProgramas(programas) {
         const contenedor = document.getElementById('contenedorProgramas');
@@ -96,7 +113,7 @@ document.addEventListener("DOMContentLoaded", function () {
         
         programas.forEach(programa => {
             const card = document.createElement('div');
-            card.className = 'bg-white border p-5 rounded-xl shadow programa-card';
+            card.className = 'bg-white border border-gray-200 p-5 rounded-xl shadow-sm hover:shadow-md transition-shadow programa-card';
             card.setAttribute('data-id', programa.id_programa);
             
             const nombreStr = String(programa.nombre_programa || '');
@@ -107,14 +124,19 @@ document.addEventListener("DOMContentLoaded", function () {
             card.setAttribute('data-estado', programa.estado || 1);
             
             const estadoActivo = programa.estado == 1;
+            const nombreNivel = getNombreNivel(programa.id_nivel);
+            const colorNivel = getColorNivel(programa.id_nivel);
+            
+            // Usar nombre_area (como viene de la BD) o un valor por defecto
+            const nombreArea = programa.nombre_area || 'N/A';
             
             card.innerHTML = `
-                <div class="flex justify-between items-start mb-3">
-                    <div class="bg-sena-soft p-2 rounded-lg">
+                <div class="flex justify-between items-start mb-4">
+                    <div class="w-10 h-10 bg-sena-soft rounded-lg flex items-center justify-center">
                         <i data-lucide="graduation-cap" class="w-5 h-5 text-green-600"></i>
                     </div>
-                    <div class="flex items-center gap-1">
-                        <button class="btn-editar-programa p-1.5 rounded-lg"
+                    <div class="flex items-center gap-2">
+                        <button class="btn-editar-programa p-2 hover:bg-gray-100 rounded-lg transition-colors"
                             data-id="${programa.id_programa}"
                             data-codigo="${programa.codigo_programa || ''}"
                             data-nombre="${programa.nombre_programa || ''}"
@@ -124,18 +146,49 @@ document.addEventListener("DOMContentLoaded", function () {
                             data-fechafin="${programa.fecha_fin || ''}"
                             data-cupos="${programa.cupos || ''}"
                             data-area="${programa.id_area || ''}">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-4 h-4">
-                                <path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/>
-                            </svg>
+                            <i data-lucide="pencil" class="w-4 h-4 text-gray-500"></i>
                         </button>
-                        <div class="switch-sena ${estadoActivo ? 'active' : ''} cursor-pointer" data-id="${programa.id_programa}"></div>
+                        <div class="switch-sena ${estadoActivo ? 'active' : ''}" data-id="${programa.id_programa}"></div>
                     </div>
                 </div>
-                <h3 class="font-semibold text-gray-800 mb-3">${programa.nombre_programa || 'Sin nombre'}</h3>
-                <div class="text-xs text-gray-500">
-                    <span>${programa.cupos || 'N/A'} cupos</span>
-                    <span class="mx-2">|</span>
-                    <span>Area: ${programa.area_nombre || 'N/A'}</span>
+                
+                <div class="flex flex-wrap gap-2 mb-3">
+                    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-700">
+                        # ${programa.codigo_programa || 'N/A'}
+                    </span>
+                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium ${colorNivel}">
+                        <i data-lucide="layers" class="w-3 h-3"></i>
+                        ${nombreNivel}
+                    </span>
+                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-sena-soft text-green-700">
+                        <i data-lucide="monitor" class="w-3 h-3"></i>
+                        ${programa.modalidad || 'N/A'}
+                    </span>
+                </div>
+                
+                <h3 class="font-semibold text-gray-800 text-base mb-4 leading-tight">${programa.nombre_programa || 'Sin nombre'}</h3>
+                
+                <div class="space-y-2 text-sm text-gray-500">
+                    <div class="flex items-center gap-4">
+                        <span class="inline-flex items-center gap-1.5">
+                            <i data-lucide="users" class="w-4 h-4"></i>
+                            ${programa.cupos || 'N/A'} cupos
+                        </span>
+                        <span class="text-gray-300">|</span>
+                        <!-- CAMBIO: usar nombre_area en lugar de area_nombre -->
+                        <span>Área: ${nombreArea}</span>
+                    </div>
+                    <div class="flex items-center gap-2 text-xs">
+                        <span class="inline-flex items-center gap-1">
+                            <i data-lucide="calendar" class="w-3.5 h-3.5"></i>
+                            ${formatearFecha(programa.fecha_creacion)}
+                        </span>
+                        <i data-lucide="arrow-right" class="w-3.5 h-3.5 text-gray-400"></i>
+                        <span class="inline-flex items-center gap-1">
+                            <i data-lucide="calendar" class="w-3.5 h-3.5"></i>
+                            ${formatearFecha(programa.fecha_fin)}
+                        </span>
+                    </div>
                 </div>
             `;
             
@@ -148,11 +201,15 @@ document.addEventListener("DOMContentLoaded", function () {
         inicializarBotonesEditar();
     }
 
-    // ===== FORMATO FECHA =====
-    function formatoFecha(fecha) {
+    // ===== FORMATEAR FECHA =====
+    function formatearFecha(fecha) {
         if (!fecha) return 'N/A';
         const date = new Date(fecha);
-        return date.toLocaleDateString('es-ES', { day: 'numeric', month: 'short', year: 'numeric' });
+        const meses = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'];
+        const dia = date.getDate();
+        const mes = meses[date.getMonth()];
+        const anio = date.getFullYear();
+        return `${dia} de ${mes} de ${anio}`;
     }
 
     // ===== INICIALIZAR SWITCHES =====
@@ -182,36 +239,90 @@ document.addEventListener("DOMContentLoaded", function () {
             });
         });
     }
-
+    
     // ===== INICIALIZAR BOTONES EDITAR =====
     function inicializarBotonesEditar() {
         document.querySelectorAll(".btn-editar-programa").forEach(btn => {
             if (btn.dataset.inicializado === 'true') return;
             btn.dataset.inicializado = 'true';
             
-            btn.addEventListener("click", function(e) {
+            btn.addEventListener("click", async function(e) {
                 e.preventDefault();
                 e.stopPropagation();
                 
-                document.getElementById("codigoPrograma").value = this.dataset.codigo || '';
-                document.getElementById("cuposPrograma").value = this.dataset.cupos || '';
-                document.getElementById("nombrePrograma").value = this.dataset.nombre || '';
-                document.getElementById("nivelFormacion").value = this.dataset.nivel || '';
-                document.getElementById("modalidadPrograma").value = this.dataset.modalidad || '';
-                document.getElementById("fechaInicio").value = this.dataset.fechainicio || '';
-                document.getElementById("fechaFin").value = this.dataset.fechafin || '';
-                document.getElementById("idProgramaEditar").value = this.dataset.id || '';
+                const boton = e.currentTarget;
                 
-                if (this.dataset.area) {
-                    const selectArea = document.getElementById("areaProgramaEditar");
-                    if (selectArea) selectArea.dataset.valor = this.dataset.area;
+                // Debug: ver datos del botón
+                console.log('Datos del botón:', {
+                    modalidad: boton.dataset.modalidad,
+                    nivel: boton.dataset.nivel,
+                    area: boton.dataset.area
+                });
+                
+                const idInput = document.getElementById("idProgramaEditar");
+                const codigoInput = document.getElementById("codigoPrograma");
+                const nombreInput = document.getElementById("nombrePrograma");
+                const cuposInput = document.getElementById("cuposPrograma");
+                const nivelSelect = document.getElementById("nivelFormacion");
+                const modalidadSelect = document.getElementById("modalidadPrograma");
+                const fechaInicioInput = document.getElementById("fechaInicio");
+                const fechaFinInput = document.getElementById("fechaFin");
+                const areaSelect = document.getElementById("areaProgramaEditar");
+                
+                if (idInput) idInput.value = boton.dataset.id || '';
+                if (codigoInput) codigoInput.value = boton.dataset.codigo || '';
+                if (nombreInput) nombreInput.value = boton.dataset.nombre || '';
+                if (cuposInput) cuposInput.value = boton.dataset.cupos || '';
+                if (nivelSelect) nivelSelect.value = boton.dataset.nivel || '';
+                if (fechaInicioInput) fechaInicioInput.value = boton.dataset.fechainicio || '';
+                if (fechaFinInput) fechaFinInput.value = boton.dataset.fechafin || '';
+                
+                // Manejar modalidad (convertir a mayúsculas si es necesario)
+                if (modalidadSelect && boton.dataset.modalidad) {
+                    const modalidadValor = boton.dataset.modalidad.toUpperCase();
+                    console.log('Asignando modalidad:', modalidadValor);
+                    modalidadSelect.value = modalidadValor;
+                    
+                    // Si no coincide, intentar con el valor original
+                    if (modalidadSelect.value !== modalidadValor) {
+                        modalidadSelect.value = boton.dataset.modalidad;
+                        console.log('Intentando con valor original:', boton.dataset.modalidad);
+                    }
                 }
                 
-                if (modalEditar) modalEditar.classList.remove("hidden");
+                // Cargar áreas y seleccionar la correspondiente
+                if (areaSelect) {
+                    areaSelect.innerHTML = '<option value="">Cargando...</option>';
+                    try {
+                        const areas = await cargarAreas();
+                        areaSelect.innerHTML = '<option value="">Seleccione un área</option>';
+                        areas.forEach(area => {
+                            const option = document.createElement('option');
+                            option.value = area.id;
+                            option.textContent = area.text;
+                            areaSelect.appendChild(option);
+                        });
+                        if (boton.dataset.area) {
+                            areaSelect.value = boton.dataset.area;
+                        }
+                    } catch (error) {
+                        console.error('Error cargando áreas:', error);
+                        areaSelect.innerHTML = '<option value="">Error al cargar</option>';
+                    }
+                }
+                
+                // Debug: ver valores asignados
+                console.log('Valores asignados:', {
+                    modalidad: modalidadSelect?.value,
+                    nivel: nivelSelect?.value,
+                    area: areaSelect?.value
+                });
+                
+                const modal = document.getElementById("modal-editar-programa");
+                if (modal) modal.classList.remove("hidden");
             });
         });
     }
-
     // ===== BUSCADOR =====
     const buscador = document.getElementById("buscador");
     let timeoutBusqueda = null;
@@ -288,7 +399,10 @@ document.addEventListener("DOMContentLoaded", function () {
                     document.querySelectorAll('.programa-card').forEach(card => {
                         if (card.getAttribute('data-id') === switchId) {
                             const sw = card.querySelector('.switch-sena');
-                            if (sw) { sw.classList.remove('active'); sw.setAttribute('title', 'Inactivo'); }
+                            if (sw) { 
+                                sw.classList.remove('active');
+                                sw.setAttribute('title', 'Inactivo'); 
+                            }
                         }
                     });
                     cerrarModal(modalDeshabilitar);
@@ -318,7 +432,10 @@ document.addEventListener("DOMContentLoaded", function () {
                     document.querySelectorAll('.programa-card').forEach(card => {
                         if (card.getAttribute('data-id') === switchId) {
                             const sw = card.querySelector('.switch-sena');
-                            if (sw) { sw.classList.add('active'); sw.setAttribute('title', 'Activo'); }
+                            if (sw) { 
+                                sw.classList.add('active');
+                                sw.setAttribute('title', 'Activo'); 
+                            }
                         }
                     });
                     cerrarModal(modalHabilitar);
@@ -333,7 +450,6 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         });
     }
-
     // ===== GUARDAR NUEVO PROGRAMA =====
     const btnGuardarNuevo = document.getElementById('btn-guardar-nuevo-programa');
     if (btnGuardarNuevo) {
@@ -355,7 +471,7 @@ document.addEventListener("DOMContentLoaded", function () {
             }
 
             try {
-                const response = await fetch(`${PRO_URL}p?accion=crear`, {
+                const response = await fetch(`${PRO_URL}?accion=crear`, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify(datos)
@@ -381,6 +497,7 @@ document.addEventListener("DOMContentLoaded", function () {
         btnGuardarEditar.addEventListener('click', async () => {
             const datos = {
                 id_programa: document.getElementById("idProgramaEditar")?.value,
+                id_area: document.getElementById("areaProgramaEditar")?.value, // ← FALTABA ESTO
                 codigo_programa: document.getElementById("codigoPrograma")?.value,
                 nombre_programa: document.getElementById("nombrePrograma")?.value,
                 id_nivel: document.getElementById("nivelFormacion")?.value,
@@ -390,8 +507,16 @@ document.addEventListener("DOMContentLoaded", function () {
                 cupos: document.getElementById("cuposPrograma")?.value
             };
 
+            // Debug: ver qué datos se están enviando
+            console.log('Datos a enviar:', datos);
+
             if (!datos.id_programa) {
                 alert('ID no encontrado');
+                return;
+            }
+
+            if (!datos.id_area) {
+                alert('El área es requerida');
                 return;
             }
 
@@ -402,12 +527,16 @@ document.addEventListener("DOMContentLoaded", function () {
                     body: JSON.stringify(datos)
                 });
                 const resultado = await response.json();
+                
+                // Debug: ver respuesta del servidor
+                console.log('Respuesta del servidor:', resultado);
+                
                 if (resultado.success) {
                     alert(resultado.message);
                     if (modalEditar) modalEditar.classList.add("hidden");
                     cargarProgramas();
                 } else {
-                    alert(resultado.error);
+                    alert(resultado.error || 'Error al actualizar');
                 }
             } catch (error) {
                 console.error(error);

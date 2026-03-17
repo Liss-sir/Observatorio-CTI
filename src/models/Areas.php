@@ -226,7 +226,7 @@ class AreaModel {
     // Search areas foor name
     public function buscar($termino) {
         try {
-            $sql = "SELECT id_area, nombre_area, estado 
+            $sql = "SELECT id_area, nombre_area, estado, descripcion 
                     FROM areas 
                     WHERE nombre_area LIKE ? 
                     ORDER BY nombre_area ASC";

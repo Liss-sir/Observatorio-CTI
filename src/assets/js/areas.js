@@ -102,6 +102,68 @@ document.addEventListener('DOMContentLoaded', function() {
         asignarEventosDinamicos();
     }
 
+    const buscador = document.getElementById("buscador-areas");
+    let timeoutBusqueda = null;
+
+    if (buscador) {
+        buscador.addEventListener("keyup", function () {
+            clearTimeout(timeoutBusqueda);
+            const texto = this.value.trim();
+            
+            console.log('Texto ingresado:', texto);
+            
+            // Si está vacío, cargar todas
+            if (texto.length === 0) {
+                cargarAreas();
+                return;
+            }
+            
+            // Esperar al menos 2 caracteres
+            if (texto.length < 2) {
+                return;
+            }
+            
+            timeoutBusqueda = setTimeout(async () => {
+                try {
+                    const url = `${API_URL}?accion=buscar&q=${encodeURIComponent(texto)}`;
+                    console.log('URL de búsqueda:', url);
+                    
+                    const response = await fetch(url);
+                    
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    
+                    const result = await response.json();
+                    console.log('Respuesta del servidor:', result);
+                    
+                    // Verificar la estructura de la respuesta
+                    if (result.success === true && Array.isArray(result.data)) {
+                        if (result.data.length === 0) {
+                            // No hay resultados
+                            if (gridAreas) {
+                                gridAreas.innerHTML = '<div class="col-span-full text-center py-10 text-gray-500">No se encontraron áreas con ese término.</div>';
+                            }
+                        } else {
+                            // Renderizar resultados
+                            renderizarAreas(result.data);
+                        }
+                    } else {
+                        console.error('Estructura de respuesta inesperada:', result);
+                        if (gridAreas) {
+                            gridAreas.innerHTML = '<div class="col-span-full text-center py-10 text-red-500">Error en la respuesta del servidor.</div>';
+                        }
+                    }
+                } catch (error) {
+                    console.error('Error en búsqueda:', error);
+                    if (gridAreas) {
+                        gridAreas.innerHTML = '<div class="col-span-full text-center py-10 text-red-500">Error de conexión.</div>';
+                    }
+                }
+            }, 300);
+        });
+    }
+
     // ===== 3. ASIGNAR EVENTOS =====
     function asignarEventosDinamicos() {
         // Botón Editar

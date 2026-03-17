@@ -87,8 +87,8 @@ class ProgramaFormacionModel {
         try {
             $sql = "INSERT INTO programas_formacion (
                 id_area, codigo_programa, nombre_programa, id_nivel, 
-                fecha_creacion, fecha_fin, modalidad, descripcion, estado
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                fecha_creacion, fecha_fin, modalidad, descripcion, estado, cupos
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"; // ← Agregué cupos (10 valores)
             
             $stmt = $this->conn->prepare($sql);
             
@@ -101,55 +101,57 @@ class ProgramaFormacionModel {
                 $data['fecha_fin'],
                 $data['modalidad'] ?? 'PRESENCIAL',
                 $data['descripcion'] ?? null,
-                $data['estado'] ?? 1
+                $data['estado'] ?? 1,
+                $data['cupos'] ?? 0 // ← Agregué cupos (por defecto 0 si no viene)
             ]);
 
             return $ok ? (int)$this->conn->lastInsertId() : false;
 
         } catch (Exception $e) {
             echo json_encode([
-        "success" => false,
-        "error" => $e->getMessage()
-        ]);
-        exit;
-    }
+                "success" => false,
+                "error" => $e->getMessage()
+            ]);
+            exit;
+        }
     }
 
     // Update program exist
     public function actualizar($data) {
-        try {
-            $campos = [];
-            $valores = [];
+    try {
+        $campos = [];
+        $valores = [];
 
-            $camposPermitidos = [
-                'id_area', 'codigo_programa', 'nombre_programa', 'id_nivel',
-                'fecha_creacion', 'fecha_fin', 'modalidad', 'descripcion', 'estado'
-            ];
+        $camposPermitidos = [
+            'id_area', 'codigo_programa', 'nombre_programa', 'id_nivel',
+            'fecha_creacion', 'fecha_fin', 'modalidad', 'descripcion', 'estado',
+            'cupos' // ← FALTABA ESTE CAMPO
+        ];
 
-            foreach ($camposPermitidos as $campo) {
-                if (array_key_exists($campo, $data)) {
-                    $campos[] = "$campo = ?";
-                    $valores[] = $campo === 'nombre_programa' ? trim($data[$campo]) : $data[$campo];
-                }
+        foreach ($camposPermitidos as $campo) {
+            if (array_key_exists($campo, $data)) {
+                $campos[] = "$campo = ?";
+                $valores[] = $campo === 'nombre_programa' ? trim($data[$campo]) : $data[$campo];
             }
+        }
 
-            // If there program no field no update
-            if (empty($campos)) {
-                return false;
-            }
-
-            // Add ID at the end
-            $valores[] = $data['id_programa'];
-
-            $sql = "UPDATE programas_formacion SET " . implode(", ", $campos) . " WHERE id_programa = ?";
-            $stmt = $this->conn->prepare($sql);
-            
-            return $stmt->execute($valores);
-
-        } catch (Exception $e) {
+        // If there program no field no update
+        if (empty($campos)) {
             return false;
         }
+
+        // Add ID at the end
+        $valores[] = $data['id_programa'];
+
+        $sql = "UPDATE programas_formacion SET " . implode(", ", $campos) . " WHERE id_programa = ?";
+        $stmt = $this->conn->prepare($sql);
+        
+        return $stmt->execute($valores);
+
+    } catch (Exception $e) {
+        return false;
     }
+}
 
     // Change state in programs
     public function cambiarEstado($id, $estado) {
