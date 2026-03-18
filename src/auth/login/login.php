@@ -18,9 +18,6 @@
             }
         }
     </script>
-
-    <!-- JS -->
-    <script src="/observatorio/Observatorio-CTI/src/assets/js/login.js"></script>
     
     <style>
         /* Efecto de medio círculo para la imagen */
@@ -128,8 +125,8 @@
     </div>
 
     <!-- LADO DERECHO (FORMULARIO CON LOGO DESTACADO) -->
-    <div class="flex w-full lg:w-1/2 items-start justify-center px-8 bg-white overflow-y-auto pt-16">
-        <div class="w-full max-w-sm animate-form-in">
+    <div class="flex w-full lg:w-1/2 items-start justify-center px-8 bg-white overflow-y-auto pt-24">
+        <div class="w-full max-w-sm animate-form-in" id="formContainer">
             
             <!-- Logo con sombra pronunciada -->
             <div class="flex justify-center">
@@ -158,14 +155,17 @@
             </div>
 
             <!-- Formulario -->
-            <form class="space-y-6">
+            <form id="loginForm" class="space-y-6">
                 <!-- Email -->
                 <div>
                     <label class="block text-sm mb-2 font-medium">
                         Correo electrónico
                     </label>
                     <input type="email"
+                           id="correo"
+                           name="correo"
                            placeholder="correo@ejemplo.com"
+                           required
                            class="w-full px-4 py-3 rounded-md border border-gray-300 
                                   focus:border-sena focus:ring-1 focus:ring-sena/30
                                   focus:outline-none transition">
@@ -179,7 +179,9 @@
                     <div class="relative">
                         <input type="password"
                                id="password"
+                               name="password"
                                placeholder="Ingresa tu contraseña"
+                               required
                                class="w-full px-4 py-3 pr-12 rounded-md border border-gray-300 
                                       focus:border-sena focus:ring-1 focus:ring-sena/30
                                       focus:outline-none transition">
@@ -193,12 +195,21 @@
                     </div>
                 </div>
 
+                <!-- Mensaje de error -->
+                <div id="errorMensaje" class="hidden text-red-500 text-sm text-center bg-red-50 p-2 rounded"></div>
+
                 <!-- Botón -->
                 <button type="submit"
+                        id="btnSubmit"
                         class="w-full bg-sena text-white py-3 rounded-md 
                                hover:bg-[#2d8a00] transition font-medium shadow-sm
-                               hover:shadow-lg hover:shadow-sena/20">
-                    Ingresar
+                               hover:shadow-lg hover:shadow-sena/20
+                               disabled:opacity-50 disabled:cursor-not-allowed flex justify-center items-center gap-2">
+                    <span id="btnText">Ingresar</span>
+                    <span id="btnLoading" class="hidden flex items-center gap-2">
+                        <i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i>
+                        Cargando...
+                    </span>
                 </button>
             </form>
 
@@ -221,41 +232,8 @@
     </div>
 </div>
 
-<script>
-lucide.createIcons();
-
-// Toggle password visibility
-const togglePassword = document.getElementById('togglePassword');
-const passwordInput = document.getElementById('password');
-
-if (togglePassword && passwordInput) {
-    togglePassword.addEventListener('click', function() {
-        const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
-        passwordInput.setAttribute('type', type);
-        
-        const icon = this.querySelector('i');
-        icon.setAttribute('data-lucide', type === 'password' ? 'eye' : 'eye-off');
-        lucide.createIcons();
-    });
-}
-
-// Animación de salida del formulario al enviar
-const form = document.querySelector('form');
-if (form) {
-    form.addEventListener('submit', function(e) {
-        const formContainer = document.querySelector('.animate-form-in');
-        if (formContainer) {
-            formContainer.classList.remove('animate-form-in');
-            formContainer.classList.add('animate-form-out');
-            
-            // Evitar que se envíe inmediatamente para ver la animación
-            setTimeout(() => {
-                // Aquí iría el envío del formulario o redirección
-            }, 400);
-        }
-    });
-}
-</script>
+<!-- JavaScript separado -->
+<script src="../../assets/js/login.js"></script>
 
 </body>
 </html>
