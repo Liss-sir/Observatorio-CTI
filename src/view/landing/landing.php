@@ -213,72 +213,100 @@ echo <<<'HTML'
 
     <!-- Líneas Tecnológicas -->
     <section class="mt-12 w-full">
+
       <div class="flex items-center gap-2 text-[11px] font-extrabold uppercase tracking-wider text-sena-strong">
         <i data-lucide="layers" class="h-4 w-4"></i>
         Clasificación
       </div>
 
-      <h2 class="font-[Montserrat] mt-1 text-xl font-extrabold text-sena-text-main">Líneas Tecnológicas</h2>
+      <h2 class="font-[Montserrat] mt-1 text-xl font-extrabold text-sena-text-main">
+        Líneas Tecnológicas
+      </h2>
 
       <div class="mt-5 grid w-full grid-cols-1 gap-4 md:grid-cols-4">
+
         <!-- TIC -->
         <article class="tarjeta-tecnologia group cursor-pointer rounded-xl border border-sena-border bg-white p-5 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-sena-strong hover:shadow-md">
-          <div class="flex h-full items-center gap-4">
-            <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-sena-soft text-sm font-extrabold text-sena-strong transition-colors duration-200 group-hover:bg-sena-strong">
+          <div class="flex items-center gap-4">
+
             <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-sena-soft text-sm font-extrabold text-sena-strong transition-colors duration-200 group-hover:bg-sena-strong">
               TIC
             </div>
-            <div class="min-w-0">
-              <div class="font-[Montserrat] truncate text-sm font-extrabold text-sena-text-main">
+
+            <div>
+              <div class="font-[Montserrat] text-sm font-extrabold text-sena-text-main">
                 Tecnologías de la Información y las Comunicaciones
               </div>
-              <div class="text-xs font-bold text-sena-text-muted">6 perfiles registrados</div>
+              <div class="text-xs font-bold text-sena-text-muted">
+                6 perfiles registrados
+              </div>
             </div>
+
           </div>
         </article>
 
         <!-- BIO -->
         <article class="tarjeta-tecnologia group cursor-pointer rounded-xl border border-sena-border bg-white p-5 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-sena-strong hover:shadow-md">
-          <div class="flex h-full items-center gap-4">
-            <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-sena-soft text-sm font-extrabold text-sena-strong transition-colors duration-200 group-hover:bg-sena-strong">
+          <div class="flex items-center gap-4">
+
             <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-sena-soft text-sm font-extrabold text-sena-strong transition-colors duration-200 group-hover:bg-sena-strong">
               BIO
             </div>
-            <div class="min-w-0">
-              <div class="font-[Montserrat] truncate text-sm font-extrabold text-sena-text-main">Biotecnología y Nanotecnología</div>
-              <div class="text-xs font-bold text-sena-text-muted">1 perfil registrado</div>
+
+            <div>
+              <div class="font-[Montserrat] text-sm font-extrabold text-sena-text-main">
+                Biotecnología y Nanotecnología
+              </div>
+              <div class="text-xs font-bold text-sena-text-muted">
+                1 perfil registrado
+              </div>
             </div>
+
           </div>
         </article>
 
         <!-- DIS -->
         <article class="tarjeta-tecnologia group cursor-pointer rounded-xl border border-sena-border bg-white p-5 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-sena-strong hover:shadow-md">
-          <div class="flex h-full items-center gap-4">
-            <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-sena-soft text-sm font-extrabold text-sena-strong transition-colors duration-200 group-hover:bg-sena-strong">
+          <div class="flex items-center gap-4">
+
             <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-sena-soft text-sm font-extrabold text-sena-strong transition-colors duration-200 group-hover:bg-sena-strong">
               DIS
             </div>
-            <div class="min-w-0">
-              <div class="font-[Montserrat] truncate text-sm font-extrabold text-sena-text-main">Diseño e Innovación</div>
-              <div class="text-xs font-bold text-sena-text-muted">1 perfil registrado</div>
+
+            <div>
+              <div class="font-[Montserrat] text-sm font-extrabold text-sena-text-main">
+                Diseño e Innovación
+              </div>
+              <div class="text-xs font-bold text-sena-text-muted">
+                1 perfil registrado
+              </div>
             </div>
+
           </div>
         </article>
 
         <!-- PRO -->
         <article class="tarjeta-tecnologia group cursor-pointer rounded-xl border border-sena-border bg-white p-5 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-sena-strong hover:shadow-md">
-          <div class="flex h-full items-center gap-4">
-            <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-sena-soft text-sm font-extrabold text-sena-strong transition-colors duration-200 group-hover:bg-sena-strong">
+          <div class="flex items-center gap-4">
+
             <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-sena-soft text-sm font-extrabold text-sena-strong transition-colors duration-200 group-hover:bg-sena-strong">
               PRO
             </div>
-            <div class="min-w-0">
-              <div class="font-[Montserrat] truncate text-sm font-extrabold text-sena-text-main">Producción y Transformación</div>
-              <div class="text-xs font-bold text-sena-text-muted">0 perfiles registrados</div>
+
+            <div>
+              <div class="font-[Montserrat] text-sm font-extrabold text-sena-text-main">
+                Producción y Transformación
+              </div>
+              <div class="text-xs font-bold text-sena-text-muted">
+                0 perfiles registrados
+              </div>
             </div>
+
           </div>
         </article>
+
       </div>
+
     </section>
 
     <!-- Tecnologías Emergentes -->
