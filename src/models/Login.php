@@ -279,4 +279,48 @@ class LoginModel {
             return ['success' => false, 'message' => 'Error al actualizar la contraseña'];
         }
     }
+
+    /**
+     * Registrar un nuevo usuario (empresa)
+     * @param array $data Campos: nombre_empresa, razon_social, representante_legal, tipo_documento, numero_documento, correo, password
+     * @return array ['success' => bool, 'error' => string|null, 'id_usuario' => int|null]
+     */
+    public function registrar($data) {
+        try {
+            // Verificar si el correo ya existe
+            $existe = $this->obtenerUsuarioPorCorreo($data['correo']);
+            if ($existe) {
+                return ['success' => false, 'error' => 'El correo ya está registrado'];
+            }
+
+            // Hash de la contraseña
+            $hash = password_hash($data['password'], PASSWORD_DEFAULT);
+
+            // Insertar usuario
+            $sql = "INSERT INTO usuarios 
+                    (id_rol, nombre_empresa, razon_social, representante_legal, tipo_documento, numero_documento, correo, password_hash, correo_verificado, estado, es_sistema, fecha_registro)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, 0, 1, 0, NOW())";
+            $stmt = $this->conn->prepare($sql);
+            $params = [
+                2, // id_rol empresa
+                $data['nombre_empresa'] ?? null,
+                $data['razon_social'] ?? null,
+                $data['representante_legal'],
+                $data['tipo_documento'],
+                $data['numero_documento'],
+                $data['correo'],
+                $hash
+            ];
+            $ok = $stmt->execute($params);
+
+            if (!$ok) {
+                return ['success' => false, 'error' => 'Error al registrar el usuario'];
+            }
+
+            $id_usuario = $this->conn->lastInsertId();
+            return ['success' => true, 'id_usuario' => $id_usuario];
+        } catch (Exception $e) {
+            return ['success' => false, 'error' => 'Error en el servidor'];
+        }
+    }
 }
