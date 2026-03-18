@@ -75,13 +75,14 @@ class SugerenciasModel {
     public function crear($data) {
         try {
             $sql = "INSERT INTO sugerencias_blog (
-                id_usuario, titulo, contenido, estado
-            ) VALUES (?, ?, ?, ?)";
+                id_usuario, tipo_sugerencia, titulo, contenido, estado
+            ) VALUES (?, ?, ?, ?, ?)";
             
             $stmt = $this->conn->prepare($sql);
             
             $ok = $stmt->execute([
                 $data['id_usuario'],
+                $data['tipo_sugerencia'],
                 trim($data['titulo']),
                 trim($data['contenido']),
                 $data['estado'] ?? 1
@@ -101,7 +102,7 @@ class SugerenciasModel {
             $valores = [];
 
             $camposPermitidos = [
-                'titulo', 'contenido', 'estado'
+                'tipo_sugerencia', 'titulo', 'contenido', 'estado'
             ];
 
             foreach ($camposPermitidos as $campo) {
@@ -301,5 +302,11 @@ class SugerenciasModel {
         }
         
         return $errores;
+    }
+
+    // Validate tipo_sugerencia
+    public function validarTipoSugerencia($tipo) {
+        $tiposPermitidos = ['PROGRAMA', 'LINEA_TECNOLOGICA', 'OTROS'];
+        return in_array($tipo, $tiposPermitidos);
     }
 }

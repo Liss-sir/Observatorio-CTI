@@ -95,6 +95,23 @@ class SugerenciasController {
             return;
         }
         
+        if (empty($input['tipo_sugerencia'])) {
+            echo json_encode([
+                'success' => false,
+                'error' => 'El tipo de sugerencia es requerido'
+            ]);
+            return;
+        }
+        
+        // Validate tipo_sugerencia
+        if (!$this->model->validarTipoSugerencia($input['tipo_sugerencia'])) {
+            echo json_encode([
+                'success' => false,
+                'error' => 'Tipo de sugerencia no válido. Debe ser PROGRAMA, LINEA_TECNOLOGICA o OTROS'
+            ]);
+            return;
+        }
+        
         if (empty($input['titulo'])) {
             echo json_encode([
                 'success' => false,
@@ -149,7 +166,16 @@ class SugerenciasController {
             return;
         }
         
-        // Conditional validations
+        // Validate tipo_sugerencia if provided
+        if (isset($input['tipo_sugerencia']) && !$this->model->validarTipoSugerencia($input['tipo_sugerencia'])) {
+            echo json_encode([
+                'success' => false,
+                'error' => 'Tipo de sugerencia no válido. Debe ser PROGRAMA, LINEA_TECNOLOGICA o OTROS'
+            ]);
+            return;
+        }
+        
+        // Conditional validations for titulo/contenido
         if (isset($input['titulo']) || isset($input['contenido'])) {
             $titulo = $input['titulo'] ?? '';
             $contenido = $input['contenido'] ?? '';
