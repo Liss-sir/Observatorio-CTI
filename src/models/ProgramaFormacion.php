@@ -88,7 +88,7 @@ class ProgramaFormacionModel {
             $sql = "INSERT INTO programas_formacion (
                 id_area, codigo_programa, nombre_programa, id_nivel, 
                 fecha_creacion, fecha_fin, modalidad, descripcion, estado, cupos
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"; // ← Agregué cupos (10 valores)
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"; 
             
             $stmt = $this->conn->prepare($sql);
             
@@ -102,7 +102,7 @@ class ProgramaFormacionModel {
                 $data['modalidad'] ?? 'PRESENCIAL',
                 $data['descripcion'] ?? null,
                 $data['estado'] ?? 1,
-                $data['cupos'] ?? 0 // ← Agregué cupos (por defecto 0 si no viene)
+                $data['cupos'] ?? 0 
             ]);
 
             return $ok ? (int)$this->conn->lastInsertId() : false;
@@ -125,7 +125,7 @@ class ProgramaFormacionModel {
         $camposPermitidos = [
             'id_area', 'codigo_programa', 'nombre_programa', 'id_nivel',
             'fecha_creacion', 'fecha_fin', 'modalidad', 'descripcion', 'estado',
-            'cupos' // ← FALTABA ESTE CAMPO
+            'cupos' 
         ];
 
         foreach ($camposPermitidos as $campo) {
