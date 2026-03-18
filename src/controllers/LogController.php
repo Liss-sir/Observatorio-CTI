@@ -174,6 +174,93 @@ class LogController {
             'estado' => $usuario['estado']
         ]);
     }
+
+    /**
+     * POST /register
+     * Espera JSON con campos: nombre_empresa, razon_social (opcional), representante_legal, tipo_documento, numero_documento, correo, password
+     */
+    public function register() {
+        $input = json_decode(file_get_contents("php://input"), true);
+
+        // Validar campos requeridos
+        $required = ['representante_legal', 'tipo_documento', 'numero_documento', 'correo', 'password'];
+        foreach ($required as $field) {
+            if (!isset($input[$field]) || empty(trim($input[$field]))) {
+                echo json_encode([
+                    'success' => false,
+                    'error' => "El campo $field es requerido"
+                ]);
+                return;
+            }
+        }
+
+        // Validar formato de correo
+        if (!filter_var($input['correo'], FILTER_VALIDATE_EMAIL)) {
+            echo json_encode([
+                'success' => false,
+                'error' => 'Correo electrónico no válido'
+            ]);
+            return;
+        }
+
+        // Validar longitud de contraseña
+        if (strlen($input['password']) < 6) {
+            echo json_encode([
+                'success' => false,
+                'error' => 'La contraseña debe tener al menos 6 caracteres'
+            ]);
+            return;
+        }
+
+        // Validar tipo_documento contra valores permitidos
+        $tipos_permitidos = ['CC', 'CE', 'NIT', 'TI', 'PASAPORTE', 'RUT'];
+        if (!in_array($input['tipo_documento'], $tipos_permitidos)) {
+            echo json_encode([
+                'success' => false,
+                'error' => 'Tipo de documento no válido'
+            ]);
+            return;
+        }
+
+        // Validar razon_social si se envía (opcional, pero debe ser uno de los valores del enum)
+        if (isset($input['razon_social']) && !empty($input['razon_social'])) {
+            $razones_permitidas = [
+                'SOCIEDAD POR ACCIONES SIMPLIFICADA',
+                'SOCIEDAD ANONIMA',
+                'SOCIEDAD DE RESPONSABILIDAD LIMITADA',
+                'SOCIEDAD EN COMANDITA SIMPLE',
+                'SOCIEDAD EN COMANDITA POR ACCIONES',
+                'EMPRESA UNIPERSONAL',
+                'COOPERATIVA',
+                'FUNDACION',
+                'ASOCIACION'
+            ];
+            if (!in_array($input['razon_social'], $razones_permitidas)) {
+                echo json_encode([
+                    'success' => false,
+                    'error' => 'Razón social no válida'
+                ]);
+                return;
+            }
+        }
+
+        // Llamar al modelo
+        $resultado = $this->model->registrar($input);
+
+        if ($resultado['success']) {
+            // Enviar correo de verificación automáticamente
+            $this->model->enviarVerificacion($resultado['id_usuario'], $input['correo']);
+            echo json_encode([
+                'success' => true,
+                'message' => 'Usuario registrado correctamente. Se ha enviado un correo de verificación.'
+            ]);
+        } else {
+            echo json_encode([
+                'success' => false,
+                'error' => $resultado['error'] ?? 'Error al registrar'
+            ]);
+        }
+    }
 }
 
 // ================= ROUTER =================
@@ -210,6 +297,10 @@ switch ($accion) {
 
     case 'estado-correo':
         $controller->estadoCorreo();
+        break;
+
+    case 'register':
+        $controller->register();
         break;
 
     default:
