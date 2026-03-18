@@ -11,14 +11,29 @@
         <!-- FORM -->
         <form id="form-nueva-area">
           <div class="p-6 space-y-4">
-            <div>
-              <label class="text-sm">Nombre del área</label>
-              <input type="text" name="area" class="w-full border rounded-lg px-3 py-2 bg-gray-100" required>
-            </div>
-            <div>
-              <label class="text-sm">Descripción</label>
-              <textarea name="descripcion" class="w-full border rounded-lg px-3 py-2 bg-gray-100" required></textarea>
-            </div>
+            <div class="mb-4">
+                    <label for="area-nueva" class="block text-sm font-medium text-gray-700 mb-1">Nombre del área</label>
+                    <!-- CORRECCIÓN: Agregados id="area-nueva" y name="area" -->
+                    <input 
+                        type="text" 
+                        id="area-nueva" 
+                        name="area" 
+                        required
+                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sena/20 focus:border-sena transition-all"
+                        placeholder="Ej: Producción, Logística..."
+                    >
+              </div>
+            <div class="mb-6">
+                    <label for="descripcion-nueva" class="block text-sm font-medium text-gray-700 mb-1">Descripción</label>
+                    <!-- CORRECCIÓN: Agregados id="descripcion-nueva" y name="descripcion" -->
+                    <textarea 
+                        id="descripcion-nueva" 
+                        name="descripcion" 
+                        rows="3"
+                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sena/20 focus:border-sena transition-all resize-none"
+                        placeholder="Breve descripción de las funciones del área..."
+                    ></textarea>
+                </div>
           </div>
           <!-- FOOTER -->
           <div class="border-t px-6 py-4 flex justify-end gap-3">

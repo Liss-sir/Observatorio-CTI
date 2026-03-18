@@ -27,7 +27,7 @@ class AreaModel {
     // List all areas
     public function listarTodas() {
         try {
-            $sql = "SELECT id_area, nombre_area, estado 
+            $sql = "SELECT id_area, nombre_area, descripcion, estado 
                     FROM areas 
                     ORDER BY nombre_area ASC";
             $stmt = $this->conn->prepare($sql);
@@ -41,7 +41,7 @@ class AreaModel {
     // Get areas for id
     public function obtener($id) {
         try {
-            $sql = "SELECT id_area, nombre_area, estado 
+            $sql = "SELECT id_area, nombre_area, descripcion, estado 
                     FROM areas 
                     WHERE id_area = ?";
             $stmt = $this->conn->prepare($sql);
@@ -55,17 +55,26 @@ class AreaModel {
     // Create areas
     public function crear($data) {
         try {
-            $sql = "INSERT INTO areas (nombre_area, estado) VALUES (?, ?)";
+            // CORRECCIÓN: 3 columnas -> 3 signos de interrogación
+            $sql = "INSERT INTO areas (nombre_area, descripcion, estado) VALUES (?, ?, ?)";
             $stmt = $this->conn->prepare($sql);
             
+            // Aseguramos que los datos existan y tengan valor por defecto si vienen vacíos
+            $nombre = trim($data['nombre_area'] ?? '');
+            $descripcion = trim($data['descripcion'] ?? '');
+            $estado = isset($data['estado']) ? (int)$data['estado'] : 1;
+
             $ok = $stmt->execute([
-                trim($data['nombre_area']),
-                $data['estado'] ?? 1
+                $nombre,
+                $descripcion, // <--- ¡Agregado! Ahora sí pasamos la descripción
+                $estado
             ]);
 
             return $ok ? (int)$this->conn->lastInsertId() : false;
 
         } catch (Exception $e) {
+            // Opcional: Guardar el error en un log para depurar
+            error_log("Error al crear área: " . $e->getMessage());
             return false;
         }
     }
@@ -76,7 +85,7 @@ class AreaModel {
             $campos = [];
             $valores = [];
 
-            $camposPermitidos = ['nombre_area', 'estado'];
+            $camposPermitidos = ['nombre_area','descripcion','estado'];
 
             foreach ($camposPermitidos as $campo) {
                 if (array_key_exists($campo, $data)) {
@@ -217,7 +226,7 @@ class AreaModel {
     // Search areas foor name
     public function buscar($termino) {
         try {
-            $sql = "SELECT id_area, nombre_area, estado 
+            $sql = "SELECT id_area, nombre_area, estado, descripcion 
                     FROM areas 
                     WHERE nombre_area LIKE ? 
                     ORDER BY nombre_area ASC";

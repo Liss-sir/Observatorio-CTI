@@ -33,6 +33,9 @@
         <div class="px-6 py-6">
 
           <form id="form-editar-programa" class="space-y-4">
+            
+            <!-- CAMPO OCULTO PARA EL ID -->
+            <input type="hidden" id="idProgramaEditar">
 
             <!-- Codigo y cupos -->
             <div class="grid grid-cols-2 gap-4">
@@ -78,9 +81,10 @@
                   id="nivelFormacion"
                   class="w-full mt-1 px-3 py-2 border border-sena-border rounded-lg bg-gray-100 text-sm"
                 >
-                  <option value="Tecnico">Técnico</option>
-                  <option value="Tecnologo">Tecnólogo</option>
-                  <option value="Especializacion">Especialización</option>
+                  <option value="1">Técnico</option>
+                  <option value="2">Tecnólogo</option>
+                  <option value="3">Especialización</option>
+                  <option value="4">Curso</option>
                 </select>
               </div>
 
@@ -90,12 +94,23 @@
                   id="modalidadPrograma"
                   class="w-full mt-1 px-3 py-2 border border-sena-border rounded-lg bg-gray-100 text-sm"
                 >
-                  <option value="Presencial">Presencial</option>
-                  <option value="Virtual">Virtual</option>
-                  <option value="Mixta">Mixta</option>
+                  <option value="PRESENCIAL">Presencial</option>
+                  <option value="VIRTUAL">Virtual</option>
+                  <option value="MIXTA">Mixta</option>
                 </select>
               </div>
 
+            </div>
+            
+            <!-- ÁREA - FALTABA ESTE CAMPO -->
+            <div>
+              <label class="text-sm text-sena-text-main">Área</label>
+              <select
+                id="areaProgramaEditar"
+                class="w-full mt-1 px-3 py-2 border border-sena-border rounded-lg bg-gray-100 text-sm"
+              >
+                <option value="">Seleccione un área</option>
+              </select>
             </div>
 
 
@@ -139,7 +154,7 @@
 
           <button
             type="button"
-            id="btn-guardar-programa"
+            id="btn-guardar-programa-editado"
             class="px-4 py-2 text-sm font-medium text-white bg-[#39A900] rounded-lg hover:bg-green-700 transition-colors"
           >
             Guardar Cambios
