@@ -193,6 +193,56 @@ class LogController {
         ]);
     }
 
+        /**
+     * GET /sesion
+     * Verifica si hay sesión activa y retorna datos del usuario
+     */
+    public function verificarSesion() {
+        // Iniciar sesión si no está iniciada
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+
+        if (isset($_SESSION['autenticado']) && $_SESSION['autenticado'] === true) {
+            echo json_encode([
+                'success' => true,
+                'autenticado' => true,
+                'usuario' => [
+                    'id_usuario' => $_SESSION['id_usuario'],
+                    'correo' => $_SESSION['correo'],
+                    'rol_nombre' => $_SESSION['rol_nombre'],
+                    'nombre' => $_SESSION['usuario']['representante_legal'] ?? $_SESSION['usuario']['nombre_empresa'] ?? 'Usuario'
+                ]
+            ]);
+        } else {
+            echo json_encode([
+                'success' => true,
+                'autenticado' => false
+            ]);
+        }
+    }
+
+    /**
+     * POST /logout
+     * Cierra la sesión del usuario
+     */
+    public function logout() {
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+        
+        // Destruir todas las variables de sesión
+        $_SESSION = array();
+        
+        // Destruir la sesión
+        session_destroy();
+        
+        echo json_encode([
+            'success' => true,
+            'message' => 'Sesión cerrada exitosamente'
+        ]);
+    }
+
     /**
      * POST /register
      * Espera JSON con campos: nombre_empresa, razon_social (opcional), representante_legal, tipo_documento, numero_documento, correo, password
@@ -319,6 +369,14 @@ switch ($accion) {
 
     case 'register':
         $controller->register();
+        break;
+
+    case 'sesion':
+        $controller->verificarSesion();
+        break;
+
+    case 'logout':
+        $controller->logout();
         break;
 
     default:
