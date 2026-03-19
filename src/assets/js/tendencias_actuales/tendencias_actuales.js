@@ -1,4 +1,7 @@
 document.addEventListener('DOMContentLoaded', function() {
+    // ===== CONFIGURACIÓN =====
+    const API_URL = '../../controllers/TendenciaEmergenteController.php';
+    
     // ===== VARIABLES DE MODALES =====
     const modalEditar = document.getElementById('modal-editar-tendencia');
     const modalEditadoConfirmacion = document.getElementById('modal-editado-confirmacion');
@@ -34,668 +37,1200 @@ document.addEventListener('DOMContentLoaded', function() {
     let timeoutCreado = null;
     let intervalContadorCreado = null;
     
-    // ===== FUNCIÓN PARA ABRIR MODAL =====
-    function abrirModal(modal) {
-      if (modal) {
-        modal.classList.remove('hidden');
-        // Forzar reflow para que la animación se ejecute
-        modal.offsetHeight;
-        document.body.classList.add('overflow-hidden');
-      }
-    }
-    
-    // ===== FUNCIÓN PARA CERRAR MODAL =====
-    function cerrarModal(modal) {
-      if (modal) {
-        modal.classList.add('hidden');
-        document.body.classList.remove('overflow-hidden');
-      }
-    }
-    
-    // ===== FUNCIÓN PARA CERRAR MODAL EDITADO =====
-    function cerrarModalEditado() {
-      if (modalEditadoConfirmacion) {
-        modalEditadoConfirmacion.classList.add('hidden');
-        document.body.classList.remove('overflow-hidden');
-      }
-      if (timeoutEditado) {
-        clearTimeout(timeoutEditado);
-        timeoutEditado = null;
-      }
-      if (intervalContadorEditado) {
-        clearInterval(intervalContadorEditado);
-        intervalContadorEditado = null;
-      }
-      const progressBar = document.getElementById('progress-bar-editado');
-      if (progressBar) {
-        progressBar.style.width = '0%';
-      }
-      const contador = document.getElementById('contador-segundos-editado');
-      if (contador) {
-        contador.textContent = '3';
-      }
-    }
-    
-    // ===== FUNCIÓN PARA CERRAR MODAL DESHABILITADO =====
-    function cerrarModalDeshabilitado() {
-      if (modalDeshabilitadoConfirmacion) {
-        modalDeshabilitadoConfirmacion.classList.add('hidden');
-        document.body.classList.remove('overflow-hidden');
-      }
-      if (timeoutDeshabilitado) {
-        clearTimeout(timeoutDeshabilitado);
-        timeoutDeshabilitado = null;
-      }
-      if (intervalContadorDeshabilitado) {
-        clearInterval(intervalContadorDeshabilitado);
-        intervalContadorDeshabilitado = null;
-      }
-      const progressBar = document.getElementById('progress-bar-deshabilitado');
-      if (progressBar) {
-        progressBar.style.width = '0%';
-      }
-      const contador = document.getElementById('contador-segundos-deshabilitado');
-      if (contador) {
-        contador.textContent = '3';
-      }
-    }
+    // Variables para almacenar datos actuales
+    let tendenciasActuales = [];
+    let areasActuales = [];
+    let tendenciaSeleccionada = null;
 
-    // ===== FUNCIÓN PARA CERRAR MODAL HABILITADO =====
-    function cerrarModalHabilitado() {
-      if (modalHabilitadoConfirmacion) {
-        modalHabilitadoConfirmacion.classList.add('hidden');
-        document.body.classList.remove('overflow-hidden');
-      }
-      if (timeoutHabilitado) {
-        clearTimeout(timeoutHabilitado);
-        timeoutHabilitado = null;
-      }
-      if (intervalContadorHabilitado) {
-        clearInterval(intervalContadorHabilitado);
-        intervalContadorHabilitado = null;
-      }
-      const progressBar = document.getElementById('progress-bar-habilitado');
-      if (progressBar) {
-        progressBar.style.width = '0%';
-      }
-      const contador = document.getElementById('contador-segundos-habilitado');
-      if (contador) {
-        contador.textContent = '3';
-      }
-    }
+    // ===== FUNCIÓN PARA MOSTRAR TOAST DE VALIDACIÓN =====
+    function mostrarToastValidacion(mensaje, tipo = 'warning') {
+        const toastContainer = document.getElementById('toast-container');
+        
+        // Si no existe el contenedor, crearlo
+        if (!toastContainer) {
+            const container = document.createElement('div');
+            container.id = 'toast-container';
+            container.className = 'fixed top-4 right-4 z-[9999] flex flex-col gap-3 pointer-events-none';
+            document.body.appendChild(container);
+        }
+        
+        const container = document.getElementById('toast-container');
+        
+        // Definir títulos según el tipo
+        const titulo = tipo === 'warning' ? 'Campo requerido' : 
+               tipo === 'error' ? 'Error' : 
+               tipo === 'info' ? 'Información' : 'Éxito';
+        
+        // Crear elemento toast
+        const toastId = 'toast-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+        const toast = document.createElement('div');
+        toast.id = toastId;
+        toast.className = `toast-validation ${tipo}`;
+        
+        // Iconos según tipo
+        const iconos = {
+            info: `
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="12" y1="16" x2="12" y2="12"></line>
+                    <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                </svg>`,
+            warning: `
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="12" y1="8" x2="12" y2="12"></line>
+                    <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                </svg>
+            `,
+            error: `
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+            `,
+            success: `
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+            `
+        };
 
-    // ===== FUNCIÓN PARA CERRAR MODAL CREADO =====
-    function cerrarModalCreado() {
-      if (modalCreadoConfirmacion) {
-        modalCreadoConfirmacion.classList.add('hidden');
-        document.body.classList.remove('overflow-hidden');
-      }
-      if (timeoutCreado) {
-        clearTimeout(timeoutCreado);
-        timeoutCreado = null;
-      }
-      if (intervalContadorCreado) {
-        clearInterval(intervalContadorCreado);
-        intervalContadorCreado = null;
-      }
-      const progressBar = document.getElementById('progress-bar-creado');
-      if (progressBar) {
-        progressBar.style.width = '0%';
-      }
-      const contador = document.getElementById('contador-segundos-creado');
-      if (contador) {
-        contador.textContent = '3';
-      }
-    }
-    
-    // ===== FUNCIÓN PARA MOSTRAR MODAL EDITADO =====
-    function mostrarModalEditado(nombreTendencia) {
-      console.log('Mostrando modal editado para:', nombreTendencia);
-      
-      if (!modalEditadoConfirmacion) {
-        console.error('Modal editado no encontrado');
-        return;
-      }
-      
-      const nombrePerfilEditadoSpan = document.getElementById('nombre-perfil-editado');
-      if (nombrePerfilEditadoSpan) {
-        nombrePerfilEditadoSpan.textContent = `"${nombreTendencia}"`;
-      }
-      
-      abrirModal(modalEditadoConfirmacion);
-      
-      // Resetear contador
-      let segundos = 3;
-      const contador = document.getElementById('contador-segundos-editado');
-      if (contador) {
-        contador.textContent = segundos;
-      }
-      
-      // Iniciar contador regresivo
-      if (intervalContadorEditado) {
-        clearInterval(intervalContadorEditado);
-      }
-      
-      intervalContadorEditado = setInterval(() => {
-        segundos--;
-        if (contador) {
-          contador.textContent = segundos;
-        }
-        if (segundos <= 0) {
-          clearInterval(intervalContadorEditado);
-          intervalContadorEditado = null;
-        }
-      }, 1000);
-      
-      // Animar barra de progreso
-      const progressBar = document.getElementById('progress-bar-editado');
-      if (progressBar) {
-        progressBar.style.width = '0%';
+        toast.innerHTML = `
+            <div class="toast-contenido">
+                <div class="toast-icono-wrapper">
+                    <div class="toast-icono">
+                        ${iconos[tipo] || iconos.warning}
+                    </div>
+                </div>
+                <div class="toast-mensaje-wrapper">
+                    <div class="toast-titulo">${titulo}</div>
+                    <div class="toast-mensaje">${mensaje}</div>
+                </div>
+            </div>
+        `;
+
+        container.appendChild(toast);
+
+        // Auto cerrar después de 3 segundos
         setTimeout(() => {
-          progressBar.style.width = '100%';
-        }, 50);
-      }
-      
-      if (timeoutEditado) {
-        clearTimeout(timeoutEditado);
-      }
-      
-      timeoutEditado = setTimeout(() => {
-        cerrarModalEditado();
-      }, 3000);
-    }
-    
-    // ===== FUNCIÓN PARA MOSTRAR MODAL DESHABILITADO =====
-    function mostrarModalDeshabilitado(nombreTendencia) {
-      console.log('Mostrando modal deshabilitado para:', nombreTendencia);
-      
-      if (!modalDeshabilitadoConfirmacion) {
-        console.error('Modal deshabilitado no encontrado');
-        return;
-      }
-      
-      // Actualizar el nombre en el modal
-      const nombreTendenciaSpan = document.getElementById('nombre-tendencia-act-deshabilitado');
-      if (nombreTendenciaSpan) {
-        nombreTendenciaSpan.textContent = `"${nombreTendencia}"`;
-      }
-      
-      abrirModal(modalDeshabilitadoConfirmacion);
-      
-      // Resetear contador (3 segundos)
-      let segundos = 3;
-      const contador = document.getElementById('contador-segundos-deshabilitado');
-      if (contador) {
-        contador.textContent = segundos;
-      }
-      
-      // Iniciar contador regresivo
-      if (intervalContadorDeshabilitado) {
-        clearInterval(intervalContadorDeshabilitado);
-      }
-      
-      intervalContadorDeshabilitado = setInterval(() => {
-        segundos--;
-        if (contador) {
-          contador.textContent = segundos;
-        }
-        if (segundos <= 0) {
-          clearInterval(intervalContadorDeshabilitado);
-          intervalContadorDeshabilitado = null;
-        }
-      }, 1000);
-      
-      // Animar barra de progreso (3 segundos)
-      const progressBar = document.getElementById('progress-bar-deshabilitado');
-      if (progressBar) {
-        progressBar.style.width = '0%';
-        setTimeout(() => {
-          progressBar.style.width = '100%';
-        }, 50);
-      }
-      
-      if (timeoutDeshabilitado) {
-        clearTimeout(timeoutDeshabilitado);
-      }
-      
-      timeoutDeshabilitado = setTimeout(() => {
-        cerrarModalDeshabilitado();
-      }, 3000);
+            const toastElement = document.getElementById(toastId);
+            if (toastElement) {
+                toastElement.classList.add('exit');
+                setTimeout(() => {
+                    if (toastElement.parentNode) {
+                        toastElement.remove();
+                    }
+                }, 200);
+            }
+        }, 3000);
     }
 
-    // ===== FUNCIÓN PARA MOSTRAR MODAL HABILITADO =====
-    function mostrarModalHabilitado(nombreTendencia) {
-      console.log('Mostrando modal habilitado para:', nombreTendencia);
-
-      if (!modalHabilitadoConfirmacion) {
-        console.error('Modal habilitado no encontrado');
-        return;
-      }
-
-      const nombreSpan = document.getElementById('nombre-tendencia-act-habilitado-exito');
-      if (nombreSpan) {
-        nombreSpan.textContent = `"${nombreTendencia}"`;
-      }
-
-      abrirModal(modalHabilitadoConfirmacion);
-
-      let segundos = 3;
-      const contador = document.getElementById('contador-segundos-habilitado');
-      if (contador) {
-        contador.textContent = segundos;
-      }
-
-      if (intervalContadorHabilitado) {
-        clearInterval(intervalContadorHabilitado);
-      }
-
-      intervalContadorHabilitado = setInterval(() => {
-        segundos--;
-        if (contador) contador.textContent = segundos;
-        if (segundos <= 0) {
-          clearInterval(intervalContadorHabilitado);
-          intervalContadorHabilitado = null;
+    // ===== FUNCIONES DE API =====
+    async function cargarTendencias() {
+        try {
+            // Usar listarTodas para obtener también las inactivas
+            const response = await fetch(`${API_URL}?accion=listarTodas`);
+            const data = await response.json();
+            
+            if (data.status === 'success') {
+                tendenciasActuales = data.data;
+                renderizarTendencias(tendenciasActuales);
+                actualizarContador(tendenciasActuales.length);
+            }
+        } catch (error) {
+            console.error('Error al cargar tendencias:', error);
+            mostrarToastValidacion('Error al cargar las tendencias', 'error');
         }
-      }, 1000);
-
-      const progressBar = document.getElementById('progress-bar-habilitado');
-      if (progressBar) {
-        progressBar.style.width = '0%';
-        setTimeout(() => {
-          progressBar.style.width = '100%';
-        }, 50);
-      }
-
-      if (timeoutHabilitado) {
-        clearTimeout(timeoutHabilitado);
-      }
-
-      timeoutHabilitado = setTimeout(() => {
-        cerrarModalHabilitado();
-      }, 3000);
     }
 
-    // ===== FUNCIÓN PARA MOSTRAR MODAL CREADO =====
-    function mostrarModalCreado(nombreTendencia) {
-      console.log('Mostrando modal creado para:', nombreTendencia);
-
-      if (!modalCreadoConfirmacion) {
-        console.error('Modal creado no encontrado');
-        return;
-      }
-
-      const nombreSpan = document.getElementById('nombre-tendencia-creada');
-      if (nombreSpan) {
-        nombreSpan.textContent = `"${nombreTendencia}"`;
-      }
-
-      abrirModal(modalCreadoConfirmacion);
-
-      let segundos = 3;
-      const contador = document.getElementById('contador-segundos-creado');
-      if (contador) {
-        contador.textContent = segundos;
-      }
-
-      if (intervalContadorCreado) {
-        clearInterval(intervalContadorCreado);
-      }
-
-      intervalContadorCreado = setInterval(() => {
-        segundos--;
-        if (contador) contador.textContent = segundos;
-        if (segundos <= 0) {
-          clearInterval(intervalContadorCreado);
-          intervalContadorCreado = null;
+    async function cargarAreas() {
+        try {
+            const response = await fetch('../../controllers/AreaController.php?accion=listar');
+            const data = await response.json();
+            
+            if (data.status === 'success') {
+                areasActuales = data.data;
+                
+                // Llenar el filtro de áreas
+                const filtroArea = document.getElementById('filtro-area');
+                if (filtroArea) {
+                    filtroArea.innerHTML = '<option value="">Todas las áreas</option>';
+                    areasActuales.forEach(area => {
+                        filtroArea.innerHTML += `<option value="${area.id_area}">${area.nombre_area}</option>`;
+                    });
+                }
+            }
+        } catch (error) {
+            console.error('Error al cargar áreas:', error);
+            mostrarToastValidacion('Error al cargar las áreas', 'error');
         }
-      }, 1000);
-
-      const progressBar = document.getElementById('progress-bar-creado');
-      if (progressBar) {
-        progressBar.style.width = '0%';
-        setTimeout(() => {
-          progressBar.style.width = '100%';
-        }, 50);
-      }
-
-      if (timeoutCreado) {
-        clearTimeout(timeoutCreado);
-      }
-
-      timeoutCreado = setTimeout(() => {
-        cerrarModalCreado();
-      }, 3000);
     }
-    
-    // ===== EVENTO PARA ABRIR MODAL CREAR =====
-    if (btnCrearTendencia) {
-      btnCrearTendencia.addEventListener('click', function(e) {
-        e.preventDefault();
-        // Limpiar el formulario
-        const form = document.getElementById('form-nueva-tendencia-actual');
-        if (form) {
-          form.reset();
-        }
-        abrirModal(modalCrear);
-      });
-    }
-    
-    // ===== EVENTOS PARA BOTONES DE EDITAR =====
-    document.querySelectorAll('.btn-editar-tendencia').forEach(btn => {
-      btn.addEventListener('click', function(e) {
-        e.preventDefault();
-        e.stopPropagation();
-        
-        // Obtener datos de la tarjeta
-        const card = this.closest('.border');
-        const nombreTendencia = card.querySelector('h3').textContent;
-        const descripcionTendencia = card.querySelector('p.text-xs').textContent;
-        
-        // Obtener el estado del switch
-        const switchEl = card.querySelector('.switch-sena');
-        const estadoTendencia = switchEl.classList.contains('active') ? 'activo' : 'inactivo';
-        
-        // Llenar el formulario con los datos
-        const nombreInput = document.getElementById('nombre-tendencia');
-        const descripcionInput = document.getElementById('descripcion-tendencia');
-        const estadoSelect = document.getElementById('estado-tendencia');
-        
-        if (nombreInput) nombreInput.value = nombreTendencia;
-        if (descripcionInput) descripcionInput.value = descripcionTendencia;
-        if (estadoSelect) estadoSelect.value = estadoTendencia;
-        
-        // Fechas (ejemplo)
-        const today = new Date();
-        const fechaCreacion = new Date(today);
-        fechaCreacion.setMonth(today.getMonth() - 3);
-        const fechaCreacionInput = document.getElementById('fecha-creacion');
-        if (fechaCreacionInput) {
-          fechaCreacionInput.value = fechaCreacion.toISOString().split('T')[0];
-        }
-        
-        const fechaExpiracion = new Date(today);
-        fechaExpiracion.setMonth(today.getMonth() + 6);
-        const fechaExpiracionInput = document.getElementById('fecha-expiracion');
-        if (fechaExpiracionInput) {
-          fechaExpiracionInput.value = fechaExpiracion.toISOString().split('T')[0];
-        }
-        
-        // Guardar referencia a la tarjeta actual
-        if (modalEditar) {
-          modalEditar.setAttribute('data-card-id', card.getAttribute('data-id'));
-        }
-        
-        // Abrir modal de edición
-        abrirModal(modalEditar);
-      });
-    });
-    
-    // ===== EVENTOS PARA SWITCHES =====
-    document.querySelectorAll('.switch-sena').forEach(switchEl => {
-      switchEl.addEventListener('click', function(e) {
-        e.preventDefault();
-        e.stopPropagation();
-        
-        const card = this.closest('.border');
-        const nombreTendencia = card.querySelector('h3').textContent;
-        
-        // Si el switch está activo (verde), mostrar modal de deshabilitar
-        if (this.classList.contains('active')) {
-          // Actualizar el nombre en el modal de deshabilitar
-          const spanNombre = modalDeshabilitar.querySelector('span.font-medium');
-          if (spanNombre) {
-            spanNombre.textContent = `"${nombreTendencia}"`;
-          }
-          
-          // Guardar referencia al switch
-          modalDeshabilitar.setAttribute('data-switch-id', card.getAttribute('data-id'));
-          
-          // Abrir modal de deshabilitar
-          abrirModal(modalDeshabilitar);
-        } else {
-          // Si está inactivo (gris), mostrar modal de habilitar
-          const spanNombre = modalHabilitar.querySelector('span.font-semibold');
-          if (spanNombre) {
-            spanNombre.textContent = `"${nombreTendencia}"`;
-          }
-          
-          // Guardar referencia al switch
-          modalHabilitar.setAttribute('data-switch-id', card.getAttribute('data-id'));
-          modalHabilitar.setAttribute('data-nombre-tendencia', nombreTendencia);
-          
-          // Abrir modal de habilitar
-          abrirModal(modalHabilitar);
-        }
-      });
-    });
-    
-    // ===== EVENTO PARA ABRIR MODAL DETALLE AL HACER CLICK EN LA TARJETA =====
-    document.querySelectorAll('.border[data-id]').forEach(card => {
-      card.addEventListener('click', function(e) {
-        // Evitar que se active si se hizo clic en el botón de editar o en el switch
-        if (e.target.closest('.btn-editar-tendencia') || e.target.closest('.switch-sena')) {
-          return;
-        }
-        
-        // Obtener datos de la tarjeta
-        const nombreTendencia = this.querySelector('h3').textContent;
-        const descripcionTendencia = this.querySelector('p.text-xs').textContent;
-        const switchEl = this.querySelector('.switch-sena');
-        const estadoTendencia = switchEl.classList.contains('active') ? 'Activo' : 'Inactivo';
-        const colorEstado = switchEl.classList.contains('active') ? '#39A900' : '#9ca3af';
-        
-        // Obtener el ID de la tarjeta
-        const cardId = this.getAttribute('data-id');
-        
-        // Actualizar el modal con los datos
-        document.getElementById('detalle-titulo').textContent = `Detalle de: ${nombreTendencia}`;
-        document.getElementById('detalle-nombre').textContent = nombreTendencia;
-        document.getElementById('detalle-descripcion').textContent = descripcionTendencia;
-        document.getElementById('detalle-estado').textContent = estadoTendencia;
-        document.getElementById('detalle-estado-indicador').style.backgroundColor = colorEstado;
-        
-        // Abrir modal
-        abrirModal(modalDetalle);
-      });
-    });
-    
-    // ===== CONFIRMAR DESHABILITAR =====
-    if (btnConfirmarDeshabilitar) {
-      btnConfirmarDeshabilitar.addEventListener('click', function(e) {
-        e.preventDefault();
-        
-        // Obtener el ID del switch guardado
-        const switchId = modalDeshabilitar.getAttribute('data-switch-id');
-        const nombreTendencia = modalDeshabilitar.querySelector('span.font-medium').textContent.replace(/"/g, '');
-        
-        // Buscar el switch correspondiente y desactivarlo
-        document.querySelectorAll('.border').forEach(card => {
-          if (card.getAttribute('data-id') === switchId) {
-            const switchEl = card.querySelector('.switch-sena');
-            switchEl.classList.remove('active');
-            switchEl.setAttribute('title', 'Inactivo');
-          }
+
+    // Función para actualizar solo el switch visualmente
+    function actualizarSwitchVisual(id, activar) {
+        const tarjetas = document.querySelectorAll('.tarjeta-tecnologia');
+        tarjetas.forEach(tarjeta => {
+            if (tarjeta.getAttribute('data-id') == id) {
+                const switchEl = tarjeta.querySelector('.switch-sena');
+                if (switchEl) {
+                    if (activar) {
+                        switchEl.classList.add('active');
+                        switchEl.setAttribute('title', 'Activo');
+                    } else {
+                        switchEl.classList.remove('active');
+                        switchEl.setAttribute('title', 'Inactivo');
+                    }
+                }
+                
+                // También actualizar la bolita de estado
+                const estadoBolita = tarjeta.querySelector('.estado-bolita');
+                if (estadoBolita) {
+                    estadoBolita.className = `estado-bolita w-2 h-2 rounded-full flex-shrink-0 ${activar ? 'bg-sena' : 'bg-gray-300'}`;
+                }
+            }
         });
-        
-        // Cerrar modal de deshabilitar
-        cerrarModal(modalDeshabilitar);
-        
-        // Mostrar modal de confirmación de deshabilitado
-        mostrarModalDeshabilitado(nombreTendencia);
-      });
     }
-    
-    // ===== CONFIRMAR HABILITAR =====
-    if (btnConfirmarHabilitar) {
-      btnConfirmarHabilitar.addEventListener('click', function(e) {
-        e.preventDefault();
+
+    // Función para actualizar una tarjeta específica
+    function actualizarTarjetaVisual(data) {
+        const tarjetas = document.querySelectorAll('.tarjeta-tecnologia');
+        tarjetas.forEach(tarjeta => {
+            if (tarjeta.getAttribute('data-id') == data.id_tendencia) {
+                // Actualizar título
+                const tituloEl = tarjeta.querySelector('h3');
+                if (tituloEl) tituloEl.textContent = data.nombre;
+                
+                // Actualizar descripción
+                const descripcionEl = tarjeta.querySelector('p.text-xs');
+                if (descripcionEl) descripcionEl.textContent = data.descripcion || 'Sin descripción';
+                
+                // Actualizar área (badge)
+                const badgeArea = tarjeta.querySelector('.badge-area');
+                if (badgeArea) {
+                    const area = areasActuales.find(a => a.id_area == data.id_area);
+                    badgeArea.textContent = area ? area.nombre_area : 'Área';
+                }
+                
+                // Actualizar estado del switch
+                const switchEl = tarjeta.querySelector('.switch-sena');
+                if (switchEl) {
+                    if (data.estado == 1) {
+                        switchEl.classList.add('active');
+                        switchEl.setAttribute('title', 'Activo');
+                    } else {
+                        switchEl.classList.remove('active');
+                        switchEl.setAttribute('title', 'Inactivo');
+                    }
+                }
+                
+                // Actualizar la bolita de estado
+                const estadoBolita = tarjeta.querySelector('.estado-bolita');
+                if (estadoBolita) {
+                    estadoBolita.className = `estado-bolita w-2 h-2 rounded-full flex-shrink-0 ${data.estado == 1 ? 'bg-sena' : 'bg-gray-300'}`;
+                }
+            }
+        });
+    }
+
+    // Función para agregar una nueva tarjeta
+    function agregarTarjetaVisual(tendencia) {
+        const contenedor = document.getElementById('contenedor-tendencias');
+        const template = document.getElementById('template-tendencia');
         
-        // Obtener el ID del switch guardado
-        const switchId = modalHabilitar.getAttribute('data-switch-id');
-        const nombreTendencia = modalHabilitar.getAttribute('data-nombre-tendencia');
+        const card = template.content.cloneNode(true);
+        const div = card.querySelector('.tarjeta-tecnologia');
         
-        // Buscar el switch correspondiente y activarlo
-        document.querySelectorAll('.border').forEach(card => {
-          if (card.getAttribute('data-id') === switchId) {
-            const switchEl = card.querySelector('.switch-sena');
+        div.setAttribute('data-id', tendencia.id_tendencia);
+        div.setAttribute('data-area', tendencia.id_area);
+        
+        div.querySelector('h3').textContent = tendencia.nombre;
+        div.querySelector('p.text-xs').textContent = tendencia.descripcion || 'Sin descripción';
+        
+        const badgeArea = div.querySelector('.badge-area');
+        if (badgeArea) {
+            badgeArea.textContent = tendencia.nombre_area;
+        }
+        
+        const switchEl = div.querySelector('.switch-sena');
+        if (tendencia.estado == 1) {
             switchEl.classList.add('active');
             switchEl.setAttribute('title', 'Activo');
-          }
+        } else {
+            switchEl.setAttribute('title', 'Inactivo');
+        }
+        
+        // Actualizar la bolita de estado según el estado de la tendencia
+        const estadoBolita = div.querySelector('.estado-bolita');
+        if (estadoBolita) {
+            estadoBolita.className = `estado-bolita w-2 h-2 rounded-full flex-shrink-0 ${tendencia.estado == 1 ? 'bg-sena' : 'bg-gray-300'}`;
+        }
+        
+        contenedor.appendChild(div);
+        
+        // Asignar eventos a la nueva tarjeta
+        asignarEventosTarjeta(div);
+    }
+
+    // Función para asignar eventos a una tarjeta específica
+    function asignarEventosTarjeta(tarjeta) {
+        // Evento para botón editar
+        const btnEditar = tarjeta.querySelector('.btn-editar-tendencia');
+        if (btnEditar) {
+            btnEditar.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                const idTendencia = tarjeta.getAttribute('data-id');
+                tendenciaSeleccionada = tendenciasActuales.find(t => t.id_tendencia == idTendencia);
+                
+                if (!tendenciaSeleccionada) return;
+                
+                // Llenar el select de áreas en el modal editar
+                const areaSelect = document.getElementById('area-tendencia');
+                if (areaSelect && areasActuales.length > 0) {
+                    areaSelect.innerHTML = '<option value="">Seleccione un área</option>';
+                    areasActuales.forEach(area => {
+                        areaSelect.innerHTML += `<option value="${area.id_area}">${area.nombre_area}</option>`;
+                    });
+                }
+                
+                // Llenar el formulario con los datos
+                const nombreInput = document.getElementById('nombre-tendencia');
+                const descripcionInput = document.getElementById('descripcion-tendencia');
+                const estadoSelect = document.getElementById('estado-tendencia');
+                
+                if (nombreInput) nombreInput.value = tendenciaSeleccionada.nombre;
+                if (areaSelect) areaSelect.value = tendenciaSeleccionada.id_area;
+                if (descripcionInput) descripcionInput.value = tendenciaSeleccionada.descripcion || '';
+                if (estadoSelect) estadoSelect.value = tendenciaSeleccionada.estado == 1 ? 'activo' : 'inactivo';
+                
+                // Guardar ID en el modal
+                if (modalEditar) {
+                    modalEditar.setAttribute('data-id', idTendencia);
+                }
+                
+                abrirModal(modalEditar);
+            });
+        }
+        
+        // Evento para switch
+        const switchEl = tarjeta.querySelector('.switch-sena');
+        if (switchEl) {
+            switchEl.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                const idTendencia = tarjeta.getAttribute('data-id');
+                const nombreTendencia = tarjeta.querySelector('h3').textContent;
+                const estaActivo = this.classList.contains('active');
+                
+                if (estaActivo) {
+                    // Deshabilitar
+                    const spanNombre = modalDeshabilitar.querySelector('span.font-medium');
+                    if (spanNombre) {
+                        spanNombre.textContent = `"${nombreTendencia}"`;
+                    }
+                    modalDeshabilitar.setAttribute('data-id', idTendencia);
+                    abrirModal(modalDeshabilitar);
+                } else {
+                    // Habilitar
+                    const spanNombre = modalHabilitar.querySelector('span.font-semibold');
+                    if (spanNombre) {
+                        spanNombre.textContent = `"${nombreTendencia}"`;
+                    }
+                    modalHabilitar.setAttribute('data-id', idTendencia);
+                    modalHabilitar.setAttribute('data-nombre', nombreTendencia);
+                    abrirModal(modalHabilitar);
+                }
+            });
+        }
+        
+        // Evento para abrir detalle
+        tarjeta.addEventListener('click', function(e) {
+            if (e.target.closest('.btn-editar-tendencia') || e.target.closest('.switch-sena')) {
+                return;
+            }
+            
+            const idTendencia = this.getAttribute('data-id');
+            const tendencia = tendenciasActuales.find(t => t.id_tendencia == idTendencia);
+            
+            if (!tendencia) return;
+            
+            document.getElementById('detalle-titulo').textContent = `Detalle de: ${tendencia.nombre}`;
+            document.getElementById('detalle-nombre').textContent = tendencia.nombre;
+            document.getElementById('detalle-descripcion').textContent = tendencia.descripcion || 'Sin descripción';
+            
+            const estadoTexto = tendencia.estado == 1 ? 'Activo' : 'Inactivo';
+            const colorEstado = tendencia.estado == 1 ? '#39A900' : '#9ca3af';
+            
+            document.getElementById('detalle-estado').textContent = estadoTexto;
+            document.getElementById('detalle-estado-indicador').style.backgroundColor = colorEstado;
+            
+            // Mostrar área
+            const area = areasActuales.find(a => a.id_area == tendencia.id_area);
+            document.getElementById('detalle-area').textContent = area ? area.nombre_area : 'No especificada';
+            
+            abrirModal(modalDetalle);
+        });
+    }
+
+    // Modifica crearTendencia para que agregue la nueva tarjeta sin recargar todo
+    async function crearTendencia(data) {
+    try {
+        const response = await fetch(`${API_URL}?accion=crear`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
         });
         
-        // Cerrar modal de habilitar
-        cerrarModal(modalHabilitar);
+        const result = await response.json();
         
-        // Mostrar modal de éxito de habilitación
-        mostrarModalHabilitado(nombreTendencia);
-      });
+        if (result.success) {
+            // Obtener el área para mostrar en la tarjeta
+            const area = areasActuales.find(a => a.id_area == data.id_area);
+            
+            // Crear la nueva tendencia para el array local
+            const nuevaTendencia = {
+                id_tendencia: result.id_tendencia,
+                id_area: data.id_area,
+                nombre: data.nombre,
+                descripcion: data.descripcion,
+                estado: data.estado,
+                nombre_area: area ? area.nombre_area : 'Área'
+            };
+            
+            // Agregar al array local
+            tendenciasActuales.push(nuevaTendencia);
+            
+            // Verificar si antes no había tendencias (estaba mostrando empty state)
+            const estabaVacio = tendenciasActuales.length === 1;
+            
+            if (estabaVacio) {
+                // Si estaba vacío, volver a renderizar todo para que desaparezca el empty state
+                renderizarTendencias(tendenciasActuales);
+            } else {
+                // Si ya había tendencias, solo agregar la nueva tarjeta
+                agregarTarjetaVisual(nuevaTendencia);
+            }
+            
+            actualizarContador(tendenciasActuales.length);
+            
+            return { success: true, id: result.id_tendencia };
+        } else {
+            return { success: false, error: result.error };
+        }
+    } catch (error) {
+        console.error('Error al crear tendencia:', error);
+        return { success: false, error: 'Error de conexión' };
+    }
+}
+
+    // Modifica actualizarTendencia para que no recargue todo
+async function actualizarTendencia(data) {
+    try {
+        const response = await fetch(`${API_URL}?accion=actualizar`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            // Actualizar los datos locales sin recargar todo
+            const tendenciaIndex = tendenciasActuales.findIndex(t => t.id_tendencia == data.id_tendencia);
+            if (tendenciaIndex !== -1) {
+                tendenciasActuales[tendenciaIndex] = {
+                    ...tendenciasActuales[tendenciaIndex],
+                    nombre: data.nombre,
+                    id_area: data.id_area,
+                    descripcion: data.descripcion,
+                    estado: data.estado
+                };
+                
+                // Actualizar también el nombre del área
+                const area = areasActuales.find(a => a.id_area == data.id_area);
+                if (area) {
+                    tendenciasActuales[tendenciaIndex].nombre_area = area.nombre_area;
+                }
+            }
+            
+            // Actualizar la tarjeta visualmente
+            actualizarTarjetaVisual(data);
+            
+            // Actualizar contador (aunque no cambie el número, por si acaso)
+            actualizarContador(tendenciasActuales.length);
+            
+            return { success: true };
+        } else {
+            return { success: false, error: result.error };
+        }
+    } catch (error) {
+        console.error('Error al actualizar tendencia:', error);
+        return { success: false, error: 'Error de conexión' };
+    }
+}
+
+    // Modifica cambiarEstadoTendencia para que no recargue todo
+   async function cambiarEstadoTendencia(id, accion) {
+    try {
+        const response = await fetch(`${API_URL}?accion=${accion}&id_tendencia=${id}`, {
+            method: 'POST'
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            // Actualizar el estado en el array local
+            const tendenciaIndex = tendenciasActuales.findIndex(t => t.id_tendencia == id);
+            if (tendenciaIndex !== -1) {
+                tendenciasActuales[tendenciaIndex].estado = accion === 'activar' ? 1 : 0;
+            }
+            
+            // Actualizar SOLO el switch y la bolita visualmente sin recargar todo
+            actualizarSwitchVisual(id, accion === 'activar');
+            
+            // Actualizar contador (no cambia el número, pero por consistencia)
+            actualizarContador(tendenciasActuales.length);
+            
+            return { success: true };
+        } else {
+            return { success: false, error: result.error };
+        }
+    } catch (error) {
+        console.error(`Error al ${accion} tendencia:`, error);
+        return { success: false, error: 'Error de conexión' };
+    }
+}
+
+    async function verificarNombreExistente(nombre, id_area, excluir_id = null) {
+        try {
+            const response = await fetch(`${API_URL}?accion=verificarNombre`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    nombre: nombre,
+                    id_area: id_area,
+                    excluir_id: excluir_id
+                })
+            });
+            
+            const result = await response.json();
+            return result.existe;
+        } catch (error) {
+            console.error('Error al verificar nombre:', error);
+            return false;
+        }
+    }
+
+    // ===== FUNCIONES DE RENDERIZADO =====
+function renderizarTendencias(tendencias) {
+    const contenedor = document.getElementById('contenedor-tendencias');
+    const template = document.getElementById('template-tendencia');
+    const terminoBusqueda = document.getElementById('buscador-tendencias').value.trim();
+    
+    // Limpiar completamente el contenedor
+    contenedor.innerHTML = '';
+    
+    if (tendencias.length === 0) {
+        // Verificar si es porque no hay tendencias en general o porque la búsqueda no dio resultados
+        const hayBusquedaActiva = terminoBusqueda.length > 0;
+        
+        // Cambiar clase del contenedor para empty state
+        contenedor.className = '';
+        
+        if (hayBusquedaActiva) {
+            // Mensaje para cuando la búsqueda no tiene resultados
+            contenedor.innerHTML = `
+                <div class="w-full flex flex-col items-center justify-center py-20 px-4 bg-white border border-gray-200 rounded-xl">
+                    <div class="w-20 h-20 mb-5 bg-sena-soft rounded-2xl flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10 text-sena" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                            <line x1="11" y1="8" x2="11" y2="14"></line>
+                            <line x1="8" y1="11" x2="14" y2="11"></line>
+                        </svg>
+                    </div>
+                    <h3 class="font-['Montserrat'] text-lg font-semibold text-sena-text-main mb-2">No se encontraron resultados</h3>
+                    <p class="text-sm text-sena-text-soft text-center max-w-sm">
+                        No hay tendencias que coincidan con <span class="font-medium text-sena">"${terminoBusqueda}"</span>. Prueba con otras palabras clave.
+                    </p>
+                </div>
+            `;
+        } else {
+            // Mensaje para cuando no hay tendencias creadas (empty state original)
+            contenedor.innerHTML = `
+                <div class="w-full flex flex-col items-center justify-center py-20 px-4 bg-white border border-gray-200 rounded-xl">
+                    <div class="w-20 h-20 mb-5 bg-sena-soft rounded-2xl flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10 text-sena" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 0 1 3 19.875v-6.75ZM9.75 6.75h2.25c.621 0 1.125.504 1.125 1.125v12.75c0 .621-.504 1.125-1.125 1.125h-2.25A1.125 1.125 0 0 1 8.625 20.625V7.875c0-.621.504-1.125 1.125-1.125ZM16.5 3.75h2.25c.621 0 1.125.504 1.125 1.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25A1.125 1.125 0 0 1 15.375 20.625V4.875c0-.621.504-1.125 1.125-1.125Z" />
+                        </svg>
+                    </div>
+                    <h3 class="font-['Montserrat'] text-lg font-semibold text-sena-text-main mb-2">No hay tendencias actuales</h3>
+                    <p class="text-sm text-sena-text-soft text-center max-w-sm mb-6">
+                        Comienza creando tu primera tendencia actual innovadora para fortalecer el desarrollo tecnológico de Risaralda.
+                    </p>
+                    <button id="btn-crear-desde-empty" class="flex items-center gap-2 px-5 py-2.5 text-sm font-medium text-white bg-sena rounded-lg hover:opacity-90 transition-opacity shadow-sm">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M5 12h14"/>
+                            <path d="M12 5v14"/>
+                        </svg>
+                        Crear primera tendencia
+                    </button>
+                </div>
+            `;
+            
+            // Asignar evento al botón del empty state
+            const btnCrearEmpty = document.getElementById('btn-crear-desde-empty');
+            if (btnCrearEmpty && modalCrear) {
+                btnCrearEmpty.addEventListener('click', function() {
+                    // Llenar el select de áreas antes de abrir el modal
+                    const selectCrear = document.querySelector('#form-nueva-tendencia-actual select[name="area"]');
+                    if (selectCrear) {
+                        if (areasActuales.length > 0) {
+                            selectCrear.innerHTML = '<option value="">Seleccione un área</option>';
+                            areasActuales.forEach(area => {
+                                if (area.estado == 1) {
+                                    selectCrear.innerHTML += `<option value="${area.id_area}">${area.nombre_area}</option>`;
+                                }
+                            });
+                        } else {
+                            selectCrear.innerHTML = '<option value="">Cargando áreas...</option>';
+                        }
+                    }
+                    
+                    const form = document.getElementById('form-nueva-tendencia-actual');
+                    if (form) form.reset();
+                    abrirModal(modalCrear);
+                });
+            }
+        }
+        return;
+    }
+    
+    // Restaurar clase de grid cuando hay tendencias
+    contenedor.className = 'grid grid-cols-1 md:grid-cols-3 gap-3';
+    
+    tendencias.forEach(tendencia => {
+        const card = template.content.cloneNode(true);
+        const div = card.querySelector('.tarjeta-tecnologia');
+        
+        div.setAttribute('data-id', tendencia.id_tendencia);
+        div.setAttribute('data-area', tendencia.id_area);
+        
+        div.querySelector('h3').textContent = tendencia.nombre;
+        div.querySelector('p.text-xs').textContent = tendencia.descripcion || 'Sin descripción';
+        
+        const badgeArea = div.querySelector('.badge-area');
+        if (badgeArea) {
+            badgeArea.textContent = tendencia.nombre_area;
+        }
+        
+        const switchEl = div.querySelector('.switch-sena');
+        if (tendencia.estado == 1) {
+            switchEl.classList.add('active');
+            switchEl.setAttribute('title', 'Activo');
+        } else {
+            switchEl.setAttribute('title', 'Inactivo');
+        }
+        
+        // Actualizar la bolita de estado según el estado de la tendencia
+        const estadoBolita = div.querySelector('.estado-bolita');
+        if (estadoBolita) {
+            estadoBolita.className = `estado-bolita w-2 h-2 rounded-full flex-shrink-0 ${tendencia.estado == 1 ? 'bg-sena' : 'bg-gray-300'}`;
+        }
+        
+        contenedor.appendChild(div);
+    });
+    
+    // Asignar eventos individualmente a cada tarjeta
+    document.querySelectorAll('.tarjeta-tecnologia').forEach(tarjeta => {
+        asignarEventosTarjeta(tarjeta);
+    });
+}
+
+    function actualizarContador(total) {
+        const contador = document.getElementById('total-tendencias');
+        if (contador) {
+            contador.textContent = total;
+        }
+    }
+
+    // ===== FUNCIONES DE FILTRADO =====
+    function filtrarTendencias() {
+    const terminoBusqueda = document.getElementById('buscador-tendencias').value.toLowerCase();
+    
+    let filtradas = tendenciasActuales;
+    
+    if (terminoBusqueda) {
+        filtradas = filtradas.filter(t => 
+            t.nombre.toLowerCase().includes(terminoBusqueda) ||
+            (t.descripcion && t.descripcion.toLowerCase().includes(terminoBusqueda)) ||
+            (t.nombre_area && t.nombre_area.toLowerCase().includes(terminoBusqueda))
+        );
+    }
+    
+    renderizarTendencias(filtradas);
+    actualizarContador(filtradas.length);
+}
+
+    // ===== FUNCIONES DE MODALES =====
+    function abrirModal(modal) {
+        if (modal) {
+            modal.classList.remove('hidden');
+            modal.offsetHeight;
+            document.body.classList.add('overflow-hidden');
+        }
+    }
+    
+    function cerrarModal(modal) {
+        if (modal) {
+            modal.classList.add('hidden');
+            document.body.classList.remove('overflow-hidden');
+        }
+    }
+    
+    function cerrarModalEditado() {
+        if (modalEditadoConfirmacion) {
+            modalEditadoConfirmacion.classList.add('hidden');
+            document.body.classList.remove('overflow-hidden');
+        }
+        if (timeoutEditado) {
+            clearTimeout(timeoutEditado);
+            timeoutEditado = null;
+        }
+        if (intervalContadorEditado) {
+            clearInterval(intervalContadorEditado);
+            intervalContadorEditado = null;
+        }
+        const progressBar = document.getElementById('progress-bar-editado');
+        if (progressBar) {
+            progressBar.style.width = '0%';
+        }
+        const contador = document.getElementById('contador-segundos-editado');
+        if (contador) {
+            contador.textContent = '3';
+        }
+    }
+    
+    function cerrarModalDeshabilitado() {
+        if (modalDeshabilitadoConfirmacion) {
+            modalDeshabilitadoConfirmacion.classList.add('hidden');
+            document.body.classList.remove('overflow-hidden');
+        }
+        if (timeoutDeshabilitado) {
+            clearTimeout(timeoutDeshabilitado);
+            timeoutDeshabilitado = null;
+        }
+        if (intervalContadorDeshabilitado) {
+            clearInterval(intervalContadorDeshabilitado);
+            intervalContadorDeshabilitado = null;
+        }
+        const progressBar = document.getElementById('progress-bar-deshabilitado');
+        if (progressBar) {
+            progressBar.style.width = '0%';
+        }
+        const contador = document.getElementById('contador-segundos-deshabilitado');
+        if (contador) {
+            contador.textContent = '3';
+        }
+    }
+
+    function cerrarModalHabilitado() {
+        if (modalHabilitadoConfirmacion) {
+            modalHabilitadoConfirmacion.classList.add('hidden');
+            document.body.classList.remove('overflow-hidden');
+        }
+        if (timeoutHabilitado) {
+            clearTimeout(timeoutHabilitado);
+            timeoutHabilitado = null;
+        }
+        if (intervalContadorHabilitado) {
+            clearInterval(intervalContadorHabilitado);
+            intervalContadorHabilitado = null;
+        }
+        const progressBar = document.getElementById('progress-bar-habilitado');
+        if (progressBar) {
+            progressBar.style.width = '0%';
+        }
+        const contador = document.getElementById('contador-segundos-habilitado');
+        if (contador) {
+            contador.textContent = '3';
+        }
+    }
+
+    function cerrarModalCreado() {
+        if (modalCreadoConfirmacion) {
+            modalCreadoConfirmacion.classList.add('hidden');
+            document.body.classList.remove('overflow-hidden');
+        }
+        if (timeoutCreado) {
+            clearTimeout(timeoutCreado);
+            timeoutCreado = null;
+        }
+        if (intervalContadorCreado) {
+            clearInterval(intervalContadorCreado);
+            intervalContadorCreado = null;
+        }
+        const progressBar = document.getElementById('progress-bar-creado');
+        if (progressBar) {
+            progressBar.style.width = '0%';
+        }
+        const contador = document.getElementById('contador-segundos-creado');
+        if (contador) {
+            contador.textContent = '3';
+        }
+    }
+    
+    function mostrarModalEditado(nombreTendencia) {
+        if (!modalEditadoConfirmacion) return;
+        
+        const nombrePerfilEditadoSpan = document.getElementById('nombre-perfil-editado');
+        if (nombrePerfilEditadoSpan) {
+            nombrePerfilEditadoSpan.textContent = `"${nombreTendencia}"`;
+        }
+        
+        abrirModal(modalEditadoConfirmacion);
+        
+        let segundos = 3;
+        const contador = document.getElementById('contador-segundos-editado');
+        if (contador) contador.textContent = segundos;
+        
+        if (intervalContadorEditado) clearInterval(intervalContadorEditado);
+        
+        intervalContadorEditado = setInterval(() => {
+            segundos--;
+            if (contador) contador.textContent = segundos;
+            if (segundos <= 0) {
+                clearInterval(intervalContadorEditado);
+                intervalContadorEditado = null;
+            }
+        }, 1000);
+        
+        const progressBar = document.getElementById('progress-bar-editado');
+        if (progressBar) {
+            progressBar.style.width = '0%';
+            setTimeout(() => progressBar.style.width = '100%', 50);
+        }
+        
+        if (timeoutEditado) clearTimeout(timeoutEditado);
+        
+        timeoutEditado = setTimeout(() => {
+            cerrarModalEditado();
+        }, 3000);
+    }
+    
+    function mostrarModalDeshabilitado(nombreTendencia) {
+        if (!modalDeshabilitadoConfirmacion) return;
+        
+        const nombreTendenciaSpan = document.getElementById('nombre-tendencia-act-deshabilitado');
+        if (nombreTendenciaSpan) {
+            nombreTendenciaSpan.textContent = `"${nombreTendencia}"`;
+        }
+        
+        abrirModal(modalDeshabilitadoConfirmacion);
+        
+        let segundos = 3;
+        const contador = document.getElementById('contador-segundos-deshabilitado');
+        if (contador) contador.textContent = segundos;
+        
+        if (intervalContadorDeshabilitado) clearInterval(intervalContadorDeshabilitado);
+        
+        intervalContadorDeshabilitado = setInterval(() => {
+            segundos--;
+            if (contador) contador.textContent = segundos;
+            if (segundos <= 0) {
+                clearInterval(intervalContadorDeshabilitado);
+                intervalContadorDeshabilitado = null;
+            }
+        }, 1000);
+        
+        const progressBar = document.getElementById('progress-bar-deshabilitado');
+        if (progressBar) {
+            progressBar.style.width = '0%';
+            setTimeout(() => progressBar.style.width = '100%', 50);
+        }
+        
+        if (timeoutDeshabilitado) clearTimeout(timeoutDeshabilitado);
+        
+        timeoutDeshabilitado = setTimeout(() => {
+            cerrarModalDeshabilitado();
+        }, 3000);
+    }
+
+    function mostrarModalHabilitado(nombreTendencia) {
+        if (!modalHabilitadoConfirmacion) return;
+
+        const nombreSpan = document.getElementById('nombre-tendencia-act-habilitado-exito');
+        if (nombreSpan) {
+            nombreSpan.textContent = `"${nombreTendencia}"`;
+        }
+
+        abrirModal(modalHabilitadoConfirmacion);
+
+        let segundos = 3;
+        const contador = document.getElementById('contador-segundos-habilitado');
+        if (contador) contador.textContent = segundos;
+
+        if (intervalContadorHabilitado) clearInterval(intervalContadorHabilitado);
+
+        intervalContadorHabilitado = setInterval(() => {
+            segundos--;
+            if (contador) contador.textContent = segundos;
+            if (segundos <= 0) {
+                clearInterval(intervalContadorHabilitado);
+                intervalContadorHabilitado = null;
+            }
+        }, 1000);
+
+        const progressBar = document.getElementById('progress-bar-habilitado');
+        if (progressBar) {
+            progressBar.style.width = '0%';
+            setTimeout(() => progressBar.style.width = '100%', 50);
+        }
+
+        if (timeoutHabilitado) clearTimeout(timeoutHabilitado);
+
+        timeoutHabilitado = setTimeout(() => {
+            cerrarModalHabilitado();
+        }, 3000);
+    }
+
+    function mostrarModalCreado(nombreTendencia) {
+        if (!modalCreadoConfirmacion) return;
+
+        const nombreSpan = document.getElementById('nombre-tendencia-creada');
+        if (nombreSpan) {
+            nombreSpan.textContent = `"${nombreTendencia}"`;
+        }
+
+        abrirModal(modalCreadoConfirmacion);
+
+        let segundos = 3;
+        const contador = document.getElementById('contador-segundos-creado');
+        if (contador) contador.textContent = segundos;
+
+        if (intervalContadorCreado) clearInterval(intervalContadorCreado);
+
+        intervalContadorCreado = setInterval(() => {
+            segundos--;
+            if (contador) contador.textContent = segundos;
+            if (segundos <= 0) {
+                clearInterval(intervalContadorCreado);
+                intervalContadorCreado = null;
+            }
+        }, 1000);
+
+        const progressBar = document.getElementById('progress-bar-creado');
+        if (progressBar) {
+            progressBar.style.width = '0%';
+            setTimeout(() => progressBar.style.width = '100%', 50);
+        }
+
+        if (timeoutCreado) clearTimeout(timeoutCreado);
+
+        timeoutCreado = setTimeout(() => {
+            cerrarModalCreado();
+        }, 3000);
+    }
+
+    // ===== ASIGNAR EVENTOS A TARJETAS (ahora usa la nueva función) =====
+    function asignarEventosTarjetas() {
+        document.querySelectorAll('.tarjeta-tecnologia').forEach(tarjeta => {
+            asignarEventosTarjeta(tarjeta);
+        });
+    }
+
+    // ===== EVENTOS PRINCIPALES =====
+    
+    // Cargar datos iniciales
+    cargarTendencias();
+    cargarAreas();
+    
+    // Evento de búsqueda
+    const buscador = document.getElementById('buscador-tendencias');
+    if (buscador) {
+        buscador.addEventListener('input', filtrarTendencias);
+    }
+    
+    // Evento de filtro por área
+    const filtroArea = document.getElementById('filtro-area');
+    if (filtroArea) {
+        filtroArea.addEventListener('change', filtrarTendencias);
+    }
+    
+    // Evento para abrir modal crear
+    if (btnCrearTendencia) {
+        btnCrearTendencia.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            // Llenar el select de áreas justo antes de abrir el modal
+            const selectCrear = document.querySelector('#form-nueva-tendencia-actual select[name="area"]');
+            if (selectCrear) {
+                if (areasActuales.length > 0) {
+                    selectCrear.innerHTML = '<option value="">Seleccione un área</option>';
+                    areasActuales.forEach(area => {
+                        if (area.estado == 1) {
+                            selectCrear.innerHTML += `<option value="${area.id_area}">${area.nombre_area}</option>`;
+                        }
+                    });
+                } else {
+                    selectCrear.innerHTML = '<option value="">Cargando áreas...</option>';
+                }
+            }
+            
+            const form = document.getElementById('form-nueva-tendencia-actual');
+            if (form) form.reset();
+            abrirModal(modalCrear);
+        });
     }
     
     // ===== MANEJAR ENVÍO DEL FORMULARIO DE CREAR =====
     const formCrear = document.getElementById('form-nueva-tendencia-actual');
     if (formCrear) {
-      formCrear.addEventListener('submit', function(e) {
-        e.preventDefault();
-        
-        // Recopilar datos del formulario
-        const area = document.querySelector('input[name="area"]').value;
-        const descripcion = document.querySelector('textarea[name="descripcion"]').value;
-        
-        console.log('Nueva tendencia creada:', { area, descripcion });
-        
-        // Cerrar modal de creación
-        cerrarModal(modalCrear);
-        
-        // Mostrar modal de éxito de creación
-        mostrarModalCreado(area);
-      });
-    }
-    
-    // ===== CERRAR MODAL DE EDICIÓN =====
-    cerrarModalBtns.forEach(btn => {
-      btn.addEventListener('click', function() {
-        cerrarModal(modalEditar);
-      });
-    });
-    
-    // ===== CERRAR MODAL DE CONFIRMACIÓN EDITADO =====
-    cerrarModalEditadoBtns.forEach(btn => {
-      btn.addEventListener('click', function() {
-        cerrarModalEditado();
-      });
-    });
-    
-    // ===== CERRAR MODAL DE DESHABILITAR =====
-    cerrarModalDeshabilitarBtns.forEach(btn => {
-      btn.addEventListener('click', function() {
-        cerrarModal(modalDeshabilitar);
-      });
-    });
-    
-    // ===== CERRAR MODAL DE CONFIRMACIÓN DESHABILITADO =====
-    cerrarModalDeshabilitadoBtns.forEach(btn => {
-      btn.addEventListener('click', function() {
-        cerrarModalDeshabilitado();
-      });
-    });
-    
-    // ===== CERRAR MODAL DE HABILITAR =====
-    cerrarModalHabilitarBtns.forEach(btn => {
-      btn.addEventListener('click', function() {
-        cerrarModal(modalHabilitar);
-      });
-    });
-    
-    // ===== CERRAR MODAL DE CONFIRMACIÓN HABILITADO =====
-    cerrarModalHabilitadoBtns.forEach(btn => {
-      btn.addEventListener('click', function() {
-        cerrarModalHabilitado();
-      });
-    });
-    
-    // ===== CERRAR MODAL DE CREAR =====
-    cerrarModalCrearBtns.forEach(btn => {
-      btn.addEventListener('click', function() {
-        cerrarModal(modalCrear);
-      });
-    });
-    
-    // ===== CERRAR MODAL DE CONFIRMACIÓN CREADO =====
-    cerrarModalCreadoBtns.forEach(btn => {
-      btn.addEventListener('click', function() {
-        cerrarModalCreado();
-      });
-    });
-    
-    // ===== CERRAR MODAL DE DETALLE =====
-    cerrarModalDetalleBtns.forEach(btn => {
-      btn.addEventListener('click', function() {
-        cerrarModal(modalDetalle);
-      });
-    });
-    
-    // ===== CERRAR MODALES HACIENDO CLICK EN OVERLAY =====
-    [modalEditar, modalEditadoConfirmacion, modalDeshabilitar, modalDeshabilitadoConfirmacion, modalHabilitar, modalHabilitadoConfirmacion, modalCrear, modalCreadoConfirmacion, modalDetalle].forEach(modal => {
-      if (modal) {
-        modal.addEventListener('click', function(e) {
-          if (e.target === modal || e.target.classList.contains('fixed')) {
-            if (modal === modalEditadoConfirmacion) {
-              cerrarModalEditado();
-            } else if (modal === modalDeshabilitadoConfirmacion) {
-              cerrarModalDeshabilitado();
-            } else if (modal === modalHabilitadoConfirmacion) {
-              cerrarModalHabilitado();
-            } else if (modal === modalCreadoConfirmacion) {
-              cerrarModalCreado();
-            } else {
-              cerrarModal(modal);
+        formCrear.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const areaSelect = this.querySelector('select[name="area"]');
+            const nombreInput = this.querySelector('input[name="nombre"]');
+            const descripcionTextarea = this.querySelector('textarea[name="descripcion"]');
+            
+            const id_area = areaSelect.value;
+            const nombre = nombreInput.value.trim();
+            const descripcion = descripcionTextarea.value.trim();
+            
+            if (!id_area) {
+                mostrarToastValidacion('Debe seleccionar un área', 'warning');
+                return;
             }
-          }
+            
+            if (!nombre) {
+                mostrarToastValidacion('El nombre de la tendencia es requerido', 'warning');
+                return;
+            }
+            
+            if (!descripcion) {
+                mostrarToastValidacion('La descripción de la tendencia es requerida', 'warning');
+                return;
+            }
+            
+            // Verificar si ya existe
+            const existe = await verificarNombreExistente(nombre, id_area);
+            if (existe) {
+                mostrarToastValidacion('Ya existe una tendencia con ese nombre en el área seleccionada', 'info');
+                return;
+            }
+            
+            const resultado = await crearTendencia({
+                id_area: parseInt(id_area),
+                nombre: nombre,
+                descripcion: descripcion,
+                estado: 1
+            });
+            
+            if (resultado.success) {
+                cerrarModal(modalCrear);
+                mostrarModalCreado(nombre);
+            } else {
+                mostrarToastValidacion(resultado.error || 'Error al crear la tendencia', 'error');
+            }
         });
-      }
-    });
-    
-    // ===== CERRAR CON TECLA ESC =====
-    document.addEventListener('keydown', function(e) {
-      if (e.key === 'Escape') {
-        if (modalEditar && !modalEditar.classList.contains('hidden')) {
-          cerrarModal(modalEditar);
-        } else if (modalEditadoConfirmacion && !modalEditadoConfirmacion.classList.contains('hidden')) {
-          cerrarModalEditado();
-        } else if (modalDeshabilitar && !modalDeshabilitar.classList.contains('hidden')) {
-          cerrarModal(modalDeshabilitar);
-        } else if (modalDeshabilitadoConfirmacion && !modalDeshabilitadoConfirmacion.classList.contains('hidden')) {
-          cerrarModalDeshabilitado();
-        } else if (modalHabilitar && !modalHabilitar.classList.contains('hidden')) {
-          cerrarModal(modalHabilitar);
-        } else if (modalHabilitadoConfirmacion && !modalHabilitadoConfirmacion.classList.contains('hidden')) {
-          cerrarModalHabilitado();
-        } else if (modalCrear && !modalCrear.classList.contains('hidden')) {
-          cerrarModal(modalCrear);
-        } else if (modalCreadoConfirmacion && !modalCreadoConfirmacion.classList.contains('hidden')) {
-          cerrarModalCreado();
-        } else if (modalDetalle && !modalDetalle.classList.contains('hidden')) {
-          cerrarModal(modalDetalle);
-        }
-      }
-    });
+    }
     
     // ===== MANEJAR ENVÍO DEL FORMULARIO DE EDICIÓN =====
     const formEditar = document.getElementById('form-editar-tendencia');
     if (formEditar) {
-      formEditar.addEventListener('submit', function(e) {
-        e.preventDefault();
-        
-        // Recopilar datos del formulario
-        const nombreTendencia = document.getElementById('nombre-tendencia').value;
-        
-        console.log('Tendencia actualizada:', nombreTendencia);
-        
-        // Cerrar modal de edición
-        cerrarModal(modalEditar);
-        
-        // Mostrar modal de éxito
-        mostrarModalEditado(nombreTendencia);
-      });
+        formEditar.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const id_tendencia = modalEditar.getAttribute('data-id');
+            const nombre = document.getElementById('nombre-tendencia').value.trim();
+            const id_area = document.getElementById('area-tendencia').value;
+            const descripcion = document.getElementById('descripcion-tendencia').value.trim();
+            const estado = document.getElementById('estado-tendencia').value === 'activo' ? 1 : 0;
+            
+            // Validaciones básicas
+            if (!nombre) {
+                mostrarToastValidacion('El nombre de la tendencia es requerido', 'warning');
+                return;
+            }
+            
+            if (!id_area) {
+                mostrarToastValidacion('Debe seleccionar un área', 'warning');
+                return;
+            }
+            
+            if (!descripcion) {
+                mostrarToastValidacion('La descripción de la tendencia es requerida', 'warning');
+                return;
+            }
+            
+            // ===== VALIDACIÓN DE CAMPOS SIN CAMBIOS =====
+            // Obtener los datos originales de la tendencia seleccionada
+            const datosOriginales = tendenciaSeleccionada;
+            
+            // Comparar campos para ver si hubo cambios
+            const nombreCambio = nombre !== datosOriginales.nombre;
+            const areaCambio = parseInt(id_area) !== datosOriginales.id_area;
+            const descripcionCambio = descripcion !== (datosOriginales.descripcion || '');
+            const estadoCambio = estado !== datosOriginales.estado;
+            
+            // Si no hay ningún cambio
+            if (!nombreCambio && !areaCambio && !descripcionCambio && !estadoCambio) {
+                mostrarToastValidacion('No se ha realizado ningún cambio en la tendencia', 'info');
+                return;
+            }
+            
+            // Verificar si ya existe (excluyendo esta tendencia)
+            const existe = await verificarNombreExistente(nombre, id_area, id_tendencia);
+            if (existe) {
+                mostrarToastValidacion('Ya existe una tendencia con ese nombre en el área seleccionada', 'info');
+                return;
+            }
+            
+            const resultado = await actualizarTendencia({
+                id_tendencia: parseInt(id_tendencia),
+                id_area: parseInt(id_area),
+                nombre: nombre,
+                descripcion: descripcion,
+                estado: estado
+            });
+            
+            if (resultado.success) {
+                cerrarModal(modalEditar);
+                mostrarModalEditado(nombre);
+            } else {
+                mostrarToastValidacion(resultado.error || 'Error al actualizar la tendencia', 'error');
+            }
+        });
     }
-  });
+    
+    // ===== CONFIRMAR DESHABILITAR =====
+    if (btnConfirmarDeshabilitar) {
+        btnConfirmarDeshabilitar.addEventListener('click', async function(e) {
+            e.preventDefault();
+            
+            const id_tendencia = modalDeshabilitar.getAttribute('data-id');
+            const nombreTendencia = modalDeshabilitar.querySelector('span.font-medium').textContent.replace(/"/g, '');
+            
+            const resultado = await cambiarEstadoTendencia(id_tendencia, 'desactivar');
+            
+            if (resultado.success) {
+                cerrarModal(modalDeshabilitar);
+                mostrarModalDeshabilitado(nombreTendencia);
+            } else {
+                mostrarToastValidacion(resultado.error || 'Error al deshabilitar la tendencia', 'error');
+            }
+        });
+    }
+    
+    // ===== CONFIRMAR HABILITAR =====
+    if (btnConfirmarHabilitar) {
+        btnConfirmarHabilitar.addEventListener('click', async function(e) {
+            e.preventDefault();
+            
+            const id_tendencia = modalHabilitar.getAttribute('data-id');
+            const nombreTendencia = modalHabilitar.getAttribute('data-nombre');
+            
+            const resultado = await cambiarEstadoTendencia(id_tendencia, 'activar');
+            
+            if (resultado.success) {
+                cerrarModal(modalHabilitar);
+                mostrarModalHabilitado(nombreTendencia);
+            } else {
+                mostrarToastValidacion(resultado.error || 'Error al habilitar la tendencia', 'error');
+            }
+        });
+    }
+    
+    // ===== CERRAR MODALES =====
+    cerrarModalBtns.forEach(btn => {
+        btn.addEventListener('click', () => cerrarModal(modalEditar));
+    });
+    
+    cerrarModalEditadoBtns.forEach(btn => {
+        btn.addEventListener('click', cerrarModalEditado);
+    });
+    
+    cerrarModalDeshabilitarBtns.forEach(btn => {
+        btn.addEventListener('click', () => cerrarModal(modalDeshabilitar));
+    });
+    
+    cerrarModalDeshabilitadoBtns.forEach(btn => {
+        btn.addEventListener('click', cerrarModalDeshabilitado);
+    });
+    
+    cerrarModalHabilitarBtns.forEach(btn => {
+        btn.addEventListener('click', () => cerrarModal(modalHabilitar));
+    });
+    
+    cerrarModalHabilitadoBtns.forEach(btn => {
+        btn.addEventListener('click', cerrarModalHabilitado);
+    });
+    
+    cerrarModalCrearBtns.forEach(btn => {
+        btn.addEventListener('click', () => cerrarModal(modalCrear));
+    });
+    
+    cerrarModalCreadoBtns.forEach(btn => {
+        btn.addEventListener('click', cerrarModalCreado);
+    });
+    
+    cerrarModalDetalleBtns.forEach(btn => {
+        btn.addEventListener('click', () => cerrarModal(modalDetalle));
+    });
+    
+    // ===== CERRAR MODALES HACIENDO CLICK EN OVERLAY =====
+    [modalEditar, modalEditadoConfirmacion, modalDeshabilitar, modalDeshabilitadoConfirmacion, 
+     modalHabilitar, modalHabilitadoConfirmacion, modalCrear, modalCreadoConfirmacion, modalDetalle].forEach(modal => {
+        if (modal) {
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal || e.target.classList.contains('fixed')) {
+                    if (modal === modalEditadoConfirmacion) {
+                        cerrarModalEditado();
+                    } else if (modal === modalDeshabilitadoConfirmacion) {
+                        cerrarModalDeshabilitado();
+                    } else if (modal === modalHabilitadoConfirmacion) {
+                        cerrarModalHabilitado();
+                    } else if (modal === modalCreadoConfirmacion) {
+                        cerrarModalCreado();
+                    } else {
+                        cerrarModal(modal);
+                    }
+                }
+            });
+        }
+    });
+    
+    // ===== CERRAR CON TECLA ESC =====
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            if (modalEditar && !modalEditar.classList.contains('hidden')) {
+                cerrarModal(modalEditar);
+            } else if (modalEditadoConfirmacion && !modalEditadoConfirmacion.classList.contains('hidden')) {
+                cerrarModalEditado();
+            } else if (modalDeshabilitar && !modalDeshabilitar.classList.contains('hidden')) {
+                cerrarModal(modalDeshabilitar);
+            } else if (modalDeshabilitadoConfirmacion && !modalDeshabilitadoConfirmacion.classList.contains('hidden')) {
+                cerrarModalDeshabilitado();
+            } else if (modalHabilitar && !modalHabilitar.classList.contains('hidden')) {
+                cerrarModal(modalHabilitar);
+            } else if (modalHabilitadoConfirmacion && !modalHabilitadoConfirmacion.classList.contains('hidden')) {
+                cerrarModalHabilitado();
+            } else if (modalCrear && !modalCrear.classList.contains('hidden')) {
+                cerrarModal(modalCrear);
+            } else if (modalCreadoConfirmacion && !modalCreadoConfirmacion.classList.contains('hidden')) {
+                cerrarModalCreado();
+            } else if (modalDetalle && !modalDetalle.classList.contains('hidden')) {
+                cerrarModal(modalDetalle);
+            }
+        }
+    });
+});

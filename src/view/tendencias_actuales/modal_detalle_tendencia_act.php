@@ -32,11 +32,11 @@
 
         <!-- Content -->
         <div class="px-6 py-5">
-          <!-- Área/Nombre y Estado en la misma fila -->
-          <div class="grid grid-cols-2 mb-6">
+          <!-- Primera fila: Área y Estado -->
+          <div class="grid grid-cols-2 mb-4">
             <div class="pr-8">
-              <span class="text-xs font-medium text-sena-text-soft uppercase tracking-wider">Nombre del área</span>
-              <p class="text-base font-semibold text-sena-text-main mt-1" id="detalle-nombre">Inteligencia Artificial</p>
+              <span class="text-xs font-medium text-sena-text-soft uppercase tracking-wider">Área</span>
+              <p class="text-base font-semibold text-sena-text-main mt-1" id="detalle-area"></p>
             </div>
             
             <!-- Estado con badge de colores institucionales -->
@@ -51,10 +51,16 @@
             </div>
           </div>
 
+          <!-- Segunda fila: Nombre de la tendencia -->
+          <div class="mb-4">
+            <span class="text-xs font-medium text-sena-text-soft uppercase tracking-wider">Nombre de la tendencia</span>
+            <p class="text-base font-semibold text-sena-text-main mt-1" id="detalle-nombre"></p>
+          </div>
+
           <!-- Descripción -->
           <div class="mb-4">
             <span class="text-xs font-medium text-sena-text-soft uppercase tracking-wider">Descripción</span>
-            <p class="text-sm text-sena-text-soft mt-1 leading-relaxed" id="detalle-descripcion">Computación cuántica accesible desde la nube para desarrolladores y empresas, permitiendo experimentación real en problemas de optimización y criptografía.</p>
+            <p class="text-sm text-sena-text-soft mt-1 leading-relaxed" id="detalle-descripcion"></p>
           </div>
         </div>
 
@@ -68,4 +74,3 @@
     </div>
   </div>
 </div>
-

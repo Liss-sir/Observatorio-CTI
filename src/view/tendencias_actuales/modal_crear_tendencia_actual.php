@@ -23,25 +23,30 @@
 
         <!-- Form -->
         <form id="form-nueva-tendencia-actual" class="px-6 py-4">
-          <!-- área -->
+          <!-- Área (select) -->
           <div class="mb-4">
-            <label class="mb-1 block text-sm font-medium text-sena-text-main">Área</label>
+            <label class="mb-1 block text-sm font-medium text-sena-text-main">Área <span class="text-red-500">*</span></label>
             <div class="select-container">
-              <select name="area" class="custom-select">
+              <select name="area" id="area-crear" class="custom-select">
                 <option value="" disabled selected>Selecciona un área</option>
-                <option value="Tecnologías de la información">Tecnologías de la información</option>
-                <option value="Desarrollo de software">Desarrollo de software</option>
-                <option value="Ciberseguridad">Ciberseguridad</option>
-                <option value="Inteligencia artificial">Inteligencia artificial</option>
-                <option value="Big Data">Big Data</option>
+                <!-- Las opciones se cargarán dinámicamente -->
               </select>
             </div>
+          </div>
+
+          <!-- Nombre de la tendencia -->
+          <div class="mb-4">
+            <label class="mb-1 block text-sm font-medium text-sena-text-main">Nombre de la tendencia <span class="text-red-500">*</span></label>
+            <input type="text" name="nombre" id="nombre-crear" 
+                   class="w-full rounded-lg border border-sena-border px-3 py-2 text-sm text-sena-text-main placeholder-sena-text-soft focus:border-sena focus:ring-2 focus:ring-sena/20"
+                   placeholder="Ej: Inteligencia Artificial Generativa">
           </div>
 
           <!-- Descripción -->
           <div class="mb-4">
             <label class="mb-1 block text-sm font-medium text-sena-text-main">Descripción</label>
-            <textarea name="descripcion" rows="3"  placeholder="Describe las responsabilidades y requisitos del perfil..."
+            <textarea name="descripcion" id="descripcion-crear" rows="4" 
+                      placeholder="Describe la tendencia tecnológica..."
                       class="w-full rounded-lg border border-sena-border px-3 py-2 text-sm text-sena-text-main placeholder-sena-text-soft focus:border-sena focus:ring-2 focus:ring-sena/20"></textarea>
           </div>
 
