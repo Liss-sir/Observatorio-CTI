@@ -3,7 +3,7 @@
 
 include __DIR__ . '../../../includes/header.php';
 
-echo <<<'HTML'
+?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -373,6 +373,5 @@ echo <<<'HTML'
 
 </body>
 </html>
-HTML;
 
-include __DIR__ . '../../../includes/footer.php';
+<?php include __DIR__ . '../../../includes/footer.php'; ?>
