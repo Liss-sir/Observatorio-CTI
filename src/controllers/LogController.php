@@ -367,6 +367,18 @@ switch ($accion) {
         $controller->estadoCorreo();
         break;
 
+    case 'register':
+        $controller->register();
+        break;
+
+    case 'sesion':
+        $controller->verificarSesion();
+        break;
+
+    case 'logout':
+        $controller->logout();
+        break;
+
     default:
         echo json_encode([
             "error" => "Acción no válida",
