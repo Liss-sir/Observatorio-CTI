@@ -83,26 +83,34 @@ include __DIR__ . '../../../includes/header.php';
         </div>
     </div>
 
-      <!-- Selector de mes -->
-      <div class="flex justify-center mb-8">
+      <!-- Selector de mes y generación de reporte -->
+      <div class="flex items-center justify-center gap-3 mb-8">
         <button class="flex items-center gap-2 px-4 py-2.5 bg-white border border-sena-border rounded-lg text-[13px] text-sena-text-muted hover:bg-sena-soft hover:border-sena-strong transition-all duration-200 shadow-sm">
-          <i data-lucide="calendar" class="w-4 h-4 text-sena-text-muted"></i>
-          Seleccione el mes
-          <i data-lucide="chevron-down" class="w-4 h-4 text-sena-text-muted"></i>
+          <i data-lucide="file-text" class="w-4 h-4 text-sena-text-muted"></i>
+          Generar reporte de estadísticas
         </button>
       </div>
 
       <!-- Gráfica de barras -->
       <div class="bg-white rounded-xl border border-sena-border p-6 mb-8 shadow-sm">
         <!-- Título -->
-        <div class="flex items-start gap-3 mb-4">
-          <div class="w-9 h-9 rounded-lg bg-slate-100 flex items-center justify-center flex-shrink-0">
-            <i data-lucide="bar-chart-3" class="w-5 h-5 text-slate-600"></i>
+        <div class="flex flex-col gap-3 mb-4 md:flex-row md:items-start md:justify-between">
+          <div class="flex items-start gap-3 md:pr-4">
+            <div class="w-9 h-9 rounded-lg bg-slate-100 flex items-center justify-center flex-shrink-0">
+              <i data-lucide="bar-chart-3" class="w-5 h-5 text-slate-600"></i>
+            </div>
+            <div>
+              <h2 class="text-[15px] font-semibold text-sena-text-main">Necesidades Empresariales vs Oferta SENA</h2>
+              <p class="text-[12px] text-sena-text-muted mt-0.5 leading-relaxed">Comparación entre los perfiles solicitados por las empresas en cada línea tecnológica y las tecnologías emergentes que el SENA ofrece para cubrir esas necesidades.</p>
+            </div>
           </div>
-          <div>
-            <h2 class="text-[15px] font-semibold text-sena-text-main">Necesidades Empresariales vs Oferta SENA</h2>
-            <p class="text-[12px] text-sena-text-muted mt-0.5 leading-relaxed">Comparación entre los perfiles solicitados por las empresas en cada línea tecnológica y las tecnologías emergentes que el SENA ofrece para cubrir esas necesidades.</p>
-          </div>
+          <button class="inline-flex w-auto items-center justify-between gap-3 px-4 py-2.5 bg-white border border-sena-border rounded-lg text-[13px] text-sena-text-muted hover:bg-sena-soft hover:border-sena-strong transition-all duration-200 shadow-sm md:ml-4">
+            <span class="inline-flex items-center gap-2">
+              <i data-lucide="calendar" class="w-4 h-4 text-sena-text-muted"></i>
+              <span class="whitespace-nowrap">Seleccione el mes</span>
+            </span>
+            <i data-lucide="chevron-down" class="w-4 h-4 text-sena-text-muted"></i>
+          </button>
         </div>
 
       <!-- Canvas para Chart.js -->
@@ -185,184 +193,7 @@ include __DIR__ . '../../../includes/header.php';
     </div>
 
   </div>
-
-  <script>
-    // Datos para la gráfica de barras
-    const barData = {
-      labels: [
-        'Tecnologías de la Información',
-        'Automatización Industrial', 
-        'Energías Renovables',
-        'Biotecnología',
-        'Nanotecnología',
-        'Materiales Avanzados',
-        'Robótica',
-        'Inteligencia Artificial'
-      ],
-      datasets: [
-        {
-          label: 'Personal Solicitado',
-          data: [28, 18, 15, 20, 14, 22, 16, 18],
-          backgroundColor: '#22c55e',
-          borderRadius: 4,
-          barThickness: 20
-        },
-        {
-          label: 'Cupos Disponibles',
-          data: [24, 16, 13, 18, 12, 20, 14, 16],
-          backgroundColor: '#3b82f6',
-          borderRadius: 4,
-          barThickness: 20
-        }
-      ]
-    };
-
-    // Configuración de la gráfica de barras
-    const barConfig = {
-      type: 'bar',
-      data: barData,
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          legend: {
-            position: 'bottom',
-            labels: {
-              usePointStyle: true,
-              pointStyle: 'rect',
-              padding: 20,
-              font: {
-                size: 12,
-                family: 'Inter'
-              },
-              color: '#475569'
-            }
-          },
-          tooltip: {
-            backgroundColor: '#1e293b',
-            titleFont: {
-              size: 12,
-              family: 'Inter'
-            },
-            bodyFont: {
-              size: 11,
-              family: 'Inter'
-            },
-            padding: 10,
-            cornerRadius: 8
-          }
-        },
-        scales: {
-          x: {
-            grid: {
-              display: false
-            },
-            ticks: {
-              font: {
-                size: 10,
-                family: 'Inter'
-              },
-              color: '#94a3b8',
-              maxRotation: 45,
-              minRotation: 45,
-              callback: function(value, index) {
-                const label = this.getLabelForValue(value);
-                return label.length > 15 ? label.substring(0, 13) + '...' : label;
-              }
-            }
-          },
-          y: {
-            grid: {
-              color: '#e2e8f0',
-              drawBorder: false
-            },
-            ticks: {
-              font: {
-                size: 11,
-                family: 'Inter'
-              },
-              color: '#94a3b8',
-              stepSize: 2
-            },
-            beginAtZero: true,
-            max: 32
-          }
-        }
-      }
-    };
-
-    // Datos para la gráfica circular
-    const pieData = {
-      labels: [
-        'Tecnologías de la Información',
-        'Automatización Industrial',
-        'Energías Renovables',
-        'Biotecnología',
-        'Nanotecnología',
-        'Materiales Avanzados'
-      ],
-      datasets: [{
-        data: [25, 20, 18, 15, 12, 10],
-        backgroundColor: [
-          '#22c55e',
-          '#3b82f6',
-          '#eab308',
-          '#ef4444',
-          '#8b5cf6',
-          '#f97316'
-        ],
-        borderWidth: 0,
-        cutout: '60%'
-      }]
-    };
-
-    // Configuración de la gráfica circular
-    const pieConfig = {
-      type: 'doughnut',
-      data: pieData,
-      options: {
-        responsive: true,
-        maintainAspectRatio: true,
-        plugins: {
-          legend: {
-            display: false
-          },
-          tooltip: {
-            backgroundColor: '#1e293b',
-            titleFont: {
-              size: 12,
-              family: 'Inter'
-            },
-            bodyFont: {
-              size: 11,
-              family: 'Inter'
-            },
-            padding: 10,
-            cornerRadius: 8,
-            callbacks: {
-              label: function(context) {
-                return context.label + ': ' + context.parsed + '%';
-              }
-            }
-          }
-        }
-      }
-    };
-
-    // Inicializar las gráficas
-    document.addEventListener('DOMContentLoaded', function() {
-      const barCtx = document.getElementById('barChart').getContext('2d');
-      new Chart(barCtx, barConfig);
-
-      const pieCtx = document.getElementById('pieChart').getContext('2d');
-      new Chart(pieCtx, pieConfig);
-
-      // Inicializar iconos de Lucide
-      if (typeof lucide !== 'undefined') {
-        lucide.createIcons();
-      }
-    });
-  </script>
+<script src="../../assets/js/estadisticas/estadisticas.js"></script>
 </main>
 </body>
 </html>
