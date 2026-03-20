@@ -128,6 +128,22 @@ transform: scale(1);
   border-color: #39A900;
 }
 
+/* Asegurar que la bolita se vea */
+.estado-bolita {
+  display: inline-block !important;
+  width: 8px !important;
+  height: 8px !important;
+  border-radius: 9999px !important;
+  flex-shrink: 0 !important;
+}
+
+.estado-bolita.bg-sena {
+  background-color: #39A900 !important;
+}
+
+.estado-bolita.bg-gray-300 {
+  background-color: #D1D5DB !important;
+}
 
 
 .custom-select::-ms-expand {

@@ -1,4 +1,4 @@
-<!-- modal_editar_tendencias.php -->
+<!-- modal_editar_tendencias_act.php -->
 <div id="modal-editar-tendencia" class="hidden fixed inset-0 z-50 overflow-y-auto" aria-hidden="true">
   <!-- Overlay -->
   <div class="fixed inset-0 bg-black bg-opacity-80 transition-opacity"></div>
@@ -23,26 +23,42 @@
 
         <!-- Form -->
         <form id="form-editar-tendencia" class="px-6 py-4">
-          <!-- área -->
+          <!-- Área (select) -->
           <div class="mb-4">
-            <label class="mb-1 block text-sm font-medium text-sena-text-main">Área</label>
+            <label class="mb-1 block text-sm font-medium text-sena-text-main">Área <span class="text-red-500">*</span></label>
             <div class="select-container">
-              <select name="area" class="custom-select">
-                <option value="" disabled selected>Selecciona un área</option>
-                <option value="Tecnologías de la información">Tecnologías de la información</option>
-                <option value="Desarrollo de software">Desarrollo de software</option>
-                <option value="Ciberseguridad">Ciberseguridad</option>
-                <option value="Inteligencia artificial">Inteligencia artificial</option>
-                <option value="Big Data">Big Data</option>
+              <select name="area" id="area-tendencia" class="custom-select">
+                <option value="" disabled>Selecciona un área</option>
+                <!-- Las opciones se cargarán dinámicamente -->
               </select>
             </div>
+          </div>
+
+          <!-- Nombre de la tendencia -->
+          <div class="mb-4">
+            <label class="mb-1 block text-sm font-medium text-sena-text-main">Nombre de la tendencia <span class="text-red-500">*</span></label>
+            <input type="text" name="nombre" id="nombre-tendencia" 
+                   class="w-full rounded-lg border border-sena-border px-3 py-2 text-sm text-sena-text-main placeholder-sena-text-soft focus:border-sena focus:ring-2 focus:ring-sena/20"
+                   placeholder="Ej: Inteligencia Artificial Generativa">
           </div>
 
           <!-- Descripción -->
           <div class="mb-4">
             <label class="mb-1 block text-sm font-medium text-sena-text-main">Descripción</label>
-            <textarea name="descripcion" id="descripcion-tendencia" rows="4" required
-                      class="w-full rounded-lg border border-sena-border px-3 py-2 text-sm text-sena-text-main focus:border-sena focus:ring-2 focus:ring-sena/20">Computación cuántica accesible desde la nube para desarrolladores y empresas, permitiendo experimentación real en problemas de optimización y criptografía.</textarea>
+            <textarea name="descripcion" id="descripcion-tendencia" rows="4" 
+                      placeholder="Describe la tendencia tecnológica..."
+                      class="w-full rounded-lg border border-sena-border px-3 py-2 text-sm text-sena-text-main placeholder-sena-text-soft focus:border-sena focus:ring-2 focus:ring-sena/20"></textarea>
+          </div>
+
+          <!-- Estado (solo para administradores) -->
+          <div class="mb-4">
+            <label class="mb-1 block text-sm font-medium text-sena-text-main">Estado</label>
+            <div class="select-container">
+              <select name="estado" id="estado-tendencia" class="custom-select">
+                <option value="activo">Activo</option>
+                <option value="inactivo">Inactivo</option>
+              </select>
+            </div>
           </div>
 
           <!-- Footer buttons -->
@@ -59,4 +75,3 @@
     </div>
   </div>
 </div>
-
