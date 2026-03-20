@@ -317,6 +317,7 @@ function nav_classes(string $target): string {
         <a href="../../view/lineas_tecnologicas/lineas_tecnologicas.php" class="<?= nav_classes('lineas_tecnologicas.php') ?>">Líneas Tecnológicas</a>
         <a href="../../view/gestion_usuarios/gestion_usuarios.php" class="<?= nav_classes('gestion_usuarios.php') ?>">Gestión Perfiles</a>
         <a href="../../view/sugerencias/sugerencias.php" class="<?= nav_classes('sugerencias.php') ?>">Sugerencias</a>
+        <a href="../../view/estadisticas/estadisticas.php" class="<?= nav_classes('estadisticas.php') ?>">Estadisticas</a>
         <a href="../../view/historial/historial.php" class="<?= nav_classes('historial.php') ?>">Historial</a>
       </nav>
 
