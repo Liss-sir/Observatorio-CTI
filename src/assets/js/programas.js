@@ -356,7 +356,6 @@ document.addEventListener("DOMContentLoaded", function () {
             document.body.classList.add('overflow-hidden');
         }
     }
-
     function cerrarModal(modal) {
         if (modal) {
             modal.classList.add('hidden');

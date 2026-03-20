@@ -1,6 +1,8 @@
 <!-- modal_detalle_tendencia_act.php -->
 <!-- Modal para ver detalle de tendencia actual -->
-<div id="modal-detalle-tendencia" class="hidden fixed inset-0 z-50 overflow-y-auto" aria-hidden="true">
+<div id="modal-detalle-area" class="hidden fixed inset-0 z-50 overflow-y-auto" aria-hidden="true">
+<link rel="stylesheet" href="../../../assets/css/output.css">
+<link rel="stylesheet" href="../../assets/css/globals.css">
   <!-- Overlay -->
   <div class="fixed inset-0 bg-black bg-opacity-80 transition-opacity"></div>
 
@@ -18,8 +20,8 @@
             </svg>
           </div>
           <div>
-            <h3 class="text-lg font-semibold text-sena-text-main" id="detalle-titulo">Detalle de Tendencia</h3>
-            <p class="text-sm text-sena-text-soft">Información completa de la tendencia seleccionada</p>
+            <h3 class="text-lg font-semibold text-sena-text-main" id="detalle-titulo">Detalle de Area</h3>
+            <p class="text-sm text-sena-text-soft">Información completa del area seleccionada</p>
           </div>
           
           <!-- Close button -->
@@ -32,11 +34,11 @@
 
         <!-- Content -->
         <div class="px-6 py-5">
-          <!-- Primera fila: Área y Estado -->
-          <div class="grid grid-cols-2 mb-4">
+          <!-- Área/Nombre y Estado en la misma fila -->
+          <div class="grid grid-cols-2 mb-6">
             <div class="pr-8">
-              <span class="text-xs font-medium text-sena-text-soft uppercase tracking-wider">Área</span>
-              <p class="text-base font-semibold text-sena-text-main mt-1" id="detalle-area"></p>
+              <span class="text-xs font-medium text-sena-text-soft uppercase tracking-wider">Nombre del área</span>
+              <p class="text-base font-semibold text-sena-text-main mt-1" id="detalle-nombre">Inteligencia Artificial</p>
             </div>
             
             <!-- Estado con badge de colores institucionales -->
@@ -51,16 +53,10 @@
             </div>
           </div>
 
-          <!-- Segunda fila: Nombre de la tendencia -->
-          <div class="mb-4">
-            <span class="text-xs font-medium text-sena-text-soft uppercase tracking-wider">Nombre de la tendencia</span>
-            <p class="text-base font-semibold text-sena-text-main mt-1" id="detalle-nombre"></p>
-          </div>
-
           <!-- Descripción -->
           <div class="mb-4">
             <span class="text-xs font-medium text-sena-text-soft uppercase tracking-wider">Descripción</span>
-            <p class="text-sm text-sena-text-soft mt-1 leading-relaxed" id="detalle-descripcion"></p>
+            <p class="text-sm text-sena-text-soft mt-1 leading-relaxed" id="detalle-descripcion">Computación cuántica accesible desde la nube para desarrolladores y empresas, permitiendo experimentación real en problemas de optimización y criptografía.</p>
           </div>
         </div>
 
@@ -74,3 +70,19 @@
     </div>
   </div>
 </div>
+
+<style>
+  @keyframes modalFadeIn {
+    from {
+      opacity: 0;
+      transform: scale(0.95) translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1) translateY(0);
+    }
+  }
+  .animate-modalFadeIn {
+    animation: modalFadeIn 0.3s ease-out;
+  }
+</style>
