@@ -12,7 +12,7 @@ class EtapaDesarrolloController {
         $this->model = new EtapaDesarrolloModel($conn);
     }
 
-    // List stage activate
+    // Listar etapas activas
     public function listar() {
         $etapas = $this->model->listar();
         echo json_encode([
@@ -21,7 +21,7 @@ class EtapaDesarrolloController {
         ]);
     }
 
-    // list all stage (for admin)
+    // Listar todas las etapas (para admin)
     public function listarTodas() {
         $etapas = $this->model->listarTodas();
         echo json_encode([
@@ -30,7 +30,7 @@ class EtapaDesarrolloController {
         ]);
     }
 
-    // Get stage for ID
+    // Obtener etapa por ID
     public function obtener($id) {
         if (!$id) {
             echo json_encode([
@@ -55,7 +55,7 @@ class EtapaDesarrolloController {
         }
     }
 
-    // Create new stage
+    // Crear nueva etapa
     public function crear() {
         $input = json_decode(file_get_contents("php://input"), true);
         
@@ -67,18 +67,18 @@ class EtapaDesarrolloController {
             return;
         }
         
-        if (empty($input['nombre'])) {
+        if (empty($input['descripcion'])) {
             echo json_encode([
                 'success' => false,
-                'error' => 'El nombre de la etapa es requerido'
+                'error' => 'La descripción de la etapa es requerida'
             ]);
             return;
         }
         
-        if ($this->model->nombreExisteEnArea($input['nombre'], $input['id_area'])) {
+        if ($this->model->descripcionExisteEnArea($input['descripcion'], $input['id_area'])) {
             echo json_encode([
                 'success' => false,
-                'error' => 'Ya existe una etapa con ese nombre en el área seleccionada'
+                'error' => 'Ya existe una etapa con esa descripción en el área seleccionada'
             ]);
             return;
         }
@@ -99,7 +99,7 @@ class EtapaDesarrolloController {
         }
     }
 
-    // Update stage exist
+    // Actualizar etapa existente
     public function actualizar() {
         $input = json_decode(file_get_contents("php://input"), true);
         
@@ -111,19 +111,19 @@ class EtapaDesarrolloController {
             return;
         }
         
-        if (isset($input['nombre']) && isset($input['id_area'])) {
-            if (empty(trim($input['nombre']))) {
+        if (isset($input['descripcion']) && isset($input['id_area'])) {
+            if (empty(trim($input['descripcion']))) {
                 echo json_encode([
                     'success' => false,
-                    'error' => 'El nombre de la etapa no puede estar vacío'
+                    'error' => 'La descripción de la etapa no puede estar vacía'
                 ]);
                 return;
             }
             
-            if ($this->model->nombreExisteEnArea($input['nombre'], $input['id_area'], $input['id_etapa'])) {
+            if ($this->model->descripcionExisteEnArea($input['descripcion'], $input['id_area'], $input['id_etapa'])) {
                 echo json_encode([
                     'success' => false,
-                    'error' => 'Ya existe una etapa con ese nombre en el área seleccionada'
+                    'error' => 'Ya existe una etapa con esa descripción en el área seleccionada'
                 ]);
                 return;
             }
@@ -137,7 +137,7 @@ class EtapaDesarrolloController {
         ]);
     }
 
-    // Change state this stage
+    // Cambiar estado de la etapa
     public function cambiarEstado($id, $accion) {
         if (!$id) {
             echo json_encode([
@@ -170,7 +170,7 @@ class EtapaDesarrolloController {
         ]);
     }
 
-    // Delete stage
+    // Eliminar etapa
     public function eliminar($id) {
         if (!$id) {
             echo json_encode([
@@ -195,8 +195,7 @@ class EtapaDesarrolloController {
         }
     }
 
-
-    // Get satage for areas
+    // Obtener etapas por área
     public function obtenerPorArea($id_area) {
         if (!$id_area) {
             echo json_encode([
@@ -214,7 +213,7 @@ class EtapaDesarrolloController {
         ]);
     }
 
-    // Get stage from select for area
+    // Obtener etapas para select por área
     public function obtenerParaSelectPorArea($id_area) {
         if (!$id_area) {
             echo json_encode([
@@ -227,10 +226,10 @@ class EtapaDesarrolloController {
         $etapas = $this->model->obtenerParaSelectPorArea($id_area);
         
         $options = [];
-        foreach ($etapas as $id => $nombre) {
+        foreach ($etapas as $id => $texto) {
             $options[] = [
                 'id' => $id,
-                'text' => $nombre
+                'text' => $texto
             ];
         }
         
@@ -240,20 +239,20 @@ class EtapaDesarrolloController {
         ]);
     }
 
-    // Verify if this name in stage exist in area
-    public function verificarNombreExistente() {
+    // Verificar si la descripción ya existe en el área
+    public function verificarDescripcionExistente() {
         $input = json_decode(file_get_contents("php://input"), true);
         
-        if (!isset($input['nombre']) || !isset($input['id_area'])) {
+        if (!isset($input['descripcion']) || !isset($input['id_area'])) {
             echo json_encode([
                 'success' => false,
-                'error' => 'Nombre y área son requeridos'
+                'error' => 'Descripción y área son requeridos'
             ]);
             return;
         }
         
-        $existe = $this->model->nombreExisteEnArea(
-            $input['nombre'],
+        $existe = $this->model->descripcionExisteEnArea(
+            $input['descripcion'],
             $input['id_area'],
             $input['excluir_id'] ?? null
         );
@@ -263,7 +262,7 @@ class EtapaDesarrolloController {
         ]);
     }
 
-    // Verify if stage have dependences
+    // Verificar si la etapa tiene dependencias
     public function verificarDependencias($id) {
         if (!$id) {
             echo json_encode([
@@ -280,7 +279,7 @@ class EtapaDesarrolloController {
         ]);
     }
 
-    // Get statistics from stage
+    // Obtener estadísticas de etapas
     public function obtenerEstadisticas() {
         $estadisticas = $this->model->obtenerEstadisticas();
         echo json_encode([
@@ -289,7 +288,7 @@ class EtapaDesarrolloController {
         ]);
     }
 
-    // Get stage for term
+    // Buscar etapas por término en descripción
     public function buscar() {
         $termino = $_GET['q'] ?? '';
         
@@ -309,15 +308,15 @@ class EtapaDesarrolloController {
         ]);
     }
 
-    // Get stage for select
+    // Obtener todas las etapas para select (global)
     public function obtenerParaSelect() {
         $etapas = $this->model->obtenerParaSelect();
         
         $options = [];
-        foreach ($etapas as $id => $nombre) {
+        foreach ($etapas as $id => $texto) {
             $options[] = [
                 'id' => $id,
-                'text' => $nombre
+                'text' => $texto
             ];
         }
         
@@ -373,7 +372,7 @@ switch ($accion) {
         $controller->eliminar($id);
         break;
     
-    // Methods area
+    // Métodos por área
     case "porArea":
         $controller->obtenerPorArea($id_area);
         break;
@@ -382,21 +381,21 @@ switch ($accion) {
         $controller->obtenerParaSelectPorArea($id_area);
         break;
         
-    // Validations
-    case "verificarNombre":
-        $controller->verificarNombreExistente();
+    // Validaciones
+    case "verificarDescripcion":
+        $controller->verificarDescripcionExistente();
         break;
         
     case "verificarDependencias":
         $controller->verificarDependencias($id);
         break;
         
-    // Statistics
+    // Estadísticas
     case "estadisticas":
         $controller->obtenerEstadisticas();
         break;
         
-    // BSearch and utils
+    // Búsqueda y utilidades
     case "buscar":
         $controller->buscar();
         break;
