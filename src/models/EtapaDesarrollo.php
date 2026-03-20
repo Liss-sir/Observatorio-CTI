@@ -9,14 +9,14 @@ class EtapaDesarrolloModel {
         $this->conn = $db;
     }
 
-    // List all stage active
+    // Listar etapas activas
     public function listar() {
         try {
             $sql = "SELECT e.*, a.nombre_area 
                     FROM etapa_desarrollo e
                     INNER JOIN areas a ON e.id_area = a.id_area
                     WHERE e.estado = 1
-                    ORDER BY a.nombre_area, e.nombre ASC";
+                    ORDER BY a.nombre_area, e.descripcion ASC";
             $stmt = $this->conn->prepare($sql);
             $stmt->execute();
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -25,13 +25,13 @@ class EtapaDesarrolloModel {
         }
     }
 
-    // List all stage (include inactive for admin)
+    // Listar todas las etapas (incluye inactivas para admin)
     public function listarTodas() {
         try {
             $sql = "SELECT e.*, a.nombre_area 
                     FROM etapa_desarrollo e
                     INNER JOIN areas a ON e.id_area = a.id_area
-                    ORDER BY a.nombre_area, e.nombre ASC";
+                    ORDER BY a.nombre_area, e.descripcion ASC";
             $stmt = $this->conn->prepare($sql);
             $stmt->execute();
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -40,7 +40,7 @@ class EtapaDesarrolloModel {
         }
     }
 
-    // Get stage for id
+    // Obtener etapa por ID
     public function obtener($id) {
         try {
             $sql = "SELECT e.*, a.nombre_area 
@@ -55,17 +55,16 @@ class EtapaDesarrolloModel {
         }
     }
 
-    // Create now stage
+    // Crear nueva etapa
     public function crear($data) {
         try {
-            $sql = "INSERT INTO etapa_desarrollo (id_area, nombre, descripcion, estado) 
-                    VALUES (?, ?, ?, ?)";
+            $sql = "INSERT INTO etapa_desarrollo (id_area, descripcion, estado) 
+                    VALUES (?, ?, ?)";
             $stmt = $this->conn->prepare($sql);
             
             $ok = $stmt->execute([
                 $data['id_area'],
-                trim($data['nombre']),
-                $data['descripcion'] ?? null,
+                trim($data['descripcion']),
                 $data['estado'] ?? 1
             ]);
 
@@ -76,18 +75,18 @@ class EtapaDesarrolloModel {
         }
     }
 
-    // Update stage exist
+    // Actualizar etapa existente
     public function actualizar($data) {
         try {
             $campos = [];
             $valores = [];
 
-            $camposPermitidos = ['id_area', 'nombre', 'descripcion', 'estado'];
+            $camposPermitidos = ['id_area', 'descripcion', 'estado'];
 
             foreach ($camposPermitidos as $campo) {
                 if (array_key_exists($campo, $data)) {
                     $campos[] = "$campo = ?";
-                    $valores[] = $campo === 'nombre' ? trim($data[$campo]) : $data[$campo];
+                    $valores[] = $campo === 'descripcion' ? trim($data[$campo]) : $data[$campo];
                 }
             }
 
@@ -107,7 +106,7 @@ class EtapaDesarrolloModel {
         }
     }
 
-    // Change state this stage
+    // Cambiar estado de la etapa
     public function cambiarEstado($id, $estado) {
         try {
             $sql = "UPDATE etapa_desarrollo SET estado = ? WHERE id_etapa = ?";
@@ -118,7 +117,7 @@ class EtapaDesarrolloModel {
         }
     }
 
-    // Delete stage
+    // Eliminar etapa
     public function eliminar($id) {
         try {
             if ($this->tieneDependencias($id)) {
@@ -136,13 +135,13 @@ class EtapaDesarrolloModel {
         }
     }
 
-    // Get stage for areas
+    // Obtener etapas por área
     public function obtenerPorArea($id_area) {
         try {
-            $sql = "SELECT id_etapa, nombre, descripcion 
+            $sql = "SELECT id_etapa, descripcion 
                     FROM etapa_desarrollo 
                     WHERE id_area = ? AND estado = 1
-                    ORDER BY nombre ASC";
+                    ORDER BY descripcion ASC";
             $stmt = $this->conn->prepare($sql);
             $stmt->execute([$id_area]);
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -151,27 +150,34 @@ class EtapaDesarrolloModel {
         }
     }
 
-    // Get stage for areas in select
+    // Obtener etapas para select por área (con descripción truncada)
     public function obtenerParaSelectPorArea($id_area) {
         try {
-            $sql = "SELECT id_etapa, nombre 
+            $sql = "SELECT id_etapa, 
+                           CONCAT(LEFT(descripcion, 50), IF(LENGTH(descripcion) > 50, '...', '')) as texto
                     FROM etapa_desarrollo 
                     WHERE id_area = ? AND estado = 1
-                    ORDER BY nombre ASC";
+                    ORDER BY descripcion ASC";
             $stmt = $this->conn->prepare($sql);
             $stmt->execute([$id_area]);
-            return $stmt->fetchAll(PDO::FETCH_KEY_PAIR);
+            
+            $resultados = [];
+            while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                $resultados[$row['id_etapa']] = $row['texto'];
+            }
+            
+            return $resultados;
         } catch (Exception $e) {
             return [];
         }
     }
 
-    // Verify if this name in stage exist in area
-    public function nombreExisteEnArea($nombre, $id_area, $excluir_id = null) {
+    // Verificar si la descripción ya existe en el área
+    public function descripcionExisteEnArea($descripcion, $id_area, $excluir_id = null) {
         try {
             $sql = "SELECT COUNT(*) as total FROM etapa_desarrollo 
-                    WHERE nombre = ? AND id_area = ?";
-            $params = [trim($nombre), $id_area];
+                    WHERE descripcion = ? AND id_area = ?";
+            $params = [trim($descripcion), $id_area];
 
             if ($excluir_id) {
                 $sql .= " AND id_etapa != ?";
@@ -189,7 +195,7 @@ class EtapaDesarrolloModel {
         }
     }
 
-    // Verify if this stage have dependences 
+    // Verificar si la etapa tiene dependencias
     public function tieneDependencias($id_etapa) {
         try {
             $sql = "SELECT COUNT(*) as total FROM lineas_tecnologicas 
@@ -206,7 +212,7 @@ class EtapaDesarrolloModel {
         }
     }
 
-    // Get statistics of stage
+    // Obtener estadísticas de etapas
     public function obtenerEstadisticas() {
         try {
             $sql = "SELECT 
@@ -232,7 +238,7 @@ class EtapaDesarrolloModel {
             $stmt->execute();
             $estadisticas['etapas_por_area'] = $stmt->fetchAll(PDO::FETCH_ASSOC);
             
-            $sql_recientes = "SELECT e.id_etapa, e.nombre, a.nombre_area, e.fecha_creacion
+            $sql_recientes = "SELECT e.id_etapa, e.descripcion, a.nombre_area, e.fecha_creacion
                              FROM etapa_desarrollo e
                              INNER JOIN areas a ON e.id_area = a.id_area
                              WHERE e.estado = 1
@@ -249,38 +255,38 @@ class EtapaDesarrolloModel {
         }
     }
 
-
-    // Search stage for term
+    // Buscar etapas por descripción
     public function buscar($termino) {
         try {
             $sql = "SELECT e.*, a.nombre_area 
                     FROM etapa_desarrollo e
                     INNER JOIN areas a ON e.id_area = a.id_area
-                    WHERE e.nombre LIKE ? OR e.descripcion LIKE ?
-                    ORDER BY a.nombre_area, e.nombre ASC";
+                    WHERE e.descripcion LIKE ?
+                    ORDER BY a.nombre_area, e.descripcion ASC";
             $stmt = $this->conn->prepare($sql);
             $termino_busqueda = "%$termino%";
-            $stmt->execute([$termino_busqueda, $termino_busqueda]);
+            $stmt->execute([$termino_busqueda]);
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
         } catch (Exception $e) {
             return [];
         }
     }
 
-    // Get stage for select (all activate)
+    // Obtener todas las etapas para select (global)
     public function obtenerParaSelect() {
         try {
-            $sql = "SELECT e.id_etapa, CONCAT(a.nombre_area, ' - ', e.nombre) as nombre_completo
+            $sql = "SELECT e.id_etapa, 
+                           CONCAT(a.nombre_area, ' - ', LEFT(e.descripcion, 50), IF(LENGTH(e.descripcion) > 50, '...', '')) as texto
                     FROM etapa_desarrollo e
                     INNER JOIN areas a ON e.id_area = a.id_area
                     WHERE e.estado = 1 AND a.estado = 1
-                    ORDER BY a.nombre_area, e.nombre ASC";
+                    ORDER BY a.nombre_area, e.descripcion ASC";
             $stmt = $this->conn->prepare($sql);
             $stmt->execute();
             
             $resultados = [];
             while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-                $resultados[$row['id_etapa']] = $row['nombre_completo'];
+                $resultados[$row['id_etapa']] = $row['texto'];
             }
             
             return $resultados;
