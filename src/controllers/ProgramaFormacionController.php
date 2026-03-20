@@ -521,6 +521,41 @@ class ProgramaFormacionController {
             'data' => $programas
         ]);
     }
+
+    // Get statistics of programs vs profiles
+    public function estadisticasVsPerfiles() {
+        try {
+            $sql = "SELECT 
+                        p.id_programa,
+                        p.codigo_programa,
+                        p.nombre_programa,
+                        a.nombre_area,
+                        n.nombre_nivel,
+                        COUNT(po.id_perfil) AS total_perfiles_asociados,
+                        IFNULL(SUM(po.cupos), 0) AS total_cupos_ofertados
+                    FROM programas_formacion p
+                    INNER JOIN areas a ON p.id_area = a.id_area
+                    INNER JOIN niveles_formacion n ON p.id_nivel = n.id_nivel
+                    LEFT JOIN perfiles_ocupacionales po ON p.id_programa = po.id_programa AND po.estado = 1
+                    WHERE p.estado = 1
+                    GROUP BY p.id_programa
+                    ORDER BY total_perfiles_asociados DESC";
+            
+            $stmt = $this->conn->prepare($sql);
+            $stmt->execute();
+            $resultados = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            
+            echo json_encode([
+                'success' => true,
+                'data' => $resultados
+            ]);
+        } catch (Exception $e) {
+            echo json_encode([
+                'success' => false,
+                'error' => 'Error al obtener estadísticas'
+            ]);
+        }
+    }
 }
 
 
@@ -638,6 +673,10 @@ switch ($accion) {
         
     case "conLineasTecnologicas":
         $controller->obtenerConLineasTecnologicas();
+        break;
+
+    case "estadisticasVsPerfiles":
+        $controller->estadisticasVsPerfiles();
         break;
 
     default:
