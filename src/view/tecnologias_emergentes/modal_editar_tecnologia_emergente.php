@@ -23,31 +23,44 @@
 
         <!-- Form -->
         <form id="form-editar-tecnologia-emergente" class="px-6 py-4">
-          <!-- Nombre -->
+          <!-- Área (select) -->
           <div class="mb-4">
-            <label class="mb-1 block text-sm font-medium text-sena-text-main">Nombre del área</label>
+            <label class="mb-1 block text-sm font-medium text-sena-text-main">Área</label>
             <div class="select-container">
-              <select name="nombre" id="nombre-tecnologia-emergente" required class="custom-select">
+              <select name="area" id="area-tecnologia" class="custom-select" >
                 <option value="">Selecciona un área</option>
-                <option value="Inteligencia Artificial">Inteligencia Artificial</option>
-                <option value="Blockchain">Blockchain</option>
-                <option value="Internet de las Cosas (IoT)">Internet de las Cosas (IoT)</option>
-                <option value="Computación en la Nube">Computación en la Nube</option>
-                <option value="Ciberseguridad Avanzada">Ciberseguridad Avanzada</option>
-                <option value="Big Data y Analítica">Big Data y Analítica</option>
-                <option value="Realidad Aumentada/Virtual">Realidad Aumentada/Virtual</option>
-                <option value="Robótica Colaborativa">Robótica Colaborativa</option>
-                <option value="Manufactura Aditiva (Impresión 3D)">Manufactura Aditiva (Impresión 3D)</option>
-                <option value="Automatización de Procesos (RPA)">Automatización de Procesos (RPA)</option>
+                <!-- Las opciones se cargarán dinámicamente desde JavaScript -->
               </select>
             </div>
           </div>
 
-          <!-- Descripción -->
-          <div class="mb-4">
+          <!-- Descripción (textarea) -->
+          <div class="mb-2">
             <label class="mb-1 block text-sm font-medium text-sena-text-main">Descripción</label>
-            <textarea name="descripcion" id="descripcion-tendencia" rows="4" required
-                      class="w-full rounded-lg border border-sena-border px-3 py-2 text-sm text-sena-text-main focus:border-sena focus:ring-2 focus:ring-sena/20">Computación cuántica accesible desde la nube para desarrolladores y empresas, permitiendo experimentación real en problemas de optimización y criptografía.</textarea>
+            <textarea 
+                name="descripcion" 
+                id="descripcion-editar" 
+                rows="4"  
+                placeholder="Describe la tecnología emergente."
+                class="w-full rounded-lg border border-sena-border px-3 py-2 text-sm text-sena-text-main placeholder-sena-text-soft focus:border-[#39A900] focus:ring-2 focus:ring-[#39A900] focus:ring-opacity-20 focus:outline-none"
+                ></textarea>
+          </div>
+          
+          <!-- Contador de caracteres -->
+          <div class="flex justify-end items-center gap-2 mb-4">
+              <span id="contador-caracteres-editar" class="text-xs text-sena-text-soft">0 / 30 caracteres</span>
+              <span id="alerta-minimo-editar" class="text-xs text-red-500 hidden">Mínimo 30 caracteres requerido</span>
+          </div>
+
+          <!-- Estado (select) -->
+          <div class="mb-4">
+            <label class="mb-1 block text-sm font-medium text-sena-text-main">Estado</label>
+            <div class="select-container">
+              <select name="estado" id="estado-tecnologia" class="custom-select">
+                <option value="activo">Activo</option>
+                <option value="inactivo">Inactivo</option>
+              </select>
+            </div>
           </div>
 
           <!-- Footer buttons -->
@@ -55,7 +68,7 @@
             <button type="button" class="cerrar-modal-editar rounded-lg border border-sena-border px-4 py-2 text-sm font-medium text-sena-text-main hover:bg-sena-soft">
               Cancelar
             </button>
-            <button type="submit" class="rounded-lg bg-sena px-4 py-2 text-sm font-medium text-white hover:opacity-90 transition-opacity">
+            <button type="submit" id="btn-submit-editar" class="rounded-lg bg-sena px-4 py-2 text-sm font-medium text-white hover:opacity-90 transition-opacity">
               Guardar Cambios
             </button>
           </div>
@@ -64,4 +77,3 @@
     </div>
   </div>
 </div>
-

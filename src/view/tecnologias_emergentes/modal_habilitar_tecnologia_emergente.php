@@ -1,6 +1,6 @@
 <!-- modal_habilitar_tecnologia_emergente.php -->
-<!-- Modal de confirmación para habilitar tendencia actual -->
-<div id="modal-habilitar-tendencia" class="hidden fixed inset-0 z-50 overflow-y-auto" aria-hidden="true">
+<!-- Modal de confirmación para habilitar tecnología emergente -->
+<div id="modal-habilitar-tecnologia-emergente" class="hidden fixed inset-0 z-50 overflow-y-auto" aria-hidden="true">
   <!-- Overlay -->
   <div class="fixed inset-0 bg-black bg-opacity-80 transition-opacity"></div>
 
@@ -26,7 +26,7 @@
         <!-- Content -->
         <div class="px-6 py-5">
           <p class="text-sm text-sena-text-soft leading-relaxed">
-            ¿Estás seguro de que deseas habilitar la tecnología emergente <span class="font-semibold text-sena-text-main" id="nombre-tecnologia-habilitar">"Desarrollador Full Stack Senior"</span>?
+            ¿Estás seguro de que deseas habilitar la tecnología emergente <span class="text-sena-text-main" id="nombre-tecnologia-habilitar">"Desarrollador Full Stack Senior"</span>?
           </p>
           <p class="text-xs text-sena-text-soft mt-3 bg-yellow-50 p-3 rounded-lg border border-yellow-200">
             <span class="font-medium text-yellow-800">Información:</span> La tecnología emergente volverá a estar visible y disponible para su uso.
@@ -38,7 +38,7 @@
           <button type="button" class="cerrar-modal-habilitar px-4 py-2 text-sm font-medium text-sena-text-main border border-sena-border rounded-lg hover:bg-sena-soft transition-colors">
             Cancelar
           </button>
-          <button type="button" id="btn-confirmar-habilitar" class="px-4 py-2 text-sm font-medium text-white bg-[#39A900] rounded-lg hover:bg-green-700 transition-colors">
+          <button type="button" id="btn-confirmar-habilitar" class="px-4 py-2 text-sm font-medium text-white bg-[#39A900] rounded-lg hover:opacity-90 transition-opacity transition-colors">
             <span class="flex items-center gap-2">
               <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <polyline points="20 6 9 17 4 12"></polyline>
@@ -51,4 +51,3 @@
     </div>
   </div>
 </div>
-

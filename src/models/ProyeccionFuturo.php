@@ -92,14 +92,14 @@ class ProyeccionFuturoModel {
      */
     public function crear($data) {
         try {
-            $sql = "INSERT INTO proyeccion_futuro (id_area, anio, descripcion, estado) 
+            $sql = "INSERT INTO proyeccion_futuro (id_area, anio, nombre, estado) 
                     VALUES (?, ?, ?, ?)";
             $stmt = $this->conn->prepare($sql);
             
             $ok = $stmt->execute([
                 $data['id_area'],
                 $data['anio'],
-                $data['descripcion'] ?? null,
+                $data['nombre'] ?? null,
                 $data['estado'] ?? 1
             ]);
 
@@ -118,7 +118,7 @@ class ProyeccionFuturoModel {
             $campos = [];
             $valores = [];
 
-            $camposPermitidos = ['id_area', 'anio', 'descripcion', 'estado'];
+            $camposPermitidos = ['id_area', 'anio', 'nombre', 'estado'];
 
             foreach ($camposPermitidos as $campo) {
                 if (array_key_exists($campo, $data)) {
@@ -161,7 +161,6 @@ class ProyeccionFuturoModel {
      */
     public function eliminar($id) {
         try {
-            // Verificar si la proyección tiene dependencias
             if ($this->tieneDependencias($id)) {
                 return ['success' => false, 'error' => 'La proyección tiene líneas tecnológicas asociadas'];
             }
@@ -184,7 +183,7 @@ class ProyeccionFuturoModel {
      */
     public function obtenerPorArea($id_area) {
         try {
-            $sql = "SELECT id_proyeccion, anio, descripcion,
+            $sql = "SELECT id_proyeccion, anio, nombre,
                     CASE 
                         WHEN anio = '1' THEN '1 año'
                         WHEN anio = '2' THEN '2 años'
@@ -228,8 +227,8 @@ class ProyeccionFuturoModel {
                             WHEN anio = '10' THEN '10 años'
                         END,
                         ' - ',
-                        LEFT(descripcion, 50),
-                        IF(LENGTH(descripcion) > 50, '...', '')
+                        LEFT(nombre, 50),
+                        IF(LENGTH(nombre) > 50, '...', '')
                     ) as nombre_completo
                     FROM proyeccion_futuro 
                     WHERE id_area = ? AND estado = 1
@@ -399,7 +398,7 @@ class ProyeccionFuturoModel {
             $estadisticas['proyecciones_por_area'] = $stmt->fetchAll(PDO::FETCH_ASSOC);
             
             // Proyecciones recientes
-            $sql_recientes = "SELECT p.id_proyeccion, p.anio, a.nombre_area, p.descripcion, p.fecha_creacion,
+            $sql_recientes = "SELECT p.id_proyeccion, p.anio, a.nombre_area, p.nombre, p.fecha_creacion,
                              CASE 
                                 WHEN p.anio = '1' THEN '1 año'
                                 WHEN p.anio = '2' THEN '2 años'
@@ -431,7 +430,7 @@ class ProyeccionFuturoModel {
     /* ================= BÚSQUEDA ================= */
 
     /**
-     * Buscar proyecciones por término en descripción
+     * Buscar proyecciones por término en nombre
      */
     public function buscar($termino) {
         try {
@@ -450,7 +449,7 @@ class ProyeccionFuturoModel {
                     END as anio_texto
                     FROM proyeccion_futuro p
                     INNER JOIN areas a ON p.id_area = a.id_area
-                    WHERE p.descripcion LIKE ? OR a.nombre_area LIKE ?
+                    WHERE p.nombre LIKE ? OR a.nombre_area LIKE ?
                     ORDER BY a.nombre_area, p.anio ASC";
             $stmt = $this->conn->prepare($sql);
             $termino_busqueda = "%$termino%";

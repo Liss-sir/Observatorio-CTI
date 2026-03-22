@@ -18,7 +18,7 @@
             </svg>
           </div>
           <div>
-            <h3 class="text-lg font-semibold text-sena-text-main" id="detalle-titulo">Detalle de la Tecnología Emergente</h3>
+            <h3 class="text-lg font-semibold text-sena-text-main">Detalle de la Tecnología Emergente</h3>
             <p class="text-sm text-sena-text-soft">Información completa de la tecnología emergente seleccionada</p>
           </div>
           
@@ -36,7 +36,7 @@
           <div class="grid grid-cols-2 mb-6">
             <div class="pr-8">
               <span class="text-xs font-medium text-sena-text-soft uppercase tracking-wider">Nombre del área</span>
-              <p class="text-base font-semibold text-sena-text-main mt-1" id="detalle-nombre-tecnologia">Inteligencia Artificial</p>
+              <p class="text-sm text-sena-text-soft mt-1 leading-relaxed" id="detalle-area-tecnologia">Inteligencia Artificial</p>
             </div>
             
             <!-- Estado con badge de colores institucionales -->
@@ -68,4 +68,3 @@
     </div>
   </div>
 </div>
-

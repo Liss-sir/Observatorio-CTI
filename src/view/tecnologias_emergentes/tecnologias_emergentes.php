@@ -23,111 +23,6 @@ include __DIR__ . '/modal_confirmacion_habilitar_te.php';
   <link rel="stylesheet" href="../../../assets/css/output.css">
   <link rel="stylesheet" href="../../assets/css/globals.css">
   <link rel="stylesheet" href="../../assets/css/style_toast_alert.css">
-
-  <style>
-    /* Estilos para los toasts */
-    .toast-validation {
-      min-width: 320px;
-      max-width: 400px;
-      background: white;
-      border-radius: 12px;
-      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-      pointer-events: auto;
-      animation: slideInToast 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-      overflow: hidden;
-      border-left: 4px solid;
-    }
-
-    .toast-validation.warning { border-left-color: #FFB020; }
-    .toast-validation.error { border-left-color: #EF4444; }
-    .toast-validation.success { border-left-color: #39A900; }
-    .toast-validation.info { border-left-color: #3B82F6; }
-
-    .toast-contenido {
-      display: flex;
-      align-items: center;
-      padding: 16px;
-      gap: 12px;
-    }
-
-    .toast-icono-wrapper { flex-shrink: 0; }
-    .toast-icono {
-      width: 24px;
-      height: 24px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .toast-validation.warning .toast-icono { color: #FFB020; }
-    .toast-validation.error .toast-icono { color: #EF4444; }
-    .toast-validation.success .toast-icono { color: #39A900; }
-    .toast-validation.info .toast-icono { color: #3B82F6; }
-
-    .toast-icono svg {
-      width: 20px;
-      height: 20px;
-      stroke-width: 2.5;
-    }
-
-    .toast-mensaje-wrapper {
-      flex: 1;
-      min-width: 0;
-    }
-
-    .toast-titulo {
-      font-size: 14px;
-      font-weight: 600;
-      color: #1E293B;
-      line-height: 1.4;
-      margin-bottom: 2px;
-    }
-
-    .toast-mensaje {
-      font-size: 13px;
-      color: #64748B;
-      line-height: 1.4;
-      word-wrap: break-word;
-    }
-
-    .toast-validation.exit {
-      animation: slideOutToast 0.2s ease forwards;
-    }
-
-    @keyframes slideInToast {
-      from { transform: translateX(100%); opacity: 0; }
-      to { transform: translateX(0); opacity: 1; }
-    }
-
-    @keyframes slideOutToast {
-      from { transform: translateX(0); opacity: 1; }
-      to { transform: translateX(100%); opacity: 0; }
-    }
-
-    /* Forzar que el toast esté por encima de todo */
-    #toast-container {
-      position: fixed !important;
-      top: 20px !important;
-      right: 20px !important;
-      z-index: 999999 !important;
-    }
-
-    .estado-bolita {
-      display: inline-block;
-      width: 8px;
-      height: 8px;
-      border-radius: 9999px;
-      flex-shrink: 0;
-    }
-
-    .estado-bolita.bg-sena {
-      background-color: #39A900;
-    }
-
-    .estado-bolita.bg-gray-300 {
-      background-color: #D1D5DB;
-    }
-  </style>
 </head>
 <body class="font-['Inter'] text-sena-text-main antialiased min-h-screen flex flex-col">
 
@@ -140,7 +35,7 @@ include __DIR__ . '/modal_confirmacion_habilitar_te.php';
 
       <!-- TECNOLOGÍAS EMERGENTES CONTENT -->
       <div class="section-heading mb-6 animate-title-in">
-        <h2 class="font-['Montserrat'] text-2xl font-bold text-sena-text-main">Tecnologías Emergentes</h2>
+        <h2 class="text-2xl font-bold text-sena-text-main">Tecnologías Emergentes</h2>
         <p class="text-sm text-sena-text-soft mt-1">Transformación digital y nuevas dinámicas del sector productivo risaraldense.</p>
       </div>
 
@@ -168,6 +63,10 @@ include __DIR__ . '/modal_confirmacion_habilitar_te.php';
         </div>
       </div>
     </div>
+
+    <!-- Contenedor para la paginación -->
+    <div id="paginacion-container" class="hidden"></div>
+
   </main>
 
   <!-- Script para controlar los modales -->

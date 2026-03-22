@@ -16,7 +16,7 @@ class TendenciaEmergenteModel {
                     FROM tendencias_emergentes t
                     INNER JOIN areas a ON t.id_area = a.id_area
                     WHERE t.estado = 1
-                    ORDER BY a.nombre_area, t.descripcion ASC";
+                    ORDER BY a.nombre_area, t.nombre ASC";
             $stmt = $this->conn->prepare($sql);
             $stmt->execute();
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -31,7 +31,7 @@ class TendenciaEmergenteModel {
             $sql = "SELECT t.*, a.nombre_area 
                     FROM tendencias_emergentes t
                     INNER JOIN areas a ON t.id_area = a.id_area
-                    ORDER BY a.nombre_area, t.descripcion ASC";
+                    ORDER BY a.nombre_area, t.nombre ASC";
             $stmt = $this->conn->prepare($sql);
             $stmt->execute();
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -58,13 +58,13 @@ class TendenciaEmergenteModel {
     // Crear nueva tendencia
     public function crear($data) {
         try {
-            $sql = "INSERT INTO tendencias_emergentes (id_area, descripcion, estado) 
+            $sql = "INSERT INTO tendencias_emergentes (id_area, nombre, estado) 
                     VALUES (?, ?, ?)";
             $stmt = $this->conn->prepare($sql);
             
             $ok = $stmt->execute([
                 $data['id_area'],
-                trim($data['descripcion']),
+                trim($data['nombre']),
                 $data['estado'] ?? 1
             ]);
 
@@ -81,12 +81,12 @@ class TendenciaEmergenteModel {
             $campos = [];
             $valores = [];
 
-            $camposPermitidos = ['id_area', 'descripcion', 'estado'];
+            $camposPermitidos = ['id_area', 'nombre', 'estado'];
 
             foreach ($camposPermitidos as $campo) {
                 if (array_key_exists($campo, $data)) {
                     $campos[] = "$campo = ?";
-                    $valores[] = $campo === 'descripcion' ? trim($data[$campo]) : $data[$campo];
+                    $valores[] = $campo === 'nombre' ? trim($data[$campo]) : $data[$campo];
                 }
             }
 
@@ -138,10 +138,10 @@ class TendenciaEmergenteModel {
     // Obtener tendencias por área
     public function obtenerPorArea($id_area) {
         try {
-            $sql = "SELECT id_tendencia, descripcion 
+            $sql = "SELECT id_tendencia, nombre 
                     FROM tendencias_emergentes 
                     WHERE id_area = ? AND estado = 1
-                    ORDER BY descripcion ASC";
+                    ORDER BY nombre ASC";
             $stmt = $this->conn->prepare($sql);
             $stmt->execute([$id_area]);
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -150,14 +150,14 @@ class TendenciaEmergenteModel {
         }
     }
 
-    // Obtener tendencias para select por área (con descripción truncada)
+    // Obtener tendencias para select por área (con nombre truncado)
     public function obtenerParaSelectPorArea($id_area) {
         try {
             $sql = "SELECT id_tendencia, 
-                           CONCAT(LEFT(descripcion, 50), IF(LENGTH(descripcion) > 50, '...', '')) as texto
+                           CONCAT(LEFT(nombre, 50), IF(LENGTH(nombre) > 50, '...', '')) as texto
                     FROM tendencias_emergentes 
                     WHERE id_area = ? AND estado = 1
-                    ORDER BY descripcion ASC";
+                    ORDER BY nombre ASC";
             $stmt = $this->conn->prepare($sql);
             $stmt->execute([$id_area]);
             
@@ -172,14 +172,14 @@ class TendenciaEmergenteModel {
         }
     }
 
-    // Buscar tendencias por descripción
+    // Buscar tendencias por nombre
     public function buscar($termino) {
         try {
             $sql = "SELECT t.*, a.nombre_area 
                     FROM tendencias_emergentes t
                     INNER JOIN areas a ON t.id_area = a.id_area
-                    WHERE t.descripcion LIKE ? AND t.estado = 1
-                    ORDER BY a.nombre_area, t.descripcion ASC";
+                    WHERE t.nombre LIKE ? AND t.estado = 1
+                    ORDER BY a.nombre_area, t.nombre ASC";
             $stmt = $this->conn->prepare($sql);
             $termino_busqueda = "%$termino%";
             $stmt->execute([$termino_busqueda]);
@@ -208,12 +208,12 @@ class TendenciaEmergenteModel {
                 $params[] = $filtros['estado'];
             }
 
-            if (!empty($filtros['descripcion'])) {
-                $sql .= " AND t.descripcion LIKE ?";
-                $params[] = "%{$filtros['descripcion']}%";
+            if (!empty($filtros['nombre'])) {
+                $sql .= " AND t.nombre LIKE ?";
+                $params[] = "%{$filtros['nombre']}%";
             }
 
-            $sql .= " ORDER BY a.nombre_area, t.descripcion ASC";
+            $sql .= " ORDER BY a.nombre_area, t.nombre ASC";
             
             $stmt = $this->conn->prepare($sql);
             $stmt->execute($params);
@@ -223,12 +223,12 @@ class TendenciaEmergenteModel {
         }
     }
 
-    // Verificar si la descripción ya existe en el área
-    public function descripcionExisteEnArea($descripcion, $id_area, $excluir_id = null) {
+    // Verificar si el nombre ya existe en el área
+    public function nombreExisteEnArea($nombre, $id_area, $excluir_id = null) {
         try {
             $sql = "SELECT COUNT(*) as total FROM tendencias_emergentes 
-                    WHERE descripcion = ? AND id_area = ?";
-            $params = [trim($descripcion), $id_area];
+                    WHERE nombre = ? AND id_area = ?";
+            $params = [trim($nombre), $id_area];
 
             if ($excluir_id) {
                 $sql .= " AND id_tendencia != ?";
@@ -288,7 +288,7 @@ class TendenciaEmergenteModel {
             $stmt->execute();
             $estadisticas['tendencias_por_area'] = $stmt->fetchAll(PDO::FETCH_ASSOC);
             
-            $sql_recientes = "SELECT t.id_tendencia, t.descripcion, a.nombre_area, t.fecha_creacion
+            $sql_recientes = "SELECT t.id_tendencia, t.nombre, a.nombre_area, t.fecha_creacion
                              FROM tendencias_emergentes t
                              INNER JOIN areas a ON t.id_area = a.id_area
                              WHERE t.estado = 1
@@ -317,11 +317,11 @@ class TendenciaEmergenteModel {
     public function obtenerParaSelect() {
         try {
             $sql = "SELECT t.id_tendencia, 
-                           CONCAT(a.nombre_area, ' - ', LEFT(t.descripcion, 50), IF(LENGTH(t.descripcion) > 50, '...', '')) as texto
+                           CONCAT(a.nombre_area, ' - ', LEFT(t.nombre, 50), IF(LENGTH(t.nombre) > 50, '...', '')) as texto
                     FROM tendencias_emergentes t
                     INNER JOIN areas a ON t.id_area = a.id_area
                     WHERE t.estado = 1 AND a.estado = 1
-                    ORDER BY a.nombre_area, t.descripcion ASC";
+                    ORDER BY a.nombre_area, t.nombre ASC";
             $stmt = $this->conn->prepare($sql);
             $stmt->execute();
             
@@ -339,13 +339,13 @@ class TendenciaEmergenteModel {
     // Obtener tendencias populares (más usadas en líneas)
     public function obtenerTendenciasPopulares($limite = 5) {
         try {
-            $sql = "SELECT t.id_tendencia, t.descripcion, a.nombre_area, COUNT(lt.id_linea) as total_lineas
+            $sql = "SELECT t.id_tendencia, t.nombre, a.nombre_area, COUNT(lt.id_linea) as total_lineas
                     FROM tendencias_emergentes t
                     INNER JOIN areas a ON t.id_area = a.id_area
                     LEFT JOIN lineas_tecnologicas lt ON t.id_tendencia = lt.id_tendencia
                     WHERE t.estado = 1
-                    GROUP BY t.id_tendencia, t.descripcion, a.nombre_area
-                    ORDER BY total_lineas DESC, t.descripcion ASC
+                    GROUP BY t.id_tendencia, t.nombre, a.nombre_area
+                    ORDER BY total_lineas DESC, t.nombre ASC
                     LIMIT ?";
             $stmt = $this->conn->prepare($sql);
             $stmt->execute([$limite]);
@@ -358,7 +358,7 @@ class TendenciaEmergenteModel {
     // Obtener tendencias con conteo de líneas asociadas
     public function obtenerConConteoLineas($id_area = null) {
         try {
-            $sql = "SELECT t.id_tendencia, t.descripcion, t.estado,
+            $sql = "SELECT t.id_tendencia, t.nombre, t.estado,
                            COUNT(lt.id_linea) as total_lineas
                     FROM tendencias_emergentes t
                     LEFT JOIN lineas_tecnologicas lt ON t.id_tendencia = lt.id_tendencia
@@ -370,8 +370,8 @@ class TendenciaEmergenteModel {
                 $params[] = $id_area;
             }
 
-            $sql .= " GROUP BY t.id_tendencia, t.descripcion, t.estado
-                      ORDER BY t.descripcion ASC";
+            $sql .= " GROUP BY t.id_tendencia, t.nombre, t.estado
+                      ORDER BY t.nombre ASC";
             
             $stmt = $this->conn->prepare($sql);
             $stmt->execute($params);

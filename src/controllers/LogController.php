@@ -18,11 +18,6 @@ class LogController {
      * Espera JSON con correo y password
      */
     public function login() {
-        // Iniciar sesión si no está iniciada
-        if (session_status() === PHP_SESSION_NONE) {
-            session_start();
-        }
-
         $input = json_decode(file_get_contents("php://input"), true);
 
         if (!isset($input['correo']) || !isset($input['password'])) {
@@ -33,30 +28,14 @@ class LogController {
             return;
         }
 
-        // Llamar al modelo
         $resultado = $this->model->login($input['correo'], $input['password']);
-        
-        // Si el login fue exitoso, iniciar sesión PHP
-        if ($resultado['success'] && isset($resultado['usuario'])) {
-            $_SESSION['usuario'] = $resultado['usuario'];
-            $_SESSION['id_usuario'] = $resultado['usuario']['id_usuario'];
-            $_SESSION['correo'] = $resultado['usuario']['correo'];
-            $_SESSION['rol_nombre'] = $resultado['usuario']['rol_nombre'];
-            $_SESSION['autenticado'] = true;
-            
-            // Agregar URL de redirección
-            $resultado['redirect'] = '../../view/dashboard/dashboard.php';
-        }
-        
         echo json_encode($resultado);
     }
-
-    
-
 
     /**
      * POST /enviar-verificacion
      * Espera JSON con correo
+     * Envía un correo de verificación al usuario si existe y no está verificado
      */
     public function enviarVerificacion() {
         $input = json_decode(file_get_contents("php://input"), true);
@@ -94,7 +73,7 @@ class LogController {
     }
 
     /**
-     * Procesa la verificación mediante token
+     * Procesa la verificación mediante token (normalmente se accede desde el enlace del correo)
      */
     public function verificarCuenta() {
         $token = $_GET['token'] ?? '';
@@ -113,7 +92,8 @@ class LogController {
 
     /**
      * POST /recuperar
-     * Solicita recuperación de contraseña
+     * Solicita recuperación de contraseña (envía correo con token)
+     * Espera JSON con correo
      */
     public function solicitarRecuperacion() {
         $input = json_decode(file_get_contents("php://input"), true);
@@ -146,6 +126,7 @@ class LogController {
     /**
      * POST /restablecer
      * Restablece la contraseña usando un token
+     * Espera JSON con token y nueva_password
      */
     public function restablecerPassword() {
         $input = json_decode(file_get_contents("php://input"), true);
@@ -172,6 +153,7 @@ class LogController {
 
     /**
      * GET /estado-correo?correo=...
+     * Verifica si un correo existe y su estado (opcional, útil para frontend)
      */
     public function estadoCorreo() {
         $correo = $_GET['correo'] ?? '';
@@ -190,56 +172,6 @@ class LogController {
             'existe' => true,
             'correo_verificado' => $usuario['correo_verificado'],
             'estado' => $usuario['estado']
-        ]);
-    }
-
-        /**
-     * GET /sesion
-     * Verifica si hay sesión activa y retorna datos del usuario
-     */
-    public function verificarSesion() {
-        // Iniciar sesión si no está iniciada
-        if (session_status() === PHP_SESSION_NONE) {
-            session_start();
-        }
-
-        if (isset($_SESSION['autenticado']) && $_SESSION['autenticado'] === true) {
-            echo json_encode([
-                'success' => true,
-                'autenticado' => true,
-                'usuario' => [
-                    'id_usuario' => $_SESSION['id_usuario'],
-                    'correo' => $_SESSION['correo'],
-                    'rol_nombre' => $_SESSION['rol_nombre'],
-                    'nombre' => $_SESSION['usuario']['representante_legal'] ?? $_SESSION['usuario']['nombre_empresa'] ?? 'Usuario'
-                ]
-            ]);
-        } else {
-            echo json_encode([
-                'success' => true,
-                'autenticado' => false
-            ]);
-        }
-    }
-
-    /**
-     * POST /logout
-     * Cierra la sesión del usuario
-     */
-    public function logout() {
-        if (session_status() === PHP_SESSION_NONE) {
-            session_start();
-        }
-        
-        // Destruir todas las variables de sesión
-        $_SESSION = array();
-        
-        // Destruir la sesión
-        session_destroy();
-        
-        echo json_encode([
-            'success' => true,
-            'message' => 'Sesión cerrada exitosamente'
         ]);
     }
 
@@ -369,14 +301,6 @@ switch ($accion) {
 
     case 'register':
         $controller->register();
-        break;
-
-    case 'sesion':
-        $controller->verificarSesion();
-        break;
-
-    case 'logout':
-        $controller->logout();
         break;
 
     default:

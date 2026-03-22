@@ -16,7 +16,7 @@ class EtapaDesarrolloModel {
                     FROM etapa_desarrollo e
                     INNER JOIN areas a ON e.id_area = a.id_area
                     WHERE e.estado = 1
-                    ORDER BY a.nombre_area, e.descripcion ASC";
+                    ORDER BY a.nombre_area, e.nombre ASC";
             $stmt = $this->conn->prepare($sql);
             $stmt->execute();
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -31,7 +31,7 @@ class EtapaDesarrolloModel {
             $sql = "SELECT e.*, a.nombre_area 
                     FROM etapa_desarrollo e
                     INNER JOIN areas a ON e.id_area = a.id_area
-                    ORDER BY a.nombre_area, e.descripcion ASC";
+                    ORDER BY a.nombre_area, e.nombre ASC";
             $stmt = $this->conn->prepare($sql);
             $stmt->execute();
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -58,13 +58,13 @@ class EtapaDesarrolloModel {
     // Crear nueva etapa
     public function crear($data) {
         try {
-            $sql = "INSERT INTO etapa_desarrollo (id_area, descripcion, estado) 
+            $sql = "INSERT INTO etapa_desarrollo (id_area, nombre, estado) 
                     VALUES (?, ?, ?)";
             $stmt = $this->conn->prepare($sql);
             
             $ok = $stmt->execute([
                 $data['id_area'],
-                trim($data['descripcion']),
+                trim($data['nombre']),
                 $data['estado'] ?? 1
             ]);
 
@@ -81,12 +81,12 @@ class EtapaDesarrolloModel {
             $campos = [];
             $valores = [];
 
-            $camposPermitidos = ['id_area', 'descripcion', 'estado'];
+            $camposPermitidos = ['id_area', 'nombre', 'estado'];
 
             foreach ($camposPermitidos as $campo) {
                 if (array_key_exists($campo, $data)) {
                     $campos[] = "$campo = ?";
-                    $valores[] = $campo === 'descripcion' ? trim($data[$campo]) : $data[$campo];
+                    $valores[] = $campo === 'nombre' ? trim($data[$campo]) : $data[$campo];
                 }
             }
 
@@ -138,10 +138,10 @@ class EtapaDesarrolloModel {
     // Obtener etapas por área
     public function obtenerPorArea($id_area) {
         try {
-            $sql = "SELECT id_etapa, descripcion 
+            $sql = "SELECT id_etapa, nombre 
                     FROM etapa_desarrollo 
                     WHERE id_area = ? AND estado = 1
-                    ORDER BY descripcion ASC";
+                    ORDER BY nombre ASC";
             $stmt = $this->conn->prepare($sql);
             $stmt->execute([$id_area]);
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -150,14 +150,14 @@ class EtapaDesarrolloModel {
         }
     }
 
-    // Obtener etapas para select por área (con descripción truncada)
+    // Obtener etapas para select por área (con nombre truncado)
     public function obtenerParaSelectPorArea($id_area) {
         try {
             $sql = "SELECT id_etapa, 
-                           CONCAT(LEFT(descripcion, 50), IF(LENGTH(descripcion) > 50, '...', '')) as texto
+                           CONCAT(LEFT(nombre, 50), IF(LENGTH(nombre) > 50, '...', '')) as texto
                     FROM etapa_desarrollo 
                     WHERE id_area = ? AND estado = 1
-                    ORDER BY descripcion ASC";
+                    ORDER BY nombre ASC";
             $stmt = $this->conn->prepare($sql);
             $stmt->execute([$id_area]);
             
@@ -172,12 +172,12 @@ class EtapaDesarrolloModel {
         }
     }
 
-    // Verificar si la descripción ya existe en el área
-    public function descripcionExisteEnArea($descripcion, $id_area, $excluir_id = null) {
+    // Verificar si el nombre ya existe en el área
+    public function nombreExisteEnArea($nombre, $id_area, $excluir_id = null) {
         try {
             $sql = "SELECT COUNT(*) as total FROM etapa_desarrollo 
-                    WHERE descripcion = ? AND id_area = ?";
-            $params = [trim($descripcion), $id_area];
+                    WHERE nombre = ? AND id_area = ?";
+            $params = [trim($nombre), $id_area];
 
             if ($excluir_id) {
                 $sql .= " AND id_etapa != ?";
@@ -238,7 +238,7 @@ class EtapaDesarrolloModel {
             $stmt->execute();
             $estadisticas['etapas_por_area'] = $stmt->fetchAll(PDO::FETCH_ASSOC);
             
-            $sql_recientes = "SELECT e.id_etapa, e.descripcion, a.nombre_area, e.fecha_creacion
+            $sql_recientes = "SELECT e.id_etapa, e.nombre, a.nombre_area, e.fecha_creacion
                              FROM etapa_desarrollo e
                              INNER JOIN areas a ON e.id_area = a.id_area
                              WHERE e.estado = 1
@@ -255,14 +255,14 @@ class EtapaDesarrolloModel {
         }
     }
 
-    // Buscar etapas por descripción
+    // Buscar etapas por nombre
     public function buscar($termino) {
         try {
             $sql = "SELECT e.*, a.nombre_area 
                     FROM etapa_desarrollo e
                     INNER JOIN areas a ON e.id_area = a.id_area
-                    WHERE e.descripcion LIKE ?
-                    ORDER BY a.nombre_area, e.descripcion ASC";
+                    WHERE e.nombre LIKE ?
+                    ORDER BY a.nombre_area, e.nombre ASC";
             $stmt = $this->conn->prepare($sql);
             $termino_busqueda = "%$termino%";
             $stmt->execute([$termino_busqueda]);
@@ -276,11 +276,11 @@ class EtapaDesarrolloModel {
     public function obtenerParaSelect() {
         try {
             $sql = "SELECT e.id_etapa, 
-                           CONCAT(a.nombre_area, ' - ', LEFT(e.descripcion, 50), IF(LENGTH(e.descripcion) > 50, '...', '')) as texto
+                           CONCAT(a.nombre_area, ' - ', LEFT(e.nombre, 50), IF(LENGTH(e.nombre) > 50, '...', '')) as texto
                     FROM etapa_desarrollo e
                     INNER JOIN areas a ON e.id_area = a.id_area
                     WHERE e.estado = 1 AND a.estado = 1
-                    ORDER BY a.nombre_area, e.descripcion ASC";
+                    ORDER BY a.nombre_area, e.nombre ASC";
             $stmt = $this->conn->prepare($sql);
             $stmt->execute();
             

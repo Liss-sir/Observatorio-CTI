@@ -19,6 +19,7 @@ class UsuarioModel {
             $sql = "SELECT u.*, r.nombre as rol_nombre 
                     FROM usuarios u
                     INNER JOIN roles r ON u.id_rol = r.id_rol
+                    WHERE u.estado = 1
                     ORDER BY u.fecha_registro DESC";
             $stmt = $this->conn->prepare($sql);
             $stmt->execute();

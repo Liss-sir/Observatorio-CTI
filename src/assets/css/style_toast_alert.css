@@ -11,7 +11,6 @@
   border-left: 4px solid;
 }
 
-
 .toast-validation.warning {
   border-left-color: #FFB020;
 }
@@ -44,6 +43,7 @@
   justify-content: center;
 }
 
+/* CORRECCIÓN: Aplicar color al SVG usando currentColor */
 .toast-validation.warning .toast-icono {
   color: #FFB020;
 }
@@ -56,10 +56,16 @@
   color: #39A900;
 }
 
+.toast-validation.info .toast-icono {
+  color: #3B82F6;
+}
+
 .toast-icono svg {
   width: 20px;
   height: 20px;
+  stroke: currentColor;
   stroke-width: 2.5;
+  fill: none;
 }
 
 .toast-mensaje-wrapper {
@@ -101,10 +107,7 @@
 }
 
 .toast-validation.info {
-    border-left-color: #3B82F6;
-}
-.toast-validation.info .toast-icono {
-    color: #3B82F6;
+  border-left-color: #3B82F6;
 }
 
 @keyframes slideInToast {

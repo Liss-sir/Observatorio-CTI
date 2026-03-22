@@ -10,7 +10,6 @@
 
         <!-- Header con icono de éxito en verde SENA -->
         <div class="border-b border-sena-border px-6 py-5 flex items-center gap-4">
-        <!-- Círculo con el verde SENA -->
           <div class="w-12 h-12 rounded-full bg-[#39A900] bg-opacity-10 flex items-center justify-center flex-shrink-0">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 text-[#39A900]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
               <polyline points="20 6 9 17 4 12"></polyline>
@@ -25,14 +24,14 @@
         <!-- Content -->
         <div class="px-6 py-5">
           <p class="text-sm text-sena-text-soft leading-relaxed">
-            La tecnología emergente actual <span class="font-semibold text-[#39A900]" id="nombre-tecnología-habilitado-exito">"Desarrollador Full Stack Senior"</span> ha sido habilitada correctamente.
+            La tecnología emergente <span class="text-sena" id="nombre-tecnología-habilitado-exito">"Desarrollador Full Stack Senior"</span> ha sido habilitada correctamente.
           </p>
           <div class="mt-4 flex items-center gap-2 text-xs text-sena-text-soft">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <circle cx="12" cy="12" r="10"/>
               <polyline points="12 6 12 12 16 14"/>
             </svg>
-            <span>Esta ventana se cerrará automáticamente en <span id="contador-segundos">6</span> segundos</span>
+            <span>Esta ventana se cerrará automáticamente en <span id="contador-segundos">3</span> segundos</span>
           </div>
         </div>
 

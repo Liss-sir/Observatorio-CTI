@@ -61,7 +61,7 @@ class AreaModel {
             
             // Aseguramos que los datos existan y tengan valor por defecto si vienen vacíos
             $nombre = trim($data['nombre_area'] ?? '');
-            $descripcion = trim($data['descripcion_area'] ?? '');
+            $descripcion = trim($data['descripcion'] ?? '');
             $estado = isset($data['estado']) ? (int)$data['estado'] : 1;
 
             $ok = $stmt->execute([
@@ -85,7 +85,10 @@ class AreaModel {
             $campos = [];
             $valores = [];
 
-            $camposPermitidos = ['nombre_area','descripcion_area','estado'];
+            $camposPermitidos = ['nombre_area','descripcion','estado'];
+            $columnMap = [
+                'descripcion' => 'descripcion_area'
+            ];
 
             foreach ($camposPermitidos as $campo) {
                 if (array_key_exists($campo, $data)) {

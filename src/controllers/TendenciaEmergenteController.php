@@ -67,18 +67,18 @@ class TendenciaEmergenteController {
             return;
         }
         
-        if (empty($input['descripcion'])) {
+        if (empty($input['nombre'])) {
             echo json_encode([
                 'success' => false,
-                'error' => 'La descripción de la tendencia es requerida'
+                'error' => 'El nombre de la tendencia es requerido'
             ]);
             return;
         }
         
-        if ($this->model->descripcionExisteEnArea($input['descripcion'], $input['id_area'])) {
+        if ($this->model->nombreExisteEnArea($input['nombre'], $input['id_area'])) {
             echo json_encode([
                 'success' => false,
-                'error' => 'Ya existe una tendencia con esa descripción en el área seleccionada'
+                'error' => 'Ya existe una tendencia con ese nombre en el área seleccionada'
             ]);
             return;
         }
@@ -111,19 +111,19 @@ class TendenciaEmergenteController {
             return;
         }
         
-        if (isset($input['descripcion']) && isset($input['id_area'])) {
-            if (empty(trim($input['descripcion']))) {
+        if (isset($input['nombre']) && isset($input['id_area'])) {
+            if (empty(trim($input['nombre']))) {
                 echo json_encode([
                     'success' => false,
-                    'error' => 'La descripción de la tendencia no puede estar vacía'
+                    'error' => 'El nombre de la tendencia no puede estar vacío'
                 ]);
                 return;
             }
             
-            if ($this->model->descripcionExisteEnArea($input['descripcion'], $input['id_area'], $input['id_tendencia'])) {
+            if ($this->model->nombreExisteEnArea($input['nombre'], $input['id_area'], $input['id_tendencia'])) {
                 echo json_encode([
                     'success' => false,
-                    'error' => 'Ya existe una tendencia con esa descripción en el área seleccionada'
+                    'error' => 'Ya existe una tendencia con ese nombre en el área seleccionada'
                 ]);
                 return;
             }
@@ -239,7 +239,7 @@ class TendenciaEmergenteController {
         ]);
     }
 
-    // Buscar tendencias por término en descripción
+    // Buscar tendencias por término en nombre
     public function buscar() {
         $termino = $_GET['q'] ?? '';
         
@@ -271,20 +271,20 @@ class TendenciaEmergenteController {
         ]);
     }
 
-    // Verificar si la descripción ya existe en el área
-    public function verificarDescripcionExistente() {
+    // Verificar si el nombre ya existe en el área
+    public function verificarNombreExistente() {
         $input = json_decode(file_get_contents("php://input"), true);
         
-        if (!isset($input['descripcion']) || !isset($input['id_area'])) {
+        if (!isset($input['nombre']) || !isset($input['id_area'])) {
             echo json_encode([
                 'success' => false,
-                'error' => 'Descripción y área son requeridos'
+                'error' => 'Nombre y área son requeridos'
             ]);
             return;
         }
         
-        $existe = $this->model->descripcionExisteEnArea(
-            $input['descripcion'],
+        $existe = $this->model->nombreExisteEnArea(
+            $input['nombre'],
             $input['id_area'],
             $input['excluir_id'] ?? null
         );
@@ -338,7 +338,7 @@ class TendenciaEmergenteController {
         ]);
     }
 
-    // Obtener tendencias populares (más usadas en líneas)
+    // Obtener tendencias populares
     public function obtenerTendenciasPopulares() {
         $limite = $_GET['limite'] ?? 5;
         $tendencias = $this->model->obtenerTendenciasPopulares((int)$limite);
@@ -425,8 +425,8 @@ switch ($accion) {
         break;
         
     // Validaciones
-    case "verificarDescripcion":
-        $controller->verificarDescripcionExistente();
+    case "verificarNombre":
+        $controller->verificarNombreExistente();
         break;
         
     case "verificarDependencias":
