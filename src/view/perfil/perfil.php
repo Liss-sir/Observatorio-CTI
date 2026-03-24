@@ -55,7 +55,7 @@ $estadisticas = [
     <div class="flex justify-between items-center mb-10">
         <div class="flex items-center gap-5">
 
-            <div class="w-16 h-16 bg-sena text-white rounded-2xl flex items-center justify-center text-2xl font-bold shadow">
+            <div class="w-16 h-16 bg-green-600 text-white rounded-2xl flex items-center justify-center text-2xl font-bold shadow">
                 <?= strtoupper($usuario['nombre'][0]) ?>
             </div>
 
@@ -69,14 +69,14 @@ $estadisticas = [
                             <?= $empresa['nombre'] ?>
                         </span>
                     <?php else: ?>
-                        <span class="bg-sena-soft text-sena-strong text-xs px-3 py-1 rounded-full font-medium">Administrador</span>
+                        <span class="bg-gray-200 text-gray-700 text-xs px-3 py-1 rounded-full font-medium">Administrador</span>
                     <?php endif; ?>
                 </div>
             </div>
         </div>
 
-        <button class="btnAbrirPerfil flex items-center gap-2 border border-sena px-4 py-2 rounded-xl hover:bg-sena-soft hover:text-sena-strong shadow-sm">
-            <i data-lucide="pencil" class="w-4 h-4 text-sena  "></i>
+        <button id="btnEditar" class="flex items-center gap-2 border px-4 py-2 rounded-xl hover:bg-gray-50 shadow-sm">
+            <i data-lucide="pencil" class="w-4 h-4 text-gray-600"></i>
             Editar Perfil
         </button>
     </div>

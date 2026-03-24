@@ -47,7 +47,7 @@
 
           <!-- Nombre de la Proyección (antes descripción) - name="nombre" para que coincida con el backend -->
           <div class="mb-2">
-            <label class="mb-1 block text-sm font-medium text-sena-text-main">Nombre de la Proyección</label>
+            <label class="mb-1 block text-sm font-medium text-sena-text-main">Descripción</label>
             <textarea 
                 name="nombre" 
                 id="nombre-proyeccion-editar"
@@ -67,7 +67,7 @@
             <button type="button" class="cerrar-modal-editar rounded-lg border border-sena-border px-4 py-2 text-sm font-medium text-sena-text-main hover:bg-sena-soft transition-colors">
               Cancelar
             </button>
-            <button type="submit" id="btn-submit-editar-proyeccion" class="rounded-lg bg-sena px-4 py-2 text-sm font-medium text-white hover:bg-sena-hover transition-all">
+            <button type="submit" id="btn-submit-editar-proyeccion" class="rounded-lg bg-sena px-4 py-2 text-sm font-medium text-white hover:opacity-90 transition-opacity">
               Guardar Cambios
             </button>
           </div>

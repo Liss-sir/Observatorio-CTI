@@ -25,7 +25,7 @@
         <!-- Content -->
         <div class="px-6 py-5">
           <p class="text-sm text-sena-text-soft leading-relaxed">
-            La proyección a futuro <span class="font-semibold text-sena-text-main" id="nombre-proyeccion-futuro-deshabilitado">"Desarrollador Full Stack Senior"</span> ha sido deshabilitada correctamente.
+            La proyección a futuro <span class="text-sena" id="nombre-proyeccion-futuro-deshabilitado">"Desarrollador Full Stack Senior"</span> ha sido deshabilitada correctamente.
           </p>
           
           <!-- Contador de segundos (NUEVO) -->
