@@ -38,15 +38,14 @@
             <!-- Campo oculto para el ID -->
             <input type="hidden" id="idProgramaEditar" name="id_programa">
 
-            <!-- Área (nuevo) -->
+            <!-- ÁREA - FALTABA ESTE CAMPO -->
             <div>
               <label class="text-sm text-sena-text-main">Área</label>
-              <select id="areaProgramaEditar" class="w-full mt-1 px-3 py-2 border border-sena-border rounded-lg bg-gray-100 text-sm" required>
+              <select
+                id="areaProgramaEditar"
+                class="w-full mt-1 px-3 py-2 border border-sena-border rounded-lg bg-gray-100 text-sm"
+              >
                 <option value="">Seleccione un área</option>
-                <option value="1">Sistemas</option>
-                <option value="2">Electrónica</option>
-                <option value="3">Administración</option>
-                <option value="4">Contabilidad</option>
               </select>
             </div>
 
@@ -118,16 +117,7 @@
 
             </div>
             
-            <!-- ÁREA - FALTABA ESTE CAMPO -->
-            <div>
-              <label class="text-sm text-sena-text-main">Área</label>
-              <select
-                id="areaProgramaEditar"
-                class="w-full mt-1 px-3 py-2 border border-sena-border rounded-lg bg-gray-100 text-sm"
-              >
-                <option value="">Seleccione un área</option>
-              </select>
-            </div>
+            
 
             <!-- Fechas (IDs renombrados) -->
             <div class="grid grid-cols-2 gap-4">
