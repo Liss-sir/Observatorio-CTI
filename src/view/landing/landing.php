@@ -65,15 +65,15 @@ include __DIR__ . '../../../includes/header.php';
   <!-- CONTENT -->
   <main class="w-full px-20 pb-20">
 
-    <!-- Perfiles Destacados -->
+    <!-- Perfiles Recientes -->
     <section class="mt-10">
       <div class="flex items-end justify-between">
         <div>
           <div class="flex items-center gap-2 text-[11px] font-bold uppercase tracking-wider text-sena-strong">
-            <i data-lucide="trending-up" class="h-4 w-4"></i>
-            Más consultados
+            <i data-lucide="clock" class="h-4 w-4"></i>
+            Recientes
           </div>
-          <h2 class="font-[Montserrat] mt-1 text-xl font-bold text-sena-text-main">Perfiles Destacados</h2>
+          <h2 class="font-[Montserrat] mt-1 text-xl font-bold text-sena-text-main">Perfiles Recientes</h2>
         </div>
 
         <a class="inline-flex items-center gap-2 text-sm font-bold text-sena-strong" href="#">
@@ -282,59 +282,115 @@ include __DIR__ . '../../../includes/header.php';
       </div>
     </section>
 
-    <!-- Tecnologías Emergentes -->
+    <!-- Programas de Formación -->
     <section class="mt-12">
       <div class="flex items-center gap-2 text-[11px] font-bold uppercase tracking-wider text-sena-strong">
-        <i data-lucide="cpu" class="h-4 w-4"></i>
-        Innovación
+        <i data-lucide="book-open" class="h-4 w-4"></i>
+        Formación
       </div>
-      <h2 class="font-[Montserrat] mt-1 text-xl font-bold text-sena-text-main">Tecnologías Emergentes</h2>
 
-      <div class="mt-5 grid grid-cols-2 gap-4 md:grid-cols-5">
-        <!-- item 1 -->
-        <div class="tarjeta-tecnologia group cursor-pointer rounded-xl border border-sena-border bg-white p-5 text-center shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-sena-strong hover:shadow-md">
-          <div class="mx-auto flex h-10 w-10 items-center justify-center rounded-full bg-sena-soft text-sena-strong transition-colors duration-200">
-            <i data-lucide="sparkles" class="h-4 w-4"></i>
-          </div>
-          <div class="font-[Montserrat] mt-3 text-xs font-bold text-sena-text-main">Inteligencia Artificial</div>
-          <div class="mt-1 text-[11px] font-bold text-sena-text-muted">2 perfiles</div>
-        </div>
+      <h2 class="font-[Montserrat] mt-1 text-xl font-bold text-sena-text-main">
+        Programas de Formación
+      </h2>
 
-        <!-- item 2 -->
-        <div class="tarjeta-tecnologia group cursor-pointer rounded-xl border border-sena-border bg-white p-5 text-center shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-sena-strong hover:shadow-md">
-          <div class="mx-auto flex h-10 w-10 items-center justify-center rounded-full bg-sena-soft text-sena-strong transition-colors duration-200">
-            <i data-lucide="link" class="h-4 w-4"></i>
-          </div>
-          <div class="font-[Montserrat] mt-3 text-xs font-bold text-sena-text-main">Blockchain</div>
-          <div class="mt-1 text-[11px] font-bold text-sena-text-muted">2 perfiles</div>
-        </div>
+      <div class="mt-5 grid grid-cols-1 gap-4 md:grid-cols-5">
 
-        <!-- item 3 -->
-        <div class="tarjeta-tecnologia group cursor-pointer rounded-xl border border-sena-border bg-white p-5 text-center shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-sena-strong hover:shadow-md">
-          <div class="mx-auto flex h-10 w-10 items-center justify-center rounded-full bg-sena-soft text-sena-strong transition-colors duration-200">
-            <i data-lucide="wifi" class="h-4 w-4"></i>
-          </div>
-          <div class="font-[Montserrat] mt-3 text-xs font-bold text-sena-text-main">Internet de las Cosas (IoT)</div>
-          <div class="mt-1 text-[11px] font-bold text-sena-text-muted">1 perfil</div>
-        </div>
+        <!-- Programa 1 -->
+        <article class="tarjeta-tecnologia group cursor-pointer rounded-xl border border-sena-border bg-white p-5 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-sena-strong hover:shadow-md">
+          <div class="flex items-center gap-4">
 
-        <!-- item 4 -->
-        <div class="tarjeta-tecnologia group cursor-pointer rounded-xl border border-sena-border bg-white p-5 text-center shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-sena-strong hover:shadow-md">
-          <div class="mx-auto flex h-10 w-10 items-center justify-center rounded-full bg-sena-soft text-sena-strong transition-colors duration-200">
-            <i data-lucide="cloud" class="h-4 w-4"></i>
-          </div>
-          <div class="font-[Montserrat] mt-3 text-xs font-bold text-sena-text-main">Computación en la Nube</div>
-          <div class="mt-1 text-[11px] font-bold text-sena-text-muted">3 perfiles</div>
-        </div>
+            <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-sena-soft text-sm font-bold text-sena-strong transition-colors duration-200">
+              DS
+            </div>
 
-        <!-- item 5 -->
-        <div class="tarjeta-tecnologia group cursor-pointer rounded-xl border border-sena-border bg-white p-5 text-center shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-sena-strong hover:shadow-md">
-          <div class="mx-auto flex h-10 w-10 items-center justify-center rounded-full bg-sena-soft text-sena-strong transition-colors duration-200">
-            <i data-lucide="shield" class="h-4 w-4"></i>
+            <div>
+              <div class="font-[Montserrat] text-sm font-bold text-sena-text-main">
+                Desarrollo de Software
+              </div>
+              <div class="text-xs font-bold text-sena-text-muted">
+                25 cupos disponibles
+              </div>
+            </div>
+
           </div>
-          <div class="font-[Montserrat] mt-3 text-xs font-bold text-sena-text-main">Ciberseguridad Avanzada</div>
-          <div class="mt-1 text-[11px] font-bold text-sena-text-muted">3 perfiles</div>
-        </div>
+        </article>
+
+        <!-- Programa 2 -->
+        <article class="tarjeta-tecnologia group cursor-pointer rounded-xl border border-sena-border bg-white p-5 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-sena-strong hover:shadow-md">
+          <div class="flex items-center gap-4">
+
+            <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-sena-soft text-sm font-bold text-sena-strong transition-colors duration-200">
+              AD
+            </div>
+
+            <div>
+              <div class="font-[Montserrat] text-sm font-bold text-sena-text-main">
+                Análisis de Datos
+              </div>
+              <div class="text-xs font-bold text-sena-text-muted">
+                18 cupos disponibles
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <!-- Programa 3 -->
+        <article class="tarjeta-tecnologia group cursor-pointer rounded-xl border border-sena-border bg-white p-5 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-sena-strong hover:shadow-md">
+          <div class="flex items-center gap-4">
+
+            <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-sena-soft text-sm font-bold text-sena-strong transition-colors duration-200">
+              CS
+            </div>
+
+            <div>
+              <div class="font-[Montserrat] text-sm font-bold text-sena-text-main">
+                Ciberseguridad
+              </div>
+              <div class="text-xs font-bold text-sena-text-muted">
+                12 cupos disponibles
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <!-- Programa 4 -->
+        <article class="tarjeta-tecnologia group cursor-pointer rounded-xl border border-sena-border bg-white p-5 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-sena-strong hover:shadow-md">
+          <div class="flex items-center gap-4">
+
+            <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-sena-soft text-sm font-bold text-sena-strong transition-colors duration-200">
+              IA
+            </div>
+
+            <div>
+              <div class="font-[Montserrat] text-sm font-bold text-sena-text-main">
+                Inteligencia Artificial
+              </div>
+              <div class="text-xs font-bold text-sena-text-muted">
+                20 cupos disponibles
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <!-- Programa 5 -->
+        <article class="tarjeta-tecnologia group cursor-pointer rounded-xl border border-sena-border bg-white p-5 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-sena-strong hover:shadow-md">
+          <div class="flex items-center gap-4">
+
+            <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-sena-soft text-sm font-bold text-sena-strong transition-colors duration-200">
+              RT
+            </div>
+
+            <div>
+              <div class="font-[Montserrat] text-sm font-bold text-sena-text-main">
+                Redes y Telecomunicaciones
+              </div>
+              <div class="text-xs font-bold text-sena-text-muted">
+                15 cupos disponibles
+              </div>
+            </div>
+          </div>
+        </article>
+
       </div>
     </section>
 
