@@ -1,24 +1,37 @@
-document.addEventListener("DOMContentLoaded", () => {
+document.getElementById("registerForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
 
-  lucide.createIcons();
+  const form = e.target;
 
-  function togglePassword(inputId, buttonId) {
-    const input = document.getElementById(inputId);
-    const button = document.getElementById(buttonId);
+  const data = {
+    representante_legal: form.representante_legal.value,
+    tipo_documento: form.tipo_documento.value,
+    numero_documento: form.numero_documento.value,
+    correo: form.correo.value,
+    password: form.password.value,
+    razon_social: form.razon_social.value || null
+  };
 
-    button.addEventListener("click", () => {
-      const isPassword = input.type === "password";
-      input.type = isPassword ? "text" : "password";
-
-      button.innerHTML = isPassword
-        ? '<i data-lucide="eye-off" class="w-5 h-5"></i>'
-        : '<i data-lucide="eye" class="w-5 h-5"></i>';
-
-      lucide.createIcons();
+  try {
+    const response = await fetch("../../controllers/LogController.php?action=register", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(data)
     });
+
+    const result = await response.json();
+
+    if (result.success) {
+      alert(result.message);
+      window.location.href = "../../auth/login/login.php";
+    } else {
+      alert(result.error);
+    }
+
+  } catch (error) {
+    console.error(error);
+    alert("Error en la conexión");
   }
-
-  togglePassword("password", "togglePassword");
-  togglePassword("confirmPassword", "toggleConfirmPassword");
-
 });

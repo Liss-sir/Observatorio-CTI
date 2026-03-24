@@ -1,11 +1,15 @@
 <?php
-// middleware/auth.php
+/**
+ * ESTO ES NUEVO
+ * Middleware de autenticación
+ * Incluir al inicio de páginas protegidas
+ */
 
 function requerirAuth() {
     session_start();
     
     if (!isset($_SESSION['autenticado']) || $_SESSION['autenticado'] !== true) {
-        header('Location: ' . rutaAbsoluta('auth/login/login.php'));
+        header('Location: ../../auth/login/login.php');
         exit;
     }
 }
@@ -13,29 +17,22 @@ function requerirAuth() {
 function requerirRol($rolPermitido) {
     requerirAuth();
     
-    $rolUsuario = $_SESSION['rol_nombre'] ?? '';
+    $rolActual = $_SESSION['rol_nombre'] ?? '';
     
-    if (strtolower($rolUsuario) !== strtolower($rolPermitido)) {
-        header('Location: ' . rutaAbsoluta('view/dashboard/dashboard.php'));
+    if (strtolower($rolActual) !== strtolower($rolPermitido)) {
+        // Redirigir al dashboard correspondiente
+        header('Location: ../../view/dashboard/dashboard.php');
         exit;
     }
 }
 
-function rutaAbsoluta($rutaRelativa) {
-    // Ajusta según tu estructura
-    $base = '/tu-proyecto/'; // Cambia esto
-    return $base . $rutaRelativa;
-}
-
-function usuarioActual() {
-    return $_SESSION['usuario'] ?? null;
-}
-
+// Helper para verificar si es admin
 function esAdmin() {
-    return ($_SESSION['rol_nombre'] ?? '') === 'administrador';
+    return ($_SESSION['rol_nombre'] ?? '') === 'ADMINISTRADOR';
 }
 
+// Helper para verificar si es empresa
 function esEmpresa() {
-    return ($_SESSION['rol_nombre'] ?? '') === 'empresa';
+    return ($_SESSION['rol_nombre'] ?? '') === 'EMPRESA';
 }
 ?>
