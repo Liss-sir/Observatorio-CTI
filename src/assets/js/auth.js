@@ -1,6 +1,6 @@
 /**
+ * ESTO ES NUEVO
  * Módulo de autenticación global
- * Maneja la verificación de sesión y actualización del UI
  */
 
 const Auth = {
@@ -8,40 +8,111 @@ const Auth = {
     usuario: null,
     autenticado: false,
 
-    /**
-     * Verifica la sesión actual con el servidor
-     */
     async verificarSesion() {
         try {
+            console.log("=== INICIANDO VERIFICACIÓN ===");
             const response = await fetch(`${this.API_URL}?accion=sesion`, {
                 method: "GET",
-                credentials: "same-origin" // Importante para enviar cookies de sesión
+                credentials: "same-origin"
             });
             
             const data = await response.json();
+            console.log("Respuesta del servidor:", data);
             
             if (data.success && data.autenticado) {
                 this.autenticado = true;
                 this.usuario = data.usuario;
-                this.actualizarUI();
-                return true;
+                console.log("✅ Usuario autenticado:", this.usuario);
             } else {
                 this.autenticado = false;
                 this.usuario = null;
-                this.actualizarUI();
-                return false;
+                console.log("❌ No autenticado");
             }
+            
+            this.actualizarUI();
+            return this.autenticado;
+            
         } catch (error) {
-            console.error("Error verificando sesión:", error);
-            this.autenticado = false;
-            this.usuario = null;
+            console.error("Error:", error);
+            this.actualizarUI();
             return false;
         }
     },
 
-    /**
-     * Cierra la sesión
-     */
+    actualizarUI() {
+        console.log("=== ACTUALIZANDO UI ===");
+        
+        const navGuest = document.getElementById("nav-guest");
+        const navUser = document.getElementById("nav-user");
+        
+        if (this.autenticado && this.usuario) {
+            if (navGuest) navGuest.style.display = "none";
+            if (navUser) navUser.classList.remove("hidden");
+            
+            this.actualizarInfoUsuario();
+            this.aplicarPermisosPorRol();
+        } else {
+            if (navGuest) navGuest.style.display = "flex";
+            if (navUser) navUser.classList.add("hidden");
+            this.ocultarTodoPorRol();
+        }
+    },
+
+    actualizarInfoUsuario() {
+        if (!this.usuario) return;
+        
+        const nombre = this.usuario.nombre || this.usuario.correo?.split('@')[0] || 'Usuario';
+        const rol = this.usuario.rol_nombre || 'Usuario';
+        
+        const userName = document.getElementById("user-name");
+        const userRole = document.getElementById("user-role");
+        
+        if (userName) userName.textContent = nombre;
+        if (userRole) userRole.textContent = rol;
+        
+        console.log("Info actualizada:", { nombre, rol });
+    },
+
+    aplicarPermisosPorRol() {
+        if (!this.usuario) {
+            console.log("No hay usuario");
+            return;
+        }
+
+        // USAR MAYÚSCULAS como vienen de la BD
+        const rolUsuario = (this.usuario.rol_nombre || '').toUpperCase().trim();
+        console.log("Rol del usuario:", rolUsuario);
+
+        const elementos = document.querySelectorAll('[data-rol]');
+        console.log(`Encontrados ${elementos.length} elementos con data-rol`);
+
+        elementos.forEach((el, index) => {
+            const rolRequerido = (el.getAttribute('data-rol') || '').toUpperCase().trim();
+            const texto = el.textContent?.trim() || `Elemento ${index}`;
+            
+            console.log(`[${index}] "${texto}" | Requiere: "${rolRequerido}" | Usuario: "${rolUsuario}"`);
+            
+            if (rolUsuario === rolRequerido) {
+                // MOSTRAR
+                el.classList.remove('hidden');
+                el.style.display = '';
+                console.log(`   ✅ MOSTRADO`);
+            } else {
+                // OCULTAR
+                el.classList.add('hidden');
+                el.style.display = 'none';
+                console.log(`   ❌ OCULTADO`);
+            }
+        });
+    },
+
+    ocultarTodoPorRol() {
+        document.querySelectorAll('[data-rol]').forEach(el => {
+            el.classList.add('hidden');
+            el.style.display = 'none';
+        });
+    },
+
     async logout() {
         try {
             const response = await fetch(`${this.API_URL}?accion=logout`, {
@@ -52,118 +123,23 @@ const Auth = {
             const data = await response.json();
             
             if (data.success) {
-                // Limpiar sessionStorage
                 sessionStorage.clear();
-                
-                // Redirigir al login o landing
                 window.location.href = "../../auth/login/login.php";
             }
         } catch (error) {
             console.error("Error en logout:", error);
+            alert("Error al cerrar sesión");
         }
     },
 
-    /**
-     * Actualiza el UI según el estado de autenticación
-     */
-    actualizarUI() {
-        const navAuth = document.getElementById("nav-auth");
-        const navGuest = document.getElementById("nav-guest");
-        const userMenu = document.getElementById("user-menu");
-        const userName = document.getElementById("user-name");
-        const userRole = document.getElementById("user-role");
-
-        if (this.autenticado && this.usuario) {
-            // Ocultar botones de invitado (login/register)
-            if (navGuest) navGuest.classList.add("hidden");
-            
-            // Mostrar menú de usuario
-            if (navAuth) {
-                navAuth.classList.remove("hidden");
-                
-                // Actualizar información del usuario
-                if (userName) {
-                    userName.textContent = this.usuario.nombre || this.usuario.correo;
-                }
-                if (userRole) {
-                    userRole.textContent = this.usuario.rol_nombre || 'Usuario';
-                }
-            }
-
-            // Ocultar/mostrar elementos según rol
-            this.aplicarPermisosPorRol();
-        } else {
-            // Mostrar botones de invitado
-            if (navGuest) navGuest.classList.remove("hidden");
-            
-            // Ocultar menú de usuario
-            if (navAuth) navAuth.classList.add("hidden");
-        }
-    },
-
-    /**
-     * Aplica permisos visuales según el rol del usuario
-     */
-    aplicarPermisosPorRol() {
-        if (!this.usuario) return;
-
-        const rol = this.usuario.rol_nombre?.toLowerCase();
-
-        // Elementos solo para administradores
-        document.querySelectorAll('[data-rol="admin"]').forEach(el => {
-            el.style.display = rol === 'administrador' ? '' : 'none';
-        });
-
-        // Elementos solo para empresas
-        document.querySelectorAll('[data-rol="empresa"]').forEach(el => {
-            el.style.display = rol === 'empresa' ? '' : 'none';
-        });
-
-        // Elementos para ambos (autenticados)
-        document.querySelectorAll('[data-auth="true"]').forEach(el => {
-            el.style.display = '';
-        });
-
-        // Elementos solo para invitados (ocultar si está autenticado)
-        document.querySelectorAll('[data-auth="false"]').forEach(el => {
-            el.style.display = 'none';
-        });
-    },
-
-    /**
-     * Verifica si el usuario tiene un rol específico
-     */
     tieneRol(rol) {
-        return this.autenticado && this.usuario?.rol_nombre?.toLowerCase() === rol.toLowerCase();
-    },
-
-    /**
-     * Redirige si no está autenticado
-     */
-    requerirAuth() {
-        if (!this.autenticado) {
-            window.location.href = "../../auth/login/login.php";
-            return false;
-        }
-        return true;
-    },
-
-    /**
-     * Redirige si no tiene el rol requerido
-     */
-    requerirRol(rol) {
-        if (!this.requerirAuth()) return false;
-        
-        if (!this.tieneRol(rol)) {
-            // Redirigir a página no autorizada o dashboard
-            window.location.href = "../../view/dashboard/dashboard.php";
-            return false;
-        }
-        return true;
+        const rolUsuario = (this.usuario?.rol_nombre || '').toUpperCase();
+        return this.autenticado && rolUsuario === rol.toUpperCase();
     }
 };
 
-// Inicializar al cargar la página
+// Inicializar
 document.addEventListener("DOMContentLoaded", () => {
+    console.log("=== DOM CARGADO ===");
     Auth.verificarSesion();
 });
