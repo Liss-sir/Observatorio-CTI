@@ -83,15 +83,6 @@ class ProyeccionFuturoController {
             return;
         }
         
-        if ($this->model->existePorAreaYAnio($input['id_area'], $input['anio'])) {
-            $anio_texto = $this->model->getListaAnios()[$input['anio']];
-            echo json_encode([
-                'success' => false,
-                'error' => "Ya existe una proyección para {$anio_texto} en el área seleccionada"
-            ]);
-            return;
-        }
-        
         $id = $this->model->crear($input);
         
         if ($id) {
@@ -118,17 +109,6 @@ class ProyeccionFuturoController {
                 'error' => 'ID de proyección requerido'
             ]);
             return;
-        }
-        
-        if (isset($input['id_area']) && isset($input['anio'])) {
-            if ($this->model->existePorAreaYAnio($input['id_area'], $input['anio'], $input['id_proyeccion'])) {
-                $anio_texto = $this->model->getListaAnios()[$input['anio']];
-                echo json_encode([
-                    'success' => false,
-                    'error' => "Ya existe una proyección para {$anio_texto} en el área seleccionada"
-                ]);
-                return;
-            }
         }
         
         $resultado = $this->model->actualizar($input);
@@ -284,6 +264,29 @@ class ProyeccionFuturoController {
         echo json_encode([
             'success' => true,
             'data' => $options
+        ]);
+    }
+
+    // Verificar existencia por área y año
+    public function verificarExistencia() {
+        $input = json_decode(file_get_contents("php://input"), true);
+        
+        if (!isset($input['id_area']) || !isset($input['anio'])) {
+            echo json_encode([
+                'success' => false,
+                'error' => 'Área y año son requeridos'
+            ]);
+            return;
+        }
+        
+        $existe = $this->model->existePorAreaYAnio(
+            $input['id_area'],
+            $input['anio'],
+            $input['excluir_id'] ?? null
+        );
+        
+        echo json_encode([
+            'existe' => $existe
         ]);
     }
 
