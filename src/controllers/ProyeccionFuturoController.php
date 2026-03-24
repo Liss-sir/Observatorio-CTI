@@ -287,29 +287,6 @@ class ProyeccionFuturoController {
         ]);
     }
 
-    // Verificar existencia por área y año
-    public function verificarExistencia() {
-        $input = json_decode(file_get_contents("php://input"), true);
-        
-        if (!isset($input['id_area']) || !isset($input['anio'])) {
-            echo json_encode([
-                'success' => false,
-                'error' => 'Área y año son requeridos'
-            ]);
-            return;
-        }
-        
-        $existe = $this->model->existePorAreaYAnio(
-            $input['id_area'],
-            $input['anio'],
-            $input['excluir_id'] ?? null
-        );
-        
-        echo json_encode([
-            'existe' => $existe
-        ]);
-    }
-
     // Verificar dependencias
     public function verificarDependencias($id) {
         if (!$id) {
