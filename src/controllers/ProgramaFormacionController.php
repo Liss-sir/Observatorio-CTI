@@ -529,6 +529,7 @@ class ProgramaFormacionController {
                         p.id_programa,
                         p.codigo_programa,
                         p.nombre_programa,
+                        p.cupos_formacion,
                         a.nombre_area,
                         n.nombre_nivel,
                         COUNT(po.id_perfil) AS total_perfiles_asociados,
