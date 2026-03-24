@@ -144,7 +144,7 @@ document.addEventListener("DOMContentLoaded", function () {
                             data-modalidad="${programa.modalidad || ''}"
                             data-fechainicio="${programa.fecha_creacion || ''}"
                             data-fechafin="${programa.fecha_fin || ''}"
-                            data-cupos="${programa.cupos || ''}"
+                            data-cupos="${programa.cupos_formacion || ''}"
                             data-area="${programa.id_area || ''}">
                             <i data-lucide="pencil" class="w-4 h-4 text-gray-500"></i>
                         </button>
@@ -172,7 +172,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     <div class="flex items-center gap-4">
                         <span class="inline-flex items-center gap-1.5">
                             <i data-lucide="users" class="w-4 h-4"></i>
-                            ${programa.cupos || 'N/A'} cupos
+                            ${programa.cupos_formacion || 'N/A'} cupos
                         </span>
                         <span class="text-gray-300">|</span>
                         <!-- CAMBIO: usar nombre_area en lugar de area_nombre -->
@@ -461,7 +461,8 @@ document.addEventListener("DOMContentLoaded", function () {
                 modalidad: document.getElementById("modalidadNuevoPrograma")?.value,
                 fecha_creacion: document.getElementById("fechaInicioNuevoPrograma")?.value,
                 fecha_fin: document.getElementById("fechaFinNuevoPrograma")?.value,
-                cupos: document.getElementById("cuposNuevoPrograma")?.value
+                cupos_formacion: document.getElementById("cuposNuevoPrograma")?.value,
+                descripcion: document.getElementById("descripcionNuevoPrograma")?.value
             };
 
             if (!datos.id_area || !datos.codigo_programa || !datos.nombre_programa || !datos.id_nivel) {
@@ -496,14 +497,15 @@ document.addEventListener("DOMContentLoaded", function () {
         btnGuardarEditar.addEventListener('click', async () => {
             const datos = {
                 id_programa: document.getElementById("idProgramaEditar")?.value,
-                id_area: document.getElementById("areaProgramaEditar")?.value, // ← FALTABA ESTO
+                id_area: document.getElementById("areaProgramaEditar")?.value, 
                 codigo_programa: document.getElementById("codigoPrograma")?.value,
                 nombre_programa: document.getElementById("nombrePrograma")?.value,
                 id_nivel: document.getElementById("nivelFormacion")?.value,
                 modalidad: document.getElementById("modalidadPrograma")?.value,
                 fecha_creacion: document.getElementById("fechaInicio")?.value,
                 fecha_fin: document.getElementById("fechaFin")?.value,
-                cupos: document.getElementById("cuposPrograma")?.value
+                cupos_formacion: document.getElementById("cuposPrograma")?.value,
+                descripcion: document.getElementById("descripcionProgramaEditar")?.value
             };
 
             // Debug: ver qué datos se están enviando
