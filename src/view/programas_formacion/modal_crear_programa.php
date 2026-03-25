@@ -93,7 +93,6 @@
                         <option value="">Seleccione modalidad</option>
                         <option value="Presencial">Presencial</option>
                         <option value="Virtual">Virtual</option>
-                        <option value="Mixta">Mixta</option>
                     </select>
                 </div>
 

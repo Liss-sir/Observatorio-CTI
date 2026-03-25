@@ -111,7 +111,6 @@
                 >
                   <option value="PRESENCIAL">Presencial</option>
                   <option value="VIRTUAL">Virtual</option>
-                  <option value="MIXTA">Mixta</option>
                 </select>
               </div>
 
