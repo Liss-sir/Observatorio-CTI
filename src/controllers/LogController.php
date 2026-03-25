@@ -314,7 +314,7 @@ class LogController {
 
         if ($resultado['success']) {
             // Enviar correo de verificación automáticamente
-            $this->model->enviarVerificacion($resultado['id_usuario'], $input['correo']);
+        //$this->model->enviarVerificacion($resultado['id_usuario'], $input['correo']);
             echo json_encode([
                 'success' => true,
                 'message' => 'Usuario registrado correctamente. Se ha enviado un correo de verificación.'

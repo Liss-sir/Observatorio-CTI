@@ -24,7 +24,7 @@
                 </label>
                 <input id="inputNombre"
                        type="text"
-                       value="<?= $usuario['nombre'] ?>"
+                       placeholder="Nombre completo"
                        class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 outline-none">
             </div>
 
@@ -36,7 +36,7 @@
                 </label>
                 <input id="inputCorreo"
                        type="email"
-                       value="<?= $usuario['correo'] ?>"
+                       placeholder="Correo electrónico"
                        class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 outline-none">
             </div>
 
