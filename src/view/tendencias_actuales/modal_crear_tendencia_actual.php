@@ -17,8 +17,8 @@
 
         <!-- Header -->
         <div class="border-b border-sena-border px-6 py-4">
-          <h3 class="text-lg font-semibold text-sena-text-main">Nueva Tendencia Actual</h3>
-          <p class="mt-1 text-sm text-sena-text-soft">Completa los datos para crear una nueva tendencia actual.</p>
+          <h3 class="text-lg font-semibold text-sena-text-main">Nueva Etapa de Desarrollo</h3>
+          <p class="mt-1 text-sm text-sena-text-soft">Completa los datos para crear una nueva etapa de desarrollo.</p>
         </div>
 
         <!-- Form -->
@@ -27,36 +27,37 @@
           <div class="mb-4">
             <label class="mb-1 block text-sm font-medium text-sena-text-main">Área <span class="text-red-500">*</span></label>
             <div class="select-container">
-              <select name="area" id="area-crear" class="custom-select">
-                <option value="" disabled selected>Selecciona un área</option>
-                <!-- Las opciones se cargarán dinámicamente -->
+              <select name="area" id="area-crear" class="custom-select w-full rounded-lg border border-sena-border px-3 py-2 text-sm text-sena-text-main focus:border-sena focus:ring-2 focus:ring-sena focus:ring-opacity-20 focus:outline-none">
+                <option value="">Selecciona un área</option>
+                <!-- Las opciones se cargarán dinámicamente desde JavaScript -->
               </select>
             </div>
           </div>
 
-          <!-- Nombre de la tendencia -->
-          <div class="mb-4">
-            <label class="mb-1 block text-sm font-medium text-sena-text-main">Nombre de la tendencia <span class="text-red-500">*</span></label>
-            <input type="text" name="nombre" id="nombre-crear" 
-                   class="w-full rounded-lg border border-sena-border px-3 py-2 text-sm text-sena-text-main placeholder-sena-text-soft focus:border-sena focus:ring-2 focus:ring-sena/20"
-                   placeholder="Ej: Inteligencia Artificial Generativa">
+          <!-- Nombre de la etapa (este es el campo "nombre" en la BD que equivale a la descripción en frontend) -->
+          <div class="mb-2">
+            <label class="mb-1 block text-sm font-medium text-sena-text-main">Descripción <span class="text-red-500">*</span></label>
+            <textarea 
+                name="nombre" 
+                id="nombre-crear"
+                rows="4"  
+                placeholder="Describe la etapa de desarrollo..."
+                class="w-full rounded-lg border border-sena-border px-3 py-2 text-sm text-sena-text-main placeholder-sena-text-soft focus:border-sena focus:ring-2 focus:ring-sena focus:ring-opacity-20 focus:outline-none resize-none"></textarea>
           </div>
-
-          <!-- Descripción -->
-          <div class="mb-4">
-            <label class="mb-1 block text-sm font-medium text-sena-text-main">Descripción</label>
-            <textarea name="descripcion" id="descripcion-crear" rows="4" 
-                      placeholder="Describe la tendencia tecnológica..."
-                      class="w-full rounded-lg border border-sena-border px-3 py-2 text-sm text-sena-text-main placeholder-sena-text-soft focus:border-sena focus:ring-2 focus:ring-sena/20"></textarea>
+          
+          <!-- Contador de caracteres -->
+          <div class="flex justify-between items-center gap-2 mb-4">
+            <span id="alerta-minimo-crear" class="text-xs text-red-500 hidden">⚠️ Mínimo 30 caracteres requerido</span>
+            <span id="contador-caracteres-crear" class="text-xs text-sena-text-soft ml-auto">0 / 30 caracteres</span>
           </div>
 
           <!-- Footer buttons -->
           <div class="flex justify-end gap-3 border-t border-sena-border pt-4">
-            <button type="button" class="cerrar-modal-crear rounded-lg border border-sena-border px-4 py-2 text-sm font-medium text-sena-text-main hover:bg-sena-soft">
+            <button type="button" class="cerrar-modal-crear rounded-lg border border-sena-border px-4 py-2 text-sm font-medium text-sena-text-main hover:bg-sena-soft transition-colors">
               Cancelar
             </button>
-            <button type="submit" class="rounded-lg bg-sena px-4 py-2 text-sm font-medium text-white hover:opacity-90 transition-opacity">
-              Crear Tendencia Actual
+            <button type="submit" id="btn-submit-etapa" class="rounded-lg bg-sena px-4 py-2 text-sm font-medium text-white hover:bg-sena-hover transition-all">
+              Crear Etapa de Desarrollo
             </button>
           </div>
         </form>

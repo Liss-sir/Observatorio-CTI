@@ -17,8 +17,8 @@
 
         <!-- Header -->
         <div class="border-b border-sena-border px-6 py-4">
-          <h3 class="text-lg font-semibold text-sena-text-main">Editar Tendencia</h3>
-          <p class="mt-1 text-sm text-sena-text-soft">Modifica los datos de la tendencia tecnológica.</p>
+          <h3 class="text-lg font-semibold text-sena-text-main">Editar Etapa de Desarrollo</h3>
+          <p class="mt-1 text-sm text-sena-text-soft">Modifica los datos de la etapa de desarrollo.</p>
         </div>
 
         <!-- Form -->
@@ -27,46 +27,49 @@
           <div class="mb-4">
             <label class="mb-1 block text-sm font-medium text-sena-text-main">Área <span class="text-red-500">*</span></label>
             <div class="select-container">
-              <select name="area" id="area-tendencia" class="custom-select">
-                <option value="" disabled>Selecciona un área</option>
-                <!-- Las opciones se cargarán dinámicamente -->
+              <select name="area" id="area-tendencia" class="custom-select w-full rounded-lg border border-sena-border px-3 py-2 text-sm text-sena-text-main focus:border-sena focus:ring-2 focus:ring-sena focus:ring-opacity-20 focus:outline-none">
+                <option value="">Selecciona un área</option>
+                <!-- Las opciones se cargarán dinámicamente desde JavaScript -->
               </select>
             </div>
-          </div>
-
-          <!-- Nombre de la tendencia -->
-          <div class="mb-4">
-            <label class="mb-1 block text-sm font-medium text-sena-text-main">Nombre de la tendencia <span class="text-red-500">*</span></label>
-            <input type="text" name="nombre" id="nombre-tendencia" 
-                   class="w-full rounded-lg border border-sena-border px-3 py-2 text-sm text-sena-text-main placeholder-sena-text-soft focus:border-sena focus:ring-2 focus:ring-sena/20"
-                   placeholder="Ej: Inteligencia Artificial Generativa">
-          </div>
-
-          <!-- Descripción -->
-          <div class="mb-4">
-            <label class="mb-1 block text-sm font-medium text-sena-text-main">Descripción</label>
-            <textarea name="descripcion" id="descripcion-tendencia" rows="4" 
-                      placeholder="Describe la tendencia tecnológica..."
-                      class="w-full rounded-lg border border-sena-border px-3 py-2 text-sm text-sena-text-main placeholder-sena-text-soft focus:border-sena focus:ring-2 focus:ring-sena/20"></textarea>
           </div>
 
           <!-- Estado (solo para administradores) -->
           <div class="mb-4">
             <label class="mb-1 block text-sm font-medium text-sena-text-main">Estado</label>
             <div class="select-container">
-              <select name="estado" id="estado-tendencia" class="custom-select">
+              <select name="estado" id="estado-tendencia" class="custom-select w-full rounded-lg border border-sena-border px-3 py-2 text-sm text-sena-text-main focus:border-sena focus:ring-2 focus:ring-sena focus:ring-opacity-20 focus:outline-none">
                 <option value="activo">Activo</option>
                 <option value="inactivo">Inactivo</option>
               </select>
             </div>
           </div>
 
+          <!-- Nombre de la etapa (este es el campo "nombre" en la BD que equivale a la descripción en frontend) -->
+          <div class="mb-2">
+            <label class="mb-1 block text-sm font-medium text-sena-text-main">Descripción <span class="text-red-500">*</span></label>
+            <textarea 
+                name="nombre" 
+                id="nombre-tendencia"
+                rows="4"  
+                placeholder="Describe la etapa de desarrollo..."
+                class="w-full rounded-lg border border-sena-border px-3 py-2 text-sm text-sena-text-main placeholder-sena-text-soft focus:border-sena focus:ring-2 focus:ring-sena focus:ring-opacity-20 focus:outline-none resize-none"></textarea>
+          </div>
+
+          
+          <!-- Contador de caracteres -->
+          <div class="flex justify-between items-center gap-2 mb-4">
+            <span id="alerta-minimo-editar" class="text-xs text-red-500 hidden">⚠️ Mínimo 30 caracteres requerido</span>
+            <span id="contador-caracteres-editar" class="text-xs text-sena-text-soft ml-auto">0 / 30 caracteres</span>
+          </div>
+
+
           <!-- Footer buttons -->
           <div class="flex justify-end gap-3 border-t border-sena-border pt-4">
-            <button type="button" class="cerrar-modal-editar rounded-lg border border-sena-border px-4 py-2 text-sm font-medium text-sena-text-main hover:bg-sena-soft">
+            <button type="button" class="cerrar-modal-editar rounded-lg border border-sena-border px-4 py-2 text-sm font-medium text-sena-text-main hover:bg-sena-soft transition-colors">
               Cancelar
             </button>
-            <button type="submit" class="rounded-lg bg-sena px-4 py-2 text-sm font-medium text-white hover:opacity-90 transition-opacity">
+            <button type="submit" id="btn-submit-editar-etapa" class="rounded-lg bg-sena px-4 py-2 text-sm font-medium text-white hover:bg-sena-hover transition-all">
               Guardar Cambios
             </button>
           </div>

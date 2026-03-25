@@ -1,10 +1,8 @@
 document.addEventListener('DOMContentLoaded', function() {
     // ===== CONFIGURACIÓN =====
-    // Cambiar a EtapaDesarrolloController
     const API_URL = '../../controllers/EtapaDesarrolloController.php';
     
     // ===== VARIABLES DE MODALES =====
-    // Mantener los IDs originales del HTML (con "tendencia")
     const modalEditar = document.getElementById('modal-editar-tendencia');
     const modalEditadoConfirmacion = document.getElementById('modal-editado-confirmacion');
     const modalDeshabilitar = document.getElementById('modal-deshabilitar-tendencias-act');
@@ -39,71 +37,323 @@ document.addEventListener('DOMContentLoaded', function() {
     let timeoutCreado = null;
     let intervalContadorCreado = null;
     
-    // Variables para almacenar datos actuales (ahora serán etapas)
+    // Variables para almacenar datos actuales
     let etapasActuales = [];
     let areasActuales = [];
     let etapaSeleccionada = null;
+    
+    // Variables para paginación
+    let paginaActual = 1;
+    const elementosPorPagina = 9;
+    let etapasFiltradas = [];
+    let ultimoTerminoBusqueda = '';
+    let filtrarDesactivadosActivo = false;
+
+    // ===== CONSTANTES =====
+    const MIN_DESCRIPCION_LENGTH = 30;
+
+    // ===== FUNCIÓN PARA VALIDAR DESCRIPCIÓN =====
+    function validarDescripcion(descripcion) {
+        if (!descripcion || descripcion.length < MIN_DESCRIPCION_LENGTH) {
+            return false;
+        }
+        return true;
+    }
+
+    // ===== FUNCIÓN PARA ACTUALIZAR CONTADOR DE CARACTERES EN MODAL CREAR =====
+    function actualizarContadorCrear() {
+        const textarea = document.getElementById('nombre-crear');
+        const contadorSpan = document.getElementById('contador-caracteres-crear');
+        const alertaSpan = document.getElementById('alerta-minimo-crear');
+        const btnSubmit = document.getElementById('btn-submit-etapa');
+        
+        if (textarea && contadorSpan) {
+            const longitud = textarea.value.length;
+            contadorSpan.textContent = `${longitud} / ${MIN_DESCRIPCION_LENGTH} caracteres`;
+            
+            if (longitud >= MIN_DESCRIPCION_LENGTH) {
+                contadorSpan.classList.remove('text-sena-text-soft', 'text-red-500');
+                contadorSpan.classList.add('text-sena');
+                if (alertaSpan) alertaSpan.classList.add('hidden');
+                if (btnSubmit) btnSubmit.disabled = false;
+            } else {
+                contadorSpan.classList.remove('text-sena', 'text-red-500');
+                contadorSpan.classList.add('text-sena-text-soft');
+                if (alertaSpan) alertaSpan.classList.remove('hidden');
+                if (btnSubmit) btnSubmit.disabled = true;
+            }
+        }
+    }
+
+    // ===== FUNCIÓN PARA ACTUALIZAR CONTADOR DE CARACTERES EN MODAL EDITAR =====
+    function actualizarContadorEditar() {
+        const textarea = document.getElementById('nombre-tendencia');
+        const contadorSpan = document.getElementById('contador-caracteres-editar');
+        const alertaSpan = document.getElementById('alerta-minimo-editar');
+        const btnSubmit = document.getElementById('btn-submit-editar-etapa');
+        
+        if (textarea && contadorSpan) {
+            const longitud = textarea.value.length;
+            contadorSpan.textContent = `${longitud} / ${MIN_DESCRIPCION_LENGTH} caracteres`;
+            
+            if (longitud >= MIN_DESCRIPCION_LENGTH) {
+                contadorSpan.classList.remove('text-sena-text-soft', 'text-red-500');
+                contadorSpan.classList.add('text-sena');
+                if (alertaSpan) alertaSpan.classList.add('hidden');
+                if (btnSubmit) btnSubmit.disabled = false;
+            } else {
+                contadorSpan.classList.remove('text-sena', 'text-red-500');
+                contadorSpan.classList.add('text-sena-text-soft');
+                if (alertaSpan) alertaSpan.classList.remove('hidden');
+                if (btnSubmit) btnSubmit.disabled = true;
+            }
+        }
+    }
+
+    // ===== FUNCIÓN PARA ORDENAR ETAPAS =====
+    function ordenarEtapas(etapas) {
+        return [...etapas].sort((a, b) => {
+            if (a.estado !== b.estado) {
+                return b.estado - a.estado;
+            }
+            return b.id_etapa - a.id_etapa;
+        });
+    }
+
+    // ===== FUNCIÓN PARA OBTENER ETAPAS DE LA PÁGINA ACTUAL =====
+    function obtenerEtapasPagina(etapas) {
+        const inicio = (paginaActual - 1) * elementosPorPagina;
+        const fin = inicio + elementosPorPagina;
+        return etapas.slice(inicio, fin);
+    }
+
+    // ===== FUNCIÓN PARA ACTUALIZAR PAGINACIÓN =====
+    function actualizarPaginacion(totalElementos) {
+        const totalPaginas = Math.ceil(totalElementos / elementosPorPagina);
+        const paginacionContainer = document.getElementById('paginacion-container');
+        
+        if (!paginacionContainer) return;
+        
+        if (totalPaginas <= 1 && !filtrarDesactivadosActivo) {
+            paginacionContainer.classList.add('hidden');
+            return;
+        }
+        
+        paginacionContainer.classList.remove('hidden');
+        
+        let paginasHTML = '';
+        let inicio = Math.max(1, paginaActual - 2);
+        let fin = Math.min(totalPaginas, paginaActual + 2);
+        
+        if (paginaActual <= 3) {
+            fin = Math.min(5, totalPaginas);
+        }
+        
+        if (paginaActual >= totalPaginas - 2) {
+            inicio = Math.max(totalPaginas - 4, 1);
+        }
+        
+        if (totalPaginas > 1) {
+            if (inicio > 1) {
+                paginasHTML += `
+                    <button class="btn-pagina px-3 py-2 rounded-lg transition-all duration-200 border border-sena-border text-sena-text-main hover:bg-sena-soft hover:border-sena/30" data-pagina="1">
+                        1
+                    </button>
+                `;
+                if (inicio > 2) {
+                    paginasHTML += `<span class="px-2 text-sena-text-soft">...</span>`;
+                }
+            }
+            
+            for (let i = inicio; i <= fin; i++) {
+                const isActive = paginaActual === i;
+                paginasHTML += `
+                    <button class="btn-pagina px-3 py-2 rounded-lg transition-all duration-200 ${
+                        isActive 
+                            ? 'bg-sena text-white shadow-md scale-100' 
+                            : 'border border-sena-border text-sena-text-main hover:bg-sena-soft hover:border-sena/30'
+                    }" data-pagina="${i}">
+                        ${i}
+                    </button>
+                `;
+            }
+            
+            if (fin < totalPaginas) {
+                if (fin < totalPaginas - 1) {
+                    paginasHTML += `<span class="px-2 text-sena-text-soft">...</span>`;
+                }
+                paginasHTML += `
+                    <button class="btn-pagina px-3 py-2 rounded-lg transition-all duration-200 border border-sena-border text-sena-text-main hover:bg-sena-soft hover:border-sena/30" data-pagina="${totalPaginas}">
+                        ${totalPaginas}
+                    </button>
+                `;
+            }
+        }
+        
+        let paginacionHTML = `
+            <div class="flex flex-col items-center gap-3 mb-6">
+                ${totalPaginas > 1 ? `
+                <div class="text-sm text-sena-text-soft">
+                    Mostrando <span class="font-medium text-sena">${((paginaActual - 1) * elementosPorPagina) + 1}</span> - 
+                    <span class="font-medium text-sena">${Math.min(paginaActual * elementosPorPagina, totalElementos)}</span> de 
+                    <span class="font-medium text-sena">${totalElementos}</span> etapas
+                </div>
+                ` : `
+                <div class="text-sm text-sena-text-soft">
+                    Total: <span class="font-medium text-sena">${totalElementos}</span> etapas ${filtrarDesactivadosActivo ? 'inactivas' : ''}
+                </div>
+                `}
+                
+                <div class="flex items-center gap-2 flex-wrap justify-center">
+                    <button id="btn-filtro-desactivados-paginacion" class="flex items-center gap-2 px-4 py-2 text-sm font-medium border rounded-lg whitespace-nowrap h-10 transition-all ${filtrarDesactivadosActivo 
+                        ? 'bg-sena text-white border-sena cursor-default' 
+                        : 'border-sena-border text-sena-text-soft hover:bg-sena-soft hover:border-sena/30'}">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-4 h-4">
+                            <path d="M3 7v10a3 3 0 0 0 3 3h12a3 3 0 0 0 3-3V7"/>
+                            <path d="M3 7h18M8 3h8M6 7h1M17 7h1"/>
+                        </svg>
+                        Etapas Inactivas
+                    </button>
+                    
+                    ${totalPaginas > 1 ? `
+                    <div class="w-px h-6 bg-sena-border"></div>
+                    <button class="btn-primera-pagina px-3 py-2 rounded-lg transition-all duration-200 ${
+                        paginaActual === 1 
+                            ? 'bg-gray-100 text-sena-text-soft cursor-not-allowed opacity-50' 
+                            : 'border border-sena-border text-sena-text-main hover:bg-sena-soft hover:border-sena/30'
+                    }" ${paginaActual === 1 ? 'disabled' : ''}>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path d="M11 19l-7-7 7-7M18 19l-7-7 7-7" />
+                        </svg>
+                    </button>
+                    <button class="btn-pagina-anterior px-3 py-2 rounded-lg transition-all duration-200 ${
+                        paginaActual === 1 
+                            ? 'bg-gray-100 text-sena-text-soft cursor-not-allowed opacity-50' 
+                            : 'border border-sena-border text-sena-text-main hover:bg-sena-soft hover:border-sena/30'
+                    }" ${paginaActual === 1 ? 'disabled' : ''}>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path d="M15 19l-7-7 7-7" />
+                        </svg>
+                    </button>
+                    ${paginasHTML}
+                    <button class="btn-pagina-siguiente px-3 py-2 rounded-lg transition-all duration-200 ${
+                        paginaActual === totalPaginas 
+                            ? 'bg-gray-100 text-sena-text-soft cursor-not-allowed opacity-50' 
+                            : 'border border-sena-border text-sena-text-main hover:bg-sena-soft hover:border-sena/30'
+                    }" ${paginaActual === totalPaginas ? 'disabled' : ''}>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path d="M9 5l7 7-7 7" />
+                        </svg>
+                    </button>
+                    <button class="btn-ultima-pagina px-3 py-2 rounded-lg transition-all duration-200 ${
+                        paginaActual === totalPaginas 
+                            ? 'bg-gray-100 text-sena-text-soft cursor-not-allowed opacity-50' 
+                            : 'border border-sena-border text-sena-text-main hover:bg-sena-soft hover:border-sena/30'
+                    }" ${paginaActual === totalPaginas ? 'disabled' : ''}>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path d="M13 5l7 7-7 7M6 5l7 7-7 7" />
+                        </svg>
+                    </button>
+                    ` : ''}
+                </div>
+            </div>
+        `;
+        
+        paginacionContainer.innerHTML = paginacionHTML;
+        
+        const btnFiltro = document.getElementById('btn-filtro-desactivados-paginacion');
+        if (btnFiltro) {
+            const newBtn = btnFiltro.cloneNode(true);
+            btnFiltro.parentNode.replaceChild(newBtn, btnFiltro);
+            newBtn.addEventListener('click', function() {
+                filtrarDesactivadosActivo = !filtrarDesactivadosActivo;
+                if (filtrarDesactivadosActivo) {
+                    this.classList.add('bg-sena', 'text-white', 'border-sena', 'cursor-default');
+                    this.classList.remove('border-sena-border', 'text-sena-text-soft', 'hover:bg-sena-soft', 'hover:border-sena/30');
+                } else {
+                    this.classList.remove('bg-sena', 'text-white', 'border-sena', 'cursor-default');
+                    this.classList.add('border-sena-border', 'text-sena-text-soft', 'hover:bg-sena-soft', 'hover:border-sena/30');
+                }
+                paginaActual = 1;
+                filtrarEtapas();
+            });
+        }
+        
+        if (totalPaginas > 1) {
+            document.querySelectorAll('.btn-pagina').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    paginaActual = parseInt(btn.dataset.pagina);
+                    renderizarEtapas(etapasFiltradas);
+                });
+            });
+            document.querySelectorAll('.btn-pagina-anterior').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    if (paginaActual > 1) {
+                        paginaActual--;
+                        renderizarEtapas(etapasFiltradas);
+                    }
+                });
+            });
+            document.querySelectorAll('.btn-pagina-siguiente').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    if (paginaActual < totalPaginas) {
+                        paginaActual++;
+                        renderizarEtapas(etapasFiltradas);
+                    }
+                });
+            });
+            document.querySelectorAll('.btn-primera-pagina').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    if (paginaActual !== 1) {
+                        paginaActual = 1;
+                        renderizarEtapas(etapasFiltradas);
+                    }
+                });
+            });
+            document.querySelectorAll('.btn-ultima-pagina').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    if (paginaActual !== totalPaginas) {
+                        paginaActual = totalPaginas;
+                        renderizarEtapas(etapasFiltradas);
+                    }
+                });
+            });
+        }
+    }
 
     // ===== FUNCIÓN PARA MOSTRAR TOAST DE VALIDACIÓN =====
     function mostrarToastValidacion(mensaje, tipo = 'warning') {
         const toastContainer = document.getElementById('toast-container');
         
-        // Si no existe el contenedor, crearlo
         if (!toastContainer) {
             const container = document.createElement('div');
             container.id = 'toast-container';
-            container.className = 'fixed top-4 right-4 z-[9999] flex flex-col gap-3 pointer-events-none';
+            container.className = 'fixed top-4 right-4 z-[99999] flex flex-col gap-3 pointer-events-none';
             document.body.appendChild(container);
         }
         
         const container = document.getElementById('toast-container');
         
-        // Definir títulos según el tipo
         const titulo = tipo === 'warning' ? 'Campo requerido' : 
-               tipo === 'error' ? 'Error' : 
-               tipo === 'info' ? 'Información' : 'Éxito';
+                       tipo === 'error' ? 'Error' : 
+                       tipo === 'info' ? 'Información' : 'Éxito';
         
-        // Crear elemento toast
         const toastId = 'toast-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
         const toast = document.createElement('div');
         toast.id = toastId;
         toast.className = `toast-validation ${tipo}`;
         
-        // Iconos según tipo
         const iconos = {
-            info: `
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="12" cy="12" r="10"></circle>
-                    <line x1="12" y1="16" x2="12" y2="12"></line>
-                    <line x1="12" y1="8" x2="12.01" y2="8"></line>
-                </svg>`,
-            warning: `
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="12" cy="12" r="10"></circle>
-                    <line x1="12" y1="8" x2="12" y2="12"></line>
-                    <line x1="12" y1="16" x2="12.01" y2="16"></line>
-                </svg>
-            `,
-            error: `
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="12" cy="12" r="10"></circle>
-                    <line x1="18" y1="6" x2="6" y2="18"></line>
-                    <line x1="6" y1="6" x2="18" y2="18"></line>
-                </svg>
-            `,
-            success: `
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                    <polyline points="20 6 9 17 4 12"></polyline>
-                </svg>
-            `
+            info: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>`,
+            warning: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>`,
+            error: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`,
+            success: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>`
         };
 
         toast.innerHTML = `
             <div class="toast-contenido">
                 <div class="toast-icono-wrapper">
-                    <div class="toast-icono">
-                        ${iconos[tipo] || iconos.warning}
-                    </div>
+                    <div class="toast-icono">${iconos[tipo] || iconos.warning}</div>
                 </div>
                 <div class="toast-mensaje-wrapper">
                     <div class="toast-titulo">${titulo}</div>
@@ -114,15 +364,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
         container.appendChild(toast);
 
-        // Auto cerrar después de 3 segundos
         setTimeout(() => {
             const toastElement = document.getElementById(toastId);
             if (toastElement) {
                 toastElement.classList.add('exit');
                 setTimeout(() => {
-                    if (toastElement.parentNode) {
-                        toastElement.remove();
-                    }
+                    if (toastElement.parentNode) toastElement.remove();
                 }, 200);
             }
         }, 3000);
@@ -131,7 +378,6 @@ document.addEventListener('DOMContentLoaded', function() {
     // ===== FUNCIONES DE API =====
     async function cargarEtapas() {
         try {
-            // Usar listarTodas para obtener también las inactivas
             const response = await fetch(`${API_URL}?accion=listarTodas`);
             const data = await response.json();
             
@@ -154,7 +400,6 @@ document.addEventListener('DOMContentLoaded', function() {
             if (data.status === 'success') {
                 areasActuales = data.data;
                 
-                // Llenar el select de áreas en los modales (usando IDs del HTML)
                 const selectCrear = document.querySelector('#form-nueva-tendencia-actual select[name="area"]');
                 const selectEditar = document.getElementById('area-tendencia');
                 
@@ -180,257 +425,33 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Función para actualizar solo el switch visualmente
-    function actualizarSwitchVisual(id, activar) {
-        const tarjetas = document.querySelectorAll('.tarjeta-tecnologia');
-        tarjetas.forEach(tarjeta => {
-            if (tarjeta.getAttribute('data-id') == id) {
-                const switchEl = tarjeta.querySelector('.switch-sena');
-                if (switchEl) {
-                    if (activar) {
-                        switchEl.classList.add('active');
-                        switchEl.setAttribute('title', 'Activo');
-                    } else {
-                        switchEl.classList.remove('active');
-                        switchEl.setAttribute('title', 'Inactivo');
-                    }
-                }
-                
-                // También actualizar la bolita de estado
-                const estadoBolita = tarjeta.querySelector('.estado-bolita');
-                if (estadoBolita) {
-                    estadoBolita.className = `estado-bolita w-2 h-2 rounded-full flex-shrink-0 ${activar ? 'bg-sena' : 'bg-gray-300'}`;
-                }
-            }
-        });
-    }
-
-    // Función para actualizar una tarjeta específica
-    function actualizarTarjetaVisual(data) {
-        const tarjetas = document.querySelectorAll('.tarjeta-tecnologia');
-        tarjetas.forEach(tarjeta => {
-            if (tarjeta.getAttribute('data-id') == data.id_etapa) {
-                // Actualizar título
-                const tituloEl = tarjeta.querySelector('h3');
-                if (tituloEl) tituloEl.textContent = data.nombre;
-                
-                // Actualizar descripción
-                const descripcionEl = tarjeta.querySelector('p.text-xs');
-                if (descripcionEl) descripcionEl.textContent = data.descripcion || 'Sin descripción';
-                
-                // Actualizar área (badge)
-                const badgeArea = tarjeta.querySelector('.badge-area');
-                if (badgeArea) {
-                    const area = areasActuales.find(a => a.id_area == data.id_area);
-                    badgeArea.textContent = area ? area.nombre_area : 'Área';
-                }
-                
-                // Actualizar estado del switch
-                const switchEl = tarjeta.querySelector('.switch-sena');
-                if (switchEl) {
-                    if (data.estado == 1) {
-                        switchEl.classList.add('active');
-                        switchEl.setAttribute('title', 'Activo');
-                    } else {
-                        switchEl.classList.remove('active');
-                        switchEl.setAttribute('title', 'Inactivo');
-                    }
-                }
-                
-                // Actualizar la bolita de estado
-                const estadoBolita = tarjeta.querySelector('.estado-bolita');
-                if (estadoBolita) {
-                    estadoBolita.className = `estado-bolita w-2 h-2 rounded-full flex-shrink-0 ${data.estado == 1 ? 'bg-sena' : 'bg-gray-300'}`;
-                }
-            }
-        });
-    }
-
-    // Función para agregar una nueva tarjeta
-    function agregarTarjetaVisual(etapa) {
-        const contenedor = document.getElementById('contenedor-tendencias');
-        const template = document.getElementById('template-tendencia');
-        
-        const card = template.content.cloneNode(true);
-        const div = card.querySelector('.tarjeta-tecnologia');
-        
-        div.setAttribute('data-id', etapa.id_etapa);
-        div.setAttribute('data-area', etapa.id_area);
-        
-        div.querySelector('h3').textContent = etapa.nombre;
-        div.querySelector('p.text-xs').textContent = etapa.descripcion || 'Sin descripción';
-        
-        const badgeArea = div.querySelector('.badge-area');
-        if (badgeArea) {
-            badgeArea.textContent = etapa.nombre_area;
-        }
-        
-        const switchEl = div.querySelector('.switch-sena');
-        if (etapa.estado == 1) {
-            switchEl.classList.add('active');
-            switchEl.setAttribute('title', 'Activo');
-        } else {
-            switchEl.setAttribute('title', 'Inactivo');
-        }
-        
-        // Actualizar la bolita de estado según el estado de la etapa
-        const estadoBolita = div.querySelector('.estado-bolita');
-        if (estadoBolita) {
-            estadoBolita.className = `estado-bolita w-2 h-2 rounded-full flex-shrink-0 ${etapa.estado == 1 ? 'bg-sena' : 'bg-gray-300'}`;
-        }
-        
-        contenedor.appendChild(div);
-        
-        // Asignar eventos a la nueva tarjeta
-        asignarEventosTarjeta(div);
-    }
-
-    // Función para asignar eventos a una tarjeta específica
-    function asignarEventosTarjeta(tarjeta) {
-        // Evento para botón editar
-        const btnEditar = tarjeta.querySelector('.btn-editar-tendencia');
-        if (btnEditar) {
-            btnEditar.addEventListener('click', function(e) {
-                e.preventDefault();
-                e.stopPropagation();
-                
-                const idEtapa = tarjeta.getAttribute('data-id');
-                etapaSeleccionada = etapasActuales.find(e => e.id_etapa == idEtapa);
-                
-                if (!etapaSeleccionada) return;
-                
-                // Llenar el select de áreas en el modal editar
-                const areaSelect = document.getElementById('area-tendencia');
-                if (areaSelect && areasActuales.length > 0) {
-                    areaSelect.innerHTML = '<option value="">Seleccione un área</option>';
-                    areasActuales.forEach(area => {
-                        areaSelect.innerHTML += `<option value="${area.id_area}">${area.nombre_area}</option>`;
-                    });
-                }
-                
-                // Llenar el formulario con los datos
-                const nombreInput = document.getElementById('nombre-tendencia');
-                const descripcionInput = document.getElementById('descripcion-tendencia');
-                const estadoSelect = document.getElementById('estado-tendencia');
-                
-                if (nombreInput) nombreInput.value = etapaSeleccionada.nombre;
-                if (areaSelect) areaSelect.value = etapaSeleccionada.id_area;
-                if (descripcionInput) descripcionInput.value = etapaSeleccionada.descripcion || '';
-                if (estadoSelect) estadoSelect.value = etapaSeleccionada.estado == 1 ? 'activo' : 'inactivo';
-                
-                // Guardar ID en el modal
-                if (modalEditar) {
-                    modalEditar.setAttribute('data-id', idEtapa);
-                }
-                
-                abrirModal(modalEditar);
-            });
-        }
-        
-        // Evento para switch
-        const switchEl = tarjeta.querySelector('.switch-sena');
-        if (switchEl) {
-            switchEl.addEventListener('click', function(e) {
-                e.preventDefault();
-                e.stopPropagation();
-                
-                const idEtapa = tarjeta.getAttribute('data-id');
-                const nombreEtapa = tarjeta.querySelector('h3').textContent;
-                const estaActivo = this.classList.contains('active');
-                
-                if (estaActivo) {
-                    // Deshabilitar
-                    const spanNombre = modalDeshabilitar.querySelector('span.font-medium');
-                    if (spanNombre) {
-                        spanNombre.textContent = `"${nombreEtapa}"`;
-                    }
-                    modalDeshabilitar.setAttribute('data-id', idEtapa);
-                    abrirModal(modalDeshabilitar);
-                } else {
-                    // Habilitar
-                    const spanNombre = modalHabilitar.querySelector('span.font-semibold');
-                    if (spanNombre) {
-                        spanNombre.textContent = `"${nombreEtapa}"`;
-                    }
-                    modalHabilitar.setAttribute('data-id', idEtapa);
-                    modalHabilitar.setAttribute('data-nombre', nombreEtapa);
-                    abrirModal(modalHabilitar);
-                }
-            });
-        }
-        
-        // Evento para abrir detalle
-        tarjeta.addEventListener('click', function(e) {
-            if (e.target.closest('.btn-editar-tendencia') || e.target.closest('.switch-sena')) {
-                return;
-            }
-            
-            const idEtapa = this.getAttribute('data-id');
-            const etapa = etapasActuales.find(e => e.id_etapa == idEtapa);
-            
-            if (!etapa) return;
-            
-            document.getElementById('detalle-titulo').textContent = `Detalle de: ${etapa.nombre}`;
-            document.getElementById('detalle-nombre').textContent = etapa.nombre;
-            document.getElementById('detalle-descripcion').textContent = etapa.descripcion || 'Sin descripción';
-            
-            const estadoTexto = etapa.estado == 1 ? 'Activo' : 'Inactivo';
-            const colorEstado = etapa.estado == 1 ? '#39A900' : '#9ca3af';
-            
-            document.getElementById('detalle-estado').textContent = estadoTexto;
-            document.getElementById('detalle-estado-indicador').style.backgroundColor = colorEstado;
-            
-            // Mostrar área
-            const area = areasActuales.find(a => a.id_area == etapa.id_area);
-            document.getElementById('detalle-area').textContent = area ? area.nombre_area : 'No especificada';
-            
-            abrirModal(modalDetalle);
-        });
-    }
-
-    // Modifica crearEtapa para que agregue la nueva tarjeta sin recargar todo
     async function crearEtapa(data) {
         try {
             const response = await fetch(`${API_URL}?accion=crear`, {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(data)
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    id_area: data.id_area,
+                    nombre: data.nombre,
+                    estado: data.estado
+                })
             });
             
             const result = await response.json();
             
             if (result.success) {
-                // Obtener el área para mostrar en la tarjeta
                 const area = areasActuales.find(a => a.id_area == data.id_area);
-                
-                // Crear la nueva etapa para el array local
                 const nuevaEtapa = {
                     id_etapa: result.id_etapa,
                     id_area: data.id_area,
                     nombre: data.nombre,
-                    descripcion: data.descripcion,
                     estado: data.estado,
                     nombre_area: area ? area.nombre_area : 'Área'
                 };
                 
-                // Agregar al array local
                 etapasActuales.push(nuevaEtapa);
-                
-                // Verificar si antes no había etapas (estaba mostrando empty state)
-                const estabaVacio = etapasActuales.length === 1;
-                
-                if (estabaVacio) {
-                    // Si estaba vacío, volver a renderizar todo para que desaparezca el empty state
-                    renderizarEtapas(etapasActuales);
-                } else {
-                    // Si ya había etapas, solo agregar la nueva tarjeta
-                    agregarTarjetaVisual(nuevaEtapa);
-                }
-                
+                renderizarEtapas(etapasActuales);
                 actualizarContador(etapasActuales.length);
-                
                 return { success: true, id: result.id_etapa };
             } else {
                 return { success: false, error: result.error };
@@ -441,44 +462,36 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Modifica actualizarEtapa para que no recargue todo
     async function actualizarEtapa(data) {
         try {
             const response = await fetch(`${API_URL}?accion=actualizar`, {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(data)
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    id_etapa: data.id_etapa,
+                    id_area: data.id_area,
+                    nombre: data.nombre,
+                    estado: data.estado
+                })
             });
             
             const result = await response.json();
             
             if (result.success) {
-                // Actualizar los datos locales sin recargar todo
-                const etapaIndex = etapasActuales.findIndex(e => e.id_etapa == data.id_etapa);
-                if (etapaIndex !== -1) {
-                    etapasActuales[etapaIndex] = {
-                        ...etapasActuales[etapaIndex],
+                const index = etapasActuales.findIndex(e => e.id_etapa == data.id_etapa);
+                if (index !== -1) {
+                    const area = areasActuales.find(a => a.id_area == data.id_area);
+                    etapasActuales[index] = {
+                        ...etapasActuales[index],
                         nombre: data.nombre,
                         id_area: data.id_area,
-                        descripcion: data.descripcion,
-                        estado: data.estado
+                        estado: data.estado,
+                        nombre_area: area ? area.nombre_area : 'Área'
                     };
-                    
-                    // Actualizar también el nombre del área
-                    const area = areasActuales.find(a => a.id_area == data.id_area);
-                    if (area) {
-                        etapasActuales[etapaIndex].nombre_area = area.nombre_area;
-                    }
                 }
                 
-                // Actualizar la tarjeta visualmente
-                actualizarTarjetaVisual(data);
-                
-                // Actualizar contador (aunque no cambie el número, por si acaso)
+                renderizarEtapas(etapasActuales);
                 actualizarContador(etapasActuales.length);
-                
                 return { success: true };
             } else {
                 return { success: false, error: result.error };
@@ -489,7 +502,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Modifica cambiarEstadoEtapa para que no recargue todo
     async function cambiarEstadoEtapa(id, accion) {
         try {
             const response = await fetch(`${API_URL}?accion=${accion}&id_etapa=${id}`, {
@@ -499,18 +511,13 @@ document.addEventListener('DOMContentLoaded', function() {
             const result = await response.json();
             
             if (result.success) {
-                // Actualizar el estado en el array local
-                const etapaIndex = etapasActuales.findIndex(e => e.id_etapa == id);
-                if (etapaIndex !== -1) {
-                    etapasActuales[etapaIndex].estado = accion === 'activar' ? 1 : 0;
+                const index = etapasActuales.findIndex(e => e.id_etapa == id);
+                if (index !== -1) {
+                    etapasActuales[index].estado = accion === 'activar' ? 1 : 0;
                 }
                 
-                // Actualizar SOLO el switch y la bolita visualmente sin recargar todo
-                actualizarSwitchVisual(id, accion === 'activar');
-                
-                // Actualizar contador (no cambia el número, pero por consistencia)
+                renderizarEtapas(etapasActuales);
                 actualizarContador(etapasActuales.length);
-                
                 return { success: true };
             } else {
                 return { success: false, error: result.error };
@@ -525,13 +532,11 @@ document.addEventListener('DOMContentLoaded', function() {
         try {
             const response = await fetch(`${API_URL}?accion=verificarNombre`, {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 
                     nombre: nombre,
-                    id_area: id_area,
-                    excluir_id: excluir_id
+                    id_area: id_area, 
+                    excluir_id: excluir_id 
                 })
             });
             
@@ -543,66 +548,72 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // ===== FUNCIONES DE RENDERIZADO =====
+    // ===== FUNCIONES VISUALES =====
     function renderizarEtapas(etapas) {
         const contenedor = document.getElementById('contenedor-tendencias');
-        const template = document.getElementById('template-tendencia');
-        const terminoBusqueda = document.getElementById('buscador-tendencias').value.trim();
+        const terminoBusqueda = document.getElementById('buscador-tendencias')?.value.trim() || '';
         
-        // Limpiar completamente el contenedor
+        if (!contenedor) return;
+        
+        let filtradas = etapas;
+        if (terminoBusqueda) {
+            filtradas = filtradas.filter(e => 
+                e.nombre.toLowerCase().includes(terminoBusqueda) ||
+                (e.nombre_area && e.nombre_area.toLowerCase().includes(terminoBusqueda))
+            );
+        }
+        
+        if (filtrarDesactivadosActivo) {
+            filtradas = filtradas.filter(e => e.estado != 1);
+        }
+        
+        etapasFiltradas = filtradas;
+        
+        if (terminoBusqueda !== ultimoTerminoBusqueda) {
+            paginaActual = 1;
+            ultimoTerminoBusqueda = terminoBusqueda;
+        }
+        
         contenedor.innerHTML = '';
         
-        if (etapas.length === 0) {
-            // Verificar si es porque no hay etapas en general o porque la búsqueda no dio resultados
+        if (filtradas.length === 0) {
             const hayBusquedaActiva = terminoBusqueda.length > 0;
-            
-            // Cambiar clase del contenedor para empty state
             contenedor.className = '';
             
-            if (hayBusquedaActiva) {
-                // Mensaje para cuando la búsqueda no tiene resultados
+            if (hayBusquedaActiva || filtrarDesactivadosActivo) {
                 contenedor.innerHTML = `
-                    <div class="w-full flex flex-col items-center justify-center py-20 px-4 bg-white border border-gray-200 rounded-xl">
+                    <div class="w-full flex flex-col items-center justify-center py-20 px-4 bg-white border border-gray-200 rounded-xl min-h-[400px]">
                         <div class="w-20 h-20 mb-5 bg-sena-soft rounded-2xl flex items-center justify-center">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10 text-sena" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10 text-sena" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
                                 <circle cx="11" cy="11" r="8"></circle>
                                 <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                                <line x1="11" y1="8" x2="11" y2="14"></line>
-                                <line x1="8" y1="11" x2="14" y2="11"></line>
                             </svg>
                         </div>
                         <h3 class="font-['Montserrat'] text-lg font-semibold text-sena-text-main mb-2">No se encontraron resultados</h3>
                         <p class="text-sm text-sena-text-soft text-center max-w-sm">
-                            No hay etapas que coincidan con <span class="font-medium text-sena">"${terminoBusqueda}"</span>. Prueba con otras palabras clave.
+                            ${filtrarDesactivadosActivo ? 'No hay etapas inactivas.' : `No hay etapas que coincidan con "${terminoBusqueda}".`}
                         </p>
                     </div>
                 `;
             } else {
-                // Mensaje para cuando no hay etapas creadas (empty state original)
                 contenedor.innerHTML = `
-                    <div class="w-full flex flex-col items-center justify-center py-20 px-4 bg-white border border-gray-200 rounded-xl">
+                    <div class="w-full flex flex-col items-center justify-center py-20 px-4 bg-white border border-gray-200 rounded-xl min-h-[400px]">
                         <div class="w-20 h-20 mb-5 bg-sena-soft rounded-2xl flex items-center justify-center">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10 text-sena" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 0 1 3 19.875v-6.75ZM9.75 6.75h2.25c.621 0 1.125.504 1.125 1.125v12.75c0 .621-.504 1.125-1.125 1.125h-2.25A1.125 1.125 0 0 1 8.625 20.625V7.875c0-.621.504-1.125 1.125-1.125ZM16.5 3.75h2.25c.621 0 1.125.504 1.125 1.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25A1.125 1.125 0 0 1 15.375 20.625V4.875c0-.621.504-1.125 1.125-1.125Z" />
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10 text-sena" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                <path d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 0 1 3 19.875v-6.75ZM9.75 6.75h2.25c.621 0 1.125.504 1.125 1.125v12.75c0 .621-.504 1.125-1.125 1.125h-2.25A1.125 1.125 0 0 1 8.625 20.625V7.875c0-.621.504-1.125 1.125-1.125ZM16.5 3.75h2.25c.621 0 1.125.504 1.125 1.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25A1.125 1.125 0 0 1 15.375 20.625V4.875c0-.621.504-1.125 1.125-1.125Z"/>
                             </svg>
                         </div>
-                        <h3 class="font-['Montserrat'] text-lg font-semibold text-sena-text-main mb-2">No hay tendencias actuales</h3>
-                        <p class="text-sm text-sena-text-soft text-center max-w-sm mb-6">
-                            Comienza creando tu primera tendencia actual para fortalecer el análisis tecnológico de Risaralda.
-                        </p>
+                        <h3 class="font-['Montserrat'] text-lg font-semibold text-sena-text-main mb-2">No hay etapas de desarrollo</h3>
+                        <p class="text-sm text-sena-text-soft text-center max-w-sm mb-6">Comienza creando tu primera etapa de desarrollo.</p>
                         <button id="btn-crear-desde-empty" class="flex items-center gap-2 px-5 py-2.5 text-sm font-medium text-white bg-sena rounded-lg hover:opacity-90 transition-opacity shadow-sm">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M5 12h14"/>
-                                <path d="M12 5v14"/>
-                            </svg>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
                             Crear primera etapa
                         </button>
                     </div>
                 `;
                 
-                // Asignar evento al botón del empty state
                 const btnCrearEmpty = document.getElementById('btn-crear-desde-empty');
-                if (btnCrearEmpty && modalCrear) {
+                if (btnCrearEmpty) {
                     btnCrearEmpty.addEventListener('click', function() {
                         const form = document.getElementById('form-nueva-tendencia-actual');
                         if (form) form.reset();
@@ -610,48 +621,73 @@ document.addEventListener('DOMContentLoaded', function() {
                     });
                 }
             }
+            
+            const paginacionContainer = document.getElementById('paginacion-container');
+            if (paginacionContainer) paginacionContainer.classList.add('hidden');
             return;
         }
         
-        // Restaurar clase de grid cuando hay etapas
-        contenedor.className = 'grid grid-cols-1 md:grid-cols-3 gap-3';
+        const totalPaginas = Math.ceil(filtradas.length / elementosPorPagina);
+        if (paginaActual > totalPaginas) {
+            paginaActual = totalPaginas;
+        }
         
-        etapas.forEach(etapa => {
-            const card = template.content.cloneNode(true);
-            const div = card.querySelector('.tarjeta-tecnologia');
-            
-            div.setAttribute('data-id', etapa.id_etapa);
-            div.setAttribute('data-area', etapa.id_area);
-            
-            div.querySelector('h3').textContent = etapa.nombre;
-            div.querySelector('p.text-xs').textContent = etapa.descripcion || 'Sin descripción';
-            
-            const badgeArea = div.querySelector('.badge-area');
-            if (badgeArea) {
-                badgeArea.textContent = etapa.nombre_area;
-            }
-            
-            const switchEl = div.querySelector('.switch-sena');
-            if (etapa.estado == 1) {
-                switchEl.classList.add('active');
-                switchEl.setAttribute('title', 'Activo');
-            } else {
-                switchEl.setAttribute('title', 'Inactivo');
-            }
-            
-            // Actualizar la bolita de estado según el estado de la etapa
-            const estadoBolita = div.querySelector('.estado-bolita');
-            if (estadoBolita) {
-                estadoBolita.className = `estado-bolita w-2 h-2 rounded-full flex-shrink-0 ${etapa.estado == 1 ? 'bg-sena' : 'bg-gray-300'}`;
-            }
-            
-            contenedor.appendChild(div);
+        contenedor.className = 'grid grid-cols-1 md:grid-cols-3 gap-3 items-stretch';
+        
+        const etapasPagina = obtenerEtapasPagina(filtradas);
+        
+        etapasPagina.forEach(etapa => {
+            const tarjeta = crearTarjetaHTML(etapa);
+            contenedor.appendChild(tarjeta);
         });
         
-        // Asignar eventos individualmente a cada tarjeta
-        document.querySelectorAll('.tarjeta-tecnologia').forEach(tarjeta => {
-            asignarEventosTarjeta(tarjeta);
-        });
+        asignarEventosTarjetas();
+        actualizarContador(filtradas.length);
+        actualizarPaginacion(filtradas.length);
+    }
+
+    function crearTarjetaHTML(etapa) {
+        const div = document.createElement('div');
+        const estaDeshabilitada = etapa.estado != 1;
+        const opacidadClass = estaDeshabilitada ? 'opacity-60' : '';
+        
+        div.className = `border border-sena-border rounded-lg bg-white p-4 hover:border-sena/30 hover:shadow-sm transition-all cursor-pointer tarjeta-tecnologia flex flex-col h-full ${opacidadClass}`;
+        div.setAttribute('data-id', etapa.id_etapa);
+        div.setAttribute('data-area', etapa.id_area);
+        div.setAttribute('data-nombre', etapa.nombre);
+        div.setAttribute('data-estado', etapa.estado == 1 ? 'activo' : 'inactivo');
+        
+        div.innerHTML = `
+            <div class="flex items-start justify-between mb-2">
+                <div class="w-10 h-10 bg-sena-soft rounded-lg flex items-center justify-center flex-shrink-0">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-sena" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <path d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 0 1 3 19.875v-6.75ZM9.75 6.75h2.25c.621 0 1.125.504 1.125 1.125v12.75c0 .621-.504 1.125-1.125 1.125h-2.25A1.125 1.125 0 0 1 8.625 20.625V7.875c0-.621.504-1.125 1.125-1.125ZM16.5 3.75h2.25c.621 0 1.125.504 1.125 1.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25A1.125 1.125 0 0 1 15.375 20.625V4.875c0-.621.504-1.125 1.125-1.125Z" />
+                    </svg>
+                </div>
+                <div class="flex items-center gap-1">
+                    <button class="btn-editar-tendencia p-1.5 rounded-lg text-sena-text-soft hover:bg-sena-soft hover:text-sena transition-colors" title="Editar etapa" data-id="${etapa.id_etapa}" data-nombre="${etapa.nombre.replace(/"/g, '&quot;')}">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-4 h-4">
+                            <path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/>
+                        </svg>
+                    </button>
+                    <div class="switch-sena ${etapa.estado == 1 ? 'active' : ''}" title="${etapa.estado == 1 ? 'Activo' : 'Inactivo'}" data-id="${etapa.id_etapa}" data-nombre="${etapa.nombre.replace(/"/g, '&quot;')}"></div>
+                </div>
+            </div>
+            <div class="flex-1">
+                <p class="text-xs text-sena-text-soft line-clamp-3">${etapa.nombre}</p>
+            </div>
+            <div class="mt-2 text-xs text-sena-text-soft">
+                <hr class="my-1 border-sena-border mb-2">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-2">
+                        <span class="estado-bolita w-2 h-2 rounded-full flex-shrink-0 ${etapa.estado == 1 ? 'bg-sena' : 'bg-gray-400'}"></span>
+                        <span class="badge-area">${etapa.nombre_area || 'Área'}</span>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        return div;
     }
 
     function actualizarContador(total) {
@@ -661,7 +697,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // ===== FUNCIONES DE FILTRADO =====
     function filtrarEtapas() {
         const terminoBusqueda = document.getElementById('buscador-tendencias').value.toLowerCase();
         
@@ -670,18 +705,66 @@ document.addEventListener('DOMContentLoaded', function() {
         if (terminoBusqueda) {
             filtradas = filtradas.filter(e => 
                 e.nombre.toLowerCase().includes(terminoBusqueda) ||
-                (e.descripcion && e.descripcion.toLowerCase().includes(terminoBusqueda)) ||
                 (e.nombre_area && e.nombre_area.toLowerCase().includes(terminoBusqueda))
             );
         }
         
+        if (filtrarDesactivadosActivo) {
+            filtradas = filtradas.filter(e => e.estado != 1);
+        }
+        
+        paginaActual = 1;
         renderizarEtapas(filtradas);
-        actualizarContador(filtradas.length);
     }
 
     // ===== FUNCIONES DE MODALES =====
     function abrirModal(modal) {
         if (modal) {
+            // Si es el modal de crear, resetear el contador
+            if (modal === modalCrear) {
+                const contadorSpan = document.getElementById('contador-caracteres-crear');
+                const alertaSpan = document.getElementById('alerta-minimo-crear');
+                const btnSubmit = document.getElementById('btn-submit-etapa');
+                const textarea = document.getElementById('nombre-crear');
+                
+                if (textarea) textarea.value = '';
+                if (contadorSpan) {
+                    contadorSpan.classList.remove('text-red-500', 'text-sena');
+                    contadorSpan.classList.add('text-sena-text-soft');
+                    contadorSpan.textContent = `0 / ${MIN_DESCRIPCION_LENGTH} caracteres`;
+                }
+                if (alertaSpan) alertaSpan.classList.add('hidden');
+                if (btnSubmit) btnSubmit.disabled = true;
+            }
+            
+            // Si es el modal de editar, cargar el contador con la longitud actual
+            if (modal === modalEditar && etapaSeleccionada) {
+                const contadorSpan = document.getElementById('contador-caracteres-editar');
+                const alertaSpan = document.getElementById('alerta-minimo-editar');
+                const btnSubmit = document.getElementById('btn-submit-editar-etapa');
+                const textarea = document.getElementById('nombre-tendencia');
+                
+                if (textarea && etapaSeleccionada) {
+                    const longitud = etapaSeleccionada.nombre.length;
+                    
+                    if (contadorSpan) {
+                        contadorSpan.classList.remove('text-red-500', 'text-sena');
+                        contadorSpan.classList.add('text-sena-text-soft');
+                        contadorSpan.textContent = `${longitud} / ${MIN_DESCRIPCION_LENGTH} caracteres`;
+                        
+                        if (longitud >= MIN_DESCRIPCION_LENGTH) {
+                            contadorSpan.classList.remove('text-sena-text-soft');
+                            contadorSpan.classList.add('text-sena');
+                            if (alertaSpan) alertaSpan.classList.add('hidden');
+                            if (btnSubmit) btnSubmit.disabled = false;
+                        } else {
+                            if (alertaSpan) alertaSpan.classList.remove('hidden');
+                            if (btnSubmit) btnSubmit.disabled = true;
+                        }
+                    }
+                }
+            }
+            
             modal.classList.remove('hidden');
             modal.offsetHeight;
             document.body.classList.add('overflow-hidden');
@@ -709,13 +792,9 @@ document.addEventListener('DOMContentLoaded', function() {
             intervalContadorEditado = null;
         }
         const progressBar = document.getElementById('progress-bar-editado');
-        if (progressBar) {
-            progressBar.style.width = '0%';
-        }
+        if (progressBar) progressBar.style.width = '0%';
         const contador = document.getElementById('contador-segundos-editado');
-        if (contador) {
-            contador.textContent = '3';
-        }
+        if (contador) contador.textContent = '3';
     }
     
     function cerrarModalDeshabilitado() {
@@ -732,13 +811,9 @@ document.addEventListener('DOMContentLoaded', function() {
             intervalContadorDeshabilitado = null;
         }
         const progressBar = document.getElementById('progress-bar-deshabilitado');
-        if (progressBar) {
-            progressBar.style.width = '0%';
-        }
+        if (progressBar) progressBar.style.width = '0%';
         const contador = document.getElementById('contador-segundos-deshabilitado');
-        if (contador) {
-            contador.textContent = '3';
-        }
+        if (contador) contador.textContent = '3';
     }
 
     function cerrarModalHabilitado() {
@@ -755,13 +830,9 @@ document.addEventListener('DOMContentLoaded', function() {
             intervalContadorHabilitado = null;
         }
         const progressBar = document.getElementById('progress-bar-habilitado');
-        if (progressBar) {
-            progressBar.style.width = '0%';
-        }
+        if (progressBar) progressBar.style.width = '0%';
         const contador = document.getElementById('contador-segundos-habilitado');
-        if (contador) {
-            contador.textContent = '3';
-        }
+        if (contador) contador.textContent = '3';
     }
 
     function cerrarModalCreado() {
@@ -778,13 +849,9 @@ document.addEventListener('DOMContentLoaded', function() {
             intervalContadorCreado = null;
         }
         const progressBar = document.getElementById('progress-bar-creado');
-        if (progressBar) {
-            progressBar.style.width = '0%';
-        }
+        if (progressBar) progressBar.style.width = '0%';
         const contador = document.getElementById('contador-segundos-creado');
-        if (contador) {
-            contador.textContent = '3';
-        }
+        if (contador) contador.textContent = '3';
     }
     
     function mostrarModalEditado(nombreEtapa) {
@@ -939,31 +1006,124 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 3000);
     }
 
-    // ===== ASIGNAR EVENTOS A TARJETAS =====
     function asignarEventosTarjetas() {
         document.querySelectorAll('.tarjeta-tecnologia').forEach(tarjeta => {
             asignarEventosTarjeta(tarjeta);
         });
     }
 
+    function asignarEventosTarjeta(tarjeta) {
+        const btnEditar = tarjeta.querySelector('.btn-editar-tendencia');
+        const switchEl = tarjeta.querySelector('.switch-sena');
+        
+        if (btnEditar) {
+            btnEditar.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                const id = parseInt(tarjeta.getAttribute('data-id'));
+                etapaSeleccionada = etapasActuales.find(e => e.id_etapa == id);
+                if (!etapaSeleccionada) return;
+                
+                const areaSelect = document.getElementById('area-tendencia');
+                if (areaSelect && areasActuales.length > 0) {
+                    areaSelect.innerHTML = '<option value="">Seleccione un área</option>';
+                    areasActuales.forEach(area => {
+                        areaSelect.innerHTML += `<option value="${area.id_area}">${area.nombre_area}</option>`;
+                    });
+                }
+                
+                const nombreInput = document.getElementById('nombre-tendencia');
+                const estadoSelect = document.getElementById('estado-tendencia');
+                
+                if (nombreInput) nombreInput.value = etapaSeleccionada.nombre;
+                if (areaSelect) areaSelect.value = etapaSeleccionada.id_area;
+                if (estadoSelect) estadoSelect.value = etapaSeleccionada.estado == 1 ? 'activo' : 'inactivo';
+                
+                if (modalEditar) modalEditar.setAttribute('data-id', id);
+                abrirModal(modalEditar);
+            });
+        }
+        
+        if (switchEl) {
+            switchEl.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                const id = parseInt(tarjeta.getAttribute('data-id'));
+                let nombre = tarjeta.getAttribute('data-nombre');
+                if (!nombre || nombre === '' || nombre === 'null') {
+                    nombre = switchEl.getAttribute('data-nombre');
+                }
+                nombre = nombre.replace(/^["']|["']$/g, '');
+                const estaActivo = this.classList.contains('active');
+                
+                if (estaActivo) {
+                    const spanNombre = modalDeshabilitar.querySelector('span.font-medium');
+                    if (spanNombre) spanNombre.textContent = `"${nombre}"`;
+                    modalDeshabilitar.setAttribute('data-id', id);
+                    abrirModal(modalDeshabilitar);
+                } else {
+                    const spanNombre = modalHabilitar.querySelector('span.font-semibold');
+                    if (spanNombre) spanNombre.textContent = `"${nombre}"`;
+                    modalHabilitar.setAttribute('data-id', id);
+                    modalHabilitar.setAttribute('data-nombre', nombre);
+                    abrirModal(modalHabilitar);
+                }
+            });
+        }
+        
+        tarjeta.addEventListener('click', function(e) {
+            if (e.target.closest('.btn-editar-tendencia') || e.target.closest('.switch-sena')) return;
+            const id = parseInt(tarjeta.getAttribute('data-id'));
+            const etapa = etapasActuales.find(e => e.id_etapa == id);
+            if (!etapa) return;
+            
+            const detalleTitulo = document.getElementById('detalle-titulo');
+            const detalleNombre = document.getElementById('detalle-nombre');
+            const detalleDescripcion = document.getElementById('detalle-descripcion');
+            const detalleEstado = document.getElementById('detalle-estado');
+            const detalleEstadoIndicador = document.getElementById('detalle-estado-indicador');
+            const detalleArea = document.getElementById('detalle-area');
+            
+            if (detalleTitulo) detalleTitulo.textContent = `Detalle de: ${etapa.nombre}`;
+            if (detalleNombre) detalleNombre.textContent = etapa.nombre;
+            if (detalleDescripcion) detalleDescripcion.textContent = etapa.nombre;
+            
+            const estadoTexto = etapa.estado == 1 ? 'Activo' : 'Inactivo';
+            const colorEstado = etapa.estado == 1 ? '#39A900' : '#9ca3af';
+            
+            if (detalleEstado) detalleEstado.textContent = estadoTexto;
+            if (detalleEstadoIndicador) detalleEstadoIndicador.style.backgroundColor = colorEstado;
+            
+            const area = areasActuales.find(a => a.id_area == etapa.id_area);
+            if (detalleArea) detalleArea.textContent = area ? area.nombre_area : 'No especificada';
+            
+            abrirModal(modalDetalle);
+        });
+    }
+
     // ===== EVENTOS PRINCIPALES =====
-    
-    // Cargar datos iniciales
     cargarEtapas();
     cargarAreas();
     
-    // Evento de búsqueda
-    const buscador = document.getElementById('buscador-tendencias');
-    if (buscador) {
-        buscador.addEventListener('input', filtrarEtapas);
+    // Event listener para el contador de caracteres en creación
+    const textareaCrear = document.getElementById('nombre-crear');
+    if (textareaCrear) {
+        textareaCrear.addEventListener('input', actualizarContadorCrear);
     }
     
-    // Evento para abrir modal crear
+    // Event listener para el contador de caracteres en edición
+    const textareaEditar = document.getElementById('nombre-tendencia');
+    if (textareaEditar) {
+        textareaEditar.addEventListener('input', actualizarContadorEditar);
+    }
+    
+    const buscador = document.getElementById('buscador-tendencias');
+    if (buscador) buscador.addEventListener('input', filtrarEtapas);
+    
     if (btnCrearTendencia) {
         btnCrearTendencia.addEventListener('click', function(e) {
             e.preventDefault();
             
-            // Llenar el select de áreas justo antes de abrir el modal
             const selectCrear = document.querySelector('#form-nueva-tendencia-actual select[name="area"]');
             if (selectCrear && areasActuales.length > 0) {
                 selectCrear.innerHTML = '<option value="">Seleccione un área</option>';
@@ -980,165 +1140,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // ===== MANEJAR ENVÍO DEL FORMULARIO DE CREAR =====
-    const formCrear = document.getElementById('form-nueva-tendencia-actual');
-    if (formCrear) {
-        formCrear.addEventListener('submit', async function(e) {
-            e.preventDefault();
-            
-            const areaSelect = this.querySelector('select[name="area"]');
-            const nombreInput = this.querySelector('input[name="nombre"]');
-            const descripcionTextarea = this.querySelector('textarea[name="descripcion"]');
-            
-            const id_area = areaSelect.value;
-            const nombre = nombreInput.value.trim();
-            const descripcion = descripcionTextarea.value.trim();
-            
-            if (!id_area) {
-                mostrarToastValidacion('Debe seleccionar un área', 'warning');
-                return;
-            }
-            
-            if (!nombre) {
-                mostrarToastValidacion('El nombre de la etapa es requerido', 'warning');
-                return;
-            }
-            
-            if (!descripcion) {
-                mostrarToastValidacion('La descripción de la etapa es requerida', 'warning');
-                return;
-            }
-            
-            // Verificar si ya existe
-            const existe = await verificarNombreExistente(nombre, id_area);
-            if (existe) {
-                mostrarToastValidacion('Ya existe una etapa con ese nombre en el área seleccionada', 'info');
-                return;
-            }
-            
-            const resultado = await crearEtapa({
-                id_area: parseInt(id_area),
-                nombre: nombre,
-                descripcion: descripcion,
-                estado: 1
-            });
-            
-            if (resultado.success) {
-                cerrarModal(modalCrear);
-                mostrarModalCreado(nombre);
-            } else {
-                mostrarToastValidacion(resultado.error || 'Error al crear la etapa', 'error');
-            }
-        });
-    }
-    
-    // ===== MANEJAR ENVÍO DEL FORMULARIO DE EDICIÓN =====
-    const formEditar = document.getElementById('form-editar-tendencia');
-    if (formEditar) {
-        formEditar.addEventListener('submit', async function(e) {
-            e.preventDefault();
-            
-            const id_etapa = modalEditar.getAttribute('data-id');
-            const nombre = document.getElementById('nombre-tendencia').value.trim();
-            const id_area = document.getElementById('area-tendencia').value;
-            const descripcion = document.getElementById('descripcion-tendencia').value.trim();
-            const estado = document.getElementById('estado-tendencia').value === 'activo' ? 1 : 0;
-            
-            // Validaciones básicas
-            if (!nombre) {
-                mostrarToastValidacion('El nombre de la etapa es requerido', 'warning');
-                return;
-            }
-            
-            if (!id_area) {
-                mostrarToastValidacion('Debe seleccionar un área', 'warning');
-                return;
-            }
-            
-            if (!descripcion) {
-                mostrarToastValidacion('La descripción de la etapa es requerida', 'warning');
-                return;
-            }
-            
-            // ===== VALIDACIÓN DE CAMPOS SIN CAMBIOS =====
-            // Obtener los datos originales de la etapa seleccionada
-            const datosOriginales = etapaSeleccionada;
-            
-            // Comparar campos para ver si hubo cambios
-            const nombreCambio = nombre !== datosOriginales.nombre;
-            const areaCambio = parseInt(id_area) !== datosOriginales.id_area;
-            const descripcionCambio = descripcion !== (datosOriginales.descripcion || '');
-            const estadoCambio = estado !== datosOriginales.estado;
-            
-            // Si no hay ningún cambio
-            if (!nombreCambio && !areaCambio && !descripcionCambio && !estadoCambio) {
-                mostrarToastValidacion('No se ha realizado ningún cambio en la etapa', 'info');
-                return;
-            }
-            
-            // Verificar si ya existe (excluyendo esta etapa)
-            const existe = await verificarNombreExistente(nombre, id_area, id_etapa);
-            if (existe) {
-                mostrarToastValidacion('Ya existe una etapa con ese nombre en el área seleccionada', 'info');
-                return;
-            }
-            
-            const resultado = await actualizarEtapa({
-                id_etapa: parseInt(id_etapa),
-                id_area: parseInt(id_area),
-                nombre: nombre,
-                descripcion: descripcion,
-                estado: estado
-            });
-            
-            if (resultado.success) {
-                cerrarModal(modalEditar);
-                mostrarModalEditado(nombre);
-            } else {
-                mostrarToastValidacion(resultado.error || 'Error al actualizar la etapa', 'error');
-            }
-        });
-    }
-    
-    // ===== CONFIRMAR DESHABILITAR =====
-    if (btnConfirmarDeshabilitar) {
-        btnConfirmarDeshabilitar.addEventListener('click', async function(e) {
-            e.preventDefault();
-            
-            const id_etapa = modalDeshabilitar.getAttribute('data-id');
-            const nombreEtapa = modalDeshabilitar.querySelector('span.font-medium').textContent.replace(/"/g, '');
-            
-            const resultado = await cambiarEstadoEtapa(id_etapa, 'desactivar');
-            
-            if (resultado.success) {
-                cerrarModal(modalDeshabilitar);
-                mostrarModalDeshabilitado(nombreEtapa);
-            } else {
-                mostrarToastValidacion(resultado.error || 'Error al deshabilitar la etapa', 'error');
-            }
-        });
-    }
-    
-    // ===== CONFIRMAR HABILITAR =====
-    if (btnConfirmarHabilitar) {
-        btnConfirmarHabilitar.addEventListener('click', async function(e) {
-            e.preventDefault();
-            
-            const id_etapa = modalHabilitar.getAttribute('data-id');
-            const nombreEtapa = modalHabilitar.getAttribute('data-nombre');
-            
-            const resultado = await cambiarEstadoEtapa(id_etapa, 'activar');
-            
-            if (resultado.success) {
-                cerrarModal(modalHabilitar);
-                mostrarModalHabilitado(nombreEtapa);
-            } else {
-                mostrarToastValidacion(resultado.error || 'Error al habilitar la etapa', 'error');
-            }
-        });
-    }
-    
-    // ===== CERRAR MODALES =====
+    // Cerrar modales
     cerrarModalBtns.forEach(btn => {
         btn.addEventListener('click', () => cerrarModal(modalEditar));
     });
@@ -1175,7 +1177,7 @@ document.addEventListener('DOMContentLoaded', function() {
         btn.addEventListener('click', () => cerrarModal(modalDetalle));
     });
     
-    // ===== CERRAR MODALES HACIENDO CLICK EN OVERLAY =====
+    // Cerrar modales haciendo clic en overlay
     [modalEditar, modalEditadoConfirmacion, modalDeshabilitar, modalDeshabilitadoConfirmacion, 
      modalHabilitar, modalHabilitadoConfirmacion, modalCrear, modalCreadoConfirmacion, modalDetalle].forEach(modal => {
         if (modal) {
@@ -1197,28 +1199,162 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
     
-    // ===== CERRAR CON TECLA ESC =====
+    // Formulario crear
+    const formCrear = document.getElementById('form-nueva-tendencia-actual');
+    if (formCrear) {
+        formCrear.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const areaSelect = this.querySelector('select[name="area"]');
+            const nombreTextarea = this.querySelector('textarea[name="nombre"]');
+            
+            const id_area = areaSelect.value;
+            const nombre = nombreTextarea.value.trim();
+            
+            if (!id_area) {
+                mostrarToastValidacion('Debe seleccionar un área', 'warning');
+                return;
+            }
+            if (!nombre) {
+                mostrarToastValidacion('El nombre de la etapa es requerido', 'warning');
+                return;
+            }
+            
+            // Validar mínimo de caracteres
+            if (!validarDescripcion(nombre)) {
+                mostrarToastValidacion(`El nombre de la etapa debe tener al menos ${MIN_DESCRIPCION_LENGTH} caracteres. Actualmente tiene ${nombre.length} caracteres.`, 'warning');
+                return;
+            }
+            
+            const existe = await verificarNombreExistente(nombre, id_area);
+            if (existe) {
+                mostrarToastValidacion('Ya existe una etapa con ese nombre en el área seleccionada', 'info');
+                return;
+            }
+            
+            const resultado = await crearEtapa({
+                id_area: parseInt(id_area),
+                nombre: nombre,
+                estado: 1
+            });
+            
+            if (resultado.success) {
+                cerrarModal(modalCrear);
+                mostrarModalCreado(nombre);
+            } else {
+                mostrarToastValidacion(resultado.error || 'Error al crear la etapa', 'error');
+            }
+        });
+    }
+    
+    // Formulario editar
+    const formEditar = document.getElementById('form-editar-tendencia');
+    if (formEditar) {
+        formEditar.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const id_etapa = modalEditar.getAttribute('data-id');
+            const nombre = document.getElementById('nombre-tendencia').value.trim();
+            const id_area = document.getElementById('area-tendencia').value;
+            const estado = document.getElementById('estado-tendencia').value === 'activo' ? 1 : 0;
+            
+            if (!nombre) {
+                mostrarToastValidacion('El nombre de la etapa es requerido', 'warning');
+                return;
+            }
+            if (!id_area) {
+                mostrarToastValidacion('Debe seleccionar un área', 'warning');
+                return;
+            }
+            
+            // Verificar cambios
+            const datosOriginales = etapaSeleccionada;
+            const nombreCambio = nombre !== datosOriginales?.nombre;
+            const areaCambio = parseInt(id_area) !== datosOriginales?.id_area;
+            const estadoCambio = estado !== datosOriginales?.estado;
+            
+            if (!nombreCambio && !areaCambio && !estadoCambio) {
+                mostrarToastValidacion('No se ha realizado ningún cambio en la etapa', 'info');
+                return;
+            }
+            
+            const existe = await verificarNombreExistente(nombre, id_area, id_etapa);
+            if (existe) {
+                mostrarToastValidacion('Ya existe una etapa con ese nombre en el área seleccionada', 'info');
+                return;
+            }
+            
+            const resultado = await actualizarEtapa({
+                id_etapa: parseInt(id_etapa),
+                id_area: parseInt(id_area),
+                nombre: nombre,
+                estado: estado
+            });
+            
+            if (resultado.success) {
+                cerrarModal(modalEditar);
+                mostrarModalEditado(nombre);
+            } else {
+                mostrarToastValidacion(resultado.error || 'Error al actualizar la etapa', 'error');
+            }
+        });
+    }
+    
+    // Confirmar deshabilitar
+    if (btnConfirmarDeshabilitar) {
+        btnConfirmarDeshabilitar.addEventListener('click', async function(e) {
+            e.preventDefault();
+            
+            const id_etapa = modalDeshabilitar.getAttribute('data-id');
+            const nombreEtapa = modalDeshabilitar.querySelector('span.font-medium')?.textContent.replace(/"/g, '');
+            
+            if (id_etapa && nombreEtapa) {
+                const resultado = await cambiarEstadoEtapa(id_etapa, 'desactivar');
+                if (resultado.success) {
+                    cerrarModal(modalDeshabilitar);
+                    mostrarModalDeshabilitado(nombreEtapa);
+                } else {
+                    mostrarToastValidacion(resultado.error || 'Error al deshabilitar la etapa', 'error');
+                }
+            } else {
+                mostrarToastValidacion('Error: No se pudo identificar la etapa', 'error');
+            }
+        });
+    }
+    
+    // Confirmar habilitar
+    if (btnConfirmarHabilitar) {
+        btnConfirmarHabilitar.addEventListener('click', async function(e) {
+            e.preventDefault();
+            
+            const id_etapa = modalHabilitar.getAttribute('data-id');
+            const nombreEtapa = modalHabilitar.getAttribute('data-nombre');
+            
+            if (id_etapa && nombreEtapa) {
+                const resultado = await cambiarEstadoEtapa(id_etapa, 'activar');
+                if (resultado.success) {
+                    cerrarModal(modalHabilitar);
+                    mostrarModalHabilitado(nombreEtapa);
+                } else {
+                    mostrarToastValidacion(resultado.error || 'Error al habilitar la etapa', 'error');
+                }
+            } else {
+                mostrarToastValidacion('Error: No se pudo identificar la etapa', 'error');
+            }
+        });
+    }
+    
     document.addEventListener('keydown', function(e) {
         if (e.key === 'Escape') {
-            if (modalEditar && !modalEditar.classList.contains('hidden')) {
-                cerrarModal(modalEditar);
-            } else if (modalEditadoConfirmacion && !modalEditadoConfirmacion.classList.contains('hidden')) {
-                cerrarModalEditado();
-            } else if (modalDeshabilitar && !modalDeshabilitar.classList.contains('hidden')) {
-                cerrarModal(modalDeshabilitar);
-            } else if (modalDeshabilitadoConfirmacion && !modalDeshabilitadoConfirmacion.classList.contains('hidden')) {
-                cerrarModalDeshabilitado();
-            } else if (modalHabilitar && !modalHabilitar.classList.contains('hidden')) {
-                cerrarModal(modalHabilitar);
-            } else if (modalHabilitadoConfirmacion && !modalHabilitadoConfirmacion.classList.contains('hidden')) {
-                cerrarModalHabilitado();
-            } else if (modalCrear && !modalCrear.classList.contains('hidden')) {
-                cerrarModal(modalCrear);
-            } else if (modalCreadoConfirmacion && !modalCreadoConfirmacion.classList.contains('hidden')) {
-                cerrarModalCreado();
-            } else if (modalDetalle && !modalDetalle.classList.contains('hidden')) {
-                cerrarModal(modalDetalle);
-            }
+            if (modalEditar && !modalEditar.classList.contains('hidden')) cerrarModal(modalEditar);
+            else if (modalEditadoConfirmacion && !modalEditadoConfirmacion.classList.contains('hidden')) cerrarModalEditado();
+            else if (modalDeshabilitar && !modalDeshabilitar.classList.contains('hidden')) cerrarModal(modalDeshabilitar);
+            else if (modalDeshabilitadoConfirmacion && !modalDeshabilitadoConfirmacion.classList.contains('hidden')) cerrarModalDeshabilitado();
+            else if (modalHabilitar && !modalHabilitar.classList.contains('hidden')) cerrarModal(modalHabilitar);
+            else if (modalHabilitadoConfirmacion && !modalHabilitadoConfirmacion.classList.contains('hidden')) cerrarModalHabilitado();
+            else if (modalCrear && !modalCrear.classList.contains('hidden')) cerrarModal(modalCrear);
+            else if (modalCreadoConfirmacion && !modalCreadoConfirmacion.classList.contains('hidden')) cerrarModalCreado();
+            else if (modalDetalle && !modalDetalle.classList.contains('hidden')) cerrarModal(modalDetalle);
         }
     });
 });
