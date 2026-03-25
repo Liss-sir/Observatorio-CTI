@@ -12,7 +12,7 @@ class ProyeccionFuturoController {
         $this->model = new ProyeccionFuturoModel($conn);
     }
 
-    // List projection active
+    // Listar proyecciones activas
     public function listar() {
         $proyecciones = $this->model->listar();
         echo json_encode([
@@ -21,7 +21,7 @@ class ProyeccionFuturoController {
         ]);
     }
 
-    // List all projection (for admin)
+    // Listar todas las proyecciones (para admin)
     public function listarTodas() {
         $proyecciones = $this->model->listarTodas();
         echo json_encode([
@@ -30,7 +30,7 @@ class ProyeccionFuturoController {
         ]);
     }
 
-    // Get projection for ID
+    // Obtener proyección por ID
     public function obtener($id) {
         if (!$id) {
             echo json_encode([
@@ -55,7 +55,7 @@ class ProyeccionFuturoController {
         }
     }
 
-    // Create new projection
+    // Crear nueva proyección
     public function crear() {
         $input = json_decode(file_get_contents("php://input"), true);
         
@@ -75,10 +75,10 @@ class ProyeccionFuturoController {
             return;
         }
         
-        if (empty($input['descripcion'])) {
+        if (empty($input['nombre'])) {
             echo json_encode([
                 'success' => false,
-                'error' => 'La descripción de la proyección es requerida'
+                'error' => 'El nombre de la proyección es requerido'
             ]);
             return;
         }
@@ -108,7 +108,7 @@ class ProyeccionFuturoController {
         }
     }
 
-    // Update projection existis
+    // Actualizar proyección existente
     public function actualizar() {
         $input = json_decode(file_get_contents("php://input"), true);
         
@@ -139,9 +139,9 @@ class ProyeccionFuturoController {
         ]);
     }
 
-    // Change state this projection (activate/desactivate)
+    // Cambiar estado de la proyección
     public function cambiarEstado($id, $accion) {
-        if (!$id) {
+        if (!$id) { 
             echo json_encode([
                 'success' => false,
                 'error' => 'ID de proyección requerido'
@@ -172,7 +172,7 @@ class ProyeccionFuturoController {
         ]);
     }
 
-    // Delete projection
+    // Eliminar proyección
     public function eliminar($id) {
         if (!$id) {
             echo json_encode([
@@ -197,7 +197,7 @@ class ProyeccionFuturoController {
         }
     }
 
-    // Get projection for area
+    // Obtener proyecciones por área
     public function obtenerPorArea($id_area) {
         if (!$id_area) {
             echo json_encode([
@@ -215,7 +215,7 @@ class ProyeccionFuturoController {
         ]);
     }
 
-    // Get projection from select or area
+    // Obtener proyecciones para select por área
     public function obtenerParaSelectPorArea($id_area) {
         if (!$id_area) {
             echo json_encode([
@@ -241,7 +241,7 @@ class ProyeccionFuturoController {
         ]);
     }
 
-    // Get projection for year
+    // Obtener proyecciones por año
     public function obtenerPorAnio($anio) {
         if (!$anio) {
             echo json_encode([
@@ -259,7 +259,7 @@ class ProyeccionFuturoController {
         ]);
     }
 
-    // Get years available
+    // Obtener años disponibles
     public function obtenerAniosDisponibles() {
         $anios = $this->model->obtenerAniosDisponibles();
         
@@ -269,7 +269,7 @@ class ProyeccionFuturoController {
         ]);
     }
 
-    // Get list compplete year
+    // Obtener lista completa de años
     public function obtenerListaAnios() {
         $anios = $this->model->getListaAnios();
         
@@ -287,30 +287,7 @@ class ProyeccionFuturoController {
         ]);
     }
 
-    // Verify if exist projection from area and taer
-    public function verificarExistencia() {
-        $input = json_decode(file_get_contents("php://input"), true);
-        
-        if (!isset($input['id_area']) || !isset($input['anio'])) {
-            echo json_encode([
-                'success' => false,
-                'error' => 'Área y año son requeridos'
-            ]);
-            return;
-        }
-        
-        $existe = $this->model->existePorAreaYAnio(
-            $input['id_area'],
-            $input['anio'],
-            $input['excluir_id'] ?? null
-        );
-        
-        echo json_encode([
-            'existe' => $existe
-        ]);
-    }
-
-    // Verify if the projections have dependences
+    // Verificar dependencias
     public function verificarDependencias($id) {
         if (!$id) {
             echo json_encode([
@@ -327,10 +304,7 @@ class ProyeccionFuturoController {
         ]);
     }
 
-    // Get statistics from projection
-    /**
-     * Obtener estadísticas de proyecciones
-     */
+    // Obtener estadísticas
     public function obtenerEstadisticas() {
         $estadisticas = $this->model->obtenerEstadisticas();
         echo json_encode([
@@ -339,7 +313,7 @@ class ProyeccionFuturoController {
         ]);
     }
 
-    // Get projection for term
+    // Buscar proyecciones
     public function buscar() {
         $termino = $_GET['q'] ?? '';
         
@@ -359,7 +333,7 @@ class ProyeccionFuturoController {
         ]);
     }
 
-    // Get projection from select (alls)
+    // Obtener proyecciones para select (global)
     public function obtenerParaSelect() {
         $proyecciones = $this->model->obtenerParaSelect();
         
@@ -424,7 +398,7 @@ switch ($accion) {
         $controller->eliminar($id);
         break;
     
-    // Methods for area
+    // Métodos por área
     case "porArea":
         $controller->obtenerPorArea($id_area);
         break;
@@ -433,7 +407,7 @@ switch ($accion) {
         $controller->obtenerParaSelectPorArea($id_area);
         break;
     
-    // Methods for year
+    // Métodos por año
     case "porAnio":
         $controller->obtenerPorAnio($anio);
         break;
@@ -446,7 +420,7 @@ switch ($accion) {
         $controller->obtenerListaAnios();
         break;
         
-    // Validations
+    // Validaciones
     case "verificarExistencia":
         $controller->verificarExistencia();
         break;
@@ -455,12 +429,12 @@ switch ($accion) {
         $controller->verificarDependencias($id);
         break;
         
-    // Statistics
+    // Estadísticas
     case "estadisticas":
         $controller->obtenerEstadisticas();
         break;
         
-    // Search ans utils
+    // Búsqueda y utilidades
     case "buscar":
         $controller->buscar();
         break;

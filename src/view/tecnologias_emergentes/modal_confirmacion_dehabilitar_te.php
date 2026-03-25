@@ -16,7 +16,7 @@
               <polyline points="20 6 9 17 4 12"></polyline>
             </svg>
           </div>
-          <div>
+          <div class="pr-8">
             <h3 class="text-lg font-semibold text-sena-text-main">¡Tecnología Emergente Deshabilitada!</h3>
             <p class="text-sm text-sena-text-soft">La operación se realizó correctamente</p>
           </div>
@@ -25,26 +25,26 @@
         <!-- Content -->
         <div class="px-6 py-5">
           <p class="text-sm text-sena-text-soft leading-relaxed">
-            La tecnología emergente <span class="font-semibold text-sena-text-main" id="nombre-tecnologia-emergente-deshabilitada">"Desarrollador Full Stack Senior"</span> ha sido deshabilitada correctamente.
+            La tecnología emergente <span class=" text-sena" id="nombre-tecnologia-emergente-deshabilitada">"Desarrollador Full Stack Senior"</span> ha sido deshabilitada correctamente.
           </p>
           
-          <!-- Contador de segundos (NUEVO) -->
+          <!-- Contador de segundos -->
           <div class="mt-4 flex items-center gap-2 text-xs text-sena-text-soft">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <circle cx="12" cy="12" r="10"/>
               <polyline points="12 6 12 12 16 14"/>
             </svg>
-            <span>Esta ventana se cerrará automáticamente en <span id="contador-segundos-deshabilitado">3</span> segundos</span>
+            <span>Esta ventana se cerrará automáticamente en <span id="contador-segundos-deshabilitado" class="font-medium">3</span> segundos</span>
           </div>
         </div>
 
-        <!-- Barra de progreso con color SENA (cambiada a 6 segundos) -->
+        <!-- Barra de progreso -->
         <div class="h-1.5 bg-gray-100 w-full rounded-b-xl overflow-hidden">
           <div id="progress-bar-deshabilitado" class="h-1 bg-[#39A900] transition-all duration-[3000ms] ease-linear" style="width: 0%;"></div>
         </div>
 
-        <!-- Botón para cerrar manualmente (NUEVO) -->
-        <div class="absolute top-3 right-3">
+        <!-- Botón para cerrar manualmente -->
+        <div class="absolute top-4 right-4">
           <button class="cerrar-modal-deshabilitado p-1 text-sena-text-soft hover:text-sena-text-main transition-colors">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M18 6 6 18"/>
@@ -56,4 +56,3 @@
     </div>
   </div>
 </div>
-

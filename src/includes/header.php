@@ -22,15 +22,28 @@ function nav_classes(string $target): string {
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Tecnologias Emergentes - SENA Observatorio Tecnologico</title>
+  <title>Observatorio CTI - SENA</title>
 
-  <!-- GOOGLE FONTS -->
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@600;700;800&display=swap" rel="stylesheet" />
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
 
-  <!-- Tailwind CSS Compilado -->
-  <link rel="stylesheet" href="../../../assets/css/output.css">
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            sena: '#39a900',
+            'sena-strong': '#2d8a00',
+            'sena-soft': '#f0fdf4',
+            'sena-text': '#166534'
+          }
+        }
+      }
+    }
+  </script>
 
-  <!-- Estilos adicionales -->
   <style>
     /* Asegurar que el grupo funcione correctamente */
     .group:hover .group-hover\:block {
@@ -130,383 +143,328 @@ function nav_classes(string $target): string {
   </style>
 </head>
 
-<body class="font-[Inter] antialiased bg-white text-sena-text-main">
+<body class="font-[Inter] antialiased bg-white text-gray-800">
 
   <!-- HEADER -->
-  <header class="sticky top-0 z-50 border-b border-sena-border bg-white/95 backdrop-blur-sm gap-2 shadow-sm">
+  <header class="sticky top-0 z-50 border-b border-gray-200 bg-white/95 backdrop-blur-sm shadow-sm">
     <div class="max-w-8xl mx-auto grid grid-cols-[auto_1fr_auto] items-center h-16 px-4 w-full">
 
       <!-- LOGOS -->
-      <a href="../../view/landing/landing.php" class="flex items-center justify-self-start">
-        <div class="flex items-center gap-3 pr-4 mr-4">
-          <div class="flex items-center gap-3">
-            <img src="../../assets/img/logo-tecnnova.png" alt="logo-tecnnova" class="h-16 w-auto block">
-            <span class="block w-px h-7 bg-sena-border" aria-hidden="true"></span>
-            <img src="../../assets/img/logo-sena-verde-complementario-png-2022.png" alt="logo-sena-verde" class="h-7 w-auto block">
-          </div>
-        </div>
+      <a href="../../view/landing/landing.php" class="flex items-center gap-3">
+        <img src="../../assets/img/logo-tecnnova.png" alt="Tecnnnova" class="h-12 w-auto">
+        <span class="w-px h-6 bg-gray-300"></span>
+        <img src="../../assets/img/logo-sena-verde-complementario-png-2022.png" alt="SENA" class="h-6 w-auto">
       </a>
 
-      <!-- NAV con menú desplegable -->
-      <nav class="flex items-center gap-2 justify-self-center whitespace-nowrap">
-        <a href="../../view/landing/landing.php" class="<?= nav_classes('landing.php') ?>">Inicio</a>
-        <a href="../../view/perfiles/perfiles.php" class="<?= nav_classes('perfiles.php') ?>">Perfiles</a>
+      <!-- NAVEGACIÓN -->
+      <nav class="flex items-center gap-1 justify-self-center whitespace-nowrap" id="main-nav">
+        
+        <!-- PÚBLICO: Inicio -->
+        <a href="../../view/landing/landing.php" class="<?= nav_classes('landing.php') ?>">
+          Inicio
+        </a>
 
-        <!-- NUEVO: Inicio del submenú de Programas (idéntico al de Tendencias) -->
-        <!-- Menú desplegable Programas Formación -->
-        <div class="relative group" id="menu-programas">
-          
-          <!-- Contenedor con hover unificado -->
-          <div class="flex items-center rounded-md hover:bg-sena-soft transition-colors duration-200">
+        <!-- PÚBLICO: Perfiles -->
+        <a href="../../view/perfiles/perfiles.php" class="<?= nav_classes('perfiles.php') ?>">
+          Perfiles
+        </a>
 
-            <a href="../../view/programas_formacion/programas.php"
-               class="px-3 py-2 rounded-l-md text-sm font-medium text-sena-text-muted hover:text-sena transition-colors duration-200">
+        <!-- PÚBLICO: Menú Programas Formación -->
+        <div class="relative group menu-container <?= (in_array($current, ['programas.php','areas.php'])) ? 'bg-sena-soft text-sena-strong rounded-md' : '' ?>" id="menu-programas">
+          <div class="flex items-center rounded-md hover:bg-sena-soft hover:text-sena transition">
+            <a href="../../view/programas_formacion/programas.php" class="px-3 py-2 rounded-l-md text-sm font-medium text-gray-600 hover:text-sena">
               Programas Formación
             </a>
-
-            <button id="btn-menu-programas"
-                    type="button"
-                    class="px-1 py-2 rounded-r-md text-sena-text-muted hover:text-sena transition-colors duration-200">
-              <svg class="w-3 h-3 transition-transform duration-200 group-hover:rotate-180"
-                   id="svg-menu-programas"
-                   fill="none"
-                   stroke="currentColor"
-                   viewBox="0 0 24 24">
-                <path stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M19 9l-7 7-7-7">
-                </path>
+            <button id="btn-menu-programas" type="button" class="btn-toggle px-2 py-2 rounded-r-md text-gray-400 hover:text-green-700" data-rol="ADMINISTRADOR">
+              <svg class="w-3 h-3 chevron transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
               </svg>
             </button>
-
           </div>
-
-          <!-- ZONA DE SEGURIDAD: Puente invisible que conecta el menú con el submenú -->
           <div class="zona-seguridad hidden group-hover:block"></div>
-          
-          <!-- Submenú - CON SEPARACIÓN JUSTA pero navegable -->
-          <div class="absolute w-64 hidden bg-white rounded-xl overflow-hidden shadow-xl z-50 border border-gray-100 animate-fadeIn"
-               id="submenu-programas"
-               style="left: -2rem;">
-            
-            <!-- Flechita superior decorativa -->
-            <div class="absolute -top-2 left-4 w-4 h-4 bg-white transform rotate-45 border-t border-l border-gray-100"></div>
-            
-            <div class="relative bg-white">
-              
-              <!-- Divisor -->
-              <div class="border-t border-gray-100 mx-4"></div>
-              
-              <!-- Área  -->
-              <a href="../../view/areas/areas.php"
-                 class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-sena-soft hover:text-sena transition-all duration-200 group/item">
-                
-                <span class="w-8 h-8 bg-sena-soft/50 rounded-lg flex items-center justify-center text-sena group-hover/item:bg-sena group-hover/item:text-white transition-colors duration-200">
-                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                  </svg>
-                </span>
-
-                <div>
-                  <p class="font-medium">Área</p>
-                  <p class="text-xs text-gray-500">Gestionar disciplinas técnicas</p>
-                </div>
-
-              </a>
-
-              <!-- Puedes añadir más áreas aquí, copiando el mismo patrón y recordando añadir los divisores necesarios -->
-
-            </div>
+          <div id="submenu-programas" class="submenu hidden absolute left-0 mt-2 w-56 hover:bg-sena-soft rounded-lg shadow-xl border border-gray-100 z-50 animate-fadeIn">
+            <a href="../../view/areas/areas.php" data-rol="ADMINISTRADOR" class="flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-sena-soft hover:text-sena rounded-lg">
+              <span class="w-8 h-8 bg-sena-soft rounded-lg flex items-center justify-center text-green-600">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                </svg>
+              </span>
+              <div>
+                <p class="font-medium">Áreas</p>
+                <p class="text-xs text-gray-500">Areas de conocimiento</p>
+              </div>
+            </a>
           </div>
-
         </div>
-        <!-- NUEVO: Fin del submenú de Programas -->
-        
-        <!-- Menú desplegable Tendencias Actuales -->
-        <div class="relative group" id="menu-tendencias">
-          
-          <!-- Contenedor con hover unificado -->
-          <div class="flex items-center rounded-md hover:bg-sena-soft transition-colors duration-200">
 
-            <a href="../../view/tendencias_actuales/tendencias_actuales.php"
-               class="px-3 py-2 rounded-l-md text-sm font-medium text-sena-text-muted hover:text-sena transition-colors duration-200">
+        <!-- PÚBLICO: Menú Tendencias Actuales -->
+        <div class="relative group menu-container <?= (in_array($current, ['tendencias_actuales.php','tecnologias_emergentes.php','proyeccion_futuro.php'])) ? 'bg-sena-soft text-sena rounded-md' : '' ?>" id="menu-tendencias">
+          <div class="flex items-center rounded-md hover:bg-sena-soft transition">
+            <a href="../../view/tendencias_actuales/tendencias_actuales.php" class="px-3 py-2 rounded-l-md text-sm font-medium text-gray-600 hover:text-sena">
               Tendencias Actuales
             </a>
+            <button  id="btn-menu-tendencias" type="button" class="btn-toggle px-2 py-2 rounded-r-md text-gray-400 hover:text-green-700">
+              <svg class="w-3 h-3 chevron transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+              </svg>
+            </button>
+          </div>
+          <div class="zona-seguridad hidden group-hover:block"></div>
+          <div id="submenu-tendencias" class="submenu hidden absolute left-0 mt-2 w-60 bg-white rounded-lg shadow-xl border border-gray-100 z-50 animate-fadeIn">
+            <a href="../../view/tecnologias_emergentes/tecnologias_emergentes.php" class="flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-sena-soft hover:text-sena ">
+              <span class="w-8 h-8 bg-sena-soft rounded-lg flex items-center justify-center text-green-600 flex-shrink-0">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                </svg>
+              </span>
+              <div>
+                <p class="font-medium">Tecnologías Emergentes</p>
+                <p class="text-xs text-gray-500">Innovación y vanguardia</p>
+              </div>
+            </a>
+            <div class="border-t border-gray-100 mx-3"></div>
+            <a href="../../view/proyeccion_futuro/proyeccion_futuro.php" class="flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-sena-soft hover:text-sena rounded-lg">
+              <span class="w-8 h-8 bg-sena-soft rounded-lg flex items-center justify-center text-green-600">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                </svg>
+              </span>
+              <div>
+                <p class="font-medium">Proyección a Futuro</p>
+                <p class="text-xs text-gray-500">Tendencias 2026-2036</p>
+              </div>
+            </a>
+          </div>
+        </div>
 
-            <button id="btn-menu-tendencias"
-                    type="button"
-                    class="px-1 py-2 rounded-r-md text-sena-text-muted hover:text-sena transition-colors duration-200">
-              <svg class="w-3 h-3 transition-transform duration-200 group-hover:rotate-180"
-                   id="svg-menu-tendencias"
-                   fill="none"
-                   stroke="currentColor"
-                   viewBox="0 0 24 24">
-                <path stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M19 9l-7 7-7-7">
-                </path>
+        <!-- PÚBLICO: Líneas Tecnológicas -->
+        <a href="../../view/lineas_tecnologicas/lineas_tecnologicas.php" class="<?= nav_classes('lineas_tecnologicas.php') ?>">
+          Líneas Tecnológicas
+        </a>
+        
+        <!-- PÚBLICO: Sugerencias -->
+        <a href="../../view/sugerencias/sugerencias.php" class="<?= nav_classes('sugerencias.php') ?>">
+          Sugerencias
+        </a>
+
+        <!-- ADMIN: Gestión Perfiles -->
+        <a href="../../view/gestion_usuarios/gestion_usuarios.php" 
+           class="<?= nav_classes('gestion_usuarios.php') ?>" 
+           data-rol="ADMINISTRADOR">
+          Gestión Usuarios
+        </a>
+
+        <!-- ADMIN: Historial -->
+        <a href="../../view/historial/historial.php" 
+           class="<?= nav_classes('historial.php') ?>" 
+           data-rol="ADMINISTRADOR">
+          Historial
+        </a>
+
+        <a href="../../view/estadisticas/estadisticas.php" class="<?= nav_classes('estadisticas.php') ?>">
+          Estadisticas
+        </a>
+
+      </nav>
+
+      <!-- BOTONES / MENÚ USUARIO -->
+      <div class="flex items-center gap-3">
+        
+        <!-- INVITADO: Login/Register -->
+        <div id="nav-guest" class="flex items-center gap-2">
+          <a href="../../auth/login/login.php" class="px-4 py-2 text-sm font-medium text-green-700 border border-green-600 rounded-md hover:bg-green-50 transition">
+            Iniciar Sesión
+          </a>
+          <a href="../../auth/login/register.php" class="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-md hover:bg-green-700 transition">
+            Registrarse
+          </a>
+        </div>
+
+        <!-- USUARIO AUTENTICADO (oculto inicialmente) -->
+        <div id="nav-user" class="hidden flex items-center gap-3">
+          
+
+          <!-- Menú desplegable usuario -->
+          <div class="relative">
+            <button id="user-menu-btn" class="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-sena-soft transition">
+              <div class="w-8 h-8 bg-sena-soft rounded-full flex items-center justify-center">
+                <svg class="w-4 h-4 text-sena-strong" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                </svg>
+              </div>
+              <div class="text-left flex-shrink-0 min-w-0">
+                <p id="user-name" class="text-sm font-medium text-gray-900 leading-none">Usuario</p>
+                <p id="user-role" class="text-xs text-gray-500 mt-0.5">Rol</p>
+              </div>
+              <svg id="user-chevron" class="w-4 h-4 text-gray-400 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
               </svg>
             </button>
 
-          </div>
-
-          <!-- ZONA DE SEGURIDAD: Puente invisible que conecta el menú con el submenú -->
-          <div class="zona-seguridad hidden group-hover:block"></div>
-          
-          <!-- Submenú - CON SEPARACIÓN JUSTA pero navegable -->
-          <div class="absolute w-64 hidden bg-white rounded-xl overflow-hidden shadow-xl z-50 border border-gray-100 animate-fadeIn"
-               id="submenu-tendencias"
-               style="left: -2rem;">
-            
-            <!-- Flechita superior decorativa -->
-            <div class="absolute -top-2 left-4 w-4 h-4 bg-white transform rotate-45 border-t border-l border-gray-100"></div>
-            
-            <div class="relative bg-white">
-              
-              <!-- Tecnologías Emergentes -->
-              <a href="../../view/tecnologias_emergentes/tecnologias_emergentes.php"
-                 class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-sena-soft hover:text-sena transition-all duration-200 group/item">
-                
-                <span class="w-8 h-8 bg-sena-soft/50 rounded-lg flex items-center justify-center text-sena group-hover/item:bg-sena group-hover/item:text-white transition-colors duration-200">
+            <!-- Dropdown -->
+            <div id="user-dropdown" class="hidden absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-xl border border-gray-100 z-50">
+              <div class="py-1">
+                <a href="../../view/perfil/perfil.php" class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-sena-soft hover:text-green-700">
                   <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
-                          d="M13 10V3L4 14h7v7l9-11h-7z">
-                    </path>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
                   </svg>
-                </span>
-
-                <div>
-                  <p class="font-medium">Tecnologías Emergentes</p>
-                  <p class="text-xs text-gray-500">Innovación y vanguardia</p>
-                </div>
-
-              </a>
-              
-              <!-- Divisor -->
-              <div class="border-t border-gray-100 mx-4"></div>
-              
-              <!-- Proyección a Futuro -->
-              <a href="../proyeccion_futuro/proyeccion_futuro.php"
-                 class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-sena-soft hover:text-sena transition-all duration-200 group/item">
+                  Mi Perfil
+                </a>
                 
-                <span class="w-8 h-8 bg-sena-soft/50 rounded-lg flex items-center justify-center text-sena group-hover/item:bg-sena group-hover/item:text-white transition-colors duration-200">
+                <a href="../../view/landing/landing.php" class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-sena-soft hover:text-green-700">
                   <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
-                          d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z">
-                    </path>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
                   </svg>
-                </span>
+                  Editar Perfil
+                </a>
 
-                <div>
-                  <p class="font-medium">Proyección a Futuro</p>
-                  <p class="text-xs text-gray-500">Tendencias 2026-2036</p>
-                </div>
+                <div class="border-t border-gray-100 my-1"></div>
 
-              </a>
-
+                <button onclick="Auth.logout()" class="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 text-left">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+                  </svg>
+                  Cerrar Sesión
+                </button>
+              </div>
             </div>
           </div>
-
         </div>
-        <a href="../../view/lineas_tecnologicas/lineas_tecnologicas.php" class="<?= nav_classes('lineas_tecnologicas.php') ?>">Líneas Tecnológicas</a>
-        <a href="../../view/gestion_usuarios/gestion_usuarios.php" class="<?= nav_classes('gestion_usuarios.php') ?>">Gestión Perfiles</a>
-        <a href="../../view/sugerencias/sugerencias.php" class="<?= nav_classes('sugerencias.php') ?>">Sugerencias</a>
-        <a href="../../view/historial/historial.php" class="<?= nav_classes('historial.php') ?>">Historial</a>
-      </nav>
-
-      <!-- BOTONES -->
-      <div class="flex items-center gap-3 justify-self-end">
-        <a href="../../auth/login/login.php"
-           class="inline-flex items-center px-4 py-1.5 rounded-md text-sm font-medium border border-sena text-sena hover:bg-sena-soft transition-colors duration-200">
-           Iniciar Sesion
-        </a>
-
-        <a href="../../auth/login/register.php"
-           class="inline-flex items-center px-4 py-1.5 rounded-md text-sm font-medium bg-sena text-white hover:bg-sena-strong transition-colors duration-200">
-           Registrarse
-        </a>
       </div>
 
     </div>
   </header>
 
-  <!-- Script para manejar menú fijo con click + hover -->
+  <!-- Script para menús desplegables -->
   <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      // --- Lógica para Tendencias (ya existente) ---
-      const btnMenuTendencias = document.getElementById('btn-menu-tendencias');
-      const menuTendencias = document.getElementById('menu-tendencias');
-      const submenuTendencias = document.getElementById('submenu-tendencias');
-      
-      // NUEVO: Obtener elementos para Programas
-      const btnMenuProgramas = document.getElementById('btn-menu-programas');
-      const menuProgramas = document.getElementById('menu-programas');
-      const submenuProgramas = document.getElementById('submenu-programas');
-      
-      const zonaSeguridad = document.querySelector('.zona-seguridad'); // Nota: Esto solo selecciona el primero. Para que sea más preciso, deberías usar IDs o clases específicas. Lo dejamos así para que no se complique, pero funcionará si el HTML es consistente.
-      
-      let clickActivoTendencias = false;
-      let hoverActivoTendencias = false;
-      
-      // NUEVO: Estados para Programas
-      let clickActivoProgramas = false;
-      let hoverActivoProgramas = false;
-      
-      let timeoutId = null;
+document.addEventListener('DOMContentLoaded', function () {
 
-      // Función para actualizar visibilidad del menú de Tendencias
-      function actualizarMenuTendencias() {
-        if (clickActivoTendencias || hoverActivoTendencias) {
-          menuTendencias.classList.add('menu-fijo');
-        } else {
-          menuTendencias.classList.remove('menu-fijo');
+  function inicializarMenu(menuId) {
+    const menu = document.getElementById(menuId);
+    if (!menu) return;
+
+    const btn = menu.querySelector('.btn-toggle');
+    const submenu = menu.querySelector('.submenu');
+    const zona = menu.querySelector('.zona-seguridad');
+
+    if (!btn || !submenu) return;
+
+    let activoPorClick = false;
+    let activoPorHover = false;
+    let timeout = null;
+
+    function actualizar() {
+      if (activoPorClick || activoPorHover) {
+        menu.classList.add('menu-fijo');
+      } else {
+        menu.classList.remove('menu-fijo');
+      }
+    }
+
+    function activarHover() {
+      clearTimeout(timeout);
+      activoPorHover = true;
+      actualizar();
+    }
+
+    function desactivarHover() {
+      clearTimeout(timeout);
+      timeout = setTimeout(() => {
+        if (!activoPorClick && !menu.matches(':hover')) {
+          activoPorHover = false;
+          actualizar();
         }
+      }, 100);
+    }
+
+    // CLICK
+    btn.addEventListener('click', function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+
+      activoPorClick = !activoPorClick;
+
+      if (activoPorClick) {
+        activoPorHover = false;
       }
 
-      // NUEVO: Función para actualizar visibilidad del menú de Programas
-      function actualizarMenuProgramas() {
-        if (clickActivoProgramas || hoverActivoProgramas) {
-          menuProgramas.classList.add('menu-fijo');
-        } else {
-          menuProgramas.classList.remove('menu-fijo');
-        }
-      }
-
-      // Función para activar hover (genérica, requiere el menú específico)
-      function activarHover(menu, setHover, actualizarFunc) {
-        if (timeoutId) {
-          clearTimeout(timeoutId);
-          timeoutId = null;
-        }
-        // Desactivar el click del otro menú si es necesario? Mejor mantenerlos independientes.
-        // if (!clickActivo) {
-          setHover(true);
-          actualizarFunc();
-        // }
-      }
-
-      // Función para desactivar hover con delay (requiere elementos específicos)
-      function desactivarHover(menu, submenu, zona, setHover, actualizarFunc, clickActivo) {
-        if (timeoutId) {
-          clearTimeout(timeoutId);
-        }
-        timeoutId = setTimeout(() => {
-          // Comprueba si el mouse está sobre ALGÚN elemento relevante de ESTE menú
-          const estaSobreEsteMenu = (menu && menu.matches(':hover')) || 
-                                      (submenu && submenu.matches(':hover')) || 
-                                      (zona && zona.matches(':hover'));
-          
-          if (!clickActivo && !estaSobreEsteMenu) {
-            setHover(false);
-            actualizarFunc();
-          }
-          timeoutId = null;
-        }, 100); // Reducido a 100ms para respuesta más rápida
-      }
-
-      // --- Eventos para Tendencias (adaptados) ---
-      if (btnMenuTendencias && menuTendencias && submenuTendencias) {
-        const zonaSeguridadTendencias = menuTendencias.querySelector('.zona-seguridad');
-
-        btnMenuTendencias.addEventListener('click', function(e) {
-          e.preventDefault();
-          e.stopPropagation();
-          
-          clickActivoTendencias = !clickActivoTendencias;
-          
-          if (clickActivoTendencias) {
-            hoverActivoTendencias = false;
-            if (timeoutId) {
-              clearTimeout(timeoutId);
-              timeoutId = null;
-            }
-          }
-          
-          actualizarMenuTendencias();
-        });
-
-        [menuTendencias, submenuTendencias, zonaSeguridadTendencias].forEach(element => {
-          if (element) {
-            element.addEventListener('mouseenter', () => activarHover(menuTendencias, (val) => hoverActivoTendencias = val, actualizarMenuTendencias));
-            element.addEventListener('mouseleave', () => desactivarHover(menuTendencias, submenuTendencias, zonaSeguridadTendencias, (val) => hoverActivoTendencias = val, actualizarMenuTendencias, clickActivoTendencias));
-          }
-        });
-
-        // Cerrar menú fijo al hacer click en enlaces
-        submenuTendencias.querySelectorAll('a').forEach(link => {
-          link.addEventListener('click', function() {
-            clickActivoTendencias = false;
-            hoverActivoTendencias = false;
-            actualizarMenuTendencias();
-          });
-        });
-      }
-
-      // --- NUEVO: Eventos para Programas (duplicado y adaptado) ---
-      if (btnMenuProgramas && menuProgramas && submenuProgramas) {
-        const zonaSeguridadProgramas = menuProgramas.querySelector('.zona-seguridad');
-
-        btnMenuProgramas.addEventListener('click', function(e) {
-          e.preventDefault();
-          e.stopPropagation();
-          
-          clickActivoProgramas = !clickActivoProgramas;
-          
-          if (clickActivoProgramas) {
-            hoverActivoProgramas = false;
-            if (timeoutId) {
-              clearTimeout(timeoutId);
-              timeoutId = null;
-            }
-          }
-          
-          actualizarMenuProgramas();
-        });
-
-        [menuProgramas, submenuProgramas, zonaSeguridadProgramas].forEach(element => {
-          if (element) {
-            element.addEventListener('mouseenter', () => activarHover(menuProgramas, (val) => hoverActivoProgramas = val, actualizarMenuProgramas));
-            element.addEventListener('mouseleave', () => desactivarHover(menuProgramas, submenuProgramas, zonaSeguridadProgramas, (val) => hoverActivoProgramas = val, actualizarMenuProgramas, clickActivoProgramas));
-          }
-        });
-
-        // Cerrar menú fijo al hacer click en enlaces
-        submenuProgramas.querySelectorAll('a').forEach(link => {
-          link.addEventListener('click', function() {
-            clickActivoProgramas = false;
-            hoverActivoProgramas = false;
-            actualizarMenuProgramas();
-          });
-        });
-      }
-
-      // Cerrar menús fijos al hacer click fuera (mejorado para ambos)
-      document.addEventListener('click', function(e) {
-        // Para Tendencias
-        if (menuTendencias && !menuTendencias.contains(e.target) && 
-            !submenuTendencias.contains(e.target) && 
-            clickActivoTendencias) {
-          clickActivoTendencias = false;
-          actualizarMenuTendencias();
-        }
-        
-        // Para Programas
-        if (menuProgramas && !menuProgramas.contains(e.target) && 
-            !submenuProgramas.contains(e.target) && 
-            clickActivoProgramas) {
-          clickActivoProgramas = false;
-          actualizarMenuProgramas();
-        }
-      });
-
+      actualizar();
     });
-  </script>
+
+    // HOVER
+    [menu, submenu, zona].forEach(el => {
+      if (!el) return;
+
+      el.addEventListener('mouseenter', activarHover);
+      el.addEventListener('mouseleave', desactivarHover);
+    });
+
+    // CLICK EN OPCIÓN → cerrar
+    submenu.querySelectorAll('a').forEach(link => {
+      link.addEventListener('click', () => {
+        activoPorClick = false;
+        activoPorHover = false;
+        actualizar();
+      });
+    });
+
+    // CLICK FUERA 
+    document.addEventListener('click', function (e) {
+      if (
+        menu &&
+        submenu &&
+        !menu.contains(e.target) &&
+        !submenu.contains(e.target)
+      ) {
+        activoPorClick = false;
+        actualizar();
+      }
+    });
+  }
+
+  function inicializarUserDropdown() {
+    const btnUser = document.getElementById('user-menu-btn');
+    const dropdownUser = document.getElementById('user-dropdown');
+
+    if (!btnUser || !dropdownUser) return;
+
+    let abierto = false;
+
+    btnUser.addEventListener('click', function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+
+      abierto = !abierto;
+
+      if (abierto) {
+        dropdownUser.classList.remove('hidden');
+      } else {
+        dropdownUser.classList.add('hidden');
+      }
+    });
+
+    // Cerrar al hacer click fuera
+    document.addEventListener('click', function (e) {
+      if (
+        !btnUser.contains(e.target) &&
+        !dropdownUser.contains(e.target)
+      ) {
+        dropdownUser.classList.add('hidden');
+        abierto = false;
+      }
+    });
+  }
+
+  // Inicializar ambos menús
+  inicializarMenu('menu-tendencias');
+  inicializarMenu('menu-programas');
+  inicializarUserDropdown();
+
+});
+</script>
+
+  <!-- Auth global -->
+  <script src="../../assets/js/auth.js"></script>
 
 </body>
 </html>

@@ -63,6 +63,17 @@
                     class="w-full mt-1 px-3 py-2 border rounded-lg bg-gray-100">
                 </div>
 
+                <!-- DESCRIPCIÓN DEL PROGRAMA -->
+                <div>
+                    <label class="text-sm">Descripción</label>
+                    <textarea
+                        id="descripcionNuevoPrograma"
+                        rows="3"
+                        placeholder="Breve descripción del programa"
+                        class="w-full mt-1 px-3 py-2 border rounded-lg bg-gray-100"
+                    ></textarea>
+                </div>
+
                 <!-- NIVEL Y MODALIDAD -->
                 <div class="grid grid-cols-2 gap-4">
 
@@ -82,7 +93,6 @@
                         <option value="">Seleccione modalidad</option>
                         <option value="Presencial">Presencial</option>
                         <option value="Virtual">Virtual</option>
-                        <option value="Mixta">Mixta</option>
                     </select>
                 </div>
 

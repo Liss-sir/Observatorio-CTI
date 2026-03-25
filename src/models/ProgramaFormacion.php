@@ -87,8 +87,8 @@ class ProgramaFormacionModel {
         try {
             $sql = "INSERT INTO programas_formacion (
                 id_area, codigo_programa, nombre_programa, id_nivel, 
-                fecha_creacion, fecha_fin, modalidad, descripcion, estado, cupos
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"; 
+                fecha_creacion, fecha_fin, modalidad, cupos_formacion, descripcion, estado
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
             
             $stmt = $this->conn->prepare($sql);
             
@@ -100,58 +100,53 @@ class ProgramaFormacionModel {
                 $data['fecha_creacion'],
                 $data['fecha_fin'],
                 $data['modalidad'] ?? 'PRESENCIAL',
+                $data['cupos_formacion'] ?? null,
                 $data['descripcion'] ?? null,
-                $data['estado'] ?? 1,
-                $data['cupos'] ?? 0 
+                $data['estado'] ?? 1
             ]);
 
             return $ok ? (int)$this->conn->lastInsertId() : false;
 
         } catch (Exception $e) {
-            echo json_encode([
-                "success" => false,
-                "error" => $e->getMessage()
-            ]);
-            exit;
+            return false;
         }
     }
 
     // Update program exist
     public function actualizar($data) {
-    try {
-        $campos = [];
-        $valores = [];
+        try {
+            $campos = [];
+            $valores = [];
 
-        $camposPermitidos = [
-            'id_area', 'codigo_programa', 'nombre_programa', 'id_nivel',
-            'fecha_creacion', 'fecha_fin', 'modalidad', 'descripcion', 'estado',
-            'cupos' 
-        ];
+            $camposPermitidos = [
+                'id_area', 'codigo_programa', 'nombre_programa', 'id_nivel',
+                'fecha_creacion', 'fecha_fin', 'modalidad', 'cupos_formacion', 'descripcion', 'estado'
+            ];
 
-        foreach ($camposPermitidos as $campo) {
-            if (array_key_exists($campo, $data)) {
-                $campos[] = "$campo = ?";
-                $valores[] = $campo === 'nombre_programa' ? trim($data[$campo]) : $data[$campo];
+            foreach ($camposPermitidos as $campo) {
+                if (array_key_exists($campo, $data)) {
+                    $campos[] = "$campo = ?";
+                    $valores[] = $campo === 'nombre_programa' ? trim($data[$campo]) : $data[$campo];
+                }
             }
-        }
 
-        // If there program no field no update
-        if (empty($campos)) {
+            // If there program no field no update
+            if (empty($campos)) {
+                return false;
+            }
+
+            // Add ID at the end
+            $valores[] = $data['id_programa'];
+
+            $sql = "UPDATE programas_formacion SET " . implode(", ", $campos) . " WHERE id_programa = ?";
+            $stmt = $this->conn->prepare($sql);
+            
+            return $stmt->execute($valores);
+
+        } catch (Exception $e) {
             return false;
         }
-
-        // Add ID at the end
-        $valores[] = $data['id_programa'];
-
-        $sql = "UPDATE programas_formacion SET " . implode(", ", $campos) . " WHERE id_programa = ?";
-        $stmt = $this->conn->prepare($sql);
-        
-        return $stmt->execute($valores);
-
-    } catch (Exception $e) {
-        return false;
     }
-}
 
     // Change state in programs
     public function cambiarEstado($id, $estado) {
@@ -384,7 +379,8 @@ class ProgramaFormacionModel {
                         SUM(CASE WHEN estado = 1 THEN 1 ELSE 0 END) as programas_activos,
                         SUM(CASE WHEN estado = 0 THEN 1 ELSE 0 END) as programas_inactivos,
                         COUNT(DISTINCT id_area) as areas_con_programas,
-                        COUNT(DISTINCT id_nivel) as niveles_utilizados
+                        COUNT(DISTINCT id_nivel) as niveles_utilizados,
+                        SUM(cupos_formacion) as total_cupos_formacion
                     FROM programas_formacion";
             
             $stmt = $this->conn->prepare($sql);
@@ -392,7 +388,7 @@ class ProgramaFormacionModel {
             $estadisticas = $stmt->fetch(PDO::FETCH_ASSOC);
             
             // Programs for area
-            $sql_por_area = "SELECT a.nombre_area, COUNT(p.id_programa) as total_programas
+            $sql_por_area = "SELECT a.nombre_area, COUNT(p.id_programa) as total_programas, SUM(p.cupos_formacion) as total_cupos
                             FROM areas a
                             LEFT JOIN programas_formacion p ON a.id_area = p.id_area AND p.estado = 1
                             WHERE a.estado = 1
@@ -404,7 +400,7 @@ class ProgramaFormacionModel {
             $estadisticas['programas_por_area'] = $stmt->fetchAll(PDO::FETCH_ASSOC);
             
             // Programs for level
-            $sql_por_nivel = "SELECT n.nombre_nivel, COUNT(p.id_programa) as total_programas
+            $sql_por_nivel = "SELECT n.nombre_nivel, COUNT(p.id_programa) as total_programas, SUM(p.cupos_formacion) as total_cupos
                              FROM niveles_formacion n
                              LEFT JOIN programas_formacion p ON n.id_nivel = p.id_nivel AND p.estado = 1
                              WHERE n.estado = 1
@@ -420,7 +416,8 @@ class ProgramaFormacionModel {
                                         WHEN modalidad = 'PRESENCIAL' THEN 'Presencial'
                                         WHEN modalidad = 'VIRTUAL' THEN 'Virtual'
                                     END as modalidad,
-                                    COUNT(*) as total
+                                    COUNT(*) as total,
+                                    SUM(cupos_formacion) as total_cupos
                                  FROM programas_formacion
                                  WHERE estado = 1
                                  GROUP BY modalidad";
@@ -429,7 +426,7 @@ class ProgramaFormacionModel {
             $estadisticas['programas_por_modalidad'] = $stmt->fetchAll(PDO::FETCH_ASSOC);
             
             // Programs soon to end
-            $sql_proximos = "SELECT p.nombre_programa, a.nombre_area, p.fecha_fin,
+            $sql_proximos = "SELECT p.nombre_programa, a.nombre_area, p.fecha_fin, p.cupos_formacion,
                             DATEDIFF(p.fecha_fin, CURDATE()) as dias_restantes
                             FROM programas_formacion p
                             INNER JOIN areas a ON p.id_area = a.id_area
@@ -514,6 +511,16 @@ class ProgramaFormacionModel {
                 $params[] = $filtros['fecha_hasta'];
             }
 
+            if (!empty($filtros['cupos_min'])) {
+                $sql .= " AND p.cupos_formacion >= ?";
+                $params[] = $filtros['cupos_min'];
+            }
+
+            if (!empty($filtros['cupos_max'])) {
+                $sql .= " AND p.cupos_formacion <= ?";
+                $params[] = $filtros['cupos_max'];
+            }
+
             $sql .= " ORDER BY a.nombre_area, p.nombre_programa ASC";
             
             $stmt = $this->conn->prepare($sql);
@@ -528,7 +535,7 @@ class ProgramaFormacionModel {
     public function obtenerParaSelect() {
         try {
             $sql = "SELECT p.id_programa, 
-                    CONCAT(a.nombre_area, ' - ', p.codigo_programa, ' - ', p.nombre_programa) as nombre_completo
+                    CONCAT(a.nombre_area, ' - ', p.codigo_programa, ' - ', p.nombre_programa, ' (', p.cupos_formacion, ' cupos)') as nombre_completo
                     FROM programas_formacion p
                     INNER JOIN areas a ON p.id_area = a.id_area
                     WHERE p.estado = 1 AND a.estado = 1
@@ -550,7 +557,7 @@ class ProgramaFormacionModel {
     // Get programs with technological lines associated
     public function obtenerConLineasTecnologicas() {
         try {
-            $sql = "SELECT p.id_programa, p.codigo_programa, p.nombre_programa,
+            $sql = "SELECT p.id_programa, p.codigo_programa, p.nombre_programa, p.cupos_formacion,
                            a.nombre_area, n.nombre_nivel,
                            COUNT(lt.id_linea) as total_lineas
                     FROM programas_formacion p
@@ -558,7 +565,7 @@ class ProgramaFormacionModel {
                     INNER JOIN niveles_formacion n ON p.id_nivel = n.id_nivel
                     LEFT JOIN lineas_tecnologicas lt ON p.id_programa = lt.id_programa
                     WHERE p.estado = 1
-                    GROUP BY p.id_programa, p.codigo_programa, p.nombre_programa, 
+                    GROUP BY p.id_programa, p.codigo_programa, p.nombre_programa, p.cupos_formacion,
                              a.nombre_area, n.nombre_nivel
                     ORDER BY total_lineas DESC, p.nombre_programa ASC
                     LIMIT 10";

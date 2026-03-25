@@ -76,7 +76,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const estadoClass = isActive ? 'active' : '';
             const estadoTitle = isActive ? 'Activo' : 'Inactivo';
             const colorIcono = isActive ? 'text-green-600' : 'text-gray-400';
-            const desc = (area.descripcion && area.descripcion.trim() !== '') ? area.descripcion : 'Sin descripción';
+            const desc = (area.descripcion_area && area.descripcion_area.trim() !== '') ? area.descripcion_area : 'Sin descripción';
 
             const cardHTML = `
                 <div class="border rounded-xl p-5 bg-white shadow-sm cursor-pointer hover:shadow-md transition-shadow" data-id="${area.id_area}">
@@ -321,7 +321,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
             const data = {
                 nombre_area: nombreVal.trim(),
-                descripcion: descVal ? descVal.trim() : ''
+                descripcion_area: descVal ? descVal.trim() : ''
             };
 
             console.log('Enviando datos:', data); // Para depurar
@@ -379,7 +379,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const data = {
                 id_area: idArea,
                 nombre_area: nombreVal,
-                descripcion: descVal,
+                descripcion_area: descVal,
                 estado: estadoVal === 'activo' ? 1 : 0
             };
 

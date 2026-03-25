@@ -1,6 +1,6 @@
 <!-- modal_habilitar_proyeccion_futura.php -->
-<!-- Modal de confirmación para habilitar proyeccion a futuro-->
-<div id="modal-habilitar-tendencia" class="hidden fixed inset-0 z-50 overflow-y-auto" aria-hidden="true">
+<!-- Modal de confirmación para habilitar proyección a futuro-->
+<div id="modal-habilitar-proyeccion-futura" class="hidden fixed inset-0 z-50 overflow-y-auto" aria-hidden="true">
   <!-- Overlay -->
   <div class="fixed inset-0 bg-black bg-opacity-80 transition-opacity"></div>
 
@@ -26,7 +26,7 @@
         <!-- Content -->
         <div class="px-6 py-5">
           <p class="text-sm text-sena-text-soft leading-relaxed">
-            ¿Estás seguro de que deseas habilitar la proyección a futuro <span class="font-semibold text-sena-text-main" id="nombre-proyeccion-habilitar">"Desarrollador Full Stack Senior"</span>?
+            ¿Estás seguro de que deseas habilitar la proyección a futuro <span class="font-semibold text-sena-text-main" id="nombre-proyeccion-habilitar">"Nombre de la proyección"</span>?
           </p>
           <p class="text-xs text-sena-text-soft mt-3 bg-yellow-50 p-3 rounded-lg border border-yellow-200">
             <span class="font-medium text-yellow-800">Información:</span> La proyección volverá a estar visible y disponible para su uso.
@@ -52,19 +52,3 @@
   </div>
 </div>
 
-<!-- Estilos necesarios (agrégalos al bloque <style> de tu página principal si no los tienes) -->
-<style>
-  @keyframes modalFadeIn {
-    from {
-      opacity: 0;
-      transform: scale(0.95) translateY(-10px);
-    }
-    to {
-      opacity: 1;
-      transform: scale(1) translateY(0);
-    }
-  }
-  .animate-modalFadeIn {
-    animation: modalFadeIn 0.3s ease-out;
-  }
-</style>

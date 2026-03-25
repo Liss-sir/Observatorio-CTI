@@ -27,31 +27,29 @@
           <div class="mb-4">
             <label class="mb-1 block text-sm font-medium text-sena-text-main">Área</label>
             <div class="select-container">
-              <select name="area" class="custom-select">
+              <select name="area" id="area-crear" class="custom-select">
                 <option value="">Selecciona un área</option>
-                <option value="Inteligencia Artificial">Inteligencia Artificial</option>
-                <option value="Blockchain">Blockchain</option>
-                <option value="Internet de las Cosas (IoT)">Internet de las Cosas (IoT)</option>
-                <option value="Computación en la Nube">Computación en la Nube</option>
-                <option value="Ciberseguridad Avanzada">Ciberseguridad Avanzada</option>
-                <option value="Big Data y Analítica">Big Data y Analítica</option>
-                <option value="Realidad Aumentada/Virtual">Realidad Aumentada/Virtual</option>
-                <option value="Robótica Colaborativa">Robótica Colaborativa</option>
-                <option value="Manufactura Aditiva (Impresión 3D)">Manufactura Aditiva (Impresión 3D)</option>
-                <option value="Automatización de Procesos (RPA)">Automatización de Procesos (RPA)</option>
+                <!-- Las opciones se cargarán dinámicamente desde JavaScript -->
               </select>
             </div>
           </div>
 
-          <!-- Descripción -->
-          <div class="mb-4">
+          <!-- Descripción (este valor se enviará como "nombre" al backend) -->
+          <div class="mb-2">
             <label class="mb-1 block text-sm font-medium text-sena-text-main">Descripción</label>
             <textarea 
                 name="descripcion" 
+                id="descripcion-crear"
                 rows="3"  
-                placeholder="Describe las responsabilidades y requisitos del perfil..."
-                class="w-full rounded-lg border border-sena-border px-3 py-2 text-sm text-sena-text-main placeholder-sena-text-soft focus:border-[#39A900] focus:ring-2 focus:ring-[#39A900] focus:ring-opacity-20 focus:outline-none"
-                ></textarea>
+                placeholder="Describe la tecnología emergente."
+                class="w-full rounded-lg border border-sena-border px-3 py-2 text-sm text-sena-text-main placeholder-sena-text-soft focus:border-sena focus:ring-2 focus:ring-sena focus:ring-opacity-20 focus:outline-none resize-none">
+            </textarea>
+          </div>
+          
+          <!-- Contador de caracteres -->
+          <div class="flex justify-end items-center gap-2 mb-4">
+            <span id="contador-caracteres-crear" class="text-xs text-sena-text-soft">0 / 30 caracteres</span>
+            <span id="alerta-minimo-crear" class="text-xs text-sena-text-soft hidden">Mínimo 30 caracteres requerido</span>
           </div>
 
           <!-- Footer buttons -->
@@ -59,8 +57,8 @@
             <button type="button" class="cerrar-modal-crear rounded-lg border border-sena-border px-4 py-2 text-sm font-medium text-sena-text-main hover:bg-sena-soft">
               Cancelar
             </button>
-            <button type="submit" class="rounded-lg bg-sena px-4 py-2 text-sm font-medium text-white hover:opacity-90 transition-opacity">
-              Crear Tendencia Actual
+            <button type="submit" id="btn-submit-crear" class="rounded-lg bg-sena px-4 py-2 text-sm font-medium text-white hover:opacity-90 transition-opacity">
+              Crear Tecnología Emergente
             </button>
           </div>
         </form>

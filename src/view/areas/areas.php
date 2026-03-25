@@ -65,6 +65,6 @@
 </script>
 
 <!-- Incluir el script corregido (Asegúrate que la ruta sea correcta) -->
-<script src="/observatorio/Observatorio-CTI/src/assets/js/areas.js"></script>
+<script src="../../assets/js/areas.js"></script>
 
 <?php include __DIR__ . '../../../includes/footer.php'; ?>

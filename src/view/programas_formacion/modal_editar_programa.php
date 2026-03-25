@@ -1,5 +1,4 @@
 <!-- modal_editar_programa.php -->
-
 <div id="modal-editar-programa" class="hidden fixed inset-0 z-50 overflow-y-auto" aria-hidden="true">
 
   <!-- Overlay -->
@@ -28,7 +27,6 @@
 
         </div>
 
-
         <!-- Contenido -->
         <div class="px-6 py-6">
 
@@ -37,71 +35,9 @@
             <!-- CAMPO OCULTO PARA EL ID -->
             <input type="hidden" id="idProgramaEditar">
 
-            <!-- Codigo y cupos -->
-            <div class="grid grid-cols-2 gap-4">
+            <!-- Campo oculto para el ID -->
+            <input type="hidden" id="idProgramaEditar" name="id_programa">
 
-              <div>
-                <label class="text-sm text-sena-text-main">Codigo del Programa</label>
-                <input
-                  type="text"
-                  id="codigoPrograma"
-                  class="w-full mt-1 px-3 py-2 border border-sena-border rounded-lg bg-gray-100 text-sm"
-                >
-              </div>
-
-              <div>
-                <label class="text-sm text-sena-text-main">Cupos</label>
-                <input
-                  type="number"
-                  id="cuposPrograma"
-                  class="w-full mt-1 px-3 py-2 border border-sena-border rounded-lg bg-gray-100 text-sm"
-                >
-              </div>
-
-            </div>
-
-
-            <!-- Nombre -->
-            <div>
-              <label class="text-sm text-sena-text-main">Nombre del Programa</label>
-              <input
-                type="text"
-                id="nombrePrograma"
-                class="w-full mt-1 px-3 py-2 border border-sena-border rounded-lg bg-gray-100 text-sm"
-              >
-            </div>
-
-
-            <!-- Nivel y modalidad -->
-            <div class="grid grid-cols-2 gap-4">
-
-              <div>
-                <label class="text-sm text-sena-text-main">Nivel de Formación</label>
-                <select
-                  id="nivelFormacion"
-                  class="w-full mt-1 px-3 py-2 border border-sena-border rounded-lg bg-gray-100 text-sm"
-                >
-                  <option value="1">Técnico</option>
-                  <option value="2">Tecnólogo</option>
-                  <option value="3">Especialización</option>
-                  <option value="4">Curso</option>
-                </select>
-              </div>
-
-              <div>
-                <label class="text-sm text-sena-text-main">Modalidad</label>
-                <select
-                  id="modalidadPrograma"
-                  class="w-full mt-1 px-3 py-2 border border-sena-border rounded-lg bg-gray-100 text-sm"
-                >
-                  <option value="PRESENCIAL">Presencial</option>
-                  <option value="VIRTUAL">Virtual</option>
-                  <option value="MIXTA">Mixta</option>
-                </select>
-              </div>
-
-            </div>
-            
             <!-- ÁREA - FALTABA ESTE CAMPO -->
             <div>
               <label class="text-sm text-sena-text-main">Área</label>
@@ -113,16 +49,85 @@
               </select>
             </div>
 
+            <!-- Código y cupos (IDs renombrados) -->
+            <div class="grid grid-cols-2 gap-4">
 
-            <!-- Fechas -->
+              <div>
+                <label class="text-sm text-sena-text-main">Código del Programa</label>
+                <input
+                  type="text"
+                  id="codigoProgramaEditar"
+                  class="w-full mt-1 px-3 py-2 border border-sena-border rounded-lg bg-gray-100 text-sm"
+                  required
+                >
+              </div>
+
+              <div>
+                <label class="text-sm text-sena-text-main">Cupos</label>
+                <input
+                  type="number"
+                  id="cuposProgramaEditar"
+                  class="w-full mt-1 px-3 py-2 border border-sena-border rounded-lg bg-gray-100 text-sm"
+                  required
+                >
+              </div>
+
+            </div>
+
+            <!-- Nombre (ID renombrado) -->
+            <div>
+              <label class="text-sm text-sena-text-main">Nombre del Programa</label>
+              <input
+                type="text"
+                id="nombreProgramaEditar"
+                class="w-full mt-1 px-3 py-2 border border-sena-border rounded-lg bg-gray-100 text-sm"
+                required
+              >
+            </div>
+
+            <!-- Nivel y modalidad (IDs renombrados y values numéricos) -->
+            <div class="grid grid-cols-2 gap-4">
+
+              <div>
+                <label class="text-sm text-sena-text-main">Nivel de Formación</label>
+                <select
+                  id="nivelFormacionEditar"
+                  class="w-full mt-1 px-3 py-2 border border-sena-border rounded-lg bg-gray-100 text-sm"
+                  required
+                >
+                  <option value="1">Técnico</option>
+                  <option value="2">Tecnólogo</option>
+                  <option value="3">Especialización</option>
+                  <option value="4">Curso</option>
+                </select>
+              </div>
+
+              <div>
+                <label class="text-sm text-sena-text-main">Modalidad</label>
+                <select
+                  id="modalidadProgramaEditar"
+                  class="w-full mt-1 px-3 py-2 border border-sena-border rounded-lg bg-gray-100 text-sm"
+                  required
+                >
+                  <option value="PRESENCIAL">Presencial</option>
+                  <option value="VIRTUAL">Virtual</option>
+                </select>
+              </div>
+
+            </div>
+            
+            
+
+            <!-- Fechas (IDs renombrados) -->
             <div class="grid grid-cols-2 gap-4">
 
               <div>
                 <label class="text-sm text-sena-text-main">Fecha de Inicio</label>
                 <input
                   type="date"
-                  id="fechaInicio"
+                  id="fechaInicioEditar"
                   class="w-full mt-1 px-3 py-2 border border-sena-border rounded-lg bg-gray-100 text-sm"
+                  required
                 >
               </div>
 
@@ -130,17 +135,28 @@
                 <label class="text-sm text-sena-text-main">Fecha de Fin</label>
                 <input
                   type="date"
-                  id="fechaFin"
+                  id="fechaFinEditar"
                   class="w-full mt-1 px-3 py-2 border border-sena-border rounded-lg bg-gray-100 text-sm"
+                  required
                 >
               </div>
 
             </div>
 
+            <!-- Descripción (nuevo) -->
+            <div>
+              <label class="text-sm text-sena-text-main">Descripción</label>
+              <textarea
+                id="descripcionProgramaEditar"
+                rows="3"
+                class="w-full mt-1 px-3 py-2 border border-sena-border rounded-lg bg-gray-100 text-sm"
+                placeholder="Breve descripción del programa"
+              ></textarea>
+            </div>
+
           </form>
 
         </div>
-
 
         <!-- Footer -->
         <div class="border-t border-sena-border px-6 py-4 flex justify-end gap-3">

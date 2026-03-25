@@ -3,7 +3,7 @@
 
 include __DIR__ . '../../../includes/header.php';
 
-echo <<<'HTML'
+?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -33,7 +33,7 @@ echo <<<'HTML'
         Plataforma Institucional SENA
       </div>
 
-      <h1 class="font-[Montserrat] mt-6 text-4xl font-extrabold leading-tight text-sena-text-main md:text-5xl">
+      <h1 class="font-[Montserrat] mt-6 text-4xl font-bold leading-tight text-sena-text-main md:text-5xl">
         Observatorio de <br class="hidden md:block" />
         Perfiles <span class="text-sena">Tecnológicos</span>
       </h1>
@@ -69,11 +69,11 @@ echo <<<'HTML'
     <section class="mt-10">
       <div class="flex items-end justify-between">
         <div>
-          <div class="flex items-center gap-2 text-[11px] font-extrabold uppercase tracking-wider text-sena-strong">
+          <div class="flex items-center gap-2 text-[11px] font-bold uppercase tracking-wider text-sena-strong">
             <i data-lucide="trending-up" class="h-4 w-4"></i>
             Más consultados
           </div>
-          <h2 class="font-[Montserrat] mt-1 text-xl font-extrabold text-sena-text-main">Perfiles Destacados</h2>
+          <h2 class="font-[Montserrat] mt-1 text-xl font-bold text-sena-text-main">Perfiles Destacados</h2>
         </div>
 
         <a class="inline-flex items-center gap-2 text-sm font-bold text-sena-strong" href="#">
@@ -86,16 +86,16 @@ echo <<<'HTML'
         <!-- Card 1 -->
         <article class="tarjeta-tecnologia group cursor-pointer rounded-xl border border-sena-border bg-white p-4 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-sena-strong hover:shadow-lg">
           <div class="flex items-center justify-between">
-            <span class="rounded-full bg-sena-soft px-2.5 py-0.5 text-[10px] font-extrabold text-sena-strong">
-            <span class="rounded-full bg-sena-soft px-2.5 py-0.5 text-[10px] font-extrabold text-sena-strong">
+            <span class="rounded-full bg-sena-soft px-2.5 py-0.5 text-[10px] font-bold text-sena-strong">
+            <span class="rounded-full bg-sena-soft px-2.5 py-0.5 text-[10px] font-bold text-sena-strong">
               Tecnologías de
             </span>
-            <span class="rounded-full bg-sena-soft px-2 py-0.5 text-[10px] font-extrabold text-sena-strong">
+            <span class="rounded-full bg-sena-soft px-2 py-0.5 text-[10px] font-bold text-sena-strong">
               Vigente
             </span>
           </div>
 
-          <h3 class="font-[Montserrat] mt-3 text-sm font-extrabold text-sena-text-main transition-colors duration-200">
+          <h3 class="font-[Montserrat] mt-3 text-sm font-bold text-sena-text-main transition-colors duration-200">
             Desarrollador Full Stack Senior
           </h3>
 
@@ -121,12 +121,12 @@ echo <<<'HTML'
         <!-- Card 2 -->
         <article class="tarjeta-tecnologia group cursor-pointer rounded-xl border border-sena-border bg-white p-4 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-sena-strong hover:shadow-lg">
           <div class="flex items-center justify-between">
-            <span class="rounded-full bg-sena-soft px-2.5 py-0.5 text-[10px] font-extrabold text-sena-strong">Tecnologías de</span>
-            <span class="rounded-full bg-sena-soft px-2.5 py-0.5 text-[10px] font-extrabold text-sena-strong">Tecnologías de</span>
-            <span class="rounded-full bg-sena-soft px-2 py-0.5 text-[10px] font-extrabold text-sena-strong">Vigente</span>
+            <span class="rounded-full bg-sena-soft px-2.5 py-0.5 text-[10px] font-bold text-sena-strong">Tecnologías de</span>
+            <span class="rounded-full bg-sena-soft px-2.5 py-0.5 text-[10px] font-bold text-sena-strong">Tecnologías de</span>
+            <span class="rounded-full bg-sena-soft px-2 py-0.5 text-[10px] font-bold text-sena-strong">Vigente</span>
           </div>
 
-          <h3 class="font-[Montserrat] mt-3 text-sm font-extrabold text-sena-text-main transition-colors duration-200">
+          <h3 class="font-[Montserrat] mt-3 text-sm font-bold text-sena-text-main transition-colors duration-200">
             Especialista en Inteligencia Artificial
           </h3>
 
@@ -152,12 +152,12 @@ echo <<<'HTML'
         <!-- Card 3 -->
         <article class="tarjeta-tecnologia group cursor-pointer rounded-xl border border-sena-border bg-white p-4 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-sena-strong hover:shadow-lg">
           <div class="flex items-center justify-between">
-            <span class="rounded-full bg-sena-soft px-2.5 py-0.5 text-[10px] font-extrabold text-sena-strong">Tecnologías de</span>
-            <span class="rounded-full bg-sena-soft px-2.5 py-0.5 text-[10px] font-extrabold text-sena-strong">Tecnologías de</span>
-            <span class="rounded-full bg-sena-soft px-2 py-0.5 text-[10px] font-extrabold text-sena-strong">Vigente</span>
+            <span class="rounded-full bg-sena-soft px-2.5 py-0.5 text-[10px] font-bold text-sena-strong">Tecnologías de</span>
+            <span class="rounded-full bg-sena-soft px-2.5 py-0.5 text-[10px] font-bold text-sena-strong">Tecnologías de</span>
+            <span class="rounded-full bg-sena-soft px-2 py-0.5 text-[10px] font-bold text-sena-strong">Vigente</span>
           </div>
 
-          <h3 class="font-[Montserrat] mt-3 text-sm font-extrabold text-sena-text-main transition-colors duration-200">
+          <h3 class="font-[Montserrat] mt-3 text-sm font-bold text-sena-text-main transition-colors duration-200">
             Analista de Ciberseguridad
           </h3>
 
@@ -182,11 +182,11 @@ echo <<<'HTML'
         <!-- Card 4 -->
         <article class="tarjeta-tecnologia group cursor-pointer rounded-xl border border-sena-border bg-white p-4 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-sena-strong hover:shadow-lg">
           <div class="flex items-center justify-between">
-            <span class="rounded-full bg-sena-soft px-2.5 py-0.5 text-[10px] font-extrabold text-sena-strong">Tecnologías de</span>
-            <span class="rounded-full bg-sena-soft px-2 py-0.5 text-[10px] font-extrabold text-sena-strong">Vigente</span>
+            <span class="rounded-full bg-sena-soft px-2.5 py-0.5 text-[10px] font-bold text-sena-strong">Tecnologías de</span>
+            <span class="rounded-full bg-sena-soft px-2 py-0.5 text-[10px] font-bold text-sena-strong">Vigente</span>
           </div>
 
-          <h3 class="font-[Montserrat] mt-3 text-sm font-extrabold text-sena-text-main transition-colors duration-200">
+          <h3 class="font-[Montserrat] mt-3 text-sm font-bold text-sena-text-main transition-colors duration-200">
             Ingeniero de Datos
           </h3>
 
@@ -214,12 +214,12 @@ echo <<<'HTML'
     <!-- Líneas Tecnológicas -->
     <section class="mt-12 w-full">
 
-      <div class="flex items-center gap-2 text-[11px] font-extrabold uppercase tracking-wider text-sena-strong">
+      <div class="flex items-center gap-2 text-[11px] font-bold uppercase tracking-wider text-sena-strong">
         <i data-lucide="layers" class="h-4 w-4"></i>
         Clasificación
       </div>
 
-      <h2 class="font-[Montserrat] mt-1 text-xl font-extrabold text-sena-text-main">
+      <h2 class="font-[Montserrat] mt-1 text-xl font-bold text-sena-text-main">
         Líneas Tecnológicas
       </h2>
 
@@ -229,12 +229,12 @@ echo <<<'HTML'
         <article class="tarjeta-tecnologia group cursor-pointer rounded-xl border border-sena-border bg-white p-5 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-sena-strong hover:shadow-md">
           <div class="flex items-center gap-4">
 
-            <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-sena-soft text-sm font-extrabold text-sena-strong transition-colors duration-200 group-hover:bg-sena-strong">
+            <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-sena-soft text-sm font-bold text-sena-strong transition-colors duration-200 group-hover:bg-sena-strong">
               TIC
             </div>
 
             <div>
-              <div class="font-[Montserrat] text-sm font-extrabold text-sena-text-main">
+              <div class="font-[Montserrat] text-sm font-bold text-sena-text-main">
                 Tecnologías de la Información y las Comunicaciones
               </div>
               <div class="text-xs font-bold text-sena-text-muted">
@@ -249,12 +249,12 @@ echo <<<'HTML'
         <article class="tarjeta-tecnologia group cursor-pointer rounded-xl border border-sena-border bg-white p-5 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-sena-strong hover:shadow-md">
           <div class="flex items-center gap-4">
 
-            <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-sena-soft text-sm font-extrabold text-sena-strong transition-colors duration-200 group-hover:bg-sena-strong">
+            <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-sena-soft text-sm font-bold text-sena-strong transition-colors duration-200 group-hover:bg-sena-strong">
               BIO
             </div>
 
             <div>
-              <div class="font-[Montserrat] text-sm font-extrabold text-sena-text-main">
+              <div class="font-[Montserrat] text-sm font-bold text-sena-text-main">
                 Biotecnología y Nanotecnología
               </div>
               <div class="text-xs font-bold text-sena-text-muted">
@@ -269,12 +269,12 @@ echo <<<'HTML'
         <article class="tarjeta-tecnologia group cursor-pointer rounded-xl border border-sena-border bg-white p-5 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-sena-strong hover:shadow-md">
           <div class="flex items-center gap-4">
 
-            <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-sena-soft text-sm font-extrabold text-sena-strong transition-colors duration-200 group-hover:bg-sena-strong">
+            <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-sena-soft text-sm font-bold text-sena-strong transition-colors duration-200 group-hover:bg-sena-strong">
               DIS
             </div>
 
             <div>
-              <div class="font-[Montserrat] text-sm font-extrabold text-sena-text-main">
+              <div class="font-[Montserrat] text-sm font-bold text-sena-text-main">
                 Diseño e Innovación
               </div>
               <div class="text-xs font-bold text-sena-text-muted">
@@ -289,12 +289,12 @@ echo <<<'HTML'
         <article class="tarjeta-tecnologia group cursor-pointer rounded-xl border border-sena-border bg-white p-5 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-sena-strong hover:shadow-md">
           <div class="flex items-center gap-4">
 
-            <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-sena-soft text-sm font-extrabold text-sena-strong transition-colors duration-200 group-hover:bg-sena-strong">
+            <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-sena-soft text-sm font-bold text-sena-strong transition-colors duration-200 group-hover:bg-sena-strong">
               PRO
             </div>
 
             <div>
-              <div class="font-[Montserrat] text-sm font-extrabold text-sena-text-main">
+              <div class="font-[Montserrat] text-sm font-bold text-sena-text-main">
                 Producción y Transformación
               </div>
               <div class="text-xs font-bold text-sena-text-muted">
@@ -311,11 +311,11 @@ echo <<<'HTML'
 
     <!-- Tecnologías Emergentes -->
     <section class="mt-12">
-      <div class="flex items-center gap-2 text-[11px] font-extrabold uppercase tracking-wider text-sena-strong">
+      <div class="flex items-center gap-2 text-[11px] font-bold uppercase tracking-wider text-sena-strong">
         <i data-lucide="cpu" class="h-4 w-4"></i>
         Innovación
       </div>
-      <h2 class="font-[Montserrat] mt-1 text-xl font-extrabold text-sena-text-main">Tecnologías Emergentes</h2>
+      <h2 class="font-[Montserrat] mt-1 text-xl font-bold text-sena-text-main">Tecnologías Emergentes</h2>
 
       <div class="mt-5 grid grid-cols-2 gap-4 md:grid-cols-5">
         <!-- item 1 -->
@@ -323,7 +323,7 @@ echo <<<'HTML'
           <div class="mx-auto flex h-10 w-10 items-center justify-center rounded-full bg-sena-soft text-sena-strong transition-colors duration-200 group-hover:bg-sena-strong">
             <i data-lucide="sparkles" class="h-4 w-4"></i>
           </div>
-          <div class="font-[Montserrat] mt-3 text-xs font-extrabold text-sena-text-main">Inteligencia Artificial</div>
+          <div class="font-[Montserrat] mt-3 text-xs font-bold text-sena-text-main">Inteligencia Artificial</div>
           <div class="mt-1 text-[11px] font-bold text-sena-text-muted">2 perfiles</div>
         </div>
 
@@ -332,7 +332,7 @@ echo <<<'HTML'
           <div class="mx-auto flex h-10 w-10 items-center justify-center rounded-full bg-sena-soft text-sena-strong transition-colors duration-200 group-hover:bg-sena-strong">
             <i data-lucide="link" class="h-4 w-4"></i>
           </div>
-          <div class="font-[Montserrat] mt-3 text-xs font-extrabold text-sena-text-main">Blockchain</div>
+          <div class="font-[Montserrat] mt-3 text-xs font-bold text-sena-text-main">Blockchain</div>
           <div class="mt-1 text-[11px] font-bold text-sena-text-muted">2 perfiles</div>
         </div>
 
@@ -341,7 +341,7 @@ echo <<<'HTML'
           <div class="mx-auto flex h-10 w-10 items-center justify-center rounded-full bg-sena-soft text-sena-strong transition-colors duration-200 group-hover:bg-sena-strong">
             <i data-lucide="wifi" class="h-4 w-4"></i>
           </div>
-          <div class="font-[Montserrat] mt-3 text-xs font-extrabold text-sena-text-main">Internet de las Cosas (IoT)</div>
+          <div class="font-[Montserrat] mt-3 text-xs font-bold text-sena-text-main">Internet de las Cosas (IoT)</div>
           <div class="mt-1 text-[11px] font-bold text-sena-text-muted">1 perfil</div>
         </div>
 
@@ -350,7 +350,7 @@ echo <<<'HTML'
           <div class="mx-auto flex h-10 w-10 items-center justify-center rounded-full bg-sena-soft text-sena-strong transition-colors duration-200 group-hover:bg-sena-strong">
             <i data-lucide="cloud" class="h-4 w-4"></i>
           </div>
-          <div class="font-[Montserrat] mt-3 text-xs font-extrabold text-sena-text-main">Computación en la Nube</div>
+          <div class="font-[Montserrat] mt-3 text-xs font-bold text-sena-text-main">Computación en la Nube</div>
           <div class="mt-1 text-[11px] font-bold text-sena-text-muted">3 perfiles</div>
         </div>
 
@@ -359,7 +359,7 @@ echo <<<'HTML'
           <div class="mx-auto flex h-10 w-10 items-center justify-center rounded-full bg-sena-soft text-sena-strong transition-colors duration-200 group-hover:bg-sena-strong">
             <i data-lucide="shield" class="h-4 w-4"></i>
           </div>
-          <div class="font-[Montserrat] mt-3 text-xs font-extrabold text-sena-text-main">Ciberseguridad Avanzada</div>
+          <div class="font-[Montserrat] mt-3 text-xs font-bold text-sena-text-main">Ciberseguridad Avanzada</div>
           <div class="mt-1 text-[11px] font-bold text-sena-text-muted">3 perfiles</div>
         </div>
       </div>
@@ -373,6 +373,5 @@ echo <<<'HTML'
 
 </body>
 </html>
-HTML;
 
-include __DIR__ . '../../../includes/footer.php';
+<?php include __DIR__ . '../../../includes/footer.php'; ?>

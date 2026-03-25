@@ -9,7 +9,7 @@ class TendenciaEmergenteModel {
         $this->conn = $db;
     }
 
-    // List all treands active
+    // Listar tendencias activas
     public function listar() {
         try {
             $sql = "SELECT t.*, a.nombre_area 
@@ -25,7 +25,7 @@ class TendenciaEmergenteModel {
         }
     }
 
-    // list all treands (include active from admin)
+    // Listar todas las tendencias (incluye inactivas para admin)
     public function listarTodas() {
         try {
             $sql = "SELECT t.*, a.nombre_area 
@@ -40,7 +40,7 @@ class TendenciaEmergenteModel {
         }
     }
 
-    // Get treands for ID
+    // Obtener tendencia por ID
     public function obtener($id) {
         try {
             $sql = "SELECT t.*, a.nombre_area 
@@ -55,17 +55,16 @@ class TendenciaEmergenteModel {
         }
     }
 
-    // Create new treands 
+    // Crear nueva tendencia
     public function crear($data) {
         try {
-            $sql = "INSERT INTO tendencias_emergentes (id_area, nombre, descripcion, estado) 
-                    VALUES (?, ?, ?, ?)";
+            $sql = "INSERT INTO tendencias_emergentes (id_area, nombre, estado) 
+                    VALUES (?, ?, ?)";
             $stmt = $this->conn->prepare($sql);
             
             $ok = $stmt->execute([
                 $data['id_area'],
                 trim($data['nombre']),
-                $data['descripcion'] ?? null,
                 $data['estado'] ?? 1
             ]);
 
@@ -76,13 +75,13 @@ class TendenciaEmergenteModel {
         }
     }
 
-    // Update treands exist
+    // Actualizar tendencia existente
     public function actualizar($data) {
         try {
             $campos = [];
             $valores = [];
 
-            $camposPermitidos = ['id_area', 'nombre', 'descripcion', 'estado'];
+            $camposPermitidos = ['id_area', 'nombre', 'estado'];
 
             foreach ($camposPermitidos as $campo) {
                 if (array_key_exists($campo, $data)) {
@@ -107,7 +106,7 @@ class TendenciaEmergenteModel {
         }
     }
 
-    // Change state the treands (activate/desactivate)
+    // Cambiar estado de la tendencia
     public function cambiarEstado($id, $estado) {
         try {
             $sql = "UPDATE tendencias_emergentes SET estado = ? WHERE id_tendencia = ?";
@@ -118,7 +117,7 @@ class TendenciaEmergenteModel {
         }
     }
 
-    // Delete treands
+    // Eliminar tendencia
     public function eliminar($id) {
         try {
             if ($this->tieneDependencias($id)) {
@@ -136,23 +135,8 @@ class TendenciaEmergenteModel {
         }
     }
 
-    // Get trands for area
+    // Obtener tendencias por área
     public function obtenerPorArea($id_area) {
-        try {
-            $sql = "SELECT id_tendencia, nombre, descripcion 
-                    FROM tendencias_emergentes 
-                    WHERE id_area = ? AND estado = 1
-                    ORDER BY nombre ASC";
-            $stmt = $this->conn->prepare($sql);
-            $stmt->execute([$id_area]);
-            return $stmt->fetchAll(PDO::FETCH_ASSOC);
-        } catch (Exception $e) {
-            return [];
-        }
-    }
-
-    // Get treands from select area
-    public function obtenerParaSelectPorArea($id_area) {
         try {
             $sql = "SELECT id_tendencia, nombre 
                     FROM tendencias_emergentes 
@@ -160,30 +144,52 @@ class TendenciaEmergenteModel {
                     ORDER BY nombre ASC";
             $stmt = $this->conn->prepare($sql);
             $stmt->execute([$id_area]);
-            return $stmt->fetchAll(PDO::FETCH_KEY_PAIR);
-        } catch (Exception $e) {
-            return [];
-        }
-    }
-
-    // Search treands for name or description
-    public function buscar($termino) {
-        try {
-            $sql = "SELECT t.*, a.nombre_area 
-                    FROM tendencias_emergentes t
-                    INNER JOIN areas a ON t.id_area = a.id_area
-                    WHERE (t.nombre LIKE ? OR t.descripcion LIKE ?) AND t.estado = 1
-                    ORDER BY a.nombre_area, t.nombre ASC";
-            $stmt = $this->conn->prepare($sql);
-            $termino_busqueda = "%$termino%";
-            $stmt->execute([$termino_busqueda, $termino_busqueda]);
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
         } catch (Exception $e) {
             return [];
         }
     }
 
-    // Search treands avanced whit filter
+    // Obtener tendencias para select por área (con nombre truncado)
+    public function obtenerParaSelectPorArea($id_area) {
+        try {
+            $sql = "SELECT id_tendencia, 
+                           CONCAT(LEFT(nombre, 50), IF(LENGTH(nombre) > 50, '...', '')) as texto
+                    FROM tendencias_emergentes 
+                    WHERE id_area = ? AND estado = 1
+                    ORDER BY nombre ASC";
+            $stmt = $this->conn->prepare($sql);
+            $stmt->execute([$id_area]);
+            
+            $resultados = [];
+            while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                $resultados[$row['id_tendencia']] = $row['texto'];
+            }
+            
+            return $resultados;
+        } catch (Exception $e) {
+            return [];
+        }
+    }
+
+    // Buscar tendencias por nombre
+    public function buscar($termino) {
+        try {
+            $sql = "SELECT t.*, a.nombre_area 
+                    FROM tendencias_emergentes t
+                    INNER JOIN areas a ON t.id_area = a.id_area
+                    WHERE t.nombre LIKE ? AND t.estado = 1
+                    ORDER BY a.nombre_area, t.nombre ASC";
+            $stmt = $this->conn->prepare($sql);
+            $termino_busqueda = "%$termino%";
+            $stmt->execute([$termino_busqueda]);
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (Exception $e) {
+            return [];
+        }
+    }
+
+    // Búsqueda avanzada con filtros
     public function buscarAvanzado($filtros) {
         try {
             $sql = "SELECT t.*, a.nombre_area 
@@ -217,7 +223,7 @@ class TendenciaEmergenteModel {
         }
     }
 
-    // Verify if thename in the treands exist in area
+    // Verificar si el nombre ya existe en el área
     public function nombreExisteEnArea($nombre, $id_area, $excluir_id = null) {
         try {
             $sql = "SELECT COUNT(*) as total FROM tendencias_emergentes 
@@ -240,7 +246,7 @@ class TendenciaEmergenteModel {
         }
     }
 
-    // Cerify if the trands have dependences
+    // Verificar si la tendencia tiene dependencias
     public function tieneDependencias($id_tendencia) {
         try {
             $sql = "SELECT COUNT(*) as total FROM lineas_tecnologicas 
@@ -257,7 +263,7 @@ class TendenciaEmergenteModel {
         }
     }
 
-    // Get statistics in treands
+    // Obtener estadísticas de tendencias
     public function obtenerEstadisticas() {
         try {
             $sql = "SELECT 
@@ -307,11 +313,11 @@ class TendenciaEmergenteModel {
         }
     }
 
-    // Get treands for selct (all active)
+    // Obtener todas las tendencias para select (global)
     public function obtenerParaSelect() {
         try {
             $sql = "SELECT t.id_tendencia, 
-                    CONCAT(a.nombre_area, ' - ', t.nombre) as nombre_completo
+                           CONCAT(a.nombre_area, ' - ', LEFT(t.nombre, 50), IF(LENGTH(t.nombre) > 50, '...', '')) as texto
                     FROM tendencias_emergentes t
                     INNER JOIN areas a ON t.id_area = a.id_area
                     WHERE t.estado = 1 AND a.estado = 1
@@ -321,7 +327,7 @@ class TendenciaEmergenteModel {
             
             $resultados = [];
             while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-                $resultados[$row['id_tendencia']] = $row['nombre_completo'];
+                $resultados[$row['id_tendencia']] = $row['texto'];
             }
             
             return $resultados;
@@ -330,7 +336,7 @@ class TendenciaEmergenteModel {
         }
     }
 
-    // Get treands popular
+    // Obtener tendencias populares (más usadas en líneas)
     public function obtenerTendenciasPopulares($limite = 5) {
         try {
             $sql = "SELECT t.id_tendencia, t.nombre, a.nombre_area, COUNT(lt.id_linea) as total_lineas
@@ -349,10 +355,10 @@ class TendenciaEmergenteModel {
         }
     }
 
-    // Get treand for area whith cont in line
+    // Obtener tendencias con conteo de líneas asociadas
     public function obtenerConConteoLineas($id_area = null) {
         try {
-            $sql = "SELECT t.id_tendencia, t.nombre, t.descripcion, t.estado,
+            $sql = "SELECT t.id_tendencia, t.nombre, t.estado,
                            COUNT(lt.id_linea) as total_lineas
                     FROM tendencias_emergentes t
                     LEFT JOIN lineas_tecnologicas lt ON t.id_tendencia = lt.id_tendencia
@@ -364,7 +370,7 @@ class TendenciaEmergenteModel {
                 $params[] = $id_area;
             }
 
-            $sql .= " GROUP BY t.id_tendencia, t.nombre, t.descripcion, t.estado
+            $sql .= " GROUP BY t.id_tendencia, t.nombre, t.estado
                       ORDER BY t.nombre ASC";
             
             $stmt = $this->conn->prepare($sql);
