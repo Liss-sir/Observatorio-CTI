@@ -28,7 +28,7 @@
         <!-- Content -->
         <div class="px-6 py-5">
           <p class="text-sm text-sena-text-soft leading-relaxed">
-            La proyección futura <span class="font-semibold" style="color: #39A900;" id="nombre-proyeccion-creada">"Desarrollador Full Stack Senior"</span> ha sido creada correctamente.
+            La proyección futura <span class="text-sena" id="nombre-proyeccion-creada">"Desarrollador Full Stack Senior"</span> ha sido creada correctamente.
           </p>
           <div class="mt-4 flex items-center gap-2 text-xs text-sena-text-soft">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -41,7 +41,7 @@
 
         <!-- Barra de progreso animada con verde SENA -->
         <div class="h-2 bg-gray-100 w-full rounded-b-xl overflow-hidden">
-          <div id="progress-bar-creado" class="h-1 transition-all duration-[3000ms] ease-linear" style="width: 0%; background-color: #39A900;"></div>
+          <div id="progress-bar-creado" class="h-1 transition-all duration-[3000ms] ease-linear bg-sena" style="width: 0%;"></div>
         </div>
 
         <!-- Botón para cerrar manualmente -->

@@ -16,7 +16,7 @@
               <polyline points="20 6 9 17 4 12"></polyline>
             </svg>
           </div>
-          <div>
+          <div class="pr-8">
             <h3 class="text-lg font-semibold text-sena-text-main">¡Proyección a Futuro Deshabilitada!</h3>
             <p class="text-sm text-sena-text-soft">La operación se realizó correctamente</p>
           </div>
@@ -25,7 +25,7 @@
         <!-- Content -->
         <div class="px-6 py-5">
           <p class="text-sm text-sena-text-soft leading-relaxed">
-            La proyección a futuro <span class="font-semibold text-sena-text-main" id="nombre-proyeccion-futuro-deshabilitado">"Nombre de la proyección"</span> ha sido deshabilitada correctamente.
+            La proyección a futuro <span class=" text-sena" id="nombre-proyeccion-futuro-deshabilitado">"Nombre de la proyección"</span> ha sido deshabilitada correctamente.
           </p>
           
           <!-- Contador de segundos -->
@@ -34,7 +34,7 @@
               <circle cx="12" cy="12" r="10"/>
               <polyline points="12 6 12 12 16 14"/>
             </svg>
-            <span>Esta ventana se cerrará automáticamente en <span id="contador-segundos-deshabilitado">3</span> segundos</span>
+            <span>Esta ventana se cerrará automáticamente en <span id="contador-segundos-deshabilitado" class="font-medium">3</span> segundos</span>
           </div>
         </div>
 

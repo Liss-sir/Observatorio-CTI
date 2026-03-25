@@ -25,14 +25,14 @@
         <!-- Content -->
         <div class="px-6 py-5">
           <p class="text-sm text-sena-text-soft leading-relaxed">
-            La proyección a futuro <span class="font-semibold text-[#39A900]" id="nombre-proyeccion-habilitado-exito">"Desarrollador Full Stack Senior"</span> ha sido habilitada correctamente.
+            La proyección a futuro <span class="text-[#39A900]" id="nombre-proyeccion-habilitado-exito">"Desarrollador Full Stack Senior"</span> ha sido habilitada correctamente.
           </p>
           <div class="mt-4 flex items-center gap-2 text-xs text-sena-text-soft">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <circle cx="12" cy="12" r="10"/>
               <polyline points="12 6 12 12 16 14"/>
             </svg>
-            <span>Esta ventana se cerrará automáticamente en <span id="contador-segundos">6</span> segundos</span>
+            <span>Esta ventana se cerrará automáticamente en <span id="contador-segundos">3</span> segundos</span>
           </div>
         </div>
 

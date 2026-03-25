@@ -428,6 +428,17 @@ document.addEventListener('DOMContentLoaded', function() {
             filtradas = filtradas.filter(p => p.estado != 1);
         }
         
+        // Ordenar proyecciones: primero habilitadas (estado = 1), luego deshabilitadas (estado = 0)
+        // Dentro de cada grupo, ordenar por ID descendente (más reciente primero)
+        filtradas.sort((a, b) => {
+            // Si tienen diferente estado, las habilitadas van primero
+            if (a.estado !== b.estado) {
+                return b.estado - a.estado; // 1 viene antes que 0
+            }
+            // Si tienen el mismo estado, ordenar por ID descendente (más reciente primero)
+            return b.id_proyeccion - a.id_proyeccion;
+        });
+        
         proyeccionesFiltradas = filtradas;
         
         if (terminoBusqueda !== ultimoTerminoBusqueda) {
@@ -460,9 +471,10 @@ document.addEventListener('DOMContentLoaded', function() {
             } else {
                 contenedor.innerHTML = `
                     <div class="w-full flex flex-col items-center justify-center py-20 px-4 bg-white border border-gray-200 rounded-xl min-h-[400px]">
-                        <div class="w-20 h-20 mb-5 bg-sena-soft rounded-2xl flex items-center justify-center">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10 text-sena" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                                <path d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 0 1 3 19.875v-6.75ZM9.75 6.75h2.25c.621 0 1.125.504 1.125 1.125v12.75c0 .621-.504 1.125-1.125 1.125h-2.25A1.125 1.125 0 0 1 8.625 20.625V7.875c0-.621.504-1.125 1.125-1.125ZM16.5 3.75h2.25c.621 0 1.125.504 1.125 1.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25A1.125 1.125 0 0 1 15.375 20.625V4.875c0-.621.504-1.125 1.125-1.125Z"/>
+                        <div class="w-20 h-20 mb-5 bg-sena-soft rounded-lg flex items-center justify-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-10 h-10 text-sena">
+                                <circle cx="12" cy="12" r="10" stroke="currentColor"/>
+                                <polyline points="12 6 12 12 16 14" stroke="currentColor"/>
                             </svg>
                         </div>
                         <h3 class="font-['Montserrat'] text-lg font-semibold text-sena-text-main mb-2">No hay proyecciones a futuro</h3>
