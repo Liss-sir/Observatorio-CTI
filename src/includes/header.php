@@ -1,4 +1,10 @@
 <?php
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+?>
+
+<?php
 // Helper: determine current page (basename of path) and provide nav classes for active state.
 // If a caller sets $activePage before including this file, that will be used instead.
 $current = isset($activePage) ? $activePage : basename(parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH));
@@ -15,6 +21,8 @@ function nav_classes(string $target): string {
 
   return $base . ' ' . ($current === $target ? $active : $default);
 }
+
+require_once __DIR__ . '/../helpers/permisos.php';
 ?>
 
 <!DOCTYPE html>
@@ -175,15 +183,15 @@ function nav_classes(string $target): string {
             <a href="../../view/programas_formacion/programas.php" class="px-3 py-2 rounded-l-md text-sm font-medium text-gray-600 hover:text-sena">
               Programas Formación
             </a>
-            <button id="btn-menu-programas" type="button" class="btn-toggle px-2 py-2 rounded-r-md text-gray-400 hover:text-green-700" data-rol="ADMINISTRADOR">
+            <button id="btn-menu-programas" type="button" class="btn-toggle px-2 py-2 rounded-r-md text-gray-400 hover:text-green-700" data-permiso="ver_menu_programas_admin">
               <svg class="w-3 h-3 chevron transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
               </svg>
             </button>
           </div>
           <div class="zona-seguridad hidden group-hover:block"></div>
-          <div id="submenu-programas" class="submenu hidden absolute left-0 mt-2 w-56 hover:bg-sena-soft rounded-lg shadow-xl border border-gray-100 z-50 animate-fadeIn">
-            <a href="../../view/areas/areas.php" data-rol="ADMINISTRADOR" class="flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-sena-soft hover:text-sena rounded-lg">
+          <div id="submenu-programas" class="submenu hidden absolute left-0 mt-2 w-60 bg-white rounded-lg shadow-xl border border-gray-100 z-50 animate-fadeIn">
+            <a href="../../view/areas/areas.php" data-permiso="ver_areas" class="flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-sena-soft hover:text-sena">
               <span class="w-8 h-8 bg-sena-soft rounded-lg flex items-center justify-center text-green-600">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
@@ -250,14 +258,14 @@ function nav_classes(string $target): string {
         <!-- ADMIN: Gestión Perfiles -->
         <a href="../../view/gestion_usuarios/gestion_usuarios.php" 
            class="<?= nav_classes('gestion_usuarios.php') ?>" 
-           data-rol="ADMINISTRADOR">
+           data-permiso="gestionar_usuarios">
           Gestión Usuarios
         </a>
 
         <!-- ADMIN: Historial -->
         <a href="../../view/historial/historial.php" 
            class="<?= nav_classes('historial.php') ?>" 
-           data-rol="ADMINISTRADOR">
+           data-permiso="ver_historial">
           Historial
         </a>
 
@@ -311,12 +319,12 @@ function nav_classes(string $target): string {
                   Mi Perfil
                 </a>
                 
-                <a href="../../view/landing/landing.php" class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-sena-soft hover:text-green-700">
+                <button class="btnAbrirPerfil w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-sena-soft hover:text-green-700">
                   <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
                   </svg>
                   Editar Perfil
-                </a>
+                </button>
 
                 <div class="border-t border-gray-100 my-1"></div>
 
@@ -334,7 +342,9 @@ function nav_classes(string $target): string {
 
     </div>
   </header>
+<script src="../../assets/js/perfil.js"></script>
 
+<?php include '../../view/perfil/modal_editar_perfil.php'; ?>
   <!-- Script para menús desplegables -->
   <script>
 document.addEventListener('DOMContentLoaded', function () {
