@@ -23,17 +23,17 @@
         <!-- Content -->
         <div class="px-6 py-4">
           <p class="text-sm text-sena-text-soft leading-relaxed">
-            ¿Estás seguro de deshabilitar <span id="nombre-proyeccion-deshabilitar" class="font-medium text-sena-text-main">"Nombre de la proyección"</span>? 
+            ¿Estás seguro de deshabilitar <span id="nombre-proyeccion-deshabilitar" class="font-medium  text-[#e65100]">"Nombre de la proyección"</span>? 
             El registro no se eliminará, solo se marcará como inactivo.
           </p>
         </div>
 
         <!-- Footer buttons -->
         <div class="flex justify-end gap-3 border-t border-sena-border px-6 py-4">
-          <button type="button" class="cerrar-modal-deshabilitar rounded-lg border border-sena-border px-4 py-2 text-sm font-medium text-sena-text-main hover:bg-sena-soft transition-colors">
+          <button type="button" class="cerrar-modal-deshabilitar rounded-lg border border-sena-border px-4 py-2 text-sm font-medium text-sena-text-main hover:bg-sena-soft">
             Cancelar
           </button>
-          <button type="button" id="btn-confirmar-deshabilitar" class="rounded-lg bg-[#e65100] px-4 py-2 text-sm font-medium text-white hover:bg-[#e65100]/90 transition-colors">
+          <button type="button" id="btn-confirmar-deshabilitar" class="rounded-lg bg-[#e65100] px-4 py-2 text-sm font-medium text-white hover:bg-[#e65100]/90">
             Desactivar
           </button>
         </div>
