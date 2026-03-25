@@ -1,8 +1,3 @@
-/**
- * ESTO ES NUEVO
- * Módulo de autenticación global
- */
-
 const Auth = {
     API_URL: "../../controllers/LogController.php",
     usuario: null,
@@ -41,21 +36,18 @@ const Auth = {
                 credentials: "same-origin"
             });
             const data = await response.json();
-            console.log("Respuesta del servidor:", data);
+            console.log("Respuesta:", data);
             
             if (data.success && data.autenticado) {
                 this.autenticado = true;
                 this.usuario = data.usuario;
-                console.log("✅ Usuario autenticado:", this.usuario);
+                console.log("✅ Autenticado:", this.usuario);
             } else {
                 this.autenticado = false;
                 this.usuario = null;
-                console.log("❌ No autenticado");
             }
-            
             this.actualizarUI();
             return this.autenticado;
-            
         } catch (error) {
             console.error("Error:", error);
             this.actualizarUI();
@@ -65,76 +57,57 @@ const Auth = {
 
     actualizarUI() {
         console.log("=== ACTUALIZANDO UI ===");
-        
-        const navGuest = document.getElementById("nav-guest");
-        const navUser = document.getElementById("nav-user");
-        
+        const navUser = document.getElementById('nav-user');
+        const navGuest = document.getElementById('nav-guest');
+
         if (this.autenticado && this.usuario) {
-            if (navGuest) navGuest.style.display = "none";
-            if (navUser) navUser.classList.remove("hidden");
+            if (navUser) navUser.classList.remove('hidden');
+            if (navGuest) navGuest.classList.add('hidden');
             
-            this.actualizarInfoUsuario();
-            this.aplicarPermisosPorRol();
+            const userName = document.getElementById('user-name');
+            const userRole = document.getElementById('user-role');
+            
+            if (userName) userName.textContent = this.usuario.nombre || 'Usuario';
+            if (userRole) userRole.textContent = this.usuario.rol_nombre || 'Rol';
+            
+            this.aplicarPermisosPorAccion();
         } else {
-            if (navGuest) navGuest.style.display = "flex";
-            if (navUser) navUser.classList.add("hidden");
-            this.ocultarTodoPorRol();
+            if (navUser) navUser.classList.add('hidden');
+            if (navGuest) navGuest.classList.remove('hidden');
         }
+        document.getElementById('app')?.classList.remove('opacity-0');
     },
 
-    actualizarInfoUsuario() {
+    aplicarPermisosPorAccion() {
         if (!this.usuario) return;
         
-        const nombre = this.usuario.nombre || this.usuario.correo?.split('@')[0] || 'Usuario';
-        const rol = this.usuario.rol_nombre || 'Usuario';
+        const rol = (this.usuario.rol_nombre || '').toUpperCase().trim();
+        const permisos = this.permisosPorRol[rol] || [];
         
-        const userName = document.getElementById("user-name");
-        const userRole = document.getElementById("user-role");
+        console.log('🔐 Rol:', rol);
+        console.log('📋 Permisos:', permisos);
         
-        if (userName) userName.textContent = nombre;
-        if (userRole) userRole.textContent = rol;
-        
-        console.log("Info actualizada:", { nombre, rol });
-    },
-
-    aplicarPermisosPorRol() {
-        if (!this.usuario) {
-            console.log("No hay usuario");
-            return;
-        }
-
-        // USAR MAYÚSCULAS como vienen de la BD
-        const rolUsuario = (this.usuario.rol_nombre || '').toUpperCase().trim();
-        console.log("Rol del usuario:", rolUsuario);
-
-        const elementos = document.querySelectorAll('[data-rol]');
-        console.log(`Encontrados ${elementos.length} elementos con data-rol`);
-
-        elementos.forEach((el, index) => {
-            const rolRequerido = (el.getAttribute('data-rol') || '').toUpperCase().trim();
-            const texto = el.textContent?.trim() || `Elemento ${index}`;
+        document.querySelectorAll('[data-permiso]').forEach(el => {
+            const permiso = el.getAttribute('data-permiso');
+            console.log('🔍 Verificando:', permiso);
             
-            console.log(`[${index}] "${texto}" | Requiere: "${rolRequerido}" | Usuario: "${rolUsuario}"`);
-            
-            if (rolUsuario === rolRequerido) {
-                // MOSTRAR
-                el.classList.remove('hidden');
+            if (permisos.includes(permiso)) {
+                console.log('✅ Concedido:', permiso);
                 el.style.display = '';
-                console.log(`   ✅ MOSTRADO`);
+                el.classList.remove('hidden');
             } else {
-                // OCULTAR
-                el.classList.add('hidden');
+                console.log('⛔ Denegado:', permiso);
                 el.style.display = 'none';
-                console.log(`   ❌ OCULTADO`);
+                el.classList.add('hidden');
             }
         });
     },
 
-    ocultarTodoPorRol() {
-        document.querySelectorAll('[data-rol]').forEach(el => {
-            el.classList.add('hidden');
-            el.style.display = 'none';
-        });
+    tienePermiso(permiso) {
+        if (!this.usuario) return false;
+        const rol = (this.usuario.rol_nombre || '').toUpperCase().trim();
+        const permisos = this.permisosPorRol[rol] || [];
+        return permisos.includes(permiso);
     },
 
     async logout() {
@@ -149,8 +122,7 @@ const Auth = {
                 window.location.href = "../../auth/login/login.php";
             }
         } catch (error) {
-            console.error("Error en logout:", error);
-            alert("Error al cerrar sesión");
+            console.error("Error logout:", error);
         }
     },
 
@@ -160,7 +132,6 @@ const Auth = {
     }
 };
 
-// Inicializar
 document.addEventListener("DOMContentLoaded", () => {
     console.log("=== DOM CARGADO ===");
     Auth.verificarSesion();
