@@ -305,7 +305,7 @@ include __DIR__ . '../../../includes/header.php';
     </div>
   </main>
 
-  <script src="../../assets/js/lineas_tecnologicas.js"></script>
+  <script src="../../assets/js/lineas_tecnologicas/lineas_tecnologicas.js"></script>
 </body>
 </html>
 <?php include __DIR__ . '../../../includes/footer.php'; ?>

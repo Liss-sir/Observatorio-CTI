@@ -32,7 +32,6 @@ document.addEventListener("DOMContentLoaded", () => {
     "Implementación piloto",
     "Adopción industrial",
   ];
-  const proyeccionesDisponibles = ["5 años", "10 años", "Más de 10 años"];
 
   const estadosInicialesPorNombre = {
     "Computacion en la Nube": {
@@ -91,6 +90,73 @@ document.addEventListener("DOMContentLoaded", () => {
     },
   };
 
+  const detalleDatosPorNombre = {
+    "Computacion en la Nube": {
+      area: "Tecnologias de la Informacion",
+      tendenciaActual: "Digitalizacion del mantenimiento",
+      proyecciones: [{ nombre: "Adopcion de arquitecturas cloud nativas", anio: "5 años" }],
+      tecnologiasEmergentes: ["IA y ciberseguridad", "IoT y robotica"],
+    },
+    "Ciberseguridad Avanzada": {
+      area: "Tecnologias de la Informacion",
+      tendenciaActual: "IA y ciberseguridad",
+      proyecciones: [{ nombre: "Fortalecimiento de seguridad ofensiva", anio: "5 años" }],
+      tecnologiasEmergentes: ["IA y ciberseguridad", "Zero Trust"],
+    },
+    "Big Data y Analitica": {
+      area: "Tecnologias de la Informacion",
+      tendenciaActual: "IA y ciberseguridad",
+      proyecciones: [{ nombre: "Analitica predictiva aplicada", anio: "10 años" }],
+      tecnologiasEmergentes: ["IA y ciberseguridad", "Ingenieria de datos"],
+    },
+    "Inteligencia Artificial": {
+      area: "Tecnologias de la Informacion",
+      tendenciaActual: "IA y ciberseguridad",
+      proyecciones: [{ nombre: "Modelos de IA para industria", anio: "5 años" }],
+      tecnologiasEmergentes: ["Vision por computador", "NLP"],
+    },
+    Blockchain: {
+      area: "Tecnologias de la Informacion",
+      tendenciaActual: "IA y ciberseguridad",
+      proyecciones: [{ nombre: "Trazabilidad digital empresarial", anio: "Más de 10 años" }],
+      tecnologiasEmergentes: ["Smart contracts", "Identidad digital"],
+    },
+    "Internet de las Cosas (IoT)": {
+      area: "Electronica y Automatizacion",
+      tendenciaActual: "IoT y robotica",
+      proyecciones: [{ nombre: "Sensores inteligentes para planta", anio: "5 años" }],
+      tecnologiasEmergentes: ["Edge computing", "5G industrial"],
+    },
+    "Manufactura Aditiva (Impresion 3D)": {
+      area: "Biotecnologia y Nanotecnologia",
+      tendenciaActual: "Manufactura aditiva",
+      proyecciones: [{ nombre: "Escalamiento de impresion 3D", anio: "10 años" }],
+      tecnologiasEmergentes: ["Materiales avanzados", "Gemelos digitales"],
+    },
+    "Realidad Aumentada/Virtual": {
+      area: "Tecnologias de la Informacion",
+      tendenciaActual: "IA y ciberseguridad",
+      proyecciones: [{ nombre: "Simulacion inmersiva para formacion", anio: "Más de 10 años" }],
+      tecnologiasEmergentes: ["XR industrial", "Interfaces inmersivas"],
+    },
+    "Robotica Colaborativa": {
+      area: "Electronica y Automatizacion",
+      tendenciaActual: "IoT y robotica",
+      proyecciones: [{ nombre: "Celdas de trabajo colaborativas", anio: "10 años" }],
+      tecnologiasEmergentes: ["Cobots", "Control inteligente"],
+    },
+  };
+
+  const areasDisponibles = Array.from(
+    new Set(
+      Object.values(detalleDatosPorNombre)
+        .map((detalle) => String(detalle?.area || "").trim())
+        .filter(Boolean)
+    )
+  );
+
+  const proyeccionesDisponibles = construirCatalogoProyecciones();
+
   const estadoLineas = {};
   let lineaEnEdicion = null;
   let lineaPendienteDeshabilitar = null;
@@ -145,18 +211,33 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function fillSelect(select, values, placeholder) {
     resetSelect(select, placeholder);
-    values.forEach((value) => {
+
+    values.forEach((entry) => {
+      const optionConfig = typeof entry === "object" && entry !== null
+        ? entry
+        : { value: String(entry || ""), label: String(entry || "") };
+      const optionValue = String(
+        optionConfig.value || optionConfig.anio || optionConfig.anios || optionConfig.label || ""
+      ).trim();
+      const optionLabel = String(optionConfig.label || optionValue).trim();
+
+      if (!optionValue || !optionLabel) {
+        return;
+      }
+
       const option = document.createElement("option");
-      option.value = value;
-      option.textContent = value;
+      option.value = optionValue;
+      option.textContent = optionLabel;
       select.appendChild(option);
     });
   }
 
+  fillSelect(modals.createArea, areasDisponibles, "Seleccionar area...");
   fillSelect(modals.createTendencia, tendenciasEmergentesDisponibles, "Seleccionar tendencia tecnologica emergente...");
   fillSelect(modals.createEtapa, etapasDisponibles, "Seleccionar etapa...");
   fillSelect(modals.createProyeccion, proyeccionesDisponibles, "Seleccionar proyeccion...");
 
+  fillSelect(modals.editArea, areasDisponibles, "Seleccionar area...");
   fillSelect(modals.editTendencia, tendenciasEmergentesDisponibles, "Seleccionar tendencia tecnologica emergente...");
   fillSelect(modals.editEtapa, etapasDisponibles, "Seleccionar etapa...");
   fillSelect(modals.editProyeccion, proyeccionesDisponibles, "Seleccionar proyeccion...");
@@ -249,6 +330,114 @@ document.addEventListener("DOMContentLoaded", () => {
       .filter(Boolean);
   }
 
+  function parseCardArea(card) {
+    const chips = parseCardTecnologias(card);
+    return chips.length > 0 ? chips[0] : "";
+  }
+
+  function getDetalleDataForNombre(nombre) {
+    return detalleDatosPorNombre[nombre] || {
+      area: "",
+      tendenciaActual: "",
+      proyecciones: [],
+      tecnologiasEmergentes: [],
+    };
+  }
+
+  function construirCatalogoProyecciones() {
+    const fallback = [
+      { nombre: "Adopcion acelerada del sector", anio: "5 años" },
+      { nombre: "Escalamiento estrategico del sector", anio: "10 años" },
+      { nombre: "Transformacion estructural del sector", anio: "Más de 10 años" },
+    ];
+
+    const proyeccionesDetalle = Object.values(detalleDatosPorNombre).flatMap((detalle) => {
+      if (!Array.isArray(detalle?.proyecciones)) {
+        return [];
+      }
+
+      return detalle.proyecciones;
+    });
+
+    const base = proyeccionesDetalle.length > 0 ? proyeccionesDetalle : fallback;
+
+    const unicasPorAnios = new Map();
+
+    base.forEach((proyeccion) => {
+      const anio = String(proyeccion?.anio || proyeccion?.anios || "").trim();
+      if (!anio) {
+        return;
+      }
+
+      const nombre = String(proyeccion?.nombre || proyeccion?.titulo || getNombreProyeccionPorAnios(anio)).trim();
+      const key = normalizarTexto(anio);
+
+      if (!unicasPorAnios.has(key)) {
+        unicasPorAnios.set(key, {
+          value: anio,
+          label: `${nombre}: ${anio}`,
+        });
+      }
+    });
+
+    return Array.from(unicasPorAnios.values());
+  }
+
+  function getNombreProyeccionPorAnios(anioValue) {
+    const normalizado = normalizarTexto(String(anioValue || ""));
+
+    if (!normalizado) {
+      return "Transformacion digital del sector";
+    }
+
+    if (normalizado.includes("5")) {
+      return "Adopcion acelerada del sector";
+    }
+
+    if (normalizado.includes("10") && !normalizado.includes("mas")) {
+      return "Escalamiento estrategico del sector";
+    }
+
+    if (normalizado.includes("mas") || normalizado.includes("de 10")) {
+      return "Transformacion estructural del sector";
+    }
+
+    return "Transformacion digital del sector";
+  }
+
+  function mapProyeccionesToText(proyecciones, fallbackAnios = "") {
+    if (!Array.isArray(proyecciones)) {
+      return [];
+    }
+
+    const mapped = proyecciones
+      .map((item) => {
+        if (typeof item === "string") {
+          return item.trim();
+        }
+
+        if (item && typeof item === "object") {
+          const anio = String(item.anio || item.anios || fallbackAnios || "").trim();
+          const nombre = String(item.nombre || item.titulo || getNombreProyeccionPorAnios(anio || fallbackAnios)).trim();
+          return anio ? `${nombre}: ${anio}` : nombre;
+        }
+
+        return "";
+      })
+      .filter(Boolean);
+
+    if (mapped.length > 0) {
+      return mapped;
+    }
+
+    const anios = String(fallbackAnios || "").trim();
+    if (!anios) {
+      return [];
+    }
+
+    return [`${getNombreProyeccionPorAnios(anios)}: ${anios}`];
+  }
+
   function actualizarLinkDetalle(card, nombre) {
     if (!card) {
       return;
@@ -265,29 +454,41 @@ document.addEventListener("DOMContentLoaded", () => {
   function construirRegistroLinea(nombre, card) {
     const state = estadoLineas[nombre] || {};
     const resumen = parseCardResumen(card);
+    const detalle = getDetalleDataForNombre(nombre);
+    const area = state.area || detalle.area || parseCardArea(card) || "";
+    const tendencia = state.tendencia || detalle.tendenciaActual || "";
+    const proyeccionesTexto = mapProyeccionesToText(detalle.proyecciones, state.proyeccion);
+    const tecnologias = Array.isArray(detalle.tecnologiasEmergentes)
+      ? detalle.tecnologiasEmergentes.filter(Boolean)
+      : [tendencia].filter(Boolean);
 
     return {
       nombre,
       active: state.active !== false,
-      tendencia: state.tendencia || "",
+      area,
+      tendencia,
       etapa: state.etapa || "",
       proyeccion: state.proyeccion || "",
+      proyecciones: proyeccionesTexto,
+      tecnologiasEmergentes: tecnologias,
       perfiles: parseCardPerfiles(card),
       vigentes: resumen.vigentes,
       totalLineas: resumen.totalLineas,
       tecnologias: parseCardTecnologias(card),
-      descripcion: `Linea tecnologica ${nombre} registrada en el Observatorio CTI.`,
       fechaActualizacion: new Date().toISOString(),
     };
   }
 
   function getDefaultStateForNombre(nombre) {
+    const detalle = getDetalleDataForNombre(nombre);
+
     return (
       estadosInicialesPorNombre[nombre] || {
         active: true,
-        tendencia: tendenciasEmergentesDisponibles[0] || "",
+        area: detalle.area || areasDisponibles[0] || "",
+        tendencia: detalle.tendenciaActual || tendenciasEmergentesDisponibles[0] || "",
         etapa: etapasDisponibles[1] || etapasDisponibles[0] || "",
-        proyeccion: proyeccionesDisponibles[0] || "",
+        proyeccion: proyeccionesDisponibles[0]?.value || "",
       }
     );
   }
@@ -339,23 +540,53 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     const hasValue = typeof value === "string" && value.trim() !== "";
-    el.textContent = hasValue ? value.trim() : fallback;
+    el.textContent = hasValue ? normalizarTextoVisible(value.trim()) : fallback;
   }
 
-  function crearDescripcionDetalle(registro) {
-    const partes = [];
-
-    if (registro.tendencia) {
-      partes.push(`La tendencia tecnologica emergente asociada es ${registro.tendencia}.`);
-    }
-    if (registro.etapa) {
-      partes.push(`Actualmente se ubica en la etapa ${registro.etapa}.`);
-    }
-    if (registro.proyeccion) {
-      partes.push(`La proyeccion estimada es ${registro.proyeccion}.`);
+  function normalizarTextoVisible(value) {
+    const text = String(value || "").trim();
+    if (!text) {
+      return "";
     }
 
-    return partes.join(" ") || `Linea tecnologica ${registro.nombre || ""} registrada en el Observatorio CTI.`.trim();
+    return text
+      .replace(/\bMas\b/gi, "Más")
+      .replace(/\b([Aa])nios\b/g, "$1ños")
+      .replace(/\b([Aa])nio\b/g, "$1ño")
+      .replace(/\b([Aa])nos\b/g, "$1ños")
+      .replace(/\b([Aa])no\b/g, "$1ño");
+  }
+
+  function normalizeToList(value) {
+    if (Array.isArray(value)) {
+      return value.map((item) => String(item || "").trim()).filter(Boolean);
+    }
+
+    if (typeof value === "string") {
+      return value
+        .split(/[|,;•]/)
+        .map((item) => item.trim())
+        .filter(Boolean);
+    }
+
+    return [];
+  }
+
+  function renderListById(id, values, fallback = "No registrado") {
+    const listEl = document.getElementById(id);
+    if (!listEl) {
+      return;
+    }
+
+    const normalized = Array.isArray(values) ? values.filter(Boolean) : [];
+    const items = normalized.length > 0 ? normalized : [fallback];
+
+    listEl.innerHTML = "";
+    items.forEach((text) => {
+      const item = document.createElement("li");
+      item.textContent = normalizarTextoVisible(text);
+      listEl.appendChild(item);
+    });
   }
 
   function guardarRegistroDetalle(nombre) {
@@ -366,18 +597,37 @@ document.addEventListener("DOMContentLoaded", () => {
     const state = estadoLineas[nombre] || getDefaultStateForNombre(nombre);
     const data = getStorageLineas();
     const existente = data[nombre] || {};
+    const detalle = getDetalleDataForNombre(nombre);
+
+    const areaFinal = typeof existente.area === "string" && existente.area.trim() !== ""
+      ? existente.area
+      : state.area || detalle.area || "";
+
+    const tendenciaFinal = state.tendencia || detalle.tendenciaActual || "";
+
+    const proyeccionesFinales = Array.isArray(existente.proyecciones) && existente.proyecciones.length > 0
+      ? existente.proyecciones.filter(Boolean)
+      : mapProyeccionesToText(detalle.proyecciones, state.proyeccion);
+
+    const tecnologiasFinales = Array.isArray(existente.tecnologiasEmergentes) && existente.tecnologiasEmergentes.length > 0
+      ? existente.tecnologiasEmergentes.filter(Boolean)
+      : Array.isArray(detalle.tecnologiasEmergentes) && detalle.tecnologiasEmergentes.length > 0
+        ? detalle.tecnologiasEmergentes.filter(Boolean)
+        : [tendenciaFinal].filter(Boolean);
 
     const registro = {
       nombre,
       active: state.active !== false,
-      tendencia: state.tendencia || "",
+      area: areaFinal,
+      tendencia: tendenciaFinal,
       etapa: state.etapa || "",
       proyeccion: state.proyeccion || "",
+      proyecciones: proyeccionesFinales,
+      tecnologiasEmergentes: tecnologiasFinales,
       perfiles: Number.isFinite(existente.perfiles) ? existente.perfiles : 0,
       vigentes: Number.isFinite(existente.vigentes) ? existente.vigentes : 0,
       totalLineas: Number.isFinite(existente.totalLineas) ? existente.totalLineas : 1,
       tecnologias: Array.isArray(existente.tecnologias) ? existente.tecnologias : [state.tendencia].filter(Boolean),
-      descripcion: crearDescripcionDetalle({ nombre, ...state }),
       fechaActualizacion: new Date().toISOString(),
     };
 
@@ -397,15 +647,31 @@ document.addEventListener("DOMContentLoaded", () => {
     const baseState = registro || {
       nombre: nombreBase,
       ...getDefaultStateForNombre(nombreBase),
-      descripcion: "",
     };
 
     const nombreFinal = (baseState.nombre || nombreBase || "Linea Tecnologica").trim();
+    const detalle = getDetalleDataForNombre(nombreFinal);
+    const areaFinal = baseState.area || detalle.area || "";
+    const tendenciaFinal = baseState.tendencia || detalle.tendenciaActual || "";
+
+    const proyeccionesFinales = Array.isArray(baseState.proyecciones) && baseState.proyecciones.length > 0
+      ? baseState.proyecciones.filter(Boolean)
+      : mapProyeccionesToText(detalle.proyecciones, baseState.proyeccion);
+
+    const tecnologiasFinales = Array.isArray(baseState.tecnologiasEmergentes) && baseState.tecnologiasEmergentes.length > 0
+      ? baseState.tecnologiasEmergentes.filter(Boolean)
+      : Array.isArray(baseState.tecnologias) && baseState.tecnologias.length > 0
+        ? baseState.tecnologias.filter(Boolean)
+        : Array.isArray(detalle.tecnologiasEmergentes)
+          ? detalle.tecnologiasEmergentes.filter(Boolean)
+          : [tendenciaFinal].filter(Boolean);
+
     detalleTitulo.textContent = nombreFinal;
 
     estadoLineas[nombreFinal] = {
       active: baseState.active !== false,
-      tendencia: baseState.tendencia || "",
+      area: areaFinal,
+      tendencia: tendenciaFinal,
       etapa: baseState.etapa || "",
       proyeccion: baseState.proyeccion || "",
     };
@@ -414,18 +680,13 @@ document.addEventListener("DOMContentLoaded", () => {
       delete estadoLineas[nombreBase];
     }
 
-    setTextById("detalle-tendencia-badge", baseState.tendencia, "Tendencia tecnologica emergente");
-    setTextById("detalle-nombre-linea-texto", nombreFinal, "No registrada");
-    setTextById("detalle-tendencia-texto", baseState.tendencia);
-    setTextById("detalle-etapa-texto", baseState.etapa);
-    setTextById("detalle-proyeccion-texto", baseState.proyeccion);
+    setTextById("detalle-tendencia-texto", tendenciaFinal);
+    setTextById("detalle-area-texto", areaFinal, "No registrada");
     setTextById("detalle-fecha-actualizacion", formatFechaDetalle(baseState.fechaActualizacion), "Sin registro");
-    setTextById("detalle-tendencia-tag-texto", baseState.tendencia, "Tendencia emergente");
-    setTextById("detalle-etapa-tag-texto", baseState.etapa, "Etapa");
-    setTextById("detalle-proyeccion-tag-texto", baseState.proyeccion, "Proyeccion");
 
-    const descripcion = baseState.descripcion || crearDescripcionDetalle({ nombre: nombreFinal, ...baseState });
-    setTextById("detalle-descripcion", descripcion, "Informacion de contexto de la linea tecnologica.");
+    renderListById("detalle-proyeccion-list", proyeccionesFinales, "No registrada");
+
+    renderListById("detalle-tecnologias-list", tecnologiasFinales, "No registradas");
 
     detalleActivo = baseState.active !== false;
     guardarRegistroDetalle(nombreFinal);
@@ -531,14 +792,16 @@ document.addEventListener("DOMContentLoaded", () => {
     const nombreActual = titleEl.textContent.trim();
     const estadoActual = estadoLineas[nombreActual] || {
       active: true,
+      area: parseCardArea(card) || "",
       tendencia: tendenciasEmergentesDisponibles[0],
       etapa: etapasDisponibles[1],
-      proyeccion: proyeccionesDisponibles[0],
+      proyeccion: proyeccionesDisponibles[0]?.value || "",
     };
 
     lineaEnEdicion = { card, titleEl, oldName: nombreActual };
 
     modals.editInput.value = nombreActual;
+    modals.editArea.value = estadoActual.area || "";
     modals.editTendencia.value = estadoActual.tendencia;
     modals.editEtapa.value = estadoActual.etapa;
     modals.editProyeccion.value = estadoActual.proyeccion;
@@ -697,14 +960,16 @@ document.addEventListener("DOMContentLoaded", () => {
         const nombreActual = (detalleTitulo?.textContent || "Linea Tecnologica").trim();
         const estadoActual = estadoLineas[nombreActual] || {
           active: detalleActivo,
+          area: "",
           tendencia: tendenciasEmergentesDisponibles[0],
           etapa: etapasDisponibles[1],
-          proyeccion: proyeccionesDisponibles[0],
+          proyeccion: proyeccionesDisponibles[0]?.value || "",
         };
 
         lineaEnEdicion = { card: null, titleEl: detalleTitulo, oldName: nombreActual, isDetalle: true };
 
         modals.editInput.value = nombreActual;
+        modals.editArea.value = estadoActual.area || "";
         modals.editTendencia.value = estadoActual.tendencia;
         modals.editEtapa.value = estadoActual.etapa;
         modals.editProyeccion.value = estadoActual.proyeccion;
@@ -832,6 +1097,7 @@ document.addEventListener("DOMContentLoaded", () => {
   if (btnNuevaLinea) {
     btnNuevaLinea.addEventListener("click", () => {
       modals.createForm.reset();
+      modals.createArea.value = "";
       modals.createTendencia.value = "";
       modals.createEtapa.value = "";
       modals.createProyeccion.value = "";
@@ -849,6 +1115,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const nombreNuevaLinea = modals.createInput.value.trim() || "Nueva Linea";
     const nuevaState = {
       active: true,
+      area: modals.createArea.value,
       tendencia: modals.createTendencia.value,
       etapa: modals.createEtapa.value,
       proyeccion: modals.createProyeccion.value,
@@ -966,13 +1233,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const oldState = estadoLineas[lineaEnEdicion.oldName] || {
       active: true,
+      area: "",
       tendencia: tendenciasEmergentesDisponibles[0],
       etapa: etapasDisponibles[1],
-      proyeccion: proyeccionesDisponibles[0],
+      proyeccion: proyeccionesDisponibles[0]?.value || "",
     };
     delete estadoLineas[lineaEnEdicion.oldName];
     estadoLineas[nuevoNombre] = {
       active: oldState.active,
+      area: modals.editArea.value,
       tendencia: modals.editTendencia.value,
       etapa: modals.editEtapa.value,
       proyeccion: modals.editProyeccion.value,
@@ -1089,24 +1358,27 @@ document.addEventListener("DOMContentLoaded", () => {
 
               <div class="flex flex-col gap-4 mb-5">
                 <div>
+                  <label class="mb-1 block text-sm font-medium text-sena-text-main">Area</label>
+                  <select id="linea-edit-area" class="w-full rounded-lg border border-sena-border pl-3 pr-10 py-2 text-sm text-sena-text-main bg-white focus:border-sena focus:ring-2 focus:ring-sena/20" required>
+                    <option value="">Seleccionar area...</option>
+                  </select>
+                </div>
+                <div>
                   <label class="mb-1 block text-sm font-medium text-sena-text-main">Etapa de Desarrollo o tendencia Actual</label>
                   <select id="linea-edit-etapa" class="w-full rounded-lg border border-sena-border pl-3 pr-10 py-2 text-sm text-sena-text-main bg-white focus:border-sena focus:ring-2 focus:ring-sena/20" required>
                     <option value="">Seleccionar etapa...</option>
-                    ${etapasDisponibles.map((o) => `<option value="${o}">${o}</option>`).join("")}
                   </select>
                 </div>
                 <div>
                   <label class="mb-1 block text-sm font-medium text-sena-text-main">Tendencias Tecnologicas Emergentes</label>
                   <select id="linea-edit-tendencia" class="w-full rounded-lg border border-sena-border pl-3 pr-10 py-2 text-sm text-sena-text-main bg-white focus:border-sena focus:ring-2 focus:ring-sena/20" required>
                     <option value="">Seleccionar tendencia tecnologica emergente...</option>
-                    ${tendenciasEmergentesDisponibles.map((o) => `<option value="${o}">${o}</option>`).join("")}
                   </select>
                 </div>
                 <div>
                   <label class="mb-1 block text-sm font-medium text-sena-text-main">Proyeccion a Futuro</label>
                   <select id="linea-edit-proyeccion" class="w-full rounded-lg border border-sena-border pl-3 pr-10 py-2 text-sm text-sena-text-main bg-white focus:border-sena focus:ring-2 focus:ring-sena/20" required>
                     <option value="">Seleccionar proyeccion...</option>
-                    ${proyeccionesDisponibles.map((o) => `<option value="${o}">${o}</option>`).join("")}
                   </select>
                 </div>
               </div>
@@ -1139,24 +1411,27 @@ document.addEventListener("DOMContentLoaded", () => {
 
               <div class="flex flex-col gap-4 mb-5">
                 <div>
+                  <label class="mb-1 block text-sm font-medium text-sena-text-main">Area</label>
+                  <select id="linea-create-area" class="w-full rounded-lg border border-sena-border pl-3 pr-10 py-2 text-sm text-sena-text-main bg-white focus:border-sena focus:ring-2 focus:ring-sena/20" required>
+                    <option value="">Seleccionar area...</option>
+                  </select>
+                </div>
+                <div>
                   <label class="mb-1 block text-sm font-medium text-sena-text-main">Etapa de Desarrollo o tendencia Actual</label>
                   <select id="linea-create-etapa" class="w-full rounded-lg border border-sena-border pl-3 pr-10 py-2 text-sm text-sena-text-main bg-white focus:border-sena focus:ring-2 focus:ring-sena/20" required>
                     <option value="">Seleccionar etapa...</option>
-                    ${etapasDisponibles.map((o) => `<option value="${o}">${o}</option>`).join("")}
                   </select>
                 </div>
                 <div>
                   <label class="mb-1 block text-sm font-medium text-sena-text-main">Tendencias Tecnologicas Emergentes</label>
                   <select id="linea-create-tendencia" class="w-full rounded-lg border border-sena-border pl-3 pr-10 py-2 text-sm text-sena-text-main bg-white focus:border-sena focus:ring-2 focus:ring-sena/20" required>
                     <option value="">Seleccionar tendencia tecnologica emergente...</option>
-                    ${tendenciasEmergentesDisponibles.map((o) => `<option value="${o}">${o}</option>`).join("")}
                   </select>
                 </div>
                 <div>
                   <label class="mb-1 block text-sm font-medium text-sena-text-main">Proyeccion a Futuro</label>
                   <select id="linea-create-proyeccion" class="w-full rounded-lg border border-sena-border pl-3 pr-10 py-2 text-sm text-sena-text-main bg-white focus:border-sena focus:ring-2 focus:ring-sena/20" required>
                     <option value="">Seleccionar proyeccion...</option>
-                    ${proyeccionesDisponibles.map((o) => `<option value="${o}">${o}</option>`).join("")}
                   </select>
                 </div>
               </div>
@@ -1251,6 +1526,7 @@ document.addEventListener("DOMContentLoaded", () => {
       createModal: document.getElementById("linea-modal-crear"),
       createForm: document.getElementById("linea-create-form"),
       createInput: document.getElementById("linea-create-input"),
+      createArea: document.getElementById("linea-create-area"),
       createTendencia: document.getElementById("linea-create-tendencia"),
       createEtapa: document.getElementById("linea-create-etapa"),
       createProyeccion: document.getElementById("linea-create-proyeccion"),
@@ -1259,6 +1535,7 @@ document.addEventListener("DOMContentLoaded", () => {
       editModal: document.getElementById("linea-modal-editar"),
       editForm: document.getElementById("linea-edit-form"),
       editInput: document.getElementById("linea-edit-input"),
+      editArea: document.getElementById("linea-edit-area"),
       editTendencia: document.getElementById("linea-edit-tendencia"),
       editEtapa: document.getElementById("linea-edit-etapa"),
       editProyeccion: document.getElementById("linea-edit-proyeccion"),
