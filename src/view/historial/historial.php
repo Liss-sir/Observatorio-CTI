@@ -98,21 +98,6 @@ include __DIR__ . '../../../includes/header.php';
             </div>
           </div>
         </div>
-        <!-- Sesiones / Registros -->
-        <div class="min-w-[230px] flex-1 bg-white rounded-xl border border-sena-border px-4 h-20 flex items-center">
-          <div class="flex items-center gap-3 w-full justify-center">
-            <div class="w-10 h-10 shrink-0 rounded-full bg-sky-100 flex items-center justify-center">
-              <svg class="w-5 h-5 text-sky-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 1 1-8 0 4 4 0 0 1 8 0Z"/>
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14a7 7 0 0 0-7 7h14a7 7 0 0 0-7-7Z"/>
-              </svg>
-            </div>
-            <div class="flex items-center gap-2 whitespace-nowrap">
-              <p id="historial-stat-sesiones" class="text-2xl font-bold text-sena-text-main">0</p>
-              <p class="text-sm text-sena-text-main">Sesiones / Registros</p>
-            </div>
-          </div>
-        </div>
       </div>
 
       <!-- Filtros -->

@@ -10,7 +10,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const statCreaciones = document.getElementById("historial-stat-creaciones");
   const statEdiciones = document.getElementById("historial-stat-ediciones");
   const statDesactivaciones = document.getElementById("historial-stat-desactivaciones");
-  const statSesiones = document.getElementById("historial-stat-sesiones");
 
   if (!searchInput || !actionSelect || !moduleSelect || !roleSelect || !resultsLabel || !listContainer || !emptyState) {
     return;
@@ -276,7 +275,6 @@ document.addEventListener("DOMContentLoaded", () => {
     if (statCreaciones) statCreaciones.textContent = String(countByAction.INSERT || 0);
     if (statEdiciones) statEdiciones.textContent = String(countByAction.UPDATE || 0);
     if (statDesactivaciones) statDesactivaciones.textContent = String(countByAction.DELETE || 0);
-    if (statSesiones) statSesiones.textContent = "0";
   }
 
   function applyFilters() {
