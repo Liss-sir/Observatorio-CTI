@@ -1,5 +1,8 @@
 <?php
-require_once '../models/MiPerfil.php';
+
+header("Content-Type: application/json; charset=utf-8");
+require_once __DIR__ ."/../models/MiPerfil.php";
+require_once __DIR__ . "/../../config/database.php";
 
 class MiPerfilController {
     private $model;
@@ -107,4 +110,28 @@ class MiPerfilController {
             echo json_encode(['error' => 'Error al actualizar el perfil']);
         }
     }
+}
+
+
+$action = $_GET['action'] ?? 'index';
+
+// Verificar que la conexión exista
+if (!isset($conn)) {
+    echo json_encode(["error" => "Error de conexión a la base de datos"]);
+    exit;
+}
+
+$controller = new MiPerfilController($conn);
+
+switch ($action) {
+    case 'index':
+        $controller->index();
+        break;
+    case 'update':
+        $controller->update();
+        break;
+    default:
+        http_response_code(400);
+        echo json_encode(['error' => 'Acción no válida']);
+        break;
 }
