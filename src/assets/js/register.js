@@ -1,8 +1,3 @@
-/**
- * Register.js - Manejo del formulario de registro
- * Incluye: toggle de contraseñas, validaciones, envío AJAX y modal de éxito
- */
-
 document.addEventListener('DOMContentLoaded', function() {
     
     // ===== 1. INICIALIZAR LUCIDE ICONS =====

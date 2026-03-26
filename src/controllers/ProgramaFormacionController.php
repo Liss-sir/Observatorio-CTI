@@ -237,13 +237,10 @@ class ProgramaFormacionController {
 
     // Change state in programs
     public function cambiarEstado($id, $accion) {
-
-        if (!tienePermiso('desactivar_programa')) {
-            echo json_encode([
-                'success' => false,
-                'error' => 'No autorizado'
-            ]);
-            return;
+        if ($accion === 'desactivar') {
+            verificarPermiso('desactivar_programa');
+        } else {
+            verificarPermiso('editar_programa');
         }
 
         if (!$id) {

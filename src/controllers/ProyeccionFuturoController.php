@@ -141,7 +141,13 @@ class ProyeccionFuturoController {
 
     // Cambiar estado de la proyección
     public function cambiarEstado($id, $accion) {
-        if (!$id) { 
+        if ($accion === 'desactivar') {
+            verificarPermiso('desactivar_proyeccion');
+        } else {
+            verificarPermiso('editar_proyeccion');
+        }
+
+        if (!$id) {
             echo json_encode([
                 'success' => false,
                 'error' => 'ID de proyección requerido'
