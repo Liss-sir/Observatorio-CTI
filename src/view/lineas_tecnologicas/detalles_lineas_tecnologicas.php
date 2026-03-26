@@ -107,6 +107,16 @@ $footerFragment = extract_tag_from_include(__DIR__ . '/../../includes/footer.php
             <li>No registrada</li>
           </ul>
         </div>
+
+        <div class="border border-sena-border rounded-xl bg-white p-5">
+          <h3 class="flex items-center gap-2 text-sm font-semibold text-sena-text-main mb-3">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" class="w-4 h-4 text-sena"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6l4 2" /><path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg>
+            Tecnologias Emergentes Relacionadas
+          </h3>
+          <ul id="detalle-tecnologias-list" class="list-disc pl-5 space-y-2 text-sm text-sena-text-main">
+            <li>No registradas</li>
+          </ul>
+        </div>
       </div>
 
       <!-- ======== RIGHT COLUMN ======== -->
@@ -122,12 +132,10 @@ $footerFragment = extract_tag_from_include(__DIR__ . '/../../includes/footer.php
 
         <div class="border border-sena-border rounded-xl bg-white p-5">
           <h3 class="flex items-center gap-2 text-sm font-semibold text-sena-text-main mb-3">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" class="w-4 h-4 text-sena"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6l4 2" /><path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg>
-            Tecnologias Emergentes Relacionadas
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" class="w-4 h-4 text-sena"><path stroke-linecap="round" stroke-linejoin="round" d="M12 14 21 9l-9-5-9 5 9 5Zm0 0v6" /><path stroke-linecap="round" stroke-linejoin="round" d="M7.5 12.5v4.5c0 .6 2 2 4.5 2s4.5-1.4 4.5-2v-4.5" /></svg>
+            Programa de Formación
           </h3>
-          <ul id="detalle-tecnologias-list" class="list-disc pl-5 space-y-2 text-sm text-sena-text-main">
-            <li>No registradas</li>
-          </ul>
+          <p id="detalle-programa-formacion-texto" class="text-sm font-medium text-sena-text-main">No registrado</p>
         </div>
 
         <!-- Linea Vigente -->

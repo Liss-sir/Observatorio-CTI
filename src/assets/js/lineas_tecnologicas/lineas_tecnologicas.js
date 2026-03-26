@@ -6,6 +6,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const lineasEncontradasCount = document.getElementById("lineas-encontradas-count");
   const lineasEncontradasLabel = document.getElementById("lineas-encontradas-label");
   const btnNuevaLinea = document.getElementById("btn-nueva-linea");
+  const emptyState = document.getElementById("linea-empty-state");
+  const btnCrearDesdeEmpty = document.getElementById("btn-crear-desde-empty");
   const btnDetalleEditar = document.getElementById("btn-detalle-editar");
   const btnDetalleDeshabilitar = document.getElementById("btn-detalle-deshabilitar");
   const detalleTitulo = document.getElementById("detalle-linea-titulo");
@@ -14,148 +16,11 @@ document.addEventListener("DOMContentLoaded", () => {
   const detalleEstadoTexto = document.getElementById("detalle-estado-texto");
   const STORAGE_KEY = "observatorio_lineas_tecnologicas_v1";
 
-  const tendenciasEmergentesDisponibles = [
-    "Manufactura aditiva",
-    "Avances en técnicas de mecanizado",
-    "Sistemas de soldadura",
-    "Sistemas de corte automatizado",
-    "Digitalización del mantenimiento",
-    "IA y ciberseguridad",
-    "Construcción modular y sostenible",
-    "IoT y robótica",
-    "Desarrollo de sistemas de control y automatización",
-  ];
-
-  const etapasDisponibles = [
-    "Investigación inicial",
-    "Desarrollo tecnológico",
-    "Implementación piloto",
-    "Adopción industrial",
-  ];
-
-  const estadosInicialesPorNombre = {
-    "Computacion en la Nube": {
-      active: true,
-      tendencia: "Digitalización del mantenimiento",
-      etapa: "Implementación piloto",
-      proyeccion: "5 años",
-    },
-    "Ciberseguridad Avanzada": {
-      active: true,
-      tendencia: "IA y ciberseguridad",
-      etapa: "Desarrollo tecnológico",
-      proyeccion: "5 años",
-    },
-    "Big Data y Analitica": {
-      active: true,
-      tendencia: "IA y ciberseguridad",
-      etapa: "Investigación inicial",
-      proyeccion: "10 años",
-    },
-    "Inteligencia Artificial": {
-      active: true,
-      tendencia: "IA y ciberseguridad",
-      etapa: "Desarrollo tecnológico",
-      proyeccion: "5 años",
-    },
-    Blockchain: {
-      active: true,
-      tendencia: "IA y ciberseguridad",
-      etapa: "Investigación inicial",
-      proyeccion: "Más de 10 años",
-    },
-    "Internet de las Cosas (IoT)": {
-      active: true,
-      tendencia: "IoT y robótica",
-      etapa: "Implementación piloto",
-      proyeccion: "5 años",
-    },
-    "Manufactura Aditiva (Impresion 3D)": {
-      active: true,
-      tendencia: "Manufactura aditiva",
-      etapa: "Implementación piloto",
-      proyeccion: "10 años",
-    },
-    "Realidad Aumentada/Virtual": {
-      active: true,
-      tendencia: "IA y ciberseguridad",
-      etapa: "Investigación inicial",
-      proyeccion: "Más de 10 años",
-    },
-    "Robotica Colaborativa": {
-      active: true,
-      tendencia: "IoT y robótica",
-      etapa: "Desarrollo tecnológico",
-      proyeccion: "10 años",
-    },
-  };
-
-  const detalleDatosPorNombre = {
-    "Computacion en la Nube": {
-      area: "Tecnologias de la Informacion",
-      tendenciaActual: "Digitalizacion del mantenimiento",
-      proyecciones: [{ nombre: "Adopcion de arquitecturas cloud nativas", anio: "5 años" }],
-      tecnologiasEmergentes: ["IA y ciberseguridad", "IoT y robotica"],
-    },
-    "Ciberseguridad Avanzada": {
-      area: "Tecnologias de la Informacion",
-      tendenciaActual: "IA y ciberseguridad",
-      proyecciones: [{ nombre: "Fortalecimiento de seguridad ofensiva", anio: "5 años" }],
-      tecnologiasEmergentes: ["IA y ciberseguridad", "Zero Trust"],
-    },
-    "Big Data y Analitica": {
-      area: "Tecnologias de la Informacion",
-      tendenciaActual: "IA y ciberseguridad",
-      proyecciones: [{ nombre: "Analitica predictiva aplicada", anio: "10 años" }],
-      tecnologiasEmergentes: ["IA y ciberseguridad", "Ingenieria de datos"],
-    },
-    "Inteligencia Artificial": {
-      area: "Tecnologias de la Informacion",
-      tendenciaActual: "IA y ciberseguridad",
-      proyecciones: [{ nombre: "Modelos de IA para industria", anio: "5 años" }],
-      tecnologiasEmergentes: ["Vision por computador", "NLP"],
-    },
-    Blockchain: {
-      area: "Tecnologias de la Informacion",
-      tendenciaActual: "IA y ciberseguridad",
-      proyecciones: [{ nombre: "Trazabilidad digital empresarial", anio: "Más de 10 años" }],
-      tecnologiasEmergentes: ["Smart contracts", "Identidad digital"],
-    },
-    "Internet de las Cosas (IoT)": {
-      area: "Electronica y Automatizacion",
-      tendenciaActual: "IoT y robotica",
-      proyecciones: [{ nombre: "Sensores inteligentes para planta", anio: "5 años" }],
-      tecnologiasEmergentes: ["Edge computing", "5G industrial"],
-    },
-    "Manufactura Aditiva (Impresion 3D)": {
-      area: "Biotecnologia y Nanotecnologia",
-      tendenciaActual: "Manufactura aditiva",
-      proyecciones: [{ nombre: "Escalamiento de impresion 3D", anio: "10 años" }],
-      tecnologiasEmergentes: ["Materiales avanzados", "Gemelos digitales"],
-    },
-    "Realidad Aumentada/Virtual": {
-      area: "Tecnologias de la Informacion",
-      tendenciaActual: "IA y ciberseguridad",
-      proyecciones: [{ nombre: "Simulacion inmersiva para formacion", anio: "Más de 10 años" }],
-      tecnologiasEmergentes: ["XR industrial", "Interfaces inmersivas"],
-    },
-    "Robotica Colaborativa": {
-      area: "Electronica y Automatizacion",
-      tendenciaActual: "IoT y robotica",
-      proyecciones: [{ nombre: "Celdas de trabajo colaborativas", anio: "10 años" }],
-      tecnologiasEmergentes: ["Cobots", "Control inteligente"],
-    },
-  };
-
-  const areasDisponibles = Array.from(
-    new Set(
-      Object.values(detalleDatosPorNombre)
-        .map((detalle) => String(detalle?.area || "").trim())
-        .filter(Boolean)
-    )
-  );
-
-  const proyeccionesDisponibles = construirCatalogoProyecciones();
+  const areasDisponibles = [];
+  const programasFormacionDisponibles = [];
+  const tendenciasEmergentesDisponibles = [];
+  const etapasDisponibles = [];
+  const proyeccionesDisponibles = [];
 
   const estadoLineas = {};
   let lineaEnEdicion = null;
@@ -164,6 +29,24 @@ document.addEventListener("DOMContentLoaded", () => {
   let successTimeout = null;
   let successInterval = null;
   let detalleActivo = true;
+
+  function getStorageLineas() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      const parsed = raw ? JSON.parse(raw) : {};
+      return parsed && typeof parsed === "object" ? parsed : {};
+    } catch (error) {
+      return {};
+    }
+  }
+
+  function setStorageLineas(value) {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(value));
+    } catch (error) {
+      // Ignore storage failures to avoid blocking UI behavior.
+    }
+  }
 
   const modals = crearModales();
   aplicarEstiloFlechaSelect();
@@ -232,12 +115,150 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  function agregarUnico(collection, value) {
+    const text = String(value || "").trim();
+    if (!text) {
+      return;
+    }
+
+    const exists = collection.some((item) => normalizarTexto(item) === normalizarTexto(text));
+    if (!exists) {
+      collection.push(text);
+    }
+  }
+
+  function agregarProyeccionUnica(value, label) {
+    const optionValue = String(value || "").trim();
+    const optionLabel = String(label || optionValue).trim();
+    if (!optionValue || !optionLabel) {
+      return;
+    }
+
+    const exists = proyeccionesDisponibles.some((item) => normalizarTexto(item.value) === normalizarTexto(optionValue));
+    if (!exists) {
+      proyeccionesDisponibles.push({ value: optionValue, label: optionLabel });
+    }
+  }
+
+  function extraerProyeccionDesdeTexto(texto) {
+    const raw = String(texto || "").trim();
+    if (!raw) {
+      return null;
+    }
+
+    const parts = raw.split(":");
+    if (parts.length < 2) {
+      return { value: raw, label: raw };
+    }
+
+    const value = parts.slice(1).join(":").trim();
+    const label = raw;
+    return value ? { value, label } : { value: raw, label: raw };
+  }
+
+  function obtenerProgramaFormacion(registro) {
+    return String(
+      (registro && (registro.programaFormacion || registro.programa_formacion || registro.programa)) || ""
+    ).trim();
+  }
+
+  function parseCardResumen(card) {
+    const resumen = card.querySelector("h3 + p");
+    const text = (resumen?.textContent || "").replace(/\s+/g, " ").trim();
+    const match = text.match(/(\d+)\s+vigentes?\s*[·\-]\s*(\d+)\s+lineas?/i);
+
+    if (!match) {
+      return { vigentes: 0, totalLineas: 0 };
+    }
+
+    return {
+      vigentes: Number.parseInt(match[1], 10) || 0,
+      totalLineas: Number.parseInt(match[2], 10) || 0,
+    };
+  }
+
+  function parseCardPerfiles(card) {
+    const counter = card.querySelector(".linea-tec-controls span") || card.querySelector(".flex.justify-between.items-start span");
+    const text = (counter?.textContent || "").trim();
+    const match = text.match(/(\d+)/);
+    return match ? Number.parseInt(match[1], 10) || 0 : 0;
+  }
+
+  function parseCardTecnologias(card) {
+    return Array.from(card.querySelectorAll(".flex.flex-wrap.gap-2 span"))
+      .map((chip) => chip.textContent.trim())
+      .filter(Boolean);
+  }
+
+  function parseCardArea(card) {
+    const chips = parseCardTecnologias(card);
+    return chips.length > 0 ? chips[0] : "";
+  }
+
+  function hidratarCatalogosIniciales() {
+    const data = getStorageLineas();
+
+    Object.values(data).forEach((registro) => {
+      if (!registro || typeof registro !== "object") {
+        return;
+      }
+
+      agregarUnico(areasDisponibles, registro.area);
+      agregarUnico(programasFormacionDisponibles, obtenerProgramaFormacion(registro));
+      agregarUnico(tendenciasEmergentesDisponibles, registro.tendencia);
+      agregarUnico(etapasDisponibles, registro.etapa);
+
+      const proyeccionSimple = extraerProyeccionDesdeTexto(registro.proyeccion);
+      if (proyeccionSimple) {
+        agregarProyeccionUnica(proyeccionSimple.value, proyeccionSimple.label);
+      }
+
+      if (Array.isArray(registro.proyecciones)) {
+        registro.proyecciones.forEach((item) => {
+          if (typeof item === "string") {
+            const parsed = extraerProyeccionDesdeTexto(item);
+            if (parsed) {
+              agregarProyeccionUnica(parsed.value, parsed.label);
+            }
+            return;
+          }
+
+          if (item && typeof item === "object") {
+            const anio = String(item.anio || item.anios || "").trim();
+            const nombre = String(item.nombre || item.titulo || "").trim();
+            if (anio && nombre) {
+              agregarProyeccionUnica(anio, `${nombre}: ${anio}`);
+              return;
+            }
+            if (anio) {
+              agregarProyeccionUnica(anio, anio);
+            }
+          }
+        });
+      }
+    });
+
+    cards.forEach((card) => {
+      const chips = parseCardTecnologias(card);
+      if (chips[0]) {
+        agregarUnico(areasDisponibles, chips[0]);
+      }
+      if (chips[1]) {
+        agregarUnico(tendenciasEmergentesDisponibles, chips[1]);
+      }
+    });
+  }
+
+  hidratarCatalogosIniciales();
+
   fillSelect(modals.createArea, areasDisponibles, "Seleccionar area...");
+  fillSelect(modals.createPrograma, programasFormacionDisponibles, "Seleccionar programa de formacion...");
   fillSelect(modals.createTendencia, tendenciasEmergentesDisponibles, "Seleccionar tendencia tecnologica emergente...");
   fillSelect(modals.createEtapa, etapasDisponibles, "Seleccionar etapa...");
   fillSelect(modals.createProyeccion, proyeccionesDisponibles, "Seleccionar proyeccion...");
 
   fillSelect(modals.editArea, areasDisponibles, "Seleccionar area...");
+  fillSelect(modals.editPrograma, programasFormacionDisponibles, "Seleccionar programa de formacion...");
   fillSelect(modals.editTendencia, tendenciasEmergentesDisponibles, "Seleccionar tendencia tecnologica emergente...");
   fillSelect(modals.editEtapa, etapasDisponibles, "Seleccionar etapa...");
   fillSelect(modals.editProyeccion, proyeccionesDisponibles, "Seleccionar proyeccion...");
@@ -282,127 +303,51 @@ document.addEventListener("DOMContentLoaded", () => {
     if (lineasEncontradasLabel) {
       lineasEncontradasLabel.textContent = visibles === 1 ? "linea encontrada" : "lineas encontradas";
     }
+    actualizarEmptyState();
   }
 
-  function getStorageLineas() {
-    try {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      const parsed = raw ? JSON.parse(raw) : {};
-      return parsed && typeof parsed === "object" ? parsed : {};
-    } catch (error) {
-      return {};
+  function actualizarEmptyState() {
+    const totalCards = cardsGrid.querySelectorAll("div.bg-white.rounded-xl").length;
+    if (emptyState) {
+      if (totalCards === 0) {
+        emptyState.classList.remove("hidden");
+      } else {
+        emptyState.classList.add("hidden");
+      }
     }
-  }
-
-  function setStorageLineas(value) {
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(value));
-    } catch (error) {
-      // Ignore storage failures to avoid blocking UI behavior.
-    }
-  }
-
-  function parseCardResumen(card) {
-    const resumen = card.querySelector("h3 + p");
-    const text = (resumen?.textContent || "").replace(/\s+/g, " ").trim();
-    const match = text.match(/(\d+)\s+vigentes?\s*[·\-]\s*(\d+)\s+lineas?/i);
-
-    if (!match) {
-      return { vigentes: 0, totalLineas: 0 };
-    }
-
-    return {
-      vigentes: Number.parseInt(match[1], 10) || 0,
-      totalLineas: Number.parseInt(match[2], 10) || 0,
-    };
-  }
-
-  function parseCardPerfiles(card) {
-    const counter = card.querySelector(".linea-tec-controls span") || card.querySelector(".flex.justify-between.items-start span");
-    const text = (counter?.textContent || "").trim();
-    const match = text.match(/(\d+)/);
-    return match ? Number.parseInt(match[1], 10) || 0 : 0;
-  }
-
-  function parseCardTecnologias(card) {
-    return Array.from(card.querySelectorAll(".flex.flex-wrap.gap-2 span"))
-      .map((chip) => chip.textContent.trim())
-      .filter(Boolean);
-  }
-
-  function parseCardArea(card) {
-    const chips = parseCardTecnologias(card);
-    return chips.length > 0 ? chips[0] : "";
   }
 
   function getDetalleDataForNombre(nombre) {
-    return detalleDatosPorNombre[nombre] || {
-      area: "",
-      tendenciaActual: "",
-      proyecciones: [],
-      tecnologiasEmergentes: [],
+    const registro = findRegistroByNombre(getStorageLineas(), nombre);
+    if (!registro) {
+      return {
+        area: "",
+        programaFormacion: "",
+        tendenciaActual: "",
+        proyecciones: [],
+        tecnologiasEmergentes: [],
+      };
+    }
+
+    const proyecciones = Array.isArray(registro.proyecciones) && registro.proyecciones.length > 0
+      ? registro.proyecciones
+      : registro.proyeccion
+        ? [registro.proyeccion]
+        : [];
+
+    const tecnologiasEmergentes = Array.isArray(registro.tecnologiasEmergentes) && registro.tecnologiasEmergentes.length > 0
+      ? registro.tecnologiasEmergentes
+      : Array.isArray(registro.tecnologias)
+        ? registro.tecnologias
+        : [];
+
+    return {
+      area: String(registro.area || "").trim(),
+      programaFormacion: obtenerProgramaFormacion(registro),
+      tendenciaActual: String(registro.tendencia || "").trim(),
+      proyecciones,
+      tecnologiasEmergentes,
     };
-  }
-
-  function construirCatalogoProyecciones() {
-    const fallback = [
-      { nombre: "Adopcion acelerada del sector", anio: "5 años" },
-      { nombre: "Escalamiento estrategico del sector", anio: "10 años" },
-      { nombre: "Transformacion estructural del sector", anio: "Más de 10 años" },
-    ];
-
-    const proyeccionesDetalle = Object.values(detalleDatosPorNombre).flatMap((detalle) => {
-      if (!Array.isArray(detalle?.proyecciones)) {
-        return [];
-      }
-
-      return detalle.proyecciones;
-    });
-
-    const base = proyeccionesDetalle.length > 0 ? proyeccionesDetalle : fallback;
-
-    const unicasPorAnios = new Map();
-
-    base.forEach((proyeccion) => {
-      const anio = String(proyeccion?.anio || proyeccion?.anios || "").trim();
-      if (!anio) {
-        return;
-      }
-
-      const nombre = String(proyeccion?.nombre || proyeccion?.titulo || getNombreProyeccionPorAnios(anio)).trim();
-      const key = normalizarTexto(anio);
-
-      if (!unicasPorAnios.has(key)) {
-        unicasPorAnios.set(key, {
-          value: anio,
-          label: `${nombre}: ${anio}`,
-        });
-      }
-    });
-
-    return Array.from(unicasPorAnios.values());
-  }
-
-  function getNombreProyeccionPorAnios(anioValue) {
-    const normalizado = normalizarTexto(String(anioValue || ""));
-
-    if (!normalizado) {
-      return "Transformacion digital del sector";
-    }
-
-    if (normalizado.includes("5")) {
-      return "Adopcion acelerada del sector";
-    }
-
-    if (normalizado.includes("10") && !normalizado.includes("mas")) {
-      return "Escalamiento estrategico del sector";
-    }
-
-    if (normalizado.includes("mas") || normalizado.includes("de 10")) {
-      return "Transformacion estructural del sector";
-    }
-
-    return "Transformacion digital del sector";
   }
 
   function mapProyeccionesToText(proyecciones, fallbackAnios = "") {
@@ -418,8 +363,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (item && typeof item === "object") {
           const anio = String(item.anio || item.anios || fallbackAnios || "").trim();
-          const nombre = String(item.nombre || item.titulo || getNombreProyeccionPorAnios(anio || fallbackAnios)).trim();
-          return anio ? `${nombre}: ${anio}` : nombre;
+          const nombre = String(item.nombre || item.titulo || "").trim();
+
+          if (nombre && anio) {
+            return `${nombre}: ${anio}`;
+          }
+          return nombre || anio;
         }
 
         return "";
@@ -435,7 +384,7 @@ document.addEventListener("DOMContentLoaded", () => {
       return [];
     }
 
-    return [`${getNombreProyeccionPorAnios(anios)}: ${anios}`];
+    return [anios];
   }
 
   function actualizarLinkDetalle(card, nombre) {
@@ -456,6 +405,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const resumen = parseCardResumen(card);
     const detalle = getDetalleDataForNombre(nombre);
     const area = state.area || detalle.area || parseCardArea(card) || "";
+    const programaFormacion = state.programaFormacion || detalle.programaFormacion || "";
     const tendencia = state.tendencia || detalle.tendenciaActual || "";
     const proyeccionesTexto = mapProyeccionesToText(detalle.proyecciones, state.proyeccion);
     const tecnologias = Array.isArray(detalle.tecnologiasEmergentes)
@@ -466,6 +416,7 @@ document.addEventListener("DOMContentLoaded", () => {
       nombre,
       active: state.active !== false,
       area,
+      programaFormacion,
       tendencia,
       etapa: state.etapa || "",
       proyeccion: state.proyeccion || "",
@@ -482,15 +433,14 @@ document.addEventListener("DOMContentLoaded", () => {
   function getDefaultStateForNombre(nombre) {
     const detalle = getDetalleDataForNombre(nombre);
 
-    return (
-      estadosInicialesPorNombre[nombre] || {
-        active: true,
-        area: detalle.area || areasDisponibles[0] || "",
-        tendencia: detalle.tendenciaActual || tendenciasEmergentesDisponibles[0] || "",
-        etapa: etapasDisponibles[1] || etapasDisponibles[0] || "",
-        proyeccion: proyeccionesDisponibles[0]?.value || "",
-      }
-    );
+    return {
+      active: true,
+      area: detalle.area || areasDisponibles[0] || "",
+      programaFormacion: detalle.programaFormacion || programasFormacionDisponibles[0] || "",
+      tendencia: detalle.tendenciaActual || tendenciasEmergentesDisponibles[0] || "",
+      etapa: etapasDisponibles[0] || "",
+      proyeccion: proyeccionesDisponibles[0]?.value || "",
+    };
   }
 
   function getLineaFromQuery() {
@@ -603,6 +553,11 @@ document.addEventListener("DOMContentLoaded", () => {
       ? existente.area
       : state.area || detalle.area || "";
 
+    const programaFormacionFinal = obtenerProgramaFormacion(existente)
+      || state.programaFormacion
+      || detalle.programaFormacion
+      || "";
+
     const tendenciaFinal = state.tendencia || detalle.tendenciaActual || "";
 
     const proyeccionesFinales = Array.isArray(existente.proyecciones) && existente.proyecciones.length > 0
@@ -619,6 +574,7 @@ document.addEventListener("DOMContentLoaded", () => {
       nombre,
       active: state.active !== false,
       area: areaFinal,
+      programaFormacion: programaFormacionFinal,
       tendencia: tendenciaFinal,
       etapa: state.etapa || "",
       proyeccion: state.proyeccion || "",
@@ -652,6 +608,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const nombreFinal = (baseState.nombre || nombreBase || "Linea Tecnologica").trim();
     const detalle = getDetalleDataForNombre(nombreFinal);
     const areaFinal = baseState.area || detalle.area || "";
+    const programaFormacionFinal = obtenerProgramaFormacion(baseState) || detalle.programaFormacion || "";
     const tendenciaFinal = baseState.tendencia || detalle.tendenciaActual || "";
 
     const proyeccionesFinales = Array.isArray(baseState.proyecciones) && baseState.proyecciones.length > 0
@@ -671,6 +628,7 @@ document.addEventListener("DOMContentLoaded", () => {
     estadoLineas[nombreFinal] = {
       active: baseState.active !== false,
       area: areaFinal,
+      programaFormacion: programaFormacionFinal,
       tendencia: tendenciaFinal,
       etapa: baseState.etapa || "",
       proyeccion: baseState.proyeccion || "",
@@ -682,6 +640,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     setTextById("detalle-tendencia-texto", tendenciaFinal);
     setTextById("detalle-area-texto", areaFinal, "No registrada");
+    setTextById("detalle-programa-formacion-texto", programaFormacionFinal, "No registrado");
     setTextById("detalle-fecha-actualizacion", formatFechaDetalle(baseState.fechaActualizacion), "Sin registro");
 
     renderListById("detalle-proyeccion-list", proyeccionesFinales, "No registrada");
@@ -765,6 +724,7 @@ document.addEventListener("DOMContentLoaded", () => {
     cards.push(card);
     inicializarCard(card, cards.length - 1);
     actualizarLinkDetalle(card, nombre);
+    actualizarEmptyState();
     return card;
   }
 
@@ -793,8 +753,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const estadoActual = estadoLineas[nombreActual] || {
       active: true,
       area: parseCardArea(card) || "",
-      tendencia: tendenciasEmergentesDisponibles[0],
-      etapa: etapasDisponibles[1],
+      programaFormacion: "",
+      tendencia: tendenciasEmergentesDisponibles[0] || "",
+      etapa: etapasDisponibles[0] || "",
       proyeccion: proyeccionesDisponibles[0]?.value || "",
     };
 
@@ -802,6 +763,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     modals.editInput.value = nombreActual;
     modals.editArea.value = estadoActual.area || "";
+    modals.editPrograma.value = estadoActual.programaFormacion || "";
     modals.editTendencia.value = estadoActual.tendencia;
     modals.editEtapa.value = estadoActual.etapa;
     modals.editProyeccion.value = estadoActual.proyeccion;
@@ -961,8 +923,9 @@ document.addEventListener("DOMContentLoaded", () => {
         const estadoActual = estadoLineas[nombreActual] || {
           active: detalleActivo,
           area: "",
-          tendencia: tendenciasEmergentesDisponibles[0],
-          etapa: etapasDisponibles[1],
+          programaFormacion: "",
+          tendencia: tendenciasEmergentesDisponibles[0] || "",
+          etapa: etapasDisponibles[0] || "",
           proyeccion: proyeccionesDisponibles[0]?.value || "",
         };
 
@@ -970,6 +933,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         modals.editInput.value = nombreActual;
         modals.editArea.value = estadoActual.area || "";
+        modals.editPrograma.value = estadoActual.programaFormacion || "";
         modals.editTendencia.value = estadoActual.tendencia;
         modals.editEtapa.value = estadoActual.etapa;
         modals.editProyeccion.value = estadoActual.proyeccion;
@@ -1093,11 +1057,25 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   aplicarFiltroBusqueda();
+  actualizarEmptyState();
 
   if (btnNuevaLinea) {
     btnNuevaLinea.addEventListener("click", () => {
       modals.createForm.reset();
       modals.createArea.value = "";
+      modals.createPrograma.value = "";
+      modals.createTendencia.value = "";
+      modals.createEtapa.value = "";
+      modals.createProyeccion.value = "";
+      abrirModal(modals.createModal);
+    });
+  }
+
+  if (btnCrearDesdeEmpty) {
+    btnCrearDesdeEmpty.addEventListener("click", () => {
+      modals.createForm.reset();
+      modals.createArea.value = "";
+      modals.createPrograma.value = "";
       modals.createTendencia.value = "";
       modals.createEtapa.value = "";
       modals.createProyeccion.value = "";
@@ -1116,6 +1094,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const nuevaState = {
       active: true,
       area: modals.createArea.value,
+      programaFormacion: modals.createPrograma.value,
       tendencia: modals.createTendencia.value,
       etapa: modals.createEtapa.value,
       proyeccion: modals.createProyeccion.value,
@@ -1124,14 +1103,14 @@ document.addEventListener("DOMContentLoaded", () => {
     estadoLineas[nombreNuevaLinea] = nuevaState;
     const nuevaCard = crearCardLinea(nombreNuevaLinea, nuevaState);
     if (nuevaCard) {
-      guardarRegistroLinea(nombreNuevaLinea, nuevaCard);
+      // Temporal: creacion solo visual (sin persistencia en storage).
       aplicarFiltroBusqueda();
     }
 
     cerrarModal(modals.createModal);
     mostrarAlertaFinal({
       title: "Linea Creada",
-      message: `La linea \"${nombreNuevaLinea}\" fue creada correctamente.`,
+      message: `La linea \"${nombreNuevaLinea}\" fue creada visualmente.`,
       color: "#39A900",
       seconds: 3,
     });
@@ -1234,14 +1213,16 @@ document.addEventListener("DOMContentLoaded", () => {
     const oldState = estadoLineas[lineaEnEdicion.oldName] || {
       active: true,
       area: "",
-      tendencia: tendenciasEmergentesDisponibles[0],
-      etapa: etapasDisponibles[1],
+      programaFormacion: "",
+      tendencia: tendenciasEmergentesDisponibles[0] || "",
+      etapa: etapasDisponibles[0] || "",
       proyeccion: proyeccionesDisponibles[0]?.value || "",
     };
     delete estadoLineas[lineaEnEdicion.oldName];
     estadoLineas[nuevoNombre] = {
       active: oldState.active,
       area: modals.editArea.value,
+      programaFormacion: modals.editPrograma.value,
       tendencia: modals.editTendencia.value,
       etapa: modals.editEtapa.value,
       proyeccion: modals.editProyeccion.value,
@@ -1364,6 +1345,12 @@ document.addEventListener("DOMContentLoaded", () => {
                   </select>
                 </div>
                 <div>
+                  <label class="mb-1 block text-sm font-medium text-sena-text-main">Programa de Formacion</label>
+                  <select id="linea-edit-programa" class="w-full rounded-lg border border-sena-border pl-3 pr-10 py-2 text-sm text-sena-text-main bg-white focus:border-sena focus:ring-2 focus:ring-sena/20">
+                    <option value="">Seleccionar programa de formacion...</option>
+                  </select>
+                </div>
+                <div>
                   <label class="mb-1 block text-sm font-medium text-sena-text-main">Etapa de Desarrollo o tendencia Actual</label>
                   <select id="linea-edit-etapa" class="w-full rounded-lg border border-sena-border pl-3 pr-10 py-2 text-sm text-sena-text-main bg-white focus:border-sena focus:ring-2 focus:ring-sena/20" required>
                     <option value="">Seleccionar etapa...</option>
@@ -1414,6 +1401,12 @@ document.addEventListener("DOMContentLoaded", () => {
                   <label class="mb-1 block text-sm font-medium text-sena-text-main">Area</label>
                   <select id="linea-create-area" class="w-full rounded-lg border border-sena-border pl-3 pr-10 py-2 text-sm text-sena-text-main bg-white focus:border-sena focus:ring-2 focus:ring-sena/20" required>
                     <option value="">Seleccionar area...</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="mb-1 block text-sm font-medium text-sena-text-main">Programa de Formacion</label>
+                  <select id="linea-create-programa" class="w-full rounded-lg border border-sena-border pl-3 pr-10 py-2 text-sm text-sena-text-main bg-white focus:border-sena focus:ring-2 focus:ring-sena/20">
+                    <option value="">Seleccionar programa de formacion...</option>
                   </select>
                 </div>
                 <div>
@@ -1527,6 +1520,7 @@ document.addEventListener("DOMContentLoaded", () => {
       createForm: document.getElementById("linea-create-form"),
       createInput: document.getElementById("linea-create-input"),
       createArea: document.getElementById("linea-create-area"),
+      createPrograma: document.getElementById("linea-create-programa"),
       createTendencia: document.getElementById("linea-create-tendencia"),
       createEtapa: document.getElementById("linea-create-etapa"),
       createProyeccion: document.getElementById("linea-create-proyeccion"),
@@ -1536,6 +1530,7 @@ document.addEventListener("DOMContentLoaded", () => {
       editForm: document.getElementById("linea-edit-form"),
       editInput: document.getElementById("linea-edit-input"),
       editArea: document.getElementById("linea-edit-area"),
+      editPrograma: document.getElementById("linea-edit-programa"),
       editTendencia: document.getElementById("linea-edit-tendencia"),
       editEtapa: document.getElementById("linea-edit-etapa"),
       editProyeccion: document.getElementById("linea-edit-proyeccion"),
