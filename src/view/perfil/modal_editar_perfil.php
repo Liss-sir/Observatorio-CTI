@@ -1,60 +1,65 @@
-<div id="modalEditar" class="fixed inset-0 bg-black/40 hidden items-center justify-center z-[999]">
-
-    <div class="bg-white rounded-2xl w-full max-w-md p-6">
-
-        <!-- HEADER -->
-        <div class="flex items-center gap-3 mb-5">
-            <i data-lucide="pencil" class="w-5 h-5 text-green-700"></i>
-            <div>
-                <h4 class="font-semibold text-sm">Editar perfil</h4>
-                <p class="text-xs text-gray-500">
-                    Modifica tu información personal y guarda los cambios.
-                </p>
-            </div>
+<!-- Modal Editar Perfil -->
+<div id="modalEditar" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+    <div class="bg-white rounded-2xl p-8 max-w-md w-full mx-4 shadow-xl">
+        <div class="flex justify-between items-center mb-6">
+            <h3 class="text-xl font-semibold">Editar perfil</h3>
+            <button id="btnCerrarModal" class="text-gray-400 hover:text-gray-600">
+                <i data-lucide="x" class="w-6 h-6"></i>
+            </button>
         </div>
-
-        <!-- FORM -->
+        
+        <p class="text-sm text-gray-500 mb-6">
+            Modifica tu información personal y guarda los cambios.
+        </p>
+        
         <div class="space-y-4">
-
-            <!-- NOMBRE -->
             <div>
-                <label class="flex items-center gap-2 text-sm text-gray-600 mb-1">
-                    <i data-lucide="user" class="w-4 h-4 text-green-600"></i>
+                <label class="block text-sm font-medium text-gray-700 mb-2">
                     Nombre completo
                 </label>
-                <input id="inputNombre"
-                       type="text"
-                       placeholder="Nombre completo"
-                       class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 outline-none">
+                <input 
+                    type="text" 
+                    id="inputNombre" 
+                    class="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-sena focus:border-transparent"
+                    placeholder="Tu nombre completo"
+                >
             </div>
-
-            <!-- CORREO -->
+            
             <div>
-                <label class="flex items-center gap-2 text-sm text-gray-600 mb-1">
-                    <i data-lucide="mail" class="w-4 h-4 text-green-600"></i>
+                <label class="block text-sm font-medium text-gray-700 mb-2">
                     Correo electrónico
                 </label>
-                <input id="inputCorreo"
-                       type="email"
-                       placeholder="Correo electrónico"
-                       class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 outline-none">
+                <input 
+                    type="email" 
+                    id="inputCorreo" 
+                    class="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-sena focus:border-transparent"
+                    placeholder="tu@correo.com"
+                >
             </div>
-
         </div>
-
-        <!-- BOTONES -->
-        <div class="flex justify-end gap-3 mt-6">
-            <button id="btnCancelar"
-                    class="px-4 py-2 border rounded-lg hover:bg-gray-100 transition">
+        
+        <div class="flex gap-3 mt-8">
+            <button 
+                id="btnCancelar" 
+                class="flex-1 px-4 py-2 border border-gray-300 rounded-xl hover:bg-gray-50"
+            >
                 Cancelar
             </button>
-
-            <button id="btnGuardar"
-                    class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition">
+            <button 
+                id="btnGuardar" 
+                class="flex-1 px-4 py-2 bg-sena text-white rounded-xl hover:bg-sena-strong"
+            >
                 Guardar cambios
             </button>
         </div>
-
     </div>
-
 </div>
+
+<script>
+    // Cerrar modal con botón X
+    document.getElementById('btnCerrarModal')?.addEventListener('click', () => {
+        const modal = document.getElementById('modalEditar');
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+    });
+</script>

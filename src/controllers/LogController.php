@@ -51,6 +51,23 @@ class LogController {
         echo json_encode($resultado);
     }
 
+    public function logout() {
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+        
+        // Destruir todas las variables de sesión
+        $_SESSION = array();
+        
+        // Destruir la sesión
+        session_destroy();
+        
+        echo json_encode([
+            'success' => true,
+            'message' => 'Sesión cerrada exitosamente'
+        ]);
+    }
+
     /**
      * POST /enviar-verificacion
      * Espera JSON con correo
@@ -91,6 +108,28 @@ class LogController {
         ]);
     }
 
+
+    /**
+     * Procesa la verificación mediante token (normalmente se accede desde el enlace del correo)
+     */
+    public function verificarCuenta() {
+        $token = $_GET['token'] ?? '';
+
+        if (empty($token)) {
+            echo json_encode([
+                'success' => false,
+                'error' => 'Token requerido'
+            ]);
+            return;
+        }
+
+        $resultado = $this->model->procesarVerificacion($token);
+        echo json_encode($resultado);
+    }
+
+    /**
+     * Procesa la verificación mediante la session
+     */
     public function verificarSesion() {
         // Iniciar sesión si no está iniciada
         if (session_status() === PHP_SESSION_NONE) {
@@ -114,45 +153,6 @@ class LogController {
                 'autenticado' => false
             ]);
         }
-    }
-
-    /**
-     * POST /logout
-     * Cierra la sesión del usuario
-     */
-    public function logout() {
-        if (session_status() === PHP_SESSION_NONE) {
-            session_start();
-        }
-        
-        // Destruir todas las variables de sesión
-        $_SESSION = array();
-        
-        // Destruir la sesión
-        session_destroy();
-        
-        echo json_encode([
-            'success' => true,
-            'message' => 'Sesión cerrada exitosamente'
-        ]);
-    }
-
-    /**
-     * Procesa la verificación mediante token (normalmente se accede desde el enlace del correo)
-     */
-    public function verificarCuenta() {
-        $token = $_GET['token'] ?? '';
-
-        if (empty($token)) {
-            echo json_encode([
-                'success' => false,
-                'error' => 'Token requerido'
-            ]);
-            return;
-        }
-
-        $resultado = $this->model->procesarVerificacion($token);
-        echo json_encode($resultado);
     }
 
     /**
@@ -344,6 +344,10 @@ switch ($accion) {
         $controller->login();
         break;
 
+    case 'logout':
+        $controller->logout();
+        break;
+
     case 'enviar-verificacion':
         $controller->enviarVerificacion();
         break;
@@ -370,10 +374,6 @@ switch ($accion) {
 
     case 'sesion':
         $controller->verificarSesion();
-        break;
-
-    case 'logout':
-        $controller->logout();
         break;
 
     default:
