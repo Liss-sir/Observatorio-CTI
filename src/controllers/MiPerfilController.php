@@ -43,10 +43,23 @@ class MiPerfilController {
         }
 
         // Estadísticas
-        $stats = $this->model->getStats();
+        // Determinar tipo de cuenta
+        $esAdmin = ($user['id_rol'] == 1);
 
-        // Últimos perfiles ocupacionales
-        $latestProfiles = $this->model->getLatestProfiles(2);
+        if ($esAdmin) {
+            $stats = $this->model->getStats();
+            $latestProfiles = $this->model->getLatestProfiles(5);
+        } else {
+            try {
+                $stats = $this->model->getStatsByEmpresa($userId);
+                $latestProfiles = $this->model->getLatestProfilesByEmpresa($userId, 5);
+            } catch (Exception $e) {
+                echo json_encode([
+                    'error' => $e->getMessage()
+                ]);
+                exit;
+            }
+        }
 
         // Formatear fecha de registro (ej. "febrero 2026")
         $registro = date('F Y', strtotime($user['fecha_registro']));
@@ -55,7 +68,7 @@ class MiPerfilController {
         $tipoCuenta = ($user['id_rol'] == 1) ? 'Administrador' : 'Empresa';
         $descripcionCuenta = ($user['id_rol'] == 1)
             ? 'Acceso completo a la plataforma'
-            : 'Acceso a módulos de empresa';
+            : 'Acceso parcial a la plataforma';
 
         $response = [
             'usuario' => [

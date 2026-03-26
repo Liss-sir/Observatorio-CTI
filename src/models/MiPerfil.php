@@ -46,13 +46,13 @@ class MiPerfil {
         $perfiles = $this->countRows("perfiles_ocupacionales", "estado = 1");
 
         // 2. Administradores activos (id_rol=1, estado=1)
-        $administradores = $this->countRows("usuarios", "id_rol = 1 AND estado = 1");
+        $administradores = $this->countRows("usuarios", "id_rol = 1");
 
         // 3. Empresas registradas (id_rol=2, estado=1)
-        $empresas = $this->countRows("usuarios", "id_rol = 2 AND estado = 1");
+        $empresas = $this->countRows("usuarios", "id_rol = 2");
 
         // 4. Usuarios totales activos (estado=1)
-        $usuariosTotales = $this->countRows("usuarios", "estado = 1");
+        $usuariosTotales = $this->countRows("usuarios");
 
         // 5. Programas de formación activos
         $programas = $this->countRows("programas_formacion", "estado = 1");
@@ -127,6 +127,58 @@ class MiPerfil {
         ");
         $stmt->execute();
         return (int) $stmt->fetchColumn();
+    }
+
+    //EMPRESA -- NUEVO
+    //ESTADISTICAS POR EMPRESA
+    public function getStatsByEmpresa($empresaId) {
+     
+
+        // Perfiles creados por la empresa
+        $sqlPerfiles = "SELECT COUNT(*) as total 
+                        FROM perfiles_ocupacionales
+                        WHERE id_usuario = :empresaId";
+        $stmt = $this->db->prepare($sqlPerfiles);
+        $stmt->bindParam(':empresaId', $empresaId, PDO::PARAM_INT);
+        $stmt->execute();
+        $perfiles = $stmt->fetch(PDO::FETCH_ASSOC)['total'] ?? 0;
+
+        // Programas de formación (ajusta si tienes relación con empresa)
+        $sqlProgramas = "SELECT COUNT(*) as total FROM programas_formacion";
+        $stmt = $this->db->prepare($sqlProgramas);
+        $stmt->execute();
+        $programas = $stmt->fetch(PDO::FETCH_ASSOC)['total'] ?? 0;
+
+        // Sugerencias (si tienes tabla relacionada)
+        $sqlSugerencias = "SELECT COUNT(*) as total 
+                        FROM sugerencias_blog
+                        WHERE id_usuario = :empresaId";
+        $stmt = $this->db->prepare($sqlSugerencias);
+        $stmt->bindParam(':empresaId', $empresaId, PDO::PARAM_INT);
+        $stmt->execute();
+        $sugerencias = $stmt->fetch(PDO::FETCH_ASSOC)['total'] ?? 0;
+
+        return [
+            'perfiles_registrados' => $perfiles,
+            'programas_formacion' => $programas,
+            'sugerencias' => $sugerencias
+        ];
+    }
+
+    //ULTIMOS PERFILES POR EMPRESA
+    public function getLatestProfilesByEmpresa($empresaId, $limit) {
+        $sql = "SELECT nombre, estado 
+                FROM perfiles_ocupacionales
+                WHERE id_usuario = :empresaId 
+                ORDER BY fecha_creacion DESC 
+                LIMIT :limit";
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->bindParam(':empresaId', $empresaId, PDO::PARAM_INT);
+        $stmt->bindParam(':limit', $limit, PDO::PARAM_INT);
+        $stmt->execute();
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
     
