@@ -6,8 +6,7 @@ if (!isset($_SESSION['autenticado']) || $_SESSION['autenticado'] !== true) {
     exit;
 }
 
-// 🔥 DEFINIR ROL
-$esAdmin = ($_SESSION['usuario']['id_rol']);
+$esAdmin = ($_SESSION['usuario']['id_rol'] == 1);
 ?>
 
 <?php include './modal_editar_perfil.php'; ?>
@@ -30,16 +29,17 @@ $esAdmin = ($_SESSION['usuario']['id_rol']);
     <!-- HEADER -->
     <div class="flex justify-between items-center mb-10">
         <div class="flex items-center gap-5">
-            <div class="w-16 h-16 bg-sena text-white rounded-2xl flex items-center justify-center text-2xl font-bold">
+            <div class="w-16 h-16 bg-sena text-white rounded-2xl flex items-center justify-center text-2xl font-bold shadow">
                 <span id="headerInicial">A</span>
             </div>
-            <div>
-                <h1 class="text-2xl font-semibold" id="headerNombre">Cargando...</h1>
-                <span id="headerRol" class="text-xs bg-sena-soft px-3 py-1 rounded-full"></span>
+
+            <div class="flex flex-col gap-1"> <!-- 🔥 separación -->
+                <h1 class="text-2xl font-semibold text-gray-800" id="headerNombre">Cargando...</h1>
+                <span id="headerRol" class="text-xs bg-sena-soft text-green-700 px-3 py-1 rounded-full w-fit"></span>
             </div>
         </div>
 
-        <button class="btnAbrirPerfil border px-4 py-2 rounded-xl">
+        <button class="btnAbrirPerfil border border-gray-300 px-4 py-2 rounded-xl hover:bg-gray-50 transition">
             Editar Perfil
         </button>
     </div>
@@ -50,72 +50,100 @@ $esAdmin = ($_SESSION['usuario']['id_rol']);
         <div class="lg:col-span-2 space-y-6">
 
             <!-- INFO -->
-            <div class="bg-white p-6 rounded-2xl">
-                <p id="infoNombre"></p>
-                <p id="infoCorreo"></p>
+            <div class="bg-white p-6 rounded-2xl shadow border">
+                
+                <!-- 🔥 TÍTULO -->
+                <div class="flex items-center gap-2 mb-4">
+                    <h3 class="text-base font-light text-gray-500">Información</h3>
+                </div>
+
+                <i data-lucide="user" class="w-5 h-5 text-green-600"></i>
+                <p id="infoNombre" class="font-medium text-gray-800"></p>
+                <p id="infoCorreo" class="text-gray-500 text-sm"></p>
             </div>
 
-            <!-- 🔥 RESUMEN SEGÚN ROL -->
-            
-            <?php if ($esAdmin): ?>
-            <!-- ADMIN -->
-            <div class="bg-white p-6 rounded-2xl">
-                <h3>Resumen de la plataforma</h3>
-                <div class="grid grid-cols-2 gap-4 mt-4">
+            <!-- RESUMEN -->
+            <div class="bg-white p-6 rounded-2xl shadow border">
+                <h3 class="text-lg font-semibold text-gray-700 mb-4">
+                    <?= $esAdmin ? 'Resumen de la plataforma' : 'Resumen de tu empresa' ?>
+                </h3>
 
-                    <div>
-                        <p>Perfiles</p>
-                        <p id="statPerfiles">0</p>
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-4">
+
+                    <!-- PERFILES -->
+                    <div class="border rounded-xl p-4 flex items-start gap-3">
+                        <div class="bg-sena-soft p-2 rounded-lg">
+                            <i data-lucide="file-text" class="w-5 h-5 text-green-600"></i>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">Perfiles</p>
+                            <p id="statPerfiles" class="text-2xl font-semibold">0</p>
+                        </div>
                     </div>
 
-                    <div>
-                        <p>Empresas</p>
-                        <p id="statEmpresas">0</p>
+                    <?php if ($esAdmin): ?>
+
+                    <div class="border rounded-xl p-4 flex items-start gap-3">
+                        <div class="bg-sena-soft p-2 rounded-lg">
+                            <i data-lucide="building" class="w-5 h-5 text-green-600"></i>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">Empresas</p>
+                            <p id="statEmpresas" class="text-2xl font-semibold">0</p>
+                        </div>
                     </div>
 
-                    <div>
-                        <p>Administradores</p>
-                        <p id="statAdministradores">0</p>
+                    <div class="border rounded-xl p-4 flex items-start gap-3">
+                        <div class="bg-sena-soft p-2 rounded-lg">
+                            <i data-lucide="shield" class="w-5 h-5 text-green-600"></i>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">Administradores</p>
+                            <p id="statAdministradores" class="text-2xl font-semibold">0</p>
+                        </div>
                     </div>
 
-                    <div>
-                        <p>Usuarios</p>
-                        <p id="statUsuarios">0</p>
+                    <div class="border rounded-xl p-4 flex items-start gap-3">
+                        <div class="bg-sena-soft p-2 rounded-lg">
+                            <i data-lucide="users" class="w-5 h-5 text-green-600"></i>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">Usuarios</p>
+                            <p id="statUsuarios" class="text-2xl font-semibold">0</p>
+                        </div>
                     </div>
+
+                    <?php else: ?>
+
+                    <div class="border rounded-xl p-4 flex items-start gap-3">
+                        <div class="bg-sena-soft p-2 rounded-lg">
+                            <i data-lucide="book-open" class="w-5 h-5 text-green-600"></i>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">Programas</p>
+                            <p id="statProgramas" class="text-2xl font-semibold">0</p>
+                        </div>
+                    </div>
+
+                    <div class="border rounded-xl p-4 flex items-start gap-3">
+                        <div class="bg-sena-soft p-2 rounded-lg">
+                            <i data-lucide="lightbulb" class="w-5 h-5 text-green-600"></i>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">Sugerencias</p>
+                            <p id="statSugerencias" class="text-2xl font-semibold">0</p>
+                        </div>
+                    </div>
+
+                    <?php endif; ?>
 
                 </div>
             </div>
-
-            <?php else: ?>
-            <!-- EMPRESA -->
-            <div class="bg-white p-6 rounded-2xl">
-                <h3>Resumen de tu empresa</h3>
-
-                <div id="resumenContainer" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-
-                    <div>
-                        <p>Perfiles</p>
-                        <p id="statPerfiles">0</p>
-                    </div>
-
-                    <div>
-                        <p>Programas</p>
-                        <p id="statProgramas">0</p>
-                    </div>
-
-                    <div>
-                        <p>Sugerencias</p>
-                        <p id="statSugerencias">0</p>
-                    </div>
-
-                </div>
-            </div>
-            <?php endif; ?>
 
             <!-- PERFILES -->
-            <div class="bg-white p-6 rounded-2xl">
-                <h3>Perfiles recientes</h3>
-                <div id="listaPerfiles"></div>
+            <div class="bg-white p-6 rounded-2xl shadow border">
+                <h3 class="text-lg font-semibold text-gray-700 mb-4">Perfiles recientes</h3>
+                <div id="listaPerfiles" class="space-y-2"></div>
             </div>
 
         </div>
@@ -124,12 +152,25 @@ $esAdmin = ($_SESSION['usuario']['id_rol']);
         <div class="space-y-6">
 
             <!-- ESTADÍSTICAS -->
-            <div class="bg-white p-6 rounded-2xl">
-                <h3>Estadísticas</h3>
-                <div id="listaEstadisticas"></div>
+            <div class="bg-white p-6 rounded-2xl shadow border">
+                
+                <!-- 🔥 ICONO -->
+                <div class="flex items-center gap-2 mb-4">
+                    <i data-lucide="bar-chart-3" class="w-5 h-5 text-green-600"></i>
+                    <h3 class="text-lg font-semibold text-gray-700">Estadísticas</h3>
+                </div>
+
+                <div id="listaEstadisticas" class="space-y-2 text-sm text-gray-600"></div>
             </div>
 
-            <div class="bg-white p-6 rounded-2xl">
+            <!-- ACTIVIDAD -->
+            <div class="bg-white p-6 rounded-2xl shadow border text-sm text-gray-500">
+                
+                <div class="flex items-center gap-2 mb-2">
+                    <i data-lucide="clock" class="w-4 h-4 text-green-600"></i>
+                    <span class="font-medium text-gray-600">Actividad</span>
+                </div>
+
                 <p id="fechaRegistro"></p>
             </div>
 
@@ -138,6 +179,10 @@ $esAdmin = ($_SESSION['usuario']['id_rol']);
     </div>
 
 </div>
+
+<script>
+    lucide.createIcons();
+</script>
 
 <script src="../../assets/js/perfil.js"></script>
 <?php include __DIR__ . '../../../includes/footer.php'; ?>
