@@ -5,6 +5,7 @@ header("Content-Type: application/json; charset=utf-8");
 // ========== CORREGIDO: RUTAS CON MINÚSCULAS ==========
 require_once __DIR__ . "/../../config/database.php";  // config con minúscula
 require_once __DIR__ . "/../models/Usuario.php";      // Usuario con mayúscula (como está en tu estructura)
+require_once __DIR__ . "/../helpers/permisos.php";
 
 class UsuarioController {
 
@@ -17,6 +18,7 @@ class UsuarioController {
     /* ================= USUARIOS (CRUD) ================= */
 
     public function listar() {
+        verificarPermiso('gestionar_usuarios');
         $usuarios = $this->model->listar();
         echo json_encode([
             'status' => 'success',
@@ -37,6 +39,7 @@ class UsuarioController {
     }
 
     public function crear() {
+        verificarPermiso('gestionar_usuarios');
         $input = json_decode(file_get_contents("php://input"), true);
         
         // Validaciones básicas
@@ -77,6 +80,7 @@ class UsuarioController {
     }
 
     public function actualizar() {
+        verificarPermiso('gestionar_usuarios');
         $input = json_decode(file_get_contents("php://input"), true);
         
         if (!isset($input['id_usuario'])) {
@@ -93,6 +97,7 @@ class UsuarioController {
     }
 
     public function cambiarEstado($id, $accion) {
+        verificarPermiso('gestionar_usuarios');
         if (!$id) {
             echo json_encode(['error' => 'id_usuario requerido']);
             return;

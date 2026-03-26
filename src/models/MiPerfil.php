@@ -99,15 +99,17 @@ class MiPerfil {
             FROM perfiles_ocupacionales
             WHERE estado = 1
             ORDER BY fecha_creacion DESC
-            LIMIT ?
+            LIMIT :limit
         ");
-        $stmt->execute([$limit]);
+        // 🔒 Bind explícito como entero
+        $stmt->bindValue(':limit', (int)$limit, PDO::PARAM_INT);
+        $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
     /**
      * Método auxiliar para contar registros con condición
-     */
+    */
     private function countRows($table, $condition = '1') {
         $stmt = $this->db->prepare("SELECT COUNT(*) FROM $table WHERE $condition");
         $stmt->execute();
@@ -126,4 +128,6 @@ class MiPerfil {
         $stmt->execute();
         return (int) $stmt->fetchColumn();
     }
+
+    
 }

@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . '/../../config/database.php';
 require_once __DIR__ . '/../models/Historial.php';
+require_once __DIR__ . '/../helpers/permisos.php';
 
 header('Content-Type: application/json; charset=utf-8');
 
@@ -23,6 +24,7 @@ $action = $_GET['action'] ?? $_GET['accion'] ?? '';
 
 try {
     if ($action === 'listar') {
+        verificarPermiso('ver_historial');
         // Parámetros de entrada
         $search = trim($_GET['q'] ?? '');
         $modulo = trim($_GET['modulo'] ?? '');        // Nombre exacto de la tabla
@@ -47,6 +49,7 @@ try {
         ]);
     }
     elseif ($action === 'contar') {
+        verificarPermiso('ver_historial');
         $search = trim($_GET['q'] ?? '');
         $modulo = trim($_GET['modulo'] ?? '');
         $accionCrud = trim($_GET['accion'] ?? '');

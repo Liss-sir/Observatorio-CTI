@@ -3,6 +3,7 @@
 header("Content-Type: application/json; charset=utf-8");
 require_once __DIR__ . "/../../config/database.php";
 require_once __DIR__ . "/../models/ProyeccionFuturo.php";
+require_once __DIR__ . "/../helpers/permisos.php";
 
 class ProyeccionFuturoController {
 
@@ -57,6 +58,7 @@ class ProyeccionFuturoController {
 
     // Crear nueva proyección
     public function crear() {
+        verificarPermiso('crear_proyeccion');
         $input = json_decode(file_get_contents("php://input"), true);
         
         if (empty($input['id_area'])) {
@@ -110,6 +112,7 @@ class ProyeccionFuturoController {
 
     // Actualizar proyección existente
     public function actualizar() {
+        verificarPermiso('editar_proyeccion');
         $input = json_decode(file_get_contents("php://input"), true);
         
         if (!isset($input['id_proyeccion'])) {
@@ -138,7 +141,13 @@ class ProyeccionFuturoController {
 
     // Cambiar estado de la proyección
     public function cambiarEstado($id, $accion) {
-        if (!$id) { 
+        if ($accion === 'desactivar') {
+            verificarPermiso('desactivar_proyeccion');
+        } else {
+            verificarPermiso('editar_proyeccion');
+        }
+
+        if (!$id) {
             echo json_encode([
                 'success' => false,
                 'error' => 'ID de proyección requerido'
@@ -171,6 +180,7 @@ class ProyeccionFuturoController {
 
     // Eliminar proyección
     public function eliminar($id) {
+        verificarPermiso('desactivar_proyeccion');
         if (!$id) {
             echo json_encode([
                 'success' => false,

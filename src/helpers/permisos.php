@@ -48,3 +48,17 @@ function tienePermiso($permiso) {
 
     return in_array($permiso, $permisos[$rol] ?? []);
 }
+
+function verificarPermiso($permiso) {
+    if (!tienePermiso($permiso)) {
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+        http_response_code(403);
+        echo json_encode([
+            'success' => false,
+            'error' => 'No autorizado'
+        ]);
+        exit;
+    }
+}

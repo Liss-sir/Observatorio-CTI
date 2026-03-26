@@ -3,6 +3,7 @@
 header("Content-Type: application/json; charset=utf-8");
 require_once __DIR__ . "/../../config/database.php";
 require_once __DIR__ . "/../models/LineaTecnologica.php";
+require_once __DIR__ . "/../helpers/permisos.php";
 
 class LineaTecnologicaController {
 
@@ -55,6 +56,7 @@ class LineaTecnologicaController {
 
     // Create a new technological line
     public function crear() {
+        verificarPermiso('crear_linea');
         $input = json_decode(file_get_contents("php://input"), true);
 
         // Required fields validation
@@ -86,6 +88,7 @@ class LineaTecnologicaController {
 
     // Update an existing technological line
     public function actualizar() {
+        verificarPermiso('editar_linea');
         $input = json_decode(file_get_contents("php://input"), true);
 
         if (!isset($input['id_linea'])) {
@@ -105,6 +108,12 @@ class LineaTecnologicaController {
 
     // Change state (activate/deactivate)
     public function cambiarEstado($id, $accion) {
+        if ($accion === 'desactivar') {
+            verificarPermiso('desactivar_linea');
+        } else {
+            verificarPermiso('editar_linea');
+        }
+
         if (!$id) {
             echo json_encode([
                 'success' => false,
@@ -136,6 +145,7 @@ class LineaTecnologicaController {
 
     // Delete a technological line (physical delete)
     public function eliminar($id) {
+        verificarPermiso('desactivar_linea');
         if (!$id) {
             echo json_encode([
                 'success' => false,

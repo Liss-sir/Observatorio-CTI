@@ -25,7 +25,7 @@ if (!isset($_SESSION['autenticado']) || $_SESSION['autenticado'] !== true) {
     <div class="flex justify-between items-center mb-10">
         <div class="flex items-center gap-5">
             <div class="w-16 h-16 bg-sena text-white rounded-2xl flex items-center justify-center text-2xl font-bold shadow">
-                <span id="headerInicial">A</span> <!-- JS lo llenará -->
+                <span id="headerInicial">A</span>
             </div>
             <div>
                 <h1 class="text-2xl font-semibold" id="headerNombre">Cargando...</h1>
@@ -58,42 +58,96 @@ if (!isset($_SESSION['autenticado']) || $_SESSION['autenticado'] !== true) {
                 </div>
             </div>
 
-            <!-- ESTADISTICAS -->
+            <!-- RESUMEN DE LA PLATAFORMA (4 tarjetas) -->
             <div class="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm">
                 <h3 class="text-xs text-gray-400 uppercase mb-4">Resumen de la plataforma</h3>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <!-- Perfiles -->
                     <div class="border rounded-xl p-4 flex items-start gap-3">
-                        <div class="bg-sena-soft p-2 rounded-lg"><i data-lucide="file-text" class="w-5 h-5 text-green-600"></i></div>
-                        <div><p class="text-sm text-gray-500">Perfiles</p><p class="text-2xl font-semibold" id="statPerfiles">0</p></div>
+                        <div class="bg-sena-soft p-2 rounded-lg">
+                            <i data-lucide="file-text" class="w-5 h-5 text-green-600"></i>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">Perfiles</p>
+                            <p class="text-2xl font-semibold" id="statPerfiles">0</p>
+                            <p class="text-xs text-gray-400">registrados</p>
+                        </div>
                     </div>
+                    <!-- Empresas -->
                     <div class="border rounded-xl p-4 flex items-start gap-3">
-                        <div class="bg-sena-soft p-2 rounded-lg"><i data-lucide="building" class="w-5 h-5 text-green-600"></i></div>
-                        <div><p class="text-sm text-gray-500">Empresas</p><p class="text-2xl font-semibold" id="statEmpresas">0</p></div>
+                        <div class="bg-sena-soft p-2 rounded-lg">
+                            <i data-lucide="building" class="w-5 h-5 text-green-600"></i>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">Empresas</p>
+                            <p class="text-2xl font-semibold" id="statEmpresas">0</p>
+                            <p class="text-xs text-gray-400">registradas</p>
+                        </div>
+                    </div>
+                    <!-- Administradores (AGREGADO) -->
+                    <div class="border rounded-xl p-4 flex items-start gap-3">
+                        <div class="bg-sena-soft p-2 rounded-lg">
+                            <i data-lucide="shield" class="w-5 h-5 text-green-600"></i>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">Administradores</p>
+                            <p class="text-2xl font-semibold" id="statAdministradores">0</p>
+                            <p class="text-xs text-gray-400">activos</p>
+                        </div>
+                    </div>
+                    <!-- Usuarios (AGREGADO) -->
+                    <div class="border rounded-xl p-4 flex items-start gap-3">
+                        <div class="bg-sena-soft p-2 rounded-lg">
+                            <i data-lucide="users" class="w-5 h-5 text-green-600"></i>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">Usuarios</p>
+                            <p class="text-2xl font-semibold" id="statUsuarios">0</p>
+                            <p class="text-xs text-gray-400">totales</p>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <!-- PERFILES -->
+            <!-- PERFILES RECIENTES -->
             <div class="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm">
                 <h2 class="text-xs text-gray-400 uppercase mb-4">Perfiles Recientes</h2>
-                <div id="listaPerfiles"><p class="text-sm text-gray-400">Cargando...</p></div>
+                <div id="listaPerfiles">
+                    <p class="text-sm text-gray-400">Cargando...</p>
+                </div>
             </div>
         </div>
 
         <!-- DERECHA -->
         <div class="space-y-6">
+            <!-- ESTADÍSTICAS -->
             <div class="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm">
-                <h3 class="font-semibold mb-4 flex items-center gap-2"><i data-lucide="bar-chart-3" class="w-5 h-5 text-green-600"></i>Estadísticas</h3>
-                <div class="space-y-2 text-sm" id="listaEstadisticas"><div class="flex justify-between"><span>Cargando...</span></div></div>
+                <h3 class="font-semibold mb-4 flex items-center gap-2">
+                    <i data-lucide="bar-chart-3" class="w-5 h-5 text-green-600"></i>
+                    Estadísticas
+                </h3>
+                <div class="space-y-2 text-sm" id="listaEstadisticas">
+                    <div class="flex justify-between"><span>Cargando...</span></div>
+                </div>
             </div>
+
+            <!-- ACTIVIDAD -->
             <div class="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm">
-                <h3 class="font-semibold mb-2 flex items-center gap-2"><i data-lucide="calendar" class="w-5 h-5 text-green-600"></i>Actividad</h3>
+                <h3 class="font-semibold mb-2 flex items-center gap-2">
+                    <i data-lucide="calendar" class="w-5 h-5 text-green-600"></i>
+                    Actividad
+                </h3>
                 <p class="text-sm text-gray-500" id="fechaRegistro">Miembro desde...</p>
             </div>
+
+            <!-- CUENTA -->
             <div class="bg-gray-50 border rounded-2xl p-6">
                 <div class="flex items-center gap-3">
                     <i data-lucide="shield" class="w-5 h-5 text-green-700"></i>
-                    <div><h4 class="font-semibold text-sm" id="tipoCuenta">Cuenta</h4><p class="text-xs text-gray-500" id="descripcionCuenta">...</p></div>
+                    <div>
+                        <h4 class="font-semibold text-sm" id="tipoCuenta">Cuenta</h4>
+                        <p class="text-xs text-gray-500" id="descripcionCuenta">...</p>
+                    </div>
                 </div>
             </div>
         </div>
