@@ -13,6 +13,7 @@ include __DIR__ . '../../../includes/header.php';
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="../../../assets/css/output.css">
   <link rel="stylesheet" href="../../assets/css/globals.css">
+  <link rel="stylesheet" href="../../assets/css/style_toast_alert.css">
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="font-['Inter'] text-sena-text-main antialiased min-h-screen flex flex-col">
@@ -44,7 +45,28 @@ include __DIR__ . '../../../includes/header.php';
       </p>
 
       <!-- Cards Grid -->
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+      <div id="lineas-cards-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+        <div class="col-span-full text-center py-10 text-gray-500" id="lineas-loading-state">
+          <svg class="w-8 h-8 mx-auto mb-2 animate-spin text-sena" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4.93 4.93a10 10 0 1 1-1.42 1.42" />
+          </svg>
+          <p>Cargando lineas...</p>
+        </div>
+      </div>
+
+      <div id="linea-search-empty-state" class="hidden w-full flex flex-col items-center justify-center py-20 px-4 bg-white border border-gray-200 rounded-xl">
+        <div class="w-20 h-20 mb-5 bg-sena-soft rounded-2xl flex items-center justify-center">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10 text-sena" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            <line x1="11" y1="8" x2="11" y2="14"></line>
+            <line x1="8" y1="11" x2="14" y2="11"></line>
+          </svg>
+        </div>
+        <h3 class="font-['Montserrat'] text-lg font-semibold text-sena-text-main mb-2">No se encontraron resultados</h3>
+        <p class="text-sm text-sena-text-soft text-center max-w-sm">
+          No hay lineas que coincidan con <span id="linea-search-empty-term" class="font-medium text-sena"></span>. Prueba con otras palabras clave.
+        </p>
       </div>
 
       <!-- Empty State -->
@@ -61,11 +83,6 @@ include __DIR__ . '../../../includes/header.php';
           <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
           Crear primera línea
         </button>
-      </div>
-    </div>
-  </main>
-              </svg>
-        </div>
       </div>
     </div>
   </main>

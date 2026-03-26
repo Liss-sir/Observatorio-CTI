@@ -1,12 +1,15 @@
 
 document.addEventListener("DOMContentLoaded", () => {
-  let cards = Array.from(document.querySelectorAll("main .grid > div.bg-white.rounded-xl"));
-  const cardsGrid = document.querySelector("main .grid");
+  const cardSelector = "div.tarjeta-tecnologia, div.bg-white.rounded-xl";
+  const cardsGrid = document.getElementById("lineas-cards-grid") || document.querySelector("main .grid");
+  let cards = cardsGrid ? Array.from(cardsGrid.querySelectorAll(`:scope > ${cardSelector}`)) : [];
   const inputBuscarLinea = document.getElementById("input-buscar-linea");
   const lineasEncontradasCount = document.getElementById("lineas-encontradas-count");
   const lineasEncontradasLabel = document.getElementById("lineas-encontradas-label");
   const btnNuevaLinea = document.getElementById("btn-nueva-linea");
   const emptyState = document.getElementById("linea-empty-state");
+  const searchEmptyState = document.getElementById("linea-search-empty-state");
+  const searchEmptyTerm = document.getElementById("linea-search-empty-term");
   const btnCrearDesdeEmpty = document.getElementById("btn-crear-desde-empty");
   const btnDetalleEditar = document.getElementById("btn-detalle-editar");
   const btnDetalleDeshabilitar = document.getElementById("btn-detalle-deshabilitar");
@@ -15,12 +18,14 @@ document.addEventListener("DOMContentLoaded", () => {
   const detalleEstadoTitulo = document.getElementById("detalle-estado-titulo");
   const detalleEstadoTexto = document.getElementById("detalle-estado-texto");
   const STORAGE_KEY = "observatorio_lineas_tecnologicas_v1";
+  const isListadoView = Boolean(inputBuscarLinea && cardsGrid);
 
   const areasDisponibles = [];
   const programasFormacionDisponibles = [];
   const tendenciasEmergentesDisponibles = [];
   const etapasDisponibles = [];
   const proyeccionesDisponibles = [];
+  let isCargandoLineas = false;
 
   const estadoLineas = {};
   let lineaEnEdicion = null;
@@ -46,6 +51,85 @@ document.addEventListener("DOMContentLoaded", () => {
     } catch (error) {
       // Ignore storage failures to avoid blocking UI behavior.
     }
+  }
+
+  const API_ROUTES = {
+    lineas: "../../controllers/LineaTecController.php",
+    areas: "../../controllers/AreaController.php",
+    programas: "../../controllers/ProgramaFormacionController.php",
+    etapas: "../../controllers/EtapaDesarrolloController.php",
+    tendencias: "../../controllers/TendenciaEmergenteController.php",
+    proyecciones: "../../controllers/ProyeccionFuturoController.php",
+  };
+
+  function buildApiUrl(base, params = {}) {
+    const url = new URL(base, window.location.href);
+    Object.entries(params).forEach(([key, value]) => {
+      if (value !== undefined && value !== null && String(value).trim() !== "") {
+        url.searchParams.set(key, String(value));
+      }
+    });
+    return url.toString();
+  }
+
+  async function fetchJson(base, params = {}, options = {}) {
+    const response = await fetch(buildApiUrl(base, params), options);
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
+    }
+    return response.json();
+  }
+
+  function toOptionList(payload) {
+    const source = Array.isArray(payload?.data) ? payload.data : [];
+    return source
+      .map((item) => {
+        const value = String(item?.id ?? item?.value ?? "").trim();
+        const label = String(item?.text ?? item?.label ?? item?.nombre ?? "").trim();
+        if (!value || !label) {
+          return null;
+        }
+        return { value, label };
+      })
+      .filter(Boolean);
+  }
+
+  function normalizarLineaDesdeBackend(row) {
+    const idLinea = String(row?.id_linea ?? "").trim();
+    const nombrePrograma = String(row?.nombre_programa ?? "").trim();
+    const nombreTendencia = String(row?.nombre_tendencia ?? "").trim();
+    const nombreEtapa = String(row?.nombre_etapa ?? "").trim();
+    const nombreArea = String(row?.nombre_area ?? "").trim();
+    const anioProyeccion = String(row?.anio_proyeccion ?? "").trim();
+    const descripcionProyeccion = String(row?.descripcion_proyeccion ?? "").trim();
+
+    const nombre =
+      nombrePrograma
+      || nombreTendencia
+      || (idLinea ? `Linea ${idLinea}` : "Linea Tecnologica");
+
+    const proyeccionTexto = descripcionProyeccion && anioProyeccion
+      ? `${descripcionProyeccion}: ${anioProyeccion}`
+      : (descripcionProyeccion || anioProyeccion);
+
+    return {
+      idLinea,
+      nombre,
+      active: Number(row?.estado ?? 1) === 1,
+      idArea: String(row?.id_area ?? ""),
+      area: nombreArea,
+      idPrograma: String(row?.id_programa ?? ""),
+      programaFormacion: nombrePrograma,
+      idEtapa: String(row?.id_etapa ?? ""),
+      etapa: nombreEtapa,
+      idTendencia: String(row?.id_tendencia ?? ""),
+      tendencia: nombreTendencia,
+      idProyeccion: String(row?.id_proyeccion ?? ""),
+      proyeccion: anioProyeccion,
+      proyecciones: proyeccionTexto ? [proyeccionTexto] : [],
+      tecnologiasEmergentes: nombreTendencia ? [nombreTendencia] : [],
+      fechaActualizacion: row?.fecha_creacion || null,
+    };
   }
 
   const modals = crearModales();
@@ -113,6 +197,291 @@ document.addEventListener("DOMContentLoaded", () => {
       option.textContent = optionLabel;
       select.appendChild(option);
     });
+  }
+
+  function getOptionValue(entry) {
+    if (entry && typeof entry === "object") {
+      return String(entry.value || entry.id || entry.label || "").trim();
+    }
+    return String(entry || "").trim();
+  }
+
+  function getOptionLabelByValue(options, value) {
+    const objetivo = String(value || "").trim();
+    if (!objetivo || !Array.isArray(options)) {
+      return "";
+    }
+
+    const found = options.find((item) => String(item?.value || item?.id || "").trim() === objetivo);
+    return String(found?.label || "").trim();
+  }
+
+  function normalizarNombreArea(area, idArea = "") {
+    const desdeId = getOptionLabelByValue(areasDisponibles, idArea || area);
+    if (desdeId) {
+      return desdeId;
+    }
+
+    const areaTexto = String(area || "").trim();
+    if (!areaTexto || /^\d+$/.test(areaTexto)) {
+      return "";
+    }
+    return areaTexto;
+  }
+  function normalizarProyeccionTexto(proyeccion, idProyeccion = "") {
+    const desdeId = getOptionLabelByValue(proyeccionesDisponibles, idProyeccion || proyeccion);
+    if (desdeId) {
+      return desdeId;
+    }
+
+    const texto = String(proyeccion || "").trim();
+    if (!texto) {
+      return "";
+    }
+    if (/^\d+$/.test(texto)) {
+      return formatAnioProyeccion(texto);
+    }
+    return texto;
+  }
+
+  function formatAnioProyeccion(value) {
+    const raw = String(value || "").trim();
+    if (!raw) {
+      return "";
+    }
+
+    if (/^\d+$/.test(raw)) {
+      const numero = Number.parseInt(raw, 10);
+      if (Number.isFinite(numero) && numero > 0) {
+        return `${numero} ${numero === 1 ? "año" : "años"}`;
+      }
+    }
+
+    return raw;
+  }
+
+  function reemplazarCatalogo(destino, opciones) {
+    destino.length = 0;
+    opciones.forEach((item) => destino.push(item));
+  }
+
+  function limpiarEstadoLineas() {
+    Object.keys(estadoLineas).forEach((key) => delete estadoLineas[key]);
+  }
+
+  function extraerNombreLineaDesdeTextoSelect(texto) {
+    const raw = String(texto || "").trim();
+    if (!raw) {
+      return "Linea Tecnologica";
+    }
+
+    const partes = raw.split(" - ").map((item) => item.trim()).filter(Boolean);
+    if (partes.length >= 3) {
+      const nombrePrograma = partes.slice(2).join(" - ").replace(/\s*\([^)]*\)\s*$/, "").trim();
+      return nombrePrograma || raw;
+    }
+
+    if (partes.length >= 2) {
+      return partes[1] || raw;
+    }
+
+    return raw;
+  }
+
+  async function cargarLineasDesdeBackendSelectFallback() {
+    const payload = await fetchJson(API_ROUTES.lineas, { accion: "paraSelect" });
+    const opciones = toOptionList(payload);
+
+    cardsGrid.innerHTML = "";
+    cards = [];
+    limpiarEstadoLineas();
+
+    opciones.forEach((opcion) => {
+      const nombre = extraerNombreLineaDesdeTextoSelect(opcion.label);
+      const state = {
+        active: true,
+        area: "",
+        programaFormacion: opcion.label,
+        tendencia: "",
+        etapa: "",
+        proyeccion: "",
+        idLinea: opcion.value,
+        idArea: "",
+        idPrograma: "",
+        idEtapa: "",
+        idTendencia: "",
+        idProyeccion: "",
+      };
+
+      estadoLineas[nombre] = state;
+      const card = crearCardLinea(nombre, state);
+      if (card) {
+        guardarRegistroLinea(nombre, card);
+      }
+    });
+
+    aplicarFiltroBusqueda();
+    return opciones.length > 0;
+  }
+
+  function renderLoadingLineas() {
+    if (!cardsGrid) {
+      return;
+    }
+
+    isCargandoLineas = true;
+    cardsGrid.innerHTML = `
+      <div class="col-span-full text-center py-10 text-gray-500" id="lineas-loading-state">
+        <svg class="w-8 h-8 mx-auto mb-2 animate-spin text-sena" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M4.93 4.93a10 10 0 1 1-1.42 1.42" />
+        </svg>
+        <p>Cargando lineas...</p>
+      </div>
+    `;
+    cards = [];
+    actualizarEmptyState();
+  }
+
+  function finalizarLoadingLineas() {
+    isCargandoLineas = false;
+    actualizarEmptyState();
+  }
+
+  async function cargarProgramasPorArea(idArea, targetSelect, selectedValue = "") {
+    if (!targetSelect) {
+      return;
+    }
+
+    if (!idArea) {
+      fillSelect(targetSelect, [], "Seleccionar programa de formacion...");
+      setSelectEnabled(targetSelect, false);
+      return;
+    }
+
+    setSelectEnabled(targetSelect, true);
+
+    try {
+      const payload = await fetchJson(API_ROUTES.programas, {
+        accion: "paraSelectPorArea",
+        id_area: idArea,
+      });
+
+      const opciones = toOptionList(payload);
+      fillSelect(targetSelect, opciones, "Seleccionar programa de formacion...");
+
+      if (selectedValue) {
+        targetSelect.value = String(selectedValue);
+      }
+    } catch (error) {
+      fillSelect(targetSelect, [], "Seleccionar programa de formacion...");
+      setSelectEnabled(targetSelect, false);
+    }
+  }
+
+  async function cargarCatalogosDesdeBackend() {
+    try {
+      const [areasPayload, etapasPayload, tendenciasPayload, proyeccionesPayload] = await Promise.all([
+        fetchJson(API_ROUTES.areas, { accion: "paraSelect" }),
+        fetchJson(API_ROUTES.etapas, { accion: "paraSelect" }),
+        fetchJson(API_ROUTES.tendencias, { accion: "paraSelect" }),
+        fetchJson(API_ROUTES.proyecciones, { accion: "paraSelect" }),
+      ]);
+
+      reemplazarCatalogo(areasDisponibles, toOptionList(areasPayload));
+      reemplazarCatalogo(etapasDisponibles, toOptionList(etapasPayload));
+      reemplazarCatalogo(tendenciasEmergentesDisponibles, toOptionList(tendenciasPayload));
+      reemplazarCatalogo(proyeccionesDisponibles, toOptionList(proyeccionesPayload));
+
+      fillSelect(modals.createArea, areasDisponibles, "Seleccionar area...");
+      fillSelect(modals.createTendencia, tendenciasEmergentesDisponibles, "Seleccionar tendencia tecnologica emergente...");
+      fillSelect(modals.createEtapa, etapasDisponibles, "Seleccionar etapa...");
+      fillSelect(modals.createProyeccion, proyeccionesDisponibles, "Seleccionar proyeccion...");
+
+      fillSelect(modals.editArea, areasDisponibles, "Seleccionar area...");
+      fillSelect(modals.editTendencia, tendenciasEmergentesDisponibles, "Seleccionar tendencia tecnologica emergente...");
+      fillSelect(modals.editEtapa, etapasDisponibles, "Seleccionar etapa...");
+      fillSelect(modals.editProyeccion, proyeccionesDisponibles, "Seleccionar proyeccion...");
+
+      setSelectEnabled(modals.createPrograma, false);
+      setSelectEnabled(modals.editPrograma, false);
+      fillSelect(modals.createPrograma, [], "Seleccionar programa de formacion...");
+      fillSelect(modals.editPrograma, [], "Seleccionar programa de formacion...");
+    } catch (error) {
+      // Keep local fallback catalogs when API is unavailable.
+    }
+  }
+
+  async function cargarLineasDesdeBackend() {
+    if (!isListadoView || !cardsGrid) {
+      return;
+    }
+
+    renderLoadingLineas();
+
+    try {
+      const payload = await fetchJson(API_ROUTES.lineas, { accion: "listarTodas" });
+      if (!Array.isArray(payload?.data)) {
+        throw new Error("Respuesta invalida en listado de lineas");
+      }
+
+      const rows = payload.data;
+
+      cardsGrid.innerHTML = "";
+      cards = [];
+      limpiarEstadoLineas();
+
+      if (rows.length === 0) {
+        const cargadasDesdeSelect = await cargarLineasDesdeBackendSelectFallback();
+        if (cargadasDesdeSelect) {
+          return;
+        }
+        aplicarFiltroBusqueda();
+        return;
+      }
+
+      rows.forEach((row) => {
+        const linea = normalizarLineaDesdeBackend(row);
+        const state = {
+          active: linea.active,
+          area: linea.area,
+          programaFormacion: linea.programaFormacion,
+          tendencia: linea.tendencia,
+          etapa: linea.etapa,
+          proyeccion: linea.proyecciones?.[0] || linea.proyeccion || normalizarProyeccionTexto("", linea.idProyeccion),
+          idLinea: linea.idLinea,
+          idArea: linea.idArea,
+          idPrograma: linea.idPrograma,
+          idEtapa: linea.idEtapa,
+          idTendencia: linea.idTendencia,
+          idProyeccion: linea.idProyeccion,
+        };
+
+        estadoLineas[linea.nombre] = state;
+        const card = crearCardLinea(linea.nombre, state);
+        if (card) {
+          guardarRegistroLinea(linea.nombre, card);
+        }
+      });
+
+      aplicarFiltroBusqueda();
+    } catch (error) {
+      try {
+        const cargadasDesdeSelect = await cargarLineasDesdeBackendSelectFallback();
+        if (!cargadasDesdeSelect) {
+          cardsGrid.innerHTML = "";
+          cards = [];
+          limpiarEstadoLineas();
+          aplicarFiltroBusqueda();
+        }
+      } catch (fallbackError) {
+        cardsGrid.innerHTML = "";
+        cards = [];
+        limpiarEstadoLineas();
+        aplicarFiltroBusqueda();
+      }
+    } finally {
+      finalizarLoadingLineas();
+    }
   }
 
   function agregarUnico(collection, value) {
@@ -283,6 +652,74 @@ document.addEventListener("DOMContentLoaded", () => {
       .trim();
   }
 
+  function mostrarToastValidacion(mensaje, tipo = "warning") {
+    const toastContainer = document.getElementById("toast-container");
+
+    if (!toastContainer) {
+      const container = document.createElement("div");
+      container.id = "toast-container";
+      container.className = "fixed top-4 right-4 z-[99999] flex flex-col gap-3 pointer-events-none";
+      document.body.appendChild(container);
+    }
+
+    const container = document.getElementById("toast-container");
+
+    const titulo = tipo === "warning"
+      ? "Campo requerido"
+      : tipo === "error"
+        ? "Error"
+        : tipo === "info"
+          ? "Información"
+          : "Éxito";
+
+    const toastId = `toast-${Date.now()}-${Math.random().toString(36).slice(2, 11)}`;
+    const toast = document.createElement("div");
+    toast.id = toastId;
+    toast.className = `toast-validation ${tipo}`;
+
+    const iconos = {
+      info: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>`,
+      warning: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4"/><path d="M12 17h.01"/><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2z"/></svg>`,
+      error: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`,
+      success: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`,
+    };
+
+    toast.innerHTML = `
+      <div class="toast-contenido">
+        <div class="toast-icono-wrapper">
+          <div class="toast-icono">${iconos[tipo] || iconos.warning}</div>
+        </div>
+        <div class="toast-mensaje-wrapper">
+          <div class="toast-titulo">${titulo}</div>
+          <div class="toast-mensaje">${mensaje}</div>
+        </div>
+      </div>
+    `;
+
+    container.appendChild(toast);
+
+    setTimeout(() => {
+      const toastElement = document.getElementById(toastId);
+      if (toastElement) {
+        toastElement.classList.add("exit");
+        setTimeout(() => {
+          if (toastElement.parentNode) {
+            toastElement.remove();
+          }
+        }, 200);
+      }
+    }, 3000);
+  }
+
+  function existeLineaConMismoNombre(nombre) {
+    const objetivo = normalizarTexto(nombre);
+    if (!objetivo) {
+      return false;
+    }
+
+    return Object.keys(estadoLineas).some((nombreExistente) => normalizarTexto(nombreExistente) === objetivo);
+  }
+
   function aplicarFiltroBusqueda() {
     const termino = normalizarTexto(inputBuscarLinea?.value || "");
     let visibles = 0;
@@ -303,11 +740,55 @@ document.addEventListener("DOMContentLoaded", () => {
     if (lineasEncontradasLabel) {
       lineasEncontradasLabel.textContent = visibles === 1 ? "linea encontrada" : "lineas encontradas";
     }
+    actualizarNoResultadosBusqueda(termino, visibles);
     actualizarEmptyState();
   }
 
+  function actualizarNoResultadosBusqueda(terminoNormalizado, visibles) {
+    if (!searchEmptyState) {
+      return;
+    }
+
+    if (isCargandoLineas) {
+      searchEmptyState.classList.add("hidden");
+      return;
+    }
+
+    const terminoRaw = String(inputBuscarLinea?.value || "").trim();
+    const hayBusquedaActiva = terminoNormalizado.length > 0;
+    const totalCards = cards.length;
+    const mostrar = hayBusquedaActiva && totalCards > 0 && visibles === 0;
+
+    if (mostrar) {
+      if (searchEmptyTerm) {
+        searchEmptyTerm.textContent = terminoRaw;
+      }
+      searchEmptyState.classList.remove("hidden");
+      return;
+    }
+
+    searchEmptyState.classList.add("hidden");
+  }
+
   function actualizarEmptyState() {
-    const totalCards = cardsGrid.querySelectorAll("div.bg-white.rounded-xl").length;
+    if (isCargandoLineas) {
+      if (emptyState) {
+        emptyState.classList.add("hidden");
+      }
+      if (searchEmptyState) {
+        searchEmptyState.classList.add("hidden");
+      }
+      return;
+    }
+
+    if (searchEmptyState && !searchEmptyState.classList.contains("hidden")) {
+      if (emptyState) {
+        emptyState.classList.add("hidden");
+      }
+      return;
+    }
+
+    const totalCards = cardsGrid ? cardsGrid.querySelectorAll(`:scope > ${cardSelector}`).length : 0;
     if (emptyState) {
       if (totalCards === 0) {
         emptyState.classList.remove("hidden");
@@ -342,7 +823,7 @@ document.addEventListener("DOMContentLoaded", () => {
         : [];
 
     return {
-      area: String(registro.area || "").trim(),
+      area: normalizarNombreArea(registro.area, registro.idArea),
       programaFormacion: obtenerProgramaFormacion(registro),
       tendenciaActual: String(registro.tendencia || "").trim(),
       proyecciones,
@@ -358,17 +839,17 @@ document.addEventListener("DOMContentLoaded", () => {
     const mapped = proyecciones
       .map((item) => {
         if (typeof item === "string") {
-          return item.trim();
+          return normalizarProyeccionTexto(item);
         }
 
         if (item && typeof item === "object") {
-          const anio = String(item.anio || item.anios || fallbackAnios || "").trim();
+          const anio = formatAnioProyeccion(item.anio || item.anios || fallbackAnios || "");
           const nombre = String(item.nombre || item.titulo || "").trim();
 
           if (nombre && anio) {
             return `${nombre}: ${anio}`;
           }
-          return nombre || anio;
+          return normalizarProyeccionTexto(nombre || anio);
         }
 
         return "";
@@ -379,7 +860,7 @@ document.addEventListener("DOMContentLoaded", () => {
       return mapped;
     }
 
-    const anios = String(fallbackAnios || "").trim();
+    const anios = formatAnioProyeccion(fallbackAnios || "");
     if (!anios) {
       return [];
     }
@@ -397,6 +878,11 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
+    const idLinea = String(card?.dataset?.idLinea || "").trim();
+    if (idLinea) {
+      link.href = `detalles_lineas_tecnologicas.php?id_linea=${encodeURIComponent(idLinea)}&linea=${encodeURIComponent(nombre)}`;
+      return;
+    }
     link.href = `detalles_lineas_tecnologicas.php?linea=${encodeURIComponent(nombre)}`;
   }
 
@@ -415,11 +901,17 @@ document.addEventListener("DOMContentLoaded", () => {
     return {
       nombre,
       active: state.active !== false,
+      idLinea: String(state.idLinea || card?.dataset?.idLinea || "").trim(),
+      idArea: String(state.idArea || card?.dataset?.idArea || "").trim(),
+      idPrograma: String(state.idPrograma || card?.dataset?.idPrograma || "").trim(),
+      idEtapa: String(state.idEtapa || card?.dataset?.idEtapa || "").trim(),
+      idTendencia: String(state.idTendencia || card?.dataset?.idTendencia || "").trim(),
+      idProyeccion: String(state.idProyeccion || card?.dataset?.idProyeccion || "").trim(),
       area,
       programaFormacion,
       tendencia,
       etapa: state.etapa || "",
-      proyeccion: state.proyeccion || "",
+      proyeccion: normalizarProyeccionTexto(state.proyeccion, state.idProyeccion || card?.dataset?.idProyeccion || ""),
       proyecciones: proyeccionesTexto,
       tecnologiasEmergentes: tecnologias,
       perfiles: parseCardPerfiles(card),
@@ -435,11 +927,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
     return {
       active: true,
-      area: detalle.area || areasDisponibles[0] || "",
-      programaFormacion: detalle.programaFormacion || programasFormacionDisponibles[0] || "",
-      tendencia: detalle.tendenciaActual || tendenciasEmergentesDisponibles[0] || "",
-      etapa: etapasDisponibles[0] || "",
-      proyeccion: proyeccionesDisponibles[0]?.value || "",
+      area: detalle.area || getOptionValue(areasDisponibles[0]) || "",
+      programaFormacion: detalle.programaFormacion || getOptionValue(programasFormacionDisponibles[0]) || "",
+      tendencia: detalle.tendenciaActual || getOptionValue(tendenciasEmergentesDisponibles[0]) || "",
+      etapa: getOptionValue(etapasDisponibles[0]) || "",
+      proyeccion: String(proyeccionesDisponibles[0]?.label || "").trim(),
     };
   }
 
@@ -447,6 +939,15 @@ document.addEventListener("DOMContentLoaded", () => {
     try {
       const params = new URLSearchParams(window.location.search);
       return (params.get("linea") || "").trim();
+    } catch (error) {
+      return "";
+    }
+  }
+
+  function getLineaIdFromQuery() {
+    try {
+      const params = new URLSearchParams(window.location.search);
+      return (params.get("id_linea") || "").trim();
     } catch (error) {
       return "";
     }
@@ -573,11 +1074,17 @@ document.addEventListener("DOMContentLoaded", () => {
     const registro = {
       nombre,
       active: state.active !== false,
+      idLinea: String(existente.idLinea || state.idLinea || "").trim(),
+      idArea: String(existente.idArea || state.idArea || "").trim(),
+      idPrograma: String(existente.idPrograma || state.idPrograma || "").trim(),
+      idEtapa: String(existente.idEtapa || state.idEtapa || "").trim(),
+      idTendencia: String(existente.idTendencia || state.idTendencia || "").trim(),
+      idProyeccion: String(existente.idProyeccion || state.idProyeccion || "").trim(),
       area: areaFinal,
       programaFormacion: programaFormacionFinal,
       tendencia: tendenciaFinal,
       etapa: state.etapa || "",
-      proyeccion: state.proyeccion || "",
+      proyeccion: normalizarProyeccionTexto(state.proyeccion, state.idProyeccion || existente.idProyeccion || ""),
       proyecciones: proyeccionesFinales,
       tecnologiasEmergentes: tecnologiasFinales,
       perfiles: Number.isFinite(existente.perfiles) ? existente.perfiles : 0,
@@ -591,9 +1098,51 @@ document.addEventListener("DOMContentLoaded", () => {
     setStorageLineas(data);
   }
 
-  function inicializarDetalleDesdeStorage() {
+  async function inicializarDetalleDesdeStorage() {
     if (!detalleTitulo) {
       return;
+    }
+
+    const idLineaQuery = getLineaIdFromQuery();
+    if (idLineaQuery) {
+      try {
+        const fila = await obtenerLineaBackend(idLineaQuery);
+        if (fila) {
+          const normalizada = normalizarLineaDesdeBackend(fila);
+          const nombreFinal = normalizada.nombre;
+
+          detalleTitulo.textContent = nombreFinal;
+
+          estadoLineas[nombreFinal] = {
+            active: normalizada.active,
+            area: normalizada.area,
+            programaFormacion: normalizada.programaFormacion,
+            tendencia: normalizada.tendencia,
+            etapa: normalizada.etapa,
+            proyeccion: normalizada.proyecciones?.[0] || normalizada.proyeccion || normalizarProyeccionTexto("", normalizada.idProyeccion),
+            idLinea: normalizada.idLinea,
+            idArea: normalizada.idArea,
+            idPrograma: normalizada.idPrograma,
+            idEtapa: normalizada.idEtapa,
+            idTendencia: normalizada.idTendencia,
+            idProyeccion: normalizada.idProyeccion,
+          };
+
+          setTextById("detalle-tendencia-texto", normalizada.tendencia);
+          setTextById("detalle-area-texto", normalizada.area, "No registrada");
+          setTextById("detalle-programa-formacion-texto", normalizada.programaFormacion, "No registrado");
+          setTextById("detalle-fecha-actualizacion", formatFechaDetalle(normalizada.fechaActualizacion), "Sin registro");
+
+          renderListById("detalle-proyeccion-list", normalizada.proyecciones, "No registrada");
+          renderListById("detalle-tecnologias-list", normalizada.tecnologiasEmergentes, "No registradas");
+
+          detalleActivo = normalizada.active;
+          actualizarEstadoDetalleUI(detalleActivo);
+          return;
+        }
+      } catch (error) {
+        // Fallback to local storage rendering.
+      }
     }
 
     const nombreDesdeQuery = getLineaFromQuery();
@@ -607,7 +1156,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const nombreFinal = (baseState.nombre || nombreBase || "Linea Tecnologica").trim();
     const detalle = getDetalleDataForNombre(nombreFinal);
-    const areaFinal = baseState.area || detalle.area || "";
+    const areaFinal = normalizarNombreArea(baseState.area || detalle.area || "", baseState.idArea || "");
     const programaFormacionFinal = obtenerProgramaFormacion(baseState) || detalle.programaFormacion || "";
     const tendenciaFinal = baseState.tendencia || detalle.tendenciaActual || "";
 
@@ -639,7 +1188,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     setTextById("detalle-tendencia-texto", tendenciaFinal);
-    setTextById("detalle-area-texto", areaFinal, "No registrada");
+    setTextById("detalle-area-texto", normalizarNombreArea(areaFinal, baseState.idArea || ""), "No registrada");
     setTextById("detalle-programa-formacion-texto", programaFormacionFinal, "No registrado");
     setTextById("detalle-fecha-actualizacion", formatFechaDetalle(baseState.fechaActualizacion), "Sin registro");
 
@@ -692,9 +1241,15 @@ document.addEventListener("DOMContentLoaded", () => {
     const card = document.createElement("div");
     const estadoActivo = state.active !== false;
     const estadoTexto = estadoActivo ? "0 vigentes" : "0 vigentes";
-    const chips = [state.tendencia, state.etapa].filter(Boolean).slice(0, 2);
+    const chips = [state.programaFormacion, state.tendencia].filter(Boolean).slice(0, 2);
 
     card.className = "tarjeta-tecnologia bg-white border border-sena-border rounded-xl p-6 flex flex-col gap-3";
+    card.dataset.idLinea = String(state.idLinea || "");
+    card.dataset.idArea = String(state.idArea || "");
+    card.dataset.idPrograma = String(state.idPrograma || "");
+    card.dataset.idEtapa = String(state.idEtapa || "");
+    card.dataset.idTendencia = String(state.idTendencia || "");
+    card.dataset.idProyeccion = String(state.idProyeccion || "");
     card.innerHTML = `
       <div class="flex justify-between items-start">
         <div class="w-11 h-11 bg-sena-soft rounded-xl flex items-center justify-center">
@@ -724,8 +1279,40 @@ document.addEventListener("DOMContentLoaded", () => {
     cards.push(card);
     inicializarCard(card, cards.length - 1);
     actualizarLinkDetalle(card, nombre);
+    guardarRegistroLinea(nombre, card);
     actualizarEmptyState();
     return card;
+  }
+
+  function actualizarCardDesdeState(card, nombre, state) {
+    if (!card) {
+      return;
+    }
+
+    const titleEl = card.querySelector("h3");
+    if (titleEl) {
+      titleEl.textContent = nombre;
+    }
+
+    card.dataset.idLinea = String(state.idLinea || card.dataset.idLinea || "");
+    card.dataset.idArea = String(state.idArea || card.dataset.idArea || "");
+    card.dataset.idPrograma = String(state.idPrograma || card.dataset.idPrograma || "");
+    card.dataset.idEtapa = String(state.idEtapa || card.dataset.idEtapa || "");
+    card.dataset.idTendencia = String(state.idTendencia || card.dataset.idTendencia || "");
+    card.dataset.idProyeccion = String(state.idProyeccion || card.dataset.idProyeccion || "");
+
+    const chipsWrap = card.querySelector(".flex.flex-wrap.gap-2");
+    if (chipsWrap) {
+      chipsWrap.innerHTML = "";
+      [state.programaFormacion, state.tendencia].filter(Boolean).slice(0, 2).forEach((chipText) => {
+        const chip = document.createElement("span");
+        chip.className = "text-xs text-sena-strong bg-sena-soft rounded-full px-2.5 py-0.5";
+        chip.textContent = chipText;
+        chipsWrap.appendChild(chip);
+      });
+    }
+
+    actualizarLinkDetalle(card, nombre);
   }
 
   function setSwitchState(switchBtn, isActive) {
@@ -754,19 +1341,25 @@ document.addEventListener("DOMContentLoaded", () => {
       active: true,
       area: parseCardArea(card) || "",
       programaFormacion: "",
-      tendencia: tendenciasEmergentesDisponibles[0] || "",
-      etapa: etapasDisponibles[0] || "",
-      proyeccion: proyeccionesDisponibles[0]?.value || "",
+      tendencia: getOptionValue(tendenciasEmergentesDisponibles[0]) || "",
+      etapa: getOptionValue(etapasDisponibles[0]) || "",
+      proyeccion: getOptionValue(proyeccionesDisponibles[0]) || "",
+      idLinea: String(card?.dataset?.idLinea || ""),
+      idArea: String(card?.dataset?.idArea || ""),
+      idPrograma: String(card?.dataset?.idPrograma || ""),
+      idEtapa: String(card?.dataset?.idEtapa || ""),
+      idTendencia: String(card?.dataset?.idTendencia || ""),
+      idProyeccion: String(card?.dataset?.idProyeccion || ""),
     };
 
     lineaEnEdicion = { card, titleEl, oldName: nombreActual };
 
     modals.editInput.value = nombreActual;
-    modals.editArea.value = estadoActual.area || "";
-    modals.editPrograma.value = estadoActual.programaFormacion || "";
-    modals.editTendencia.value = estadoActual.tendencia;
-    modals.editEtapa.value = estadoActual.etapa;
-    modals.editProyeccion.value = estadoActual.proyeccion;
+    modals.editArea.value = estadoActual.idArea || estadoActual.area || "";
+    modals.editTendencia.value = estadoActual.idTendencia || estadoActual.tendencia;
+    modals.editEtapa.value = estadoActual.idEtapa || estadoActual.etapa;
+    modals.editProyeccion.value = estadoActual.idProyeccion || estadoActual.proyeccion;
+    cargarProgramasPorArea(modals.editArea.value, modals.editPrograma, estadoActual.idPrograma || estadoActual.programaFormacion || "");
     abrirModal(modals.editModal);
   }
 
@@ -799,6 +1392,44 @@ document.addEventListener("DOMContentLoaded", () => {
     modals.successProgress.style.width = "0%";
     modals.successCounter.textContent = "3";
     cerrarModal(modals.successModal);
+  }
+
+  async function obtenerLineaBackend(idLinea) {
+    if (!idLinea) {
+      return null;
+    }
+    const payload = await fetchJson(API_ROUTES.lineas, {
+      accion: "obtener",
+      id_linea: idLinea,
+    });
+    return payload?.data || null;
+  }
+
+  async function crearLineaBackend(data) {
+    return fetchJson(API_ROUTES.lineas, { accion: "crear" }, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
+    });
+  }
+
+  async function actualizarLineaBackend(data) {
+    return fetchJson(API_ROUTES.lineas, { accion: "actualizar" }, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
+    });
+  }
+
+  async function cambiarEstadoLineaBackend(idLinea, activar) {
+    if (!idLinea) {
+      return { success: false };
+    }
+    const accion = activar ? "activar" : "desactivar";
+    return fetchJson(API_ROUTES.lineas, {
+      accion,
+      id_linea: idLinea,
+    });
   }
 
   function mostrarAlertaFinal(config) {
@@ -924,19 +1555,19 @@ document.addEventListener("DOMContentLoaded", () => {
           active: detalleActivo,
           area: "",
           programaFormacion: "",
-          tendencia: tendenciasEmergentesDisponibles[0] || "",
-          etapa: etapasDisponibles[0] || "",
-          proyeccion: proyeccionesDisponibles[0]?.value || "",
+          tendencia: getOptionValue(tendenciasEmergentesDisponibles[0]) || "",
+          etapa: getOptionValue(etapasDisponibles[0]) || "",
+          proyeccion: getOptionValue(proyeccionesDisponibles[0]) || "",
         };
 
         lineaEnEdicion = { card: null, titleEl: detalleTitulo, oldName: nombreActual, isDetalle: true };
 
         modals.editInput.value = nombreActual;
-        modals.editArea.value = estadoActual.area || "";
-        modals.editPrograma.value = estadoActual.programaFormacion || "";
-        modals.editTendencia.value = estadoActual.tendencia;
-        modals.editEtapa.value = estadoActual.etapa;
-        modals.editProyeccion.value = estadoActual.proyeccion;
+        modals.editArea.value = estadoActual.idArea || estadoActual.area || "";
+        modals.editTendencia.value = estadoActual.idTendencia || estadoActual.tendencia;
+        modals.editEtapa.value = estadoActual.idEtapa || estadoActual.etapa;
+        modals.editProyeccion.value = estadoActual.idProyeccion || estadoActual.proyeccion;
+        cargarProgramasPorArea(modals.editArea.value, modals.editPrograma, estadoActual.idPrograma || estadoActual.programaFormacion || "");
         abrirModal(modals.editModal);
       });
     }
@@ -1047,17 +1678,38 @@ document.addEventListener("DOMContentLoaded", () => {
     actualizarLinkDetalle(card, nombreTecnologia);
   }
 
-  cards.forEach(inicializarCard);
-  guardarTodasLasLineas();
+  if (isListadoView) {
+    cards.forEach(inicializarCard);
+    guardarTodasLasLineas();
+  }
   inicializarDetalleDesdeStorage();
   inicializarAccionesDetalle();
 
-  if (inputBuscarLinea) {
+  cargarCatalogosDesdeBackend();
+  if (isListadoView) {
+    cargarLineasDesdeBackend();
+  }
+
+  if (isListadoView && inputBuscarLinea) {
     inputBuscarLinea.addEventListener("input", aplicarFiltroBusqueda);
   }
 
-  aplicarFiltroBusqueda();
-  actualizarEmptyState();
+  if (modals.createArea) {
+    modals.createArea.addEventListener("change", () => {
+      cargarProgramasPorArea(modals.createArea.value, modals.createPrograma);
+    });
+  }
+
+  if (modals.editArea) {
+    modals.editArea.addEventListener("change", () => {
+      cargarProgramasPorArea(modals.editArea.value, modals.editPrograma);
+    });
+  }
+
+  if (isListadoView) {
+    aplicarFiltroBusqueda();
+    actualizarEmptyState();
+  }
 
   if (btnNuevaLinea) {
     btnNuevaLinea.addEventListener("click", () => {
@@ -1067,6 +1719,7 @@ document.addEventListener("DOMContentLoaded", () => {
       modals.createTendencia.value = "";
       modals.createEtapa.value = "";
       modals.createProyeccion.value = "";
+      setSelectEnabled(modals.createPrograma, false);
       abrirModal(modals.createModal);
     });
   }
@@ -1079,6 +1732,7 @@ document.addEventListener("DOMContentLoaded", () => {
       modals.createTendencia.value = "";
       modals.createEtapa.value = "";
       modals.createProyeccion.value = "";
+      setSelectEnabled(modals.createPrograma, false);
       abrirModal(modals.createModal);
     });
   }
@@ -1087,17 +1741,97 @@ document.addEventListener("DOMContentLoaded", () => {
     btn.addEventListener("click", () => cerrarModal(modals.createModal));
   });
 
-  modals.createForm.addEventListener("submit", (event) => {
+  modals.createForm.addEventListener("submit", async (event) => {
     event.preventDefault();
 
     const nombreNuevaLinea = modals.createInput.value.trim() || "Nueva Linea";
+
+    if (!modals.createInput.value.trim()) {
+      mostrarToastValidacion("El nombre de la linea es requerido", "warning");
+      return;
+    }
+
+    if (existeLineaConMismoNombre(nombreNuevaLinea)) {
+      mostrarToastValidacion("Ya existe una linea con ese nombre", "info");
+      return;
+    }
+
+    const payloadCrear = {
+      id_area: modals.createArea.value,
+      id_programa: modals.createPrograma.value,
+      id_etapa: modals.createEtapa.value,
+      id_tendencia: modals.createTendencia.value,
+      id_proyeccion: modals.createProyeccion.value,
+      estado: 1,
+    };
+
+    if (!payloadCrear.id_area || !payloadCrear.id_programa || !payloadCrear.id_etapa || !payloadCrear.id_tendencia || !payloadCrear.id_proyeccion) {
+      mostrarAlertaFinal({
+        title: "Datos incompletos",
+        message: "Debes completar Area, Programa, Etapa, Tendencia y Proyeccion.",
+        color: "#e65100",
+        seconds: 3,
+      });
+      return;
+    }
+
+    try {
+      const creado = await crearLineaBackend(payloadCrear);
+      const idCreado = String(creado?.id_linea || "").trim();
+      const fila = await obtenerLineaBackend(idCreado);
+
+      if (!fila) {
+        throw new Error("No fue posible obtener la linea creada");
+      }
+
+      const normalizada = normalizarLineaDesdeBackend(fila);
+      const nombreFinal = normalizada.nombre || nombreNuevaLinea;
+
+      const nuevaState = {
+        active: normalizada.active,
+        area: normalizada.area,
+        programaFormacion: normalizada.programaFormacion,
+        tendencia: normalizada.tendencia,
+        etapa: normalizada.etapa,
+        proyeccion: normalizada.proyecciones?.[0] || normalizada.proyeccion || normalizarProyeccionTexto("", normalizada.idProyeccion),
+        idLinea: normalizada.idLinea,
+        idArea: normalizada.idArea,
+        idPrograma: normalizada.idPrograma,
+        idEtapa: normalizada.idEtapa,
+        idTendencia: normalizada.idTendencia,
+        idProyeccion: normalizada.idProyeccion,
+      };
+
+      estadoLineas[nombreFinal] = nuevaState;
+      const nuevaCard = crearCardLinea(nombreFinal, nuevaState);
+      if (nuevaCard) {
+        aplicarFiltroBusqueda();
+      }
+
+      cerrarModal(modals.createModal);
+      mostrarAlertaFinal({
+        title: "Linea Creada",
+        message: `La linea \"${nombreFinal}\" fue creada correctamente.`,
+        color: "#39A900",
+        seconds: 3,
+      });
+      return;
+    } catch (error) {
+      // Fallback visual temporal when API fails.
+    }
+
     const nuevaState = {
       active: true,
-      area: modals.createArea.value,
+      area: getOptionLabelByValue(areasDisponibles, modals.createArea.value),
       programaFormacion: modals.createPrograma.value,
       tendencia: modals.createTendencia.value,
       etapa: modals.createEtapa.value,
-      proyeccion: modals.createProyeccion.value,
+      proyeccion: getOptionLabelByValue(proyeccionesDisponibles, modals.createProyeccion.value),
+      idArea: modals.createArea.value,
+      idPrograma: modals.createPrograma.value,
+      idEtapa: modals.createEtapa.value,
+      idTendencia: modals.createTendencia.value,
+      idProyeccion: modals.createProyeccion.value,
     };
 
     estadoLineas[nombreNuevaLinea] = nuevaState;
@@ -1120,9 +1854,35 @@ document.addEventListener("DOMContentLoaded", () => {
     btn.addEventListener("click", () => cerrarModal(modals.disableModal));
   });
 
-  modals.disableConfirm.addEventListener("click", () => {
+  modals.disableConfirm.addEventListener("click", async () => {
     if (!lineaPendienteDeshabilitar) {
       return;
+    }
+
+    const card = lineaPendienteDeshabilitar.switchBtn
+      ? lineaPendienteDeshabilitar.switchBtn.closest("div.tarjeta-tecnologia, div.bg-white.rounded-xl")
+      : null;
+    const idLinea = String(
+      card?.dataset?.idLinea
+      || estadoLineas[lineaPendienteDeshabilitar.nombre]?.idLinea
+      || ""
+    ).trim();
+
+    if (idLinea) {
+      try {
+        const resp = await cambiarEstadoLineaBackend(idLinea, false);
+        if (resp?.success === false) {
+          throw new Error(resp?.error || "No fue posible desactivar");
+        }
+      } catch (error) {
+        mostrarAlertaFinal({
+          title: "Error",
+          message: "No fue posible deshabilitar la linea en el backend.",
+          color: "#e65100",
+          seconds: 3,
+        });
+        return;
+      }
     }
 
     if (lineaPendienteDeshabilitar.switchBtn) {
@@ -1138,9 +1898,6 @@ document.addEventListener("DOMContentLoaded", () => {
       estadoLineas[lineaPendienteDeshabilitar.nombre].active = false;
     }
 
-    const card = lineaPendienteDeshabilitar.switchBtn
-      ? lineaPendienteDeshabilitar.switchBtn.closest("div.bg-white.rounded-xl")
-      : null;
     if (card) {
       guardarRegistroLinea(lineaPendienteDeshabilitar.nombre, card);
     }
@@ -1159,9 +1916,35 @@ document.addEventListener("DOMContentLoaded", () => {
     btn.addEventListener("click", () => cerrarModal(modals.enableModal));
   });
 
-  modals.enableConfirm.addEventListener("click", () => {
+  modals.enableConfirm.addEventListener("click", async () => {
     if (!lineaPendienteHabilitar) {
       return;
+    }
+
+    const card = lineaPendienteHabilitar.switchBtn
+      ? lineaPendienteHabilitar.switchBtn.closest("div.tarjeta-tecnologia, div.bg-white.rounded-xl")
+      : null;
+    const idLinea = String(
+      card?.dataset?.idLinea
+      || estadoLineas[lineaPendienteHabilitar.nombre]?.idLinea
+      || ""
+    ).trim();
+
+    if (idLinea) {
+      try {
+        const resp = await cambiarEstadoLineaBackend(idLinea, true);
+        if (resp?.success === false) {
+          throw new Error(resp?.error || "No fue posible activar");
+        }
+      } catch (error) {
+        mostrarAlertaFinal({
+          title: "Error",
+          message: "No fue posible habilitar la linea en el backend.",
+          color: "#e65100",
+          seconds: 3,
+        });
+        return;
+      }
     }
 
     if (lineaPendienteHabilitar.switchBtn) {
@@ -1177,9 +1960,6 @@ document.addEventListener("DOMContentLoaded", () => {
       estadoLineas[lineaPendienteHabilitar.nombre].active = true;
     }
 
-    const card = lineaPendienteHabilitar.switchBtn
-      ? lineaPendienteHabilitar.switchBtn.closest("div.bg-white.rounded-xl")
-      : null;
     if (card) {
       guardarRegistroLinea(lineaPendienteHabilitar.nombre, card);
     }
@@ -1198,7 +1978,7 @@ document.addEventListener("DOMContentLoaded", () => {
     btn.addEventListener("click", () => cerrarModal(modals.editModal));
   });
 
-  modals.editForm.addEventListener("submit", (event) => {
+  modals.editForm.addEventListener("submit", async (event) => {
     event.preventDefault();
 
     if (!lineaEnEdicion) {
@@ -1214,26 +1994,106 @@ document.addEventListener("DOMContentLoaded", () => {
       active: true,
       area: "",
       programaFormacion: "",
-      tendencia: tendenciasEmergentesDisponibles[0] || "",
-      etapa: etapasDisponibles[0] || "",
-      proyeccion: proyeccionesDisponibles[0]?.value || "",
+      tendencia: getOptionValue(tendenciasEmergentesDisponibles[0]) || "",
+      etapa: getOptionValue(etapasDisponibles[0]) || "",
+      proyeccion: getOptionValue(proyeccionesDisponibles[0]) || "",
     };
+
+    const idLineaEditar = String(
+      oldState.idLinea
+      || lineaEnEdicion?.card?.dataset?.idLinea
+      || ""
+    ).trim();
+
     delete estadoLineas[lineaEnEdicion.oldName];
     estadoLineas[nuevoNombre] = {
       active: oldState.active,
-      area: modals.editArea.value,
+      area: getOptionLabelByValue(areasDisponibles, modals.editArea.value),
       programaFormacion: modals.editPrograma.value,
       tendencia: modals.editTendencia.value,
       etapa: modals.editEtapa.value,
-      proyeccion: modals.editProyeccion.value,
+      proyeccion: getOptionLabelByValue(proyeccionesDisponibles, modals.editProyeccion.value),
+      idLinea: idLineaEditar,
+      idArea: modals.editArea.value,
+      idPrograma: modals.editPrograma.value,
+      idEtapa: modals.editEtapa.value,
+      idTendencia: modals.editTendencia.value,
+      idProyeccion: modals.editProyeccion.value,
     };
 
-    lineaEnEdicion.titleEl.textContent = nuevoNombre;
-    actualizarLinkDetalle(lineaEnEdicion.card, nuevoNombre);
+    let nombreFinalEdicion = nuevoNombre;
+
+    if (idLineaEditar) {
+      try {
+        const payloadActualizar = {
+          id_linea: idLineaEditar,
+          id_area: modals.editArea.value,
+          id_programa: modals.editPrograma.value,
+          id_etapa: modals.editEtapa.value,
+          id_tendencia: modals.editTendencia.value,
+          id_proyeccion: modals.editProyeccion.value,
+          estado: oldState.active ? 1 : 0,
+        };
+
+        await actualizarLineaBackend(payloadActualizar);
+        const filaActualizada = await obtenerLineaBackend(idLineaEditar);
+
+        if (filaActualizada) {
+          const normalizada = normalizarLineaDesdeBackend(filaActualizada);
+          const nombreBackend = normalizada.nombre || nuevoNombre;
+
+          delete estadoLineas[nuevoNombre];
+          estadoLineas[nombreBackend] = {
+            active: normalizada.active,
+            area: normalizada.area,
+            programaFormacion: normalizada.programaFormacion,
+            tendencia: normalizada.tendencia,
+            etapa: normalizada.etapa,
+            proyeccion: normalizada.proyecciones?.[0] || normalizada.proyeccion || normalizarProyeccionTexto("", normalizada.idProyeccion),
+            idLinea: normalizada.idLinea,
+            idArea: normalizada.idArea,
+            idPrograma: normalizada.idPrograma,
+            idEtapa: normalizada.idEtapa,
+            idTendencia: normalizada.idTendencia,
+            idProyeccion: normalizada.idProyeccion,
+          };
+
+          if (lineaEnEdicion.card) {
+            lineaEnEdicion.card.dataset.idLinea = normalizada.idLinea;
+            lineaEnEdicion.card.dataset.idArea = normalizada.idArea;
+            lineaEnEdicion.card.dataset.idPrograma = normalizada.idPrograma;
+            lineaEnEdicion.card.dataset.idEtapa = normalizada.idEtapa;
+            lineaEnEdicion.card.dataset.idTendencia = normalizada.idTendencia;
+            lineaEnEdicion.card.dataset.idProyeccion = normalizada.idProyeccion;
+            actualizarCardDesdeState(lineaEnEdicion.card, nombreBackend, estadoLineas[nombreBackend]);
+          }
+
+          lineaEnEdicion.titleEl.textContent = nombreBackend;
+          nombreFinalEdicion = nombreBackend;
+        }
+      } catch (error) {
+        mostrarAlertaFinal({
+          title: "Error",
+          message: "No fue posible actualizar la linea en el backend.",
+          color: "#e65100",
+          seconds: 3,
+        });
+        return;
+      }
+    }
+
+    lineaEnEdicion.titleEl.textContent = nombreFinalEdicion;
+    if (lineaEnEdicion.card && estadoLineas[nombreFinalEdicion]) {
+      actualizarCardDesdeState(lineaEnEdicion.card, nombreFinalEdicion, estadoLineas[nombreFinalEdicion]);
+    } else {
+      actualizarLinkDetalle(lineaEnEdicion.card, nombreFinalEdicion);
+    }
 
     if (lineaEnEdicion.isDetalle) {
-      estadoLineas[nuevoNombre].active = detalleActivo;
-      guardarRegistroDetalle(nuevoNombre);
+      if (estadoLineas[nombreFinalEdicion]) {
+        estadoLineas[nombreFinalEdicion].active = detalleActivo;
+      }
+      guardarRegistroDetalle(nombreFinalEdicion);
       inicializarDetalleDesdeStorage();
     }
 
