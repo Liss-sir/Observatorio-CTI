@@ -75,7 +75,7 @@ $estadisticas = [
             </div>
         </div>
 
-        <button id="btnEditar" class="flex items-center gap-2 border border-sena px-4 py-2 rounded-xl hover:bg-sena-soft hover:text-sena-strong shadow-sm">
+        <button class="btnAbrirPerfil flex items-center gap-2 border border-sena px-4 py-2 rounded-xl hover:bg-sena-soft hover:text-sena-strong shadow-sm">
             <i data-lucide="pencil" class="w-4 h-4 text-sena  "></i>
             Editar Perfil
         </button>

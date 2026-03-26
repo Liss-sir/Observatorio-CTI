@@ -317,56 +317,6 @@ $razonesSociales = [
 <script src="https://unpkg.com/lucide@latest"></script>
 <script src="../../assets/js/register.js"></script>
 
-<script>
-lucide.createIcons();
-
-// Toggle password visibility
-const togglePassword = document.getElementById('togglePassword');
-const passwordInput = document.getElementById('password');
-
-if (togglePassword && passwordInput) {
-    togglePassword.addEventListener('click', function() {
-        const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
-        passwordInput.setAttribute('type', type);
-        
-        const icon = this.querySelector('i');
-        icon.setAttribute('data-lucide', type === 'password' ? 'eye' : 'eye-off');
-        lucide.createIcons();
-    });
-}
-
-// Toggle confirm password visibility
-const toggleConfirmPassword = document.getElementById('toggleConfirmPassword');
-const confirmPasswordInput = document.getElementById('confirmPassword');
-
-if (toggleConfirmPassword && confirmPasswordInput) {
-    toggleConfirmPassword.addEventListener('click', function() {
-        const type = confirmPasswordInput.getAttribute('type') === 'password' ? 'text' : 'password';
-        confirmPasswordInput.setAttribute('type', type);
-        
-        const icon = this.querySelector('i');
-        icon.setAttribute('data-lucide', type === 'password' ? 'eye' : 'eye-off');
-        lucide.createIcons();
-    });
-}
-
-// Animación de salida del formulario al enviar
-const form = document.querySelector('form');
-if (form) {
-    form.addEventListener('submit', function(e) {
-        const formContainer = document.querySelector('.animate-form-in');
-        if (formContainer) {
-            formContainer.classList.remove('animate-form-in');
-            formContainer.classList.add('animate-form-out');
-            
-            // Evitar que se envíe inmediatamente para ver la animación
-            setTimeout(() => {
-                // Aquí iría el envío del formulario o redirección
-            }, 700);
-        }
-    });
-}
-</script>
 <?php
 include __DIR__ . '/modal_registro_confirmacion.php';;
 ?>

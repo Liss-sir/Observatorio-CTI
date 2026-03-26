@@ -1,4 +1,8 @@
 <?php
+session_start();
+
+$usuario = $_SESSION['usuario'] ?? null;
+
 include __DIR__ . '../../../includes/header.php';
 include __DIR__ . '/modal_deshabilitar_perfiles.php';
 include __DIR__ . '/modal_habilitar_perfiles.php';
@@ -17,6 +21,7 @@ include __DIR__ . '/modal_crear_programa.php';
     <link rel="stylesheet" href="../../../assets/css/output.css">
     <link rel="stylesheet" href="../../assets/css/globals.css">
 </head>
+<body class="opacity-0" id="app">
 <body class="bg-gray-100">
 <div class="max-w-[82rem] mx-auto px-4 py-8 lg:px-8">
     <!-- Header -->
@@ -33,7 +38,7 @@ include __DIR__ . '/modal_crear_programa.php';
             <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-sena-text-soft pointer-events-none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
             <input type="text" id="buscador" class="w-full h-10 pl-10 pr-3 text-sm border border-sena-border rounded-lg bg-white text-sena-text-main placeholder:text-sena-text-soft focus:border-sena focus:ring-2 focus:ring-sena/15 outline-none transition-all" placeholder="Buscar por nombre o código">
         </div>
-        <button id="btn-abrir-crear-programa" class="flex items-center gap-2 px-5 py-2 text-sm font-medium text-white bg-sena rounded-lg whitespace-nowrap h-10 hover:opacity-90 transition-opacity">
+        <button data-permiso="crear_programa" id="btn-abrir-crear-programa" class="flex items-center gap-2 px-5 py-2 text-sm font-medium text-white bg-sena rounded-lg whitespace-nowrap h-10 hover:opacity-90 transition-opacity">
             <i data-lucide="plus" class="w-4 h-4"></i>
             Nuevo Programa
         </button>
@@ -51,6 +56,7 @@ include __DIR__ . '/modal_crear_programa.php';
 <script>
     lucide.createIcons();
 </script>
+
 <script src="../../assets/js/programas.js"></script>
 </body>
 </html>

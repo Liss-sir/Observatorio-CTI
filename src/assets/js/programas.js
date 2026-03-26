@@ -129,6 +129,14 @@ document.addEventListener("DOMContentLoaded", function () {
             
             // Usar nombre_area (como viene de la BD) o un valor por defecto
             const nombreArea = programa.nombre_area || 'N/A';
+
+            let switchHTML = '';
+
+            if (Auth.tienePermiso('desactivar_programa')) {
+                switchHTML = `
+                    <div class="switch-sena ${estadoActivo ? 'active' : ''}" data-id="${programa.id_programa}"></div>
+                `;
+            }
             
             card.innerHTML = `
                 <div class="flex justify-between items-start mb-4">
@@ -136,7 +144,7 @@ document.addEventListener("DOMContentLoaded", function () {
                         <i data-lucide="graduation-cap" class="w-5 h-5 text-green-600"></i>
                     </div>
                     <div class="flex items-center gap-2">
-                        <button class="btn-editar-programa p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                        <button data-permiso="editar_programa" class="btn-editar-programa p-2 hover:bg-gray-100 rounded-lg transition-colors"
                             data-id="${programa.id_programa}"
                             data-codigo="${programa.codigo_programa || ''}"
                             data-nombre="${programa.nombre_programa || ''}"
@@ -148,7 +156,7 @@ document.addEventListener("DOMContentLoaded", function () {
                             data-area="${programa.id_area || ''}">
                             <i data-lucide="pencil" class="w-4 h-4 text-gray-500"></i>
                         </button>
-                        <div class="switch-sena ${estadoActivo ? 'active' : ''}" data-id="${programa.id_programa}"></div>
+                        ${switchHTML}
                     </div>
                 </div>
                 

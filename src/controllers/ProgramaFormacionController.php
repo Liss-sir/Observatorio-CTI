@@ -3,6 +3,7 @@
 header("Content-Type: application/json; charset=utf-8");
 require_once __DIR__ . "/../../config/database.php";
 require_once __DIR__ . "/../models/ProgramaFormacion.php";
+require_once __DIR__ . '/../helpers/permisos.php';
 
 class ProgramaFormacionController {
 
@@ -58,6 +59,15 @@ class ProgramaFormacionController {
     // Create new program
     public function crear() {
         $input = json_decode(file_get_contents("php://input"), true);
+
+        if (!tienePermiso('crear_programa')) {
+            echo json_encode([
+                'success' => false,
+                'error' => 'No autorizado'
+            ]);
+            exit;
+        }
+
         
         // Basic validations
         if (empty($input['id_area'])) {
@@ -155,6 +165,14 @@ class ProgramaFormacionController {
     // Update program exist
     public function actualizar() {
         $input = json_decode(file_get_contents("php://input"), true);
+
+        if (!tienePermiso('editar_programa')) {
+            echo json_encode([
+                'success' => false,
+                'error' => 'No autorizado'
+            ]);
+            exit;
+        }
         
         if (!isset($input['id_programa'])) {
             echo json_encode([
@@ -215,6 +233,15 @@ class ProgramaFormacionController {
 
     // Change state in programs
     public function cambiarEstado($id, $accion) {
+
+        if (!tienePermiso('desactivar_programa')) {
+            echo json_encode([
+                'success' => false,
+                'error' => 'No autorizado'
+            ]);
+            return;
+        }
+
         if (!$id) {
             echo json_encode([
                 'success' => false,
