@@ -3,6 +3,7 @@
 header("Content-Type: application/json; charset=utf-8");
 require_once __DIR__ . "/../../config/database.php";
 require_once __DIR__ . "/../models/Areas.php";
+require_once __DIR__ . "/../helpers/permisos.php";
 
 class AreaController {
 
@@ -14,6 +15,7 @@ class AreaController {
 
     // List areas active
     public function listar() {
+        verificarPermiso('ver_areas');
         $areas = $this->model->listar();
         echo json_encode([
             'status' => 'success',
@@ -23,6 +25,7 @@ class AreaController {
 
     // List all areas (For admin)
     public function listarTodas() {
+        verificarPermiso('ver_areas');
         $areas = $this->model->listarTodas();
         echo json_encode([
             'status' => 'success',

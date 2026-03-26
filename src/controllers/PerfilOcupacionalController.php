@@ -3,6 +3,7 @@
 header("Content-Type: application/json; charset=utf-8");
 require_once __DIR__ . "/../../config/database.php";
 require_once __DIR__ . "/../models/PerfilOcupacional.php";
+require_once __DIR__ . "/../helpers/permisos.php";
 
 class PerfilOcupacionalController {
 
@@ -75,6 +76,7 @@ class PerfilOcupacionalController {
 
     // Create new profile
     public function crear() {
+        verificarPermiso('crear_perfil');
         $input = json_decode(file_get_contents("php://input"), true);
         
         // Basic validations
