@@ -408,15 +408,6 @@ class PerfilOcupacionalController {
         ]);
     }
 
-    // Get statistics for profiles
-    public function obtenerEstadisticas() {
-        $estadisticas = $this->model->obtenerEstadisticas();
-        echo json_encode([
-            'status' => 'success',
-            'data' => $estadisticas
-        ]);
-    }
-
     // Get profiles for select by user
     public function obtenerParaSelectPorUsuario($id_usuario) {
         if (!$id_usuario) {
