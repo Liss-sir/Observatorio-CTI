@@ -3,13 +3,16 @@
 header("Content-Type: application/json; charset=utf-8");
 require_once __DIR__ . "/../../config/database.php";
 require_once __DIR__ . "/../models/ProgramaFormacion.php";
+require_once __DIR__ . "/../helpers/permisos.php";
 
 class ProgramaFormacionController {
 
     private $model;
+    private $conn;
 
     public function __construct(PDO $conn) {
         $this->model = new ProgramaFormacionModel($conn);
+        $this->conn = $conn;
     }
 
     // List programs active
@@ -57,7 +60,17 @@ class ProgramaFormacionController {
 
     // Create new program
     public function crear() {
+        verificarPermiso('crear_programa');
         $input = json_decode(file_get_contents("php://input"), true);
+
+        if (!tienePermiso('crear_programa')) {
+            echo json_encode([
+                'success' => false,
+                'error' => 'No autorizado'
+            ]);
+            exit;
+        }
+
         
         // Basic validations
         if (empty($input['id_area'])) {
@@ -154,7 +167,16 @@ class ProgramaFormacionController {
 
     // Update program exist
     public function actualizar() {
+        verificarPermiso('editar_programa');
         $input = json_decode(file_get_contents("php://input"), true);
+
+        if (!tienePermiso('editar_programa')) {
+            echo json_encode([
+                'success' => false,
+                'error' => 'No autorizado'
+            ]);
+            exit;
+        }
         
         if (!isset($input['id_programa'])) {
             echo json_encode([
@@ -215,6 +237,12 @@ class ProgramaFormacionController {
 
     // Change state in programs
     public function cambiarEstado($id, $accion) {
+        if ($accion === 'desactivar') {
+            verificarPermiso('desactivar_programa');
+        } else {
+            verificarPermiso('editar_programa');
+        }
+
         if (!$id) {
             echo json_encode([
                 'success' => false,
@@ -248,6 +276,7 @@ class ProgramaFormacionController {
 
     // Delete programs
     public function eliminar($id) {
+        verificarPermiso('desactivar_programa');
         if (!$id) {
             echo json_encode([
                 'success' => false,
@@ -529,6 +558,7 @@ class ProgramaFormacionController {
                         p.id_programa,
                         p.codigo_programa,
                         p.nombre_programa,
+                        p.cupos_formacion,
                         a.nombre_area,
                         n.nombre_nivel,
                         COUNT(po.id_perfil) AS total_perfiles_asociados,

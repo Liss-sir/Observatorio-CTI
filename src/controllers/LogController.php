@@ -18,6 +18,11 @@ class LogController {
      * Espera JSON con correo y password
      */
     public function login() {
+        // Iniciar sesión si no está iniciada
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+
         $input = json_decode(file_get_contents("php://input"), true);
 
         if (!isset($input['correo']) || !isset($input['password'])) {
@@ -28,8 +33,39 @@ class LogController {
             return;
         }
 
+        // Llamar al modelo
         $resultado = $this->model->login($input['correo'], $input['password']);
+        
+        // Si el login fue exitoso, iniciar sesión PHP
+        if ($resultado['success'] && isset($resultado['usuario'])) {
+            $_SESSION['usuario'] = $resultado['usuario'];
+            $_SESSION['id_usuario'] = $resultado['usuario']['id_usuario'];
+            $_SESSION['correo'] = $resultado['usuario']['correo'];
+            $_SESSION['rol_nombre'] = $resultado['usuario']['rol_nombre'];
+            $_SESSION['autenticado'] = true;
+            
+            // Agregar URL de redirección
+            $resultado['redirect'] = '../../view/dashboard/dashboard.php';
+        }
+        
         echo json_encode($resultado);
+    }
+
+    public function logout() {
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+        
+        // Destruir todas las variables de sesión
+        $_SESSION = array();
+        
+        // Destruir la sesión
+        session_destroy();
+        
+        echo json_encode([
+            'success' => true,
+            'message' => 'Sesión cerrada exitosamente'
+        ]);
     }
 
     /**
@@ -72,6 +108,7 @@ class LogController {
         ]);
     }
 
+
     /**
      * Procesa la verificación mediante token (normalmente se accede desde el enlace del correo)
      */
@@ -88,6 +125,34 @@ class LogController {
 
         $resultado = $this->model->procesarVerificacion($token);
         echo json_encode($resultado);
+    }
+
+    /**
+     * Procesa la verificación mediante la session
+     */
+    public function verificarSesion() {
+        // Iniciar sesión si no está iniciada
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+
+        if (isset($_SESSION['autenticado']) && $_SESSION['autenticado'] === true) {
+            echo json_encode([
+                'success' => true,
+                'autenticado' => true,
+                'usuario' => [
+                    'id_usuario' => $_SESSION['id_usuario'],
+                    'correo' => $_SESSION['correo'],
+                    'rol_nombre' => $_SESSION['rol_nombre'],
+                    'nombre' => $_SESSION['usuario']['representante_legal'] ?? $_SESSION['usuario']['nombre_empresa'] ?? 'Usuario'
+                ]
+            ]);
+        } else {
+            echo json_encode([
+                'success' => true,
+                'autenticado' => false
+            ]);
+        }
     }
 
     /**
@@ -249,7 +314,7 @@ class LogController {
 
         if ($resultado['success']) {
             // Enviar correo de verificación automáticamente
-            $this->model->enviarVerificacion($resultado['id_usuario'], $input['correo']);
+        //$this->model->enviarVerificacion($resultado['id_usuario'], $input['correo']);
             echo json_encode([
                 'success' => true,
                 'message' => 'Usuario registrado correctamente. Se ha enviado un correo de verificación.'
@@ -279,6 +344,10 @@ switch ($accion) {
         $controller->login();
         break;
 
+    case 'logout':
+        $controller->logout();
+        break;
+
     case 'enviar-verificacion':
         $controller->enviarVerificacion();
         break;
@@ -301,6 +370,10 @@ switch ($accion) {
 
     case 'register':
         $controller->register();
+        break;
+
+    case 'sesion':
+        $controller->verificarSesion();
         break;
 
     default:

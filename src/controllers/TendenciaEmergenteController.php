@@ -3,6 +3,7 @@
 header("Content-Type: application/json; charset=utf-8");
 require_once __DIR__ . "/../../config/database.php";
 require_once __DIR__ . "/../models/TendenciaEmergente.php";
+require_once __DIR__ . "/../helpers/permisos.php";
 
 class TendenciaEmergenteController {
 
@@ -57,6 +58,7 @@ class TendenciaEmergenteController {
 
     // Crear nueva tendencia
     public function crear() {
+        verificarPermiso('crear_tendencia');
         $input = json_decode(file_get_contents("php://input"), true);
         
         if (empty($input['id_area'])) {
@@ -101,6 +103,7 @@ class TendenciaEmergenteController {
 
     // Actualizar tendencia existente
     public function actualizar() {
+        verificarPermiso('editar_tendencia');
         $input = json_decode(file_get_contents("php://input"), true);
         
         if (!isset($input['id_tendencia'])) {
@@ -139,6 +142,12 @@ class TendenciaEmergenteController {
 
     // Cambiar estado de la tendencia
     public function cambiarEstado($id, $accion) {
+        if ($accion === 'desactivar') {
+            verificarPermiso('desactivar_tendencia');
+        } else {
+            verificarPermiso('editar_tendencia');
+        }
+
         if (!$id) {
             echo json_encode([
                 'success' => false,
@@ -172,6 +181,7 @@ class TendenciaEmergenteController {
 
     // Eliminar tendencia
     public function eliminar($id) {
+        verificarPermiso('desactivar_tendencia');
         if (!$id) {
             echo json_encode([
                 'success' => false,

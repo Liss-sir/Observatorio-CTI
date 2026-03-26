@@ -1,4 +1,18 @@
- <!DOCTYPE html>
+<?php
+// Al inicio del archivo, definir las razones sociales
+$razonesSociales = [
+    ['value' => 'SOCIEDAD POR ACCIONES SIMPLIFICADA', 'label' => 'Sociedad por Acciones Simplificada (SAS)'],
+    ['value' => 'SOCIEDAD ANONIMA', 'label' => 'Sociedad Anónima (SA)'],
+    ['value' => 'SOCIEDAD DE RESPONSABILIDAD LIMITADA', 'label' => 'Sociedad de Responsabilidad Limitada (Ltda)'],
+    ['value' => 'SOCIEDAD EN COMANDITA SIMPLE', 'label' => 'Sociedad en Comandita Simple'],
+    ['value' => 'SOCIEDAD EN COMANDITA POR ACCIONES', 'label' => 'Sociedad en Comandita por Acciones'],
+    ['value' => 'EMPRESA UNIPERSONAL', 'label' => 'Empresa Unipersonal'],
+    ['value' => 'COOPERATIVA', 'label' => 'Cooperativa'],
+    ['value' => 'FUNDACION', 'label' => 'Fundación'],
+    ['value' => 'ASOCIACION', 'label' => 'Asociación']
+];
+?>
+<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -152,7 +166,7 @@
                         Correo electrónico <span class="text-red-500">*</span>
                     </label>
                     <input type="email" name="email" placeholder="ejemplo@ejemplo.com"
-                           class="w-full px-3 py-2 rounded-md border border-gray-300 text-sm
+                    class="w-full px-3 py-2 rounded-md border border-gray-300 text-sm
                                   focus:border-sena focus:ring-1 focus:ring-sena/30
                                   focus:outline-none transition" />
                 </div>
@@ -162,10 +176,18 @@
                     <label class="block text-xs font-medium mb-1">
                         Razón social
                     </label>
-                    <input type="text" name="razon_social" placeholder="Razón social..."
-                           class="w-full px-3 py-2 rounded-md border border-gray-300 text-sm
-                                  focus:border-sena focus:ring-1 focus:ring-sena/30
-                                  focus:outline-none transition" />
+                    <select name="razon_social"
+                            class="w-full px-3 py-2 rounded-md border border-gray-300 text-sm
+                                focus:border-sena focus:ring-1 focus:ring-sena/30
+                                focus:outline-none transition bg-white">
+                        <option value="">Seleccione el tipo de empresa (opcional)</option>
+                        <?php foreach ($razonesSociales as $razon): ?>
+                            <option value="<?= htmlspecialchars($razon['value']) ?>">
+                                <?= htmlspecialchars($razon['label']) ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+                    <p class="text-xs text-gray-400 mt-1">Campo opcional</p>
                 </div>
 
                 <!-- Tipo documento -->
@@ -293,58 +315,10 @@
 </div>
 
 <script src="https://unpkg.com/lucide@latest"></script>
-<script src="<?= BASE_URL ?>src/assets/js/register.js"></script>
+<script src="../../assets/js/register.js"></script>
 
-<script>
-lucide.createIcons();
-
-// Toggle password visibility
-const togglePassword = document.getElementById('togglePassword');
-const passwordInput = document.getElementById('password');
-
-if (togglePassword && passwordInput) {
-    togglePassword.addEventListener('click', function() {
-        const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
-        passwordInput.setAttribute('type', type);
-        
-        const icon = this.querySelector('i');
-        icon.setAttribute('data-lucide', type === 'password' ? 'eye' : 'eye-off');
-        lucide.createIcons();
-    });
-}
-
-// Toggle confirm password visibility
-const toggleConfirmPassword = document.getElementById('toggleConfirmPassword');
-const confirmPasswordInput = document.getElementById('confirmPassword');
-
-if (toggleConfirmPassword && confirmPasswordInput) {
-    toggleConfirmPassword.addEventListener('click', function() {
-        const type = confirmPasswordInput.getAttribute('type') === 'password' ? 'text' : 'password';
-        confirmPasswordInput.setAttribute('type', type);
-        
-        const icon = this.querySelector('i');
-        icon.setAttribute('data-lucide', type === 'password' ? 'eye' : 'eye-off');
-        lucide.createIcons();
-    });
-}
-
-// Animación de salida del formulario al enviar
-const form = document.querySelector('form');
-if (form) {
-    form.addEventListener('submit', function(e) {
-        const formContainer = document.querySelector('.animate-form-in');
-        if (formContainer) {
-            formContainer.classList.remove('animate-form-in');
-            formContainer.classList.add('animate-form-out');
-            
-            // Evitar que se envíe inmediatamente para ver la animación
-            setTimeout(() => {
-                // Aquí iría el envío del formulario o redirección
-            }, 700);
-        }
-    });
-}
-</script>
-
+<?php
+include __DIR__ . '/modal_registro_confirmacion.php';;
+?>
 </body>
 </html> 

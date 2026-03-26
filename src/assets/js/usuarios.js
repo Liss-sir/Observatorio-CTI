@@ -33,14 +33,9 @@ document.addEventListener("DOMContentLoaded", () => {
   // =========================
   function cargarUsuarios(){
 
-    fetch("../../controllers/UsuarioController.php", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded"
-      },
-      body: "accion=listar"
+    fetch("../../controllers/UsuarioController.php?accion=listar", {
+      method: "GET"
     })
-
     .then(res => res.json())
     .then(response => {
 
@@ -51,6 +46,9 @@ document.addEventListener("DOMContentLoaded", () => {
       actualizarTarjetas();
       filtrarUsuarios(filtroActual);
 
+    })
+    .catch(error => {
+      console.error("Error al cargar usuarios:", error);
     });
 
   }

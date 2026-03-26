@@ -3,6 +3,7 @@
 header("Content-Type: application/json; charset=utf-8");
 require_once __DIR__ . "/../../config/database.php";
 require_once __DIR__ . "/../models/ProyeccionFuturo.php";
+require_once __DIR__ . "/../helpers/permisos.php";
 
 class ProyeccionFuturoController {
 
@@ -57,6 +58,7 @@ class ProyeccionFuturoController {
 
     // Crear nueva proyección
     public function crear() {
+        verificarPermiso('crear_proyeccion');
         $input = json_decode(file_get_contents("php://input"), true);
         
         if (empty($input['id_area'])) {
@@ -82,12 +84,12 @@ class ProyeccionFuturoController {
             ]);
             return;
         }
-        
-        if ($this->model->existePorAreaYAnio($input['id_area'], $input['anio'])) {
-            $anio_texto = $this->model->getListaAnios()[$input['anio']];
+
+        // Verificar si ya existe otra proyección con el mismo nombre en el área
+        if ($this->model->existePorAreaYNombre($input['id_area'], $input['nombre'])) {
             echo json_encode([
                 'success' => false,
-                'error' => "Ya existe una proyección para {$anio_texto} en el área seleccionada"
+                'error' => 'Ya existe una proyección con este nombre en el área seleccionada.'
             ]);
             return;
         }
@@ -110,6 +112,7 @@ class ProyeccionFuturoController {
 
     // Actualizar proyección existente
     public function actualizar() {
+        verificarPermiso('editar_proyeccion');
         $input = json_decode(file_get_contents("php://input"), true);
         
         if (!isset($input['id_proyeccion'])) {
@@ -120,17 +123,14 @@ class ProyeccionFuturoController {
             return;
         }
         
-        if (isset($input['id_area']) && isset($input['anio'])) {
-            if ($this->model->existePorAreaYAnio($input['id_area'], $input['anio'], $input['id_proyeccion'])) {
-                $anio_texto = $this->model->getListaAnios()[$input['anio']];
-                echo json_encode([
-                    'success' => false,
-                    'error' => "Ya existe una proyección para {$anio_texto} en el área seleccionada"
-                ]);
-                return;
-            }
+        if ($this->model->existePorAreaYNombre($input['id_area'], $input['nombre'], $input['id_proyeccion'])) {
+            echo json_encode([
+                'success' => false,
+                'error' => 'Ya existe otra proyección con este nombre en el área seleccionada.'
+            ]);
+            return;
         }
-        
+
         $resultado = $this->model->actualizar($input);
         
         echo json_encode([
@@ -141,6 +141,12 @@ class ProyeccionFuturoController {
 
     // Cambiar estado de la proyección
     public function cambiarEstado($id, $accion) {
+        if ($accion === 'desactivar') {
+            verificarPermiso('desactivar_proyeccion');
+        } else {
+            verificarPermiso('editar_proyeccion');
+        }
+
         if (!$id) {
             echo json_encode([
                 'success' => false,
@@ -174,6 +180,7 @@ class ProyeccionFuturoController {
 
     // Eliminar proyección
     public function eliminar($id) {
+        verificarPermiso('desactivar_proyeccion');
         if (!$id) {
             echo json_encode([
                 'success' => false,

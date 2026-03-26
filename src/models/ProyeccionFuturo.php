@@ -515,4 +515,29 @@ class ProyeccionFuturoModel {
             '10' => '10 años'
         ];
     }
+
+    /**
+    * Verificar si ya existe una proyección con el mismo nombre en el área
+    */
+    public function existePorAreaYNombre($id_area, $nombre, $excluir_id = null) {
+        try {
+            $sql = "SELECT COUNT(*) as total FROM proyeccion_futuro 
+                    WHERE id_area = ? AND nombre = ?";
+            $params = [$id_area, $nombre];
+
+            if ($excluir_id) {
+                $sql .= " AND id_proyeccion != ?";
+                $params[] = $excluir_id;
+            }
+
+            $stmt = $this->conn->prepare($sql);
+            $stmt->execute($params);
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+            
+            return $result['total'] > 0;
+
+        } catch (Exception $e) {
+            return false;
+        }
+    }
 }

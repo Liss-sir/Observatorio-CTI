@@ -18,7 +18,7 @@
             </svg>
           </div>
           <div>
-            <h3 class="text-lg font-semibold text-sena-text-main" id="detalle-titulo">Detalle de la Proyección a Futuro</h3>
+            <h3 class="text-lg font-semibold text-sena-text-main">Detalle de la Proyección a Futuro</h3>
             <p class="text-sm text-sena-text-soft">Información completa de la proyección a futuro seleccionada</p>
           </div>
           
@@ -36,7 +36,7 @@
           <div class="grid grid-cols-2 mb-6">
             <div class="pr-8">
               <span class="text-xs font-medium text-sena-text-soft uppercase tracking-wider">Nombre del área</span>
-              <p class="text-base font-semibold text-sena-text-main mt-1" id="detalle-nombre-proyeccion_futuro">Inteligencia Artificial</p>
+              <p class="text-sm text-sena-text-soft mt-1 leading-relaxed" id="detalle-nombre-proyeccion_futuro">Inteligencia Artificial</p>
             </div>
             
             <!-- Estado con badge de colores institucionales -->
