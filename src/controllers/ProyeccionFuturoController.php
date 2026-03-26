@@ -82,6 +82,15 @@ class ProyeccionFuturoController {
             ]);
             return;
         }
+
+        // Verificar si ya existe otra proyección con el mismo nombre en el área
+        if ($this->model->existePorAreaYNombre($input['id_area'], $input['nombre'])) {
+            echo json_encode([
+                'success' => false,
+                'error' => 'Ya existe una proyección con este nombre en el área seleccionada.'
+            ]);
+            return;
+        }
         
         $id = $this->model->crear($input);
         
@@ -111,6 +120,14 @@ class ProyeccionFuturoController {
             return;
         }
         
+        if ($this->model->existePorAreaYNombre($input['id_area'], $input['nombre'], $input['id_proyeccion'])) {
+            echo json_encode([
+                'success' => false,
+                'error' => 'Ya existe otra proyección con este nombre en el área seleccionada.'
+            ]);
+            return;
+        }
+
         $resultado = $this->model->actualizar($input);
         
         echo json_encode([
