@@ -3,14 +3,16 @@
 header("Content-Type: application/json; charset=utf-8");
 require_once __DIR__ . "/../../config/database.php";
 require_once __DIR__ . "/../models/ProgramaFormacion.php";
-require_once __DIR__ . '/../helpers/permisos.php';
+require_once __DIR__ . "/../helpers/permisos.php";
 
 class ProgramaFormacionController {
 
     private $model;
+    private $conn;
 
     public function __construct(PDO $conn) {
         $this->model = new ProgramaFormacionModel($conn);
+        $this->conn = $conn;
     }
 
     // List programs active
@@ -58,6 +60,7 @@ class ProgramaFormacionController {
 
     // Create new program
     public function crear() {
+        verificarPermiso('crear_programa');
         $input = json_decode(file_get_contents("php://input"), true);
 
         if (!tienePermiso('crear_programa')) {
@@ -164,6 +167,7 @@ class ProgramaFormacionController {
 
     // Update program exist
     public function actualizar() {
+        verificarPermiso('editar_programa');
         $input = json_decode(file_get_contents("php://input"), true);
 
         if (!tienePermiso('editar_programa')) {
@@ -275,6 +279,7 @@ class ProgramaFormacionController {
 
     // Delete programs
     public function eliminar($id) {
+        verificarPermiso('desactivar_programa');
         if (!$id) {
             echo json_encode([
                 'success' => false,
