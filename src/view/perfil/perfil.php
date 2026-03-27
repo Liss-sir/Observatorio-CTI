@@ -33,13 +33,14 @@ $esAdmin = ($_SESSION['usuario']['id_rol'] == 1);
                 <span id="headerInicial">A</span>
             </div>
 
-            <div class="flex flex-col gap-1"> <!-- 🔥 separación -->
+            <div class="flex flex-col gap-1"> 
                 <h1 class="text-2xl font-semibold text-gray-800" id="headerNombre">Cargando...</h1>
                 <span id="headerRol" class="text-xs bg-sena-soft text-green-700 px-3 py-1 rounded-full w-fit"></span>
             </div>
         </div>
 
-        <button class="btnAbrirPerfil border border-gray-300 px-4 py-2 rounded-xl hover:bg-gray-50 transition">
+        <button class="btnAbrirPerfil border border-sena-strong px-4 py-2 rounded-xl hover:bg-sena-soft hover:text-sena transition flex items-center gap-2 mb-2">
+            <i data-lucide="edit" class="w-5 h-5 text-green-600"></i>
             Editar Perfil
         </button>
     </div>
@@ -52,14 +53,19 @@ $esAdmin = ($_SESSION['usuario']['id_rol'] == 1);
             <!-- INFO -->
             <div class="bg-white p-6 rounded-2xl shadow border">
                 
-                <!-- 🔥 TÍTULO -->
                 <div class="flex items-center gap-2 mb-4">
                     <h3 class="text-base font-light text-gray-500">Información</h3>
                 </div>
 
-                <i data-lucide="user" class="w-5 h-5 text-green-600"></i>
-                <p id="infoNombre" class="font-medium text-gray-800"></p>
-                <p id="infoCorreo" class="text-gray-500 text-sm"></p>
+                <div class="flex items-center gap-2 mb-2">
+                    <i data-lucide="user" class="w-5 h-5 text-green-600"></i>
+                    <p id="infoNombre" class="font-medium text-gray-800"></p>
+                </div>
+                
+                <div class="flex items-center gap-2 mb-2">
+                    <i data-lucide="mail" class="w-5 h-5 text-green-600"></i>
+                    <p id="infoCorreo" class="font-medium text-gray-800"></p>
+                </div>
             </div>
 
             <!-- RESUMEN -->
@@ -68,7 +74,7 @@ $esAdmin = ($_SESSION['usuario']['id_rol'] == 1);
                     <?= $esAdmin ? 'Resumen de la plataforma' : 'Resumen de tu empresa' ?>
                 </h3>
 
-                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-4">
+                <div id="resumenContainer" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-4">
 
                     <!-- PERFILES -->
                     <div class="border rounded-xl p-4 flex items-start gap-3">

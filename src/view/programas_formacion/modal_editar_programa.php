@@ -32,9 +32,6 @@
 
           <form id="form-editar-programa" class="space-y-4">
             
-            <!-- CAMPO OCULTO PARA EL ID -->
-            <input type="hidden" id="idProgramaEditar">
-
             <!-- Campo oculto para el ID -->
             <input type="hidden" id="idProgramaEditar" name="id_programa">
 

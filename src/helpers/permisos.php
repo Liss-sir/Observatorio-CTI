@@ -5,6 +5,8 @@ function obtenerPermisosPorRol() {
         'INVITADO' => [
             'ver_inicio',
             'ver_perfiles',
+            'ver_lineas_tecnologicas',
+            'ver_programas'
         ],
         'ADMINISTRADOR' => [
             //programas
@@ -46,7 +48,7 @@ function obtenerPermisosPorRol() {
             'editar_sugerencia',
             'desactivar_sugerencia',
             //estadisticas
-            'ver_estadisticas',
+            'ver_estadisticas'
         ],
         'EMPRESA' => [
             // Solo puede ver y gestionar perfiles

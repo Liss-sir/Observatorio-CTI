@@ -11,6 +11,7 @@ include __DIR__ . '/modal_confirmacion_deshabilitar_perfiles.php';
 include __DIR__ . '/modal_editar_programa.php';
 include __DIR__ . '/modal_crear_programa.php';
 ?>
+<script src="../../assets/js/programas.js"></script>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -57,7 +58,7 @@ include __DIR__ . '/modal_crear_programa.php';
     lucide.createIcons();
 </script>
 
-<script src="../../assets/js/programas.js"></script>
+
 </body>
 </html>
 <?php include __DIR__ . '../../../includes/footer.php'; ?>
