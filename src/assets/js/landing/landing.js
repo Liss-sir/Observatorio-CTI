@@ -5,7 +5,7 @@ const controllerUrl = '../../controllers/LandingController.php';
 // Rutas de destino por módulo
 const routes = {
   perfiles: '../perfiles/perfiles.php',
-  lineas: '../tecnologias_emergentes/tecnologias_emergentes.php',
+  lineas: '../lineas_tecnologicas/lineas_tecnologicas.php',
   programas: '../programas_formacion/programas.php'
 };
 
@@ -149,8 +149,8 @@ function renderLineas(lineas) {
   if (!lineas || lineas.length === 0) {
     renderEmptyState('lineas-tecnologicas', {
       icon: 'bar-chart-3',
-      title: 'No hay tecnologías emergentes',
-      subtitle: 'Haz clic para ir a la vista de tecnologías emergentes.',
+      title: 'No hay líneas tecnológicas',
+      subtitle: 'Haz clic para ir a la vista de líneas tecnológicas.',
       href: routes.lineas
     });
     return;
@@ -275,8 +275,8 @@ async function cargarLanding() {
 
     renderEmptyState('lineas-tecnologicas', {
       icon: 'bar-chart-3',
-      title: 'No se pudieron cargar las tecnologías emergentes',
-      subtitle: 'Haz clic para ir a la vista de tecnologías emergentes.',
+      title: 'No se pudieron cargar las líneas tecnológicas',
+      subtitle: 'Haz clic para ir a la vista de líneas tecnológicas.',
       href: routes.lineas
     });
 
