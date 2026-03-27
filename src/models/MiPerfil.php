@@ -58,22 +58,22 @@ class MiPerfil {
         $programas = $this->countRows("programas_formacion", "estado = 1");
 
         // 6. Áreas activas
-        $areas = $this->countRows("areas", "estado = 1");
+        $areas = $this->countRows("areas");
 
         // 7. Líneas tecnológicas activas
-        $lineas = $this->countRows("lineas_tecnologicas", "estado = 1");
+        $lineas = $this->countRows("lineas_tecnologicas");
 
         // 8. Tecnologías emergentes activas
-        $tecnologiasEmergentes = $this->countRows("tendencias_emergentes", "estado = 1");
+        $tecnologiasEmergentes = $this->countRows("tendencias_emergentes");
 
         // 9. Tendencias actuales: conteo de tendencias distintas que están siendo utilizadas en líneas tecnológicas activas
-        $tendenciasActuales = $this->countDistinctTendenciasEnLineas();
+        $tendenciasActuales = $this->countRows("etapa_desarrollo");;
 
         // 10. Proyecciones a futuro activas
-        $proyecciones = $this->countRows("proyeccion_futuro", "estado = 1");
+        $proyecciones = $this->countRows("proyeccion_futuro");
 
         // 11. Sugerencias activas
-        $sugerencias = $this->countRows("sugerencias_blog", "estado = 1");
+        $sugerencias = $this->countRows("sugerencias_blog");
 
         return [
             'perfiles_registrados'      => $perfiles,

@@ -18,7 +18,7 @@
             </svg>
           </div>
           <div>
-            <h3 class="text-lg font-semibold text-sena-text-main" id="detalle-titulo">Detalle de Tendencia</h3>
+            <h3 class="text-lg font-semibold text-sena-text-main">Detalle de Tendencia</h3>
             <p class="text-sm text-sena-text-soft">Información completa de la tendencia seleccionada</p>
           </div>
           
@@ -36,7 +36,7 @@
           <div class="grid grid-cols-2 mb-4">
             <div class="pr-8">
               <span class="text-xs font-medium text-sena-text-soft uppercase tracking-wider">Área</span>
-              <p class="text-base font-semibold text-sena-text-main mt-1" id="detalle-area"></p>
+              <p class="text-sm text-sena-text-soft mt-1 leading-relaxed" id="detalle-area"></p>
             </div>
             
             <!-- Estado con badge de colores institucionales -->
@@ -49,12 +49,6 @@
                 </span>
               </div>
             </div>
-          </div>
-
-          <!-- Segunda fila: Nombre de la tendencia -->
-          <div class="mb-4">
-            <span class="text-xs font-medium text-sena-text-soft uppercase tracking-wider">Nombre de la tendencia</span>
-            <p class="text-base font-semibold text-sena-text-main mt-1" id="detalle-nombre"></p>
           </div>
 
           <!-- Descripción -->

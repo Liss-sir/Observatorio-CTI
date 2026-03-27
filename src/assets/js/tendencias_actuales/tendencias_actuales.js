@@ -104,8 +104,14 @@ document.addEventListener('DOMContentLoaded', function() {
             } else {
                 contadorSpan.classList.remove('text-sena', 'text-red-500');
                 contadorSpan.classList.add('text-sena-text-soft');
-                if (alertaSpan) alertaSpan.classList.remove('hidden');
-                if (btnSubmit) btnSubmit.disabled = true;
+                if (alertaSpan) {
+                    if (longitud > 0) {
+                        alertaSpan.classList.remove('hidden');
+                    } else {
+                        alertaSpan.classList.add('hidden');
+                    }
+                }
+                if (btnSubmit) btnSubmit.disabled = false;
             }
         }
     }
@@ -113,9 +119,11 @@ document.addEventListener('DOMContentLoaded', function() {
     // ===== FUNCIÓN PARA ORDENAR ETAPAS =====
     function ordenarEtapas(etapas) {
         return [...etapas].sort((a, b) => {
+            // Primero ordenar por estado: activos (1) primero, inactivos (0) después
             if (a.estado !== b.estado) {
                 return b.estado - a.estado;
             }
+            // Si tienen el mismo estado, ordenar por ID descendente (los más nuevos primero)
             return b.id_etapa - a.id_etapa;
         });
     }
@@ -196,11 +204,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 <div class="text-sm text-sena-text-soft">
                     Mostrando <span class="font-medium text-sena">${((paginaActual - 1) * elementosPorPagina) + 1}</span> - 
                     <span class="font-medium text-sena">${Math.min(paginaActual * elementosPorPagina, totalElementos)}</span> de 
-                    <span class="font-medium text-sena">${totalElementos}</span> etapas
+                    <span class="font-medium text-sena">${totalElementos}</span> tendencias
                 </div>
                 ` : `
                 <div class="text-sm text-sena-text-soft">
-                    Total: <span class="font-medium text-sena">${totalElementos}</span> etapas ${filtrarDesactivadosActivo ? 'inactivas' : ''}
+                    Total: <span class="font-medium text-sena">${totalElementos}</span> tendencias ${filtrarDesactivadosActivo ? 'inactivas' : ''}
                 </div>
                 `}
                 
@@ -212,7 +220,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             <path d="M3 7v10a3 3 0 0 0 3 3h12a3 3 0 0 0 3-3V7"/>
                             <path d="M3 7h18M8 3h8M6 7h1M17 7h1"/>
                         </svg>
-                        Etapas Inactivas
+                        Tendencias Inactivas
                     </button>
                     
                     ${totalPaginas > 1 ? `
@@ -344,10 +352,24 @@ document.addEventListener('DOMContentLoaded', function() {
         toast.className = `toast-validation ${tipo}`;
         
         const iconos = {
-            info: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>`,
-            warning: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>`,
-            error: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`,
-            success: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>`
+            info: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"/>
+                    <line x1="12" y1="16" x2="12" y2="12"/>
+                    <line x1="12" y1="8" x2="12.01" y2="8"/>
+                  </svg>`,
+            warning: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                       <path d="M12 9v4"/>
+                       <path d="M12 17h.01"/>
+                       <circle cx="12" cy="12" r="10"/>
+                     </svg>`,
+            error: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"/>
+                    <line x1="18" y1="6" x2="6" y2="18"/>
+                    <line x1="6" y1="6" x2="18" y2="18"/>
+                  </svg>`,
+            success: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                       <polyline points="20 6 9 17 4 12"/>
+                     </svg>`
         };
 
         toast.innerHTML = `
@@ -382,13 +404,13 @@ document.addEventListener('DOMContentLoaded', function() {
             const data = await response.json();
             
             if (data.status === 'success') {
-                etapasActuales = data.data;
+                etapasActuales = ordenarEtapas(data.data);
                 renderizarEtapas(etapasActuales);
                 actualizarContador(etapasActuales.length);
             }
         } catch (error) {
-            console.error('Error al cargar etapas:', error);
-            mostrarToastValidacion('Error al cargar las etapas', 'error');
+            console.error('Error al cargar tendencias:', error);
+            mostrarToastValidacion('Error al cargar las tendencias', 'error');
         }
     }
 
@@ -450,6 +472,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 };
                 
                 etapasActuales.push(nuevaEtapa);
+                etapasActuales = ordenarEtapas(etapasActuales);
                 renderizarEtapas(etapasActuales);
                 actualizarContador(etapasActuales.length);
                 return { success: true, id: result.id_etapa };
@@ -457,7 +480,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 return { success: false, error: result.error };
             }
         } catch (error) {
-            console.error('Error al crear etapa:', error);
+            console.error('Error al crear tendencia:', error);
             return { success: false, error: 'Error de conexión' };
         }
     }
@@ -490,6 +513,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     };
                 }
                 
+                etapasActuales = ordenarEtapas(etapasActuales);
                 renderizarEtapas(etapasActuales);
                 actualizarContador(etapasActuales.length);
                 return { success: true };
@@ -497,7 +521,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 return { success: false, error: result.error };
             }
         } catch (error) {
-            console.error('Error al actualizar etapa:', error);
+            console.error('Error al actualizar tendencia:', error);
             return { success: false, error: 'Error de conexión' };
         }
     }
@@ -516,6 +540,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     etapasActuales[index].estado = accion === 'activar' ? 1 : 0;
                 }
                 
+                etapasActuales = ordenarEtapas(etapasActuales);
                 renderizarEtapas(etapasActuales);
                 actualizarContador(etapasActuales.length);
                 return { success: true };
@@ -523,7 +548,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 return { success: false, error: result.error };
             }
         } catch (error) {
-            console.error(`Error al ${accion} etapa:`, error);
+            console.error(`Error al ${accion} tendencia:`, error);
             return { success: false, error: 'Error de conexión' };
         }
     }
@@ -589,9 +614,9 @@ document.addEventListener('DOMContentLoaded', function() {
                                 <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
                             </svg>
                         </div>
-                        <h3 class="font-['Montserrat'] text-lg font-semibold text-sena-text-main mb-2">No se encontraron resultados</h3>
+                        <h3 class=" text-lg font-semibold text-sena-text-main mb-2">No se encontraron resultados</h3>
                         <p class="text-sm text-sena-text-soft text-center max-w-sm">
-                            ${filtrarDesactivadosActivo ? 'No hay etapas inactivas.' : `No hay etapas que coincidan con "${terminoBusqueda}".`}
+                            ${filtrarDesactivadosActivo ? 'No hay tendencias inactivas.' : `No hay tendencias que coincidan con "${terminoBusqueda}".`}
                         </p>
                     </div>
                 `;
@@ -603,11 +628,11 @@ document.addEventListener('DOMContentLoaded', function() {
                                 <path d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 0 1 3 19.875v-6.75ZM9.75 6.75h2.25c.621 0 1.125.504 1.125 1.125v12.75c0 .621-.504 1.125-1.125 1.125h-2.25A1.125 1.125 0 0 1 8.625 20.625V7.875c0-.621.504-1.125 1.125-1.125ZM16.5 3.75h2.25c.621 0 1.125.504 1.125 1.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25A1.125 1.125 0 0 1 15.375 20.625V4.875c0-.621.504-1.125 1.125-1.125Z"/>
                             </svg>
                         </div>
-                        <h3 class="font-['Montserrat'] text-lg font-semibold text-sena-text-main mb-2">No hay etapas de desarrollo</h3>
-                        <p class="text-sm text-sena-text-soft text-center max-w-sm mb-6">Comienza creando tu primera etapa de desarrollo.</p>
+                        <h3 class=" text-lg font-semibold text-sena-text-main mb-2">No hay tendencias actuales</h3>
+                        <p class="text-sm text-sena-text-soft text-center max-w-sm mb-6">Comienza creando tu primera tendencia actual.</p>
                         <button id="btn-crear-desde-empty" class="flex items-center gap-2 px-5 py-2.5 text-sm font-medium text-white bg-sena rounded-lg hover:opacity-90 transition-opacity shadow-sm">
                             <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
-                            Crear primera etapa
+                            Crear primera tendencia
                         </button>
                     </div>
                 `;
@@ -665,7 +690,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     </svg>
                 </div>
                 <div class="flex items-center gap-1">
-                    <button class="btn-editar-tendencia p-1.5 rounded-lg text-sena-text-soft hover:bg-sena-soft hover:text-sena transition-colors" title="Editar etapa" data-id="${etapa.id_etapa}" data-nombre="${etapa.nombre.replace(/"/g, '&quot;')}">
+                    <button class="btn-editar-tendencia p-1.5 rounded-lg text-sena-text-soft hover:bg-sena-soft hover:text-sena transition-colors" title="Editar tendencia" data-id="${etapa.id_etapa}" data-nombre="${etapa.nombre.replace(/"/g, '&quot;')}">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-4 h-4">
                             <path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/>
                         </svg>
@@ -720,7 +745,6 @@ document.addEventListener('DOMContentLoaded', function() {
     // ===== FUNCIONES DE MODALES =====
     function abrirModal(modal) {
         if (modal) {
-            // Si es el modal de crear, resetear el contador
             if (modal === modalCrear) {
                 const contadorSpan = document.getElementById('contador-caracteres-crear');
                 const alertaSpan = document.getElementById('alerta-minimo-crear');
@@ -737,7 +761,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (btnSubmit) btnSubmit.disabled = true;
             }
             
-            // Si es el modal de editar, cargar el contador con la longitud actual
             if (modal === modalEditar && etapaSeleccionada) {
                 const contadorSpan = document.getElementById('contador-caracteres-editar');
                 const alertaSpan = document.getElementById('alerta-minimo-editar');
@@ -758,8 +781,14 @@ document.addEventListener('DOMContentLoaded', function() {
                             if (alertaSpan) alertaSpan.classList.add('hidden');
                             if (btnSubmit) btnSubmit.disabled = false;
                         } else {
-                            if (alertaSpan) alertaSpan.classList.remove('hidden');
-                            if (btnSubmit) btnSubmit.disabled = true;
+                            if (alertaSpan) {
+                                if (longitud > 0) {
+                                    alertaSpan.classList.remove('hidden');
+                                } else {
+                                    alertaSpan.classList.add('hidden');
+                                }
+                            }
+                            if (btnSubmit) btnSubmit.disabled = false;
                         }
                     }
                 }
@@ -1057,12 +1086,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 const estaActivo = this.classList.contains('active');
                 
                 if (estaActivo) {
-                    const spanNombre = modalDeshabilitar.querySelector('span.font-medium');
+                    const spanNombre = modalDeshabilitar.querySelector('span.text-\\[\\#e65100\\]');
                     if (spanNombre) spanNombre.textContent = `"${nombre}"`;
                     modalDeshabilitar.setAttribute('data-id', id);
                     abrirModal(modalDeshabilitar);
                 } else {
-                    const spanNombre = modalHabilitar.querySelector('span.font-semibold');
+                    const spanNombre = document.getElementById('nombre-tendencia_actual-habilitar');
                     if (spanNombre) spanNombre.textContent = `"${nombre}"`;
                     modalHabilitar.setAttribute('data-id', id);
                     modalHabilitar.setAttribute('data-nombre', nombre);
@@ -1105,13 +1134,11 @@ document.addEventListener('DOMContentLoaded', function() {
     cargarEtapas();
     cargarAreas();
     
-    // Event listener para el contador de caracteres en creación
     const textareaCrear = document.getElementById('nombre-crear');
     if (textareaCrear) {
         textareaCrear.addEventListener('input', actualizarContadorCrear);
     }
     
-    // Event listener para el contador de caracteres en edición
     const textareaEditar = document.getElementById('nombre-tendencia');
     if (textareaEditar) {
         textareaEditar.addEventListener('input', actualizarContadorEditar);
@@ -1140,7 +1167,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // Cerrar modales
     cerrarModalBtns.forEach(btn => {
         btn.addEventListener('click', () => cerrarModal(modalEditar));
     });
@@ -1177,7 +1203,6 @@ document.addEventListener('DOMContentLoaded', function() {
         btn.addEventListener('click', () => cerrarModal(modalDetalle));
     });
     
-    // Cerrar modales haciendo clic en overlay
     [modalEditar, modalEditadoConfirmacion, modalDeshabilitar, modalDeshabilitadoConfirmacion, 
      modalHabilitar, modalHabilitadoConfirmacion, modalCrear, modalCreadoConfirmacion, modalDetalle].forEach(modal => {
         if (modal) {
@@ -1199,7 +1224,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
     
-    // Formulario crear
     const formCrear = document.getElementById('form-nueva-tendencia-actual');
     if (formCrear) {
         formCrear.addEventListener('submit', async function(e) {
@@ -1216,19 +1240,18 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
             if (!nombre) {
-                mostrarToastValidacion('El nombre de la etapa es requerido', 'warning');
+                mostrarToastValidacion('La descripción de la tendencia es requerida', 'warning');
                 return;
             }
             
-            // Validar mínimo de caracteres
             if (!validarDescripcion(nombre)) {
-                mostrarToastValidacion(`El nombre de la etapa debe tener al menos ${MIN_DESCRIPCION_LENGTH} caracteres. Actualmente tiene ${nombre.length} caracteres.`, 'warning');
+                mostrarToastValidacion(`La descripción de la tendencia debe tener al menos ${MIN_DESCRIPCION_LENGTH} caracteres. Actualmente tiene ${nombre.length} caracteres.`, 'warning');
                 return;
             }
             
             const existe = await verificarNombreExistente(nombre, id_area);
             if (existe) {
-                mostrarToastValidacion('Ya existe una etapa con ese nombre en el área seleccionada', 'info');
+                mostrarToastValidacion('Ya existe una tendencia con esa descripción en el área seleccionada', 'info');
                 return;
             }
             
@@ -1242,12 +1265,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 cerrarModal(modalCrear);
                 mostrarModalCreado(nombre);
             } else {
-                mostrarToastValidacion(resultado.error || 'Error al crear la etapa', 'error');
+                mostrarToastValidacion(resultado.error || 'Error al crear la tendencia', 'error');
             }
         });
     }
     
-    // Formulario editar
     const formEditar = document.getElementById('form-editar-tendencia');
     if (formEditar) {
         formEditar.addEventListener('submit', async function(e) {
@@ -1259,7 +1281,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const estado = document.getElementById('estado-tendencia').value === 'activo' ? 1 : 0;
             
             if (!nombre) {
-                mostrarToastValidacion('El nombre de la etapa es requerido', 'warning');
+                mostrarToastValidacion('La descripción de la tendencia es requerida', 'warning');
                 return;
             }
             if (!id_area) {
@@ -1267,20 +1289,19 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
             
-            // Verificar cambios
             const datosOriginales = etapaSeleccionada;
             const nombreCambio = nombre !== datosOriginales?.nombre;
             const areaCambio = parseInt(id_area) !== datosOriginales?.id_area;
             const estadoCambio = estado !== datosOriginales?.estado;
             
             if (!nombreCambio && !areaCambio && !estadoCambio) {
-                mostrarToastValidacion('No se ha realizado ningún cambio en la etapa', 'info');
+                mostrarToastValidacion('No se ha realizado ningún cambio en la tendencia', 'info');
                 return;
             }
             
             const existe = await verificarNombreExistente(nombre, id_area, id_etapa);
             if (existe) {
-                mostrarToastValidacion('Ya existe una etapa con ese nombre en el área seleccionada', 'info');
+                mostrarToastValidacion('Ya existe una tendencia con esa descripción en el área seleccionada', 'info');
                 return;
             }
             
@@ -1295,18 +1316,17 @@ document.addEventListener('DOMContentLoaded', function() {
                 cerrarModal(modalEditar);
                 mostrarModalEditado(nombre);
             } else {
-                mostrarToastValidacion(resultado.error || 'Error al actualizar la etapa', 'error');
+                mostrarToastValidacion(resultado.error || 'Error al actualizar la tendencia', 'error');
             }
         });
     }
     
-    // Confirmar deshabilitar
     if (btnConfirmarDeshabilitar) {
         btnConfirmarDeshabilitar.addEventListener('click', async function(e) {
             e.preventDefault();
             
             const id_etapa = modalDeshabilitar.getAttribute('data-id');
-            const nombreEtapa = modalDeshabilitar.querySelector('span.font-medium')?.textContent.replace(/"/g, '');
+            const nombreEtapa = modalDeshabilitar.querySelector('span.text-\\[\\#e65100\\]')?.textContent.replace(/"/g, '');
             
             if (id_etapa && nombreEtapa) {
                 const resultado = await cambiarEstadoEtapa(id_etapa, 'desactivar');
@@ -1314,15 +1334,14 @@ document.addEventListener('DOMContentLoaded', function() {
                     cerrarModal(modalDeshabilitar);
                     mostrarModalDeshabilitado(nombreEtapa);
                 } else {
-                    mostrarToastValidacion(resultado.error || 'Error al deshabilitar la etapa', 'error');
+                    mostrarToastValidacion(resultado.error || 'Error al deshabilitar la tendencia', 'error');
                 }
             } else {
-                mostrarToastValidacion('Error: No se pudo identificar la etapa', 'error');
+                mostrarToastValidacion('Error: No se pudo identificar la tendencia', 'error');
             }
         });
     }
     
-    // Confirmar habilitar
     if (btnConfirmarHabilitar) {
         btnConfirmarHabilitar.addEventListener('click', async function(e) {
             e.preventDefault();
@@ -1336,10 +1355,10 @@ document.addEventListener('DOMContentLoaded', function() {
                     cerrarModal(modalHabilitar);
                     mostrarModalHabilitado(nombreEtapa);
                 } else {
-                    mostrarToastValidacion(resultado.error || 'Error al habilitar la etapa', 'error');
+                    mostrarToastValidacion(resultado.error || 'Error al habilitar la tendencia', 'error');
                 }
             } else {
-                mostrarToastValidacion('Error: No se pudo identificar la etapa', 'error');
+                mostrarToastValidacion('Error: No se pudo identificar la tendencia', 'error');
             }
         });
     }

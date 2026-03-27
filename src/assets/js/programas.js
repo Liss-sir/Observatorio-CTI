@@ -4,13 +4,12 @@ document.addEventListener("DOMContentLoaded", function () {
     const modalDeshabilitado = document.getElementById('modal-deshabilitado-perfil');
     const btnConfirmarDeshabilitar = document.getElementById('btn-confirmar-deshabilitar');
     const nombrePerfilDeshabilitadoSpan = document.getElementById('nombre-perfil-deshabilitado');
-    
     const modalHabilitar = document.getElementById('modal-habilitar-perfil');
     const btnConfirmarHabilitar = document.getElementById('btn-confirmar-habilitar');
     const nombrePerfilHabilitarSpan = document.getElementById('nombre-perfil-habilitar');
     const nombrePerfilHabilitadoExitoSpan = document.getElementById('nombre-perfil-habilitado-exito');
     const modalHabilitadoConfirmacion = document.getElementById('modal-habilitado-confirmacion');
-    
+
     const btnCrearPrograma = document.getElementById("btn-abrir-crear-programa");
     const modalCrear = document.getElementById("modal-crear-programa");
     const modalEditar = document.getElementById("modal-editar-programa");
@@ -93,9 +92,8 @@ document.addEventListener("DOMContentLoaded", function () {
         return niveles[idNivel] || 'N/A';
     }
 
-   // ===== OBTENER COLOR NIVEL =====
+    // ===== OBTENER COLOR NIVEL =====
     function getColorNivel(idNivel) {
-        // Verde un poco más intenso que bg-sena-soft para diferenciar
         return 'bg-green-100 text-green-800';
     }
 
@@ -110,6 +108,12 @@ document.addEventListener("DOMContentLoaded", function () {
             contenedor.innerHTML = '<div class="col-span-3 text-center py-10"><p>No hay programas</p></div>';
             return;
         }
+        
+        // ✅ VERIFICAR PERMISOS UNA VEZ AL INICIO
+        const puedeEditar = typeof Auth !== 'undefined' && Auth.tienePermiso('editar_programa');
+        const puedeDesactivar = typeof Auth !== 'undefined' && Auth.tienePermiso('desactivar_programa');
+        
+        console.log('🔐 Permisos en renderizado:', { puedeEditar, puedeDesactivar });
         
         programas.forEach(programa => {
             const card = document.createElement('div');
@@ -126,15 +130,33 @@ document.addEventListener("DOMContentLoaded", function () {
             const estadoActivo = programa.estado == 1;
             const nombreNivel = getNombreNivel(programa.id_nivel);
             const colorNivel = getColorNivel(programa.id_nivel);
-            
-            // Usar nombre_area (como viene de la BD) o un valor por defecto
             const nombreArea = programa.nombre_area || 'N/A';
 
+            // ✅ MOSTRAR BOTONES SOLO SI TIENE PERMISO
             let switchHTML = '';
-
-            if (Auth.tienePermiso('desactivar_programa')) {
+            let editButtonHTML = '';
+            
+            if (puedeDesactivar) {
                 switchHTML = `
                     <div class="switch-sena ${estadoActivo ? 'active' : ''}" data-id="${programa.id_programa}"></div>
+                `;
+            }
+            
+            if (puedeEditar) {
+                editButtonHTML = `
+                    <button data-permiso="editar_programa" class="btn-editar-programa p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                        data-id="${programa.id_programa}"
+                        data-codigo="${programa.codigo_programa || ''}"
+                        data-nombre="${programa.nombre_programa || ''}"
+                        data-nivel="${programa.id_nivel || ''}"
+                        data-modalidad="${programa.modalidad || ''}"
+                        data-fechainicio="${programa.fecha_creacion || ''}"
+                        data-fechafin="${programa.fecha_fin || ''}"
+                        data-cupos="${programa.cupos_formacion || ''}"
+                        data-area="${programa.id_area || ''}"
+                        data-descripcion="${programa.descripcion || ''}">
+                        <i data-lucide="pencil" class="w-4 h-4 text-gray-500"></i>
+                    </button>
                 `;
             }
             
@@ -144,18 +166,7 @@ document.addEventListener("DOMContentLoaded", function () {
                         <i data-lucide="graduation-cap" class="w-5 h-5 text-green-600"></i>
                     </div>
                     <div class="flex items-center gap-2">
-                        <button data-permiso="editar_programa" class="btn-editar-programa p-2 hover:bg-gray-100 rounded-lg transition-colors"
-                            data-id="${programa.id_programa}"
-                            data-codigo="${programa.codigo_programa || ''}"
-                            data-nombre="${programa.nombre_programa || ''}"
-                            data-nivel="${programa.id_nivel || ''}"
-                            data-modalidad="${programa.modalidad || ''}"
-                            data-fechainicio="${programa.fecha_creacion || ''}"
-                            data-fechafin="${programa.fecha_fin || ''}"
-                            data-cupos="${programa.cupos_formacion || ''}"
-                            data-area="${programa.id_area || ''}">
-                            <i data-lucide="pencil" class="w-4 h-4 text-gray-500"></i>
-                        </button>
+                        ${editButtonHTML}
                         ${switchHTML}
                     </div>
                 </div>
@@ -183,7 +194,6 @@ document.addEventListener("DOMContentLoaded", function () {
                             ${programa.cupos_formacion || 'N/A'} cupos
                         </span>
                         <span class="text-gray-300">|</span>
-                        <!-- CAMBIO: usar nombre_area en lugar de area_nombre -->
                         <span>Área: ${nombreArea}</span>
                     </div>
                     <div class="flex items-center gap-2 text-xs">
@@ -207,6 +217,11 @@ document.addEventListener("DOMContentLoaded", function () {
         
         inicializarSwitches();
         inicializarBotonesEditar();
+        
+        // ✅ NUEVO: Aplicar permisos después de renderizar (por seguridad)
+        if (typeof Auth !== 'undefined' && Auth.aplicarPermisosPorAccion) {
+            Auth.aplicarPermisosPorAccion();
+        }
     }
 
     // ===== FORMATEAR FECHA =====
@@ -247,7 +262,7 @@ document.addEventListener("DOMContentLoaded", function () {
             });
         });
     }
-    
+
     // ===== INICIALIZAR BOTONES EDITAR =====
     function inicializarBotonesEditar() {
         document.querySelectorAll(".btn-editar-programa").forEach(btn => {
@@ -260,81 +275,91 @@ document.addEventListener("DOMContentLoaded", function () {
                 
                 const boton = e.currentTarget;
                 
-                // Debug: ver datos del botón
-                console.log('Datos del botón:', {
-                    modalidad: boton.dataset.modalidad,
-                    nivel: boton.dataset.nivel,
-                    area: boton.dataset.area
-                });
+                console.log('🔍 Datos del botón:', boton.dataset);
                 
+                // ✅ CORREGIDO: IDs que COINCIDEN con tu modal HTML
                 const idInput = document.getElementById("idProgramaEditar");
-                const codigoInput = document.getElementById("codigoPrograma");
-                const nombreInput = document.getElementById("nombrePrograma");
-                const cuposInput = document.getElementById("cuposPrograma");
-                const nivelSelect = document.getElementById("nivelFormacion");
-                const modalidadSelect = document.getElementById("modalidadPrograma");
-                const fechaInicioInput = document.getElementById("fechaInicio");
-                const fechaFinInput = document.getElementById("fechaFin");
+                const codigoInput = document.getElementById("codigoProgramaEditar");
+                const nombreInput = document.getElementById("nombreProgramaEditar");
+                const cuposInput = document.getElementById("cuposProgramaEditar");
+                const descripcionInput = document.getElementById("descripcionProgramaEditar");
+                const nivelSelect = document.getElementById("nivelFormacionEditar");
+                const modalidadSelect = document.getElementById("modalidadProgramaEditar");
+                const fechaInicioInput = document.getElementById("fechaInicioEditar");
+                const fechaFinInput = document.getElementById("fechaFinEditar");
                 const areaSelect = document.getElementById("areaProgramaEditar");
                 
+                // ✅ Asignar valores
                 if (idInput) idInput.value = boton.dataset.id || '';
                 if (codigoInput) codigoInput.value = boton.dataset.codigo || '';
                 if (nombreInput) nombreInput.value = boton.dataset.nombre || '';
                 if (cuposInput) cuposInput.value = boton.dataset.cupos || '';
+                if (descripcionInput) descripcionInput.value = boton.dataset.descripcion || '';
                 if (nivelSelect) nivelSelect.value = boton.dataset.nivel || '';
+                
+                // ✅ Fechas: usar dataset en minúsculas (como vienen del HTML)
                 if (fechaInicioInput) fechaInicioInput.value = boton.dataset.fechainicio || '';
                 if (fechaFinInput) fechaFinInput.value = boton.dataset.fechafin || '';
                 
-                // Manejar modalidad (convertir a mayúsculas si es necesario)
+                // ✅ Modalidad: manejar caso
                 if (modalidadSelect && boton.dataset.modalidad) {
-                    const modalidadValor = boton.dataset.modalidad.toUpperCase();
-                    console.log('Asignando modalidad:', modalidadValor);
+                    const modalidadValor = boton.dataset.modalidad.trim().toUpperCase();
                     modalidadSelect.value = modalidadValor;
-                    
-                    // Si no coincide, intentar con el valor original
                     if (modalidadSelect.value !== modalidadValor) {
                         modalidadSelect.value = boton.dataset.modalidad;
-                        console.log('Intentando con valor original:', boton.dataset.modalidad);
                     }
                 }
                 
-                // Cargar áreas y seleccionar la correspondiente
-                if (areaSelect) {
-                    areaSelect.innerHTML = '<option value="">Cargando...</option>';
+                // ✅ Área: cargar opciones primero, luego seleccionar
+                if (areaSelect && boton.dataset.area) {
+                    areaSelect.innerHTML = '<option value="">Cargando áreas...</option>';
+                    areaSelect.disabled = true;
+                    
                     try {
                         const areas = await cargarAreas();
                         areaSelect.innerHTML = '<option value="">Seleccione un área</option>';
+                        
                         areas.forEach(area => {
                             const option = document.createElement('option');
                             option.value = area.id;
                             option.textContent = area.text;
                             areaSelect.appendChild(option);
                         });
-                        if (boton.dataset.area) {
-                            areaSelect.value = boton.dataset.area;
-                        }
+                        
+                        areaSelect.value = boton.dataset.area;
+                        areaSelect.disabled = false;
+                        
                     } catch (error) {
                         console.error('Error cargando áreas:', error);
                         areaSelect.innerHTML = '<option value="">Error al cargar</option>';
+                        areaSelect.disabled = false;
                     }
                 }
                 
-                // Debug: ver valores asignados
-                console.log('Valores asignados:', {
-                    modalidad: modalidadSelect?.value,
+                console.log('✅ Valores asignados:', {
+                    id: idInput?.value,
+                    codigo: codigoInput?.value,
+                    nombre: nombreInput?.value,
+                    cupos: cuposInput?.value,
+                    descripcion: descripcionInput?.value,
                     nivel: nivelSelect?.value,
+                    modalidad: modalidadSelect?.value,
+                    fechaInicio: fechaInicioInput?.value,
+                    fechaFin: fechaFinInput?.value,
                     area: areaSelect?.value
                 });
                 
+                // ✅ Abrir modal
                 const modal = document.getElementById("modal-editar-programa");
                 if (modal) modal.classList.remove("hidden");
             });
         });
     }
+
     // ===== BUSCADOR =====
     const buscador = document.getElementById("buscador");
     let timeoutBusqueda = null;
-    
+
     if (buscador) {
         buscador.addEventListener("keyup", function () {
             clearTimeout(timeoutBusqueda);
@@ -364,6 +389,7 @@ document.addEventListener("DOMContentLoaded", function () {
             document.body.classList.add('overflow-hidden');
         }
     }
+
     function cerrarModal(modal) {
         if (modal) {
             modal.classList.add('hidden');
@@ -447,16 +473,16 @@ document.addEventListener("DOMContentLoaded", function () {
                     });
                     cerrarModal(modalHabilitar);
                     mostrarModalHabilitado(modalHabilitar.getAttribute('data-nombre-programa') || 'Programa');
-                } else {
+                } else { 
                     alert(result.error || 'Error');
                 }
-                
             } catch (error) {
                 console.error(error);
                 alert('Error de conexion');
             }
         });
     }
+
     // ===== GUARDAR NUEVO PROGRAMA =====
     const btnGuardarNuevo = document.getElementById('btn-guardar-nuevo-programa');
     if (btnGuardarNuevo) {
@@ -506,17 +532,16 @@ document.addEventListener("DOMContentLoaded", function () {
             const datos = {
                 id_programa: document.getElementById("idProgramaEditar")?.value,
                 id_area: document.getElementById("areaProgramaEditar")?.value, 
-                codigo_programa: document.getElementById("codigoPrograma")?.value,
-                nombre_programa: document.getElementById("nombrePrograma")?.value,
-                id_nivel: document.getElementById("nivelFormacion")?.value,
-                modalidad: document.getElementById("modalidadPrograma")?.value,
-                fecha_creacion: document.getElementById("fechaInicio")?.value,
-                fecha_fin: document.getElementById("fechaFin")?.value,
-                cupos_formacion: document.getElementById("cuposPrograma")?.value,
+                codigo_programa: document.getElementById("codigoProgramaEditar")?.value,  // ✅ Corregido
+                nombre_programa: document.getElementById("nombreProgramaEditar")?.value,  // ✅ Corregido
+                id_nivel: document.getElementById("nivelFormacionEditar")?.value,         // ✅ Corregido
+                modalidad: document.getElementById("modalidadProgramaEditar")?.value,     // ✅ Corregido
+                fecha_creacion: document.getElementById("fechaInicioEditar")?.value,      // ✅ Corregido
+                fecha_fin: document.getElementById("fechaFinEditar")?.value,              // ✅ Corregido
+                cupos_formacion: document.getElementById("cuposProgramaEditar")?.value,   // ✅ Corregido
                 descripcion: document.getElementById("descripcionProgramaEditar")?.value
             };
 
-            // Debug: ver qué datos se están enviando
             console.log('Datos a enviar:', datos);
 
             if (!datos.id_programa) {
@@ -537,7 +562,6 @@ document.addEventListener("DOMContentLoaded", function () {
                 });
                 const resultado = await response.json();
                 
-                // Debug: ver respuesta del servidor
                 console.log('Respuesta del servidor:', resultado);
                 
                 if (resultado.success) {
@@ -637,5 +661,23 @@ document.addEventListener("DOMContentLoaded", function () {
     console.log('programas.js cargado correctamente');
     llenarSelectAreas('areaPrograma');
     llenarSelectAreas('areaProgramaEditar');
-    cargarProgramas();
+
+    // ✅ ESPERAR A QUE AUTH ESTÉ LISTO - SIN FALLBACK
+    if (typeof Auth !== 'undefined' && typeof Auth.whenReady === 'function') {
+        console.log('⏳ Esperando a que Auth esté listo...');
+        Auth.whenReady(() => {
+            console.log('✅ Auth listo, cargando programas con permisos correctos...');
+            cargarProgramas();
+        });
+    } else {
+        // Solo fallback si Auth realmente no existe (no si está cargando)
+        console.log('⚠️ Auth no disponible, intentando en 500ms...');
+        setTimeout(() => {
+            if (typeof Auth !== 'undefined' && typeof Auth.whenReady === 'function') {
+                Auth.whenReady(() => cargarProgramas());
+            } else {
+                cargarProgramas(); // Último recurso
+            }
+        }, 500);
+    }
 });

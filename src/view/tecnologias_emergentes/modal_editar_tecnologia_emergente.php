@@ -34,6 +34,17 @@
             </div>
           </div>
 
+          <!-- Estado (select) -->
+          <div class="mb-4">
+            <label class="mb-1 block text-sm font-medium text-sena-text-main">Estado</label>
+            <div class="select-container">
+              <select name="estado" id="estado-tecnologia" class="custom-select">
+                <option value="activo">Activo</option>
+                <option value="inactivo">Inactivo</option>
+              </select>
+            </div>
+          </div>
+
           <!-- Descripción (textarea) -->
           <div class="mb-2">
             <label class="mb-1 block text-sm font-medium text-sena-text-main">Descripción</label>
@@ -52,16 +63,7 @@
               <span id="alerta-minimo-editar" class="text-xs text-red-500 hidden">Mínimo 30 caracteres requerido</span>
           </div>
 
-          <!-- Estado (select) -->
-          <div class="mb-4">
-            <label class="mb-1 block text-sm font-medium text-sena-text-main">Estado</label>
-            <div class="select-container">
-              <select name="estado" id="estado-tecnologia" class="custom-select">
-                <option value="activo">Activo</option>
-                <option value="inactivo">Inactivo</option>
-              </select>
-            </div>
-          </div>
+          
 
           <!-- Footer buttons -->
           <div class="flex justify-end gap-3 border-t border-sena-border pt-4">

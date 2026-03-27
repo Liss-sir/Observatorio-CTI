@@ -44,7 +44,7 @@ include __DIR__ . '/modal_detalles.pf.php';
 
       <!-- PROYECCIÓN A FUTURO CONTENT -->
       <div class="section-heading mb-6">
-        <h2 class="font-['Montserrat'] text-2xl font-bold text-sena-text-main">Proyección a Futuro</h2>
+        <h2 class=" text-2xl font-bold text-sena-text-main">Proyección a Futuro</h2>
         <p class="text-sm text-sena-text-soft mt-1">Innovaciones emergentes que impactan el sector productivo risaraldense.</p>
       </div>
 

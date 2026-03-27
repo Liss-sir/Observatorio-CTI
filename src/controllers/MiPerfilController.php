@@ -62,7 +62,7 @@ class MiPerfilController {
         }
 
         // Formatear fecha de registro (ej. "febrero 2026")
-        $registro = date('F Y', strtotime($user['fecha_registro']));
+        $registro = date('d \d\e F \d\e Y', strtotime($user['fecha_registro']));
 
         // Determinar tipo de cuenta (según rol)
         $tipoCuenta = ($user['id_rol'] == 1) ? 'Administrador' : 'Empresa';

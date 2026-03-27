@@ -1,3 +1,4 @@
+<script src="../../assets/js/auth.js"></script>
 <?php
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
@@ -182,34 +183,34 @@ $rolActual = obtenerRolActual();
 
         <?php if (tienePermiso('ver_programas')): ?>
         <!-- PROTEGIDO: Menú Programas Formación -->
-        <div class="relative group menu-container <?= (in_array($current, ['programas.php','areas.php'])) ? 'bg-sena-soft text-sena-strong rounded-md' : '' ?>" id="menu-programas">
-          <div class="flex items-center rounded-md hover:bg-sena-soft hover:text-sena transition">
-            <a href="../../view/programas_formacion/programas.php" class="px-3 py-2 rounded-l-md text-sm font-medium text-gray-600 hover:text-sena">
-              Programas Formación
-            </a>
-            <button id="btn-menu-programas" type="button" class="btn-toggle px-2 py-2 rounded-r-md text-gray-400 hover:text-green-700" data-permiso="ver_menu_programas_admin">
-              <svg class="w-3 h-3 chevron transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-              </svg>
-            </button>
-          </div>
-          <div class="zona-seguridad hidden group-hover:block"></div>
-          <div id="submenu-programas" class="submenu hidden absolute left-0 mt-2 w-60 bg-white rounded-lg shadow-xl border border-gray-100 z-50 animate-fadeIn">
-            <?php if (tienePermiso('ver_areas')): ?>
-            <a href="../../view/areas/areas.php" data-permiso="ver_areas" class="flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-sena-soft hover:text-sena">
-              <span class="w-8 h-8 bg-sena-soft rounded-lg flex items-center justify-center text-green-600">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
-                </svg>
-              </span>
-              <div>
-                <p class="font-medium">Áreas</p>
-                <p class="text-xs text-gray-500">Areas de conocimiento</p>
+          <div class="relative group menu-container <?= (in_array($current, ['programas.php','areas.php'])) ? 'bg-sena-soft text-sena-strong rounded-md' : '' ?>" id="menu-programas" data-permiso="ver_programas">
+              <div class="flex items-center rounded-md hover:bg-sena-soft hover:text-sena transition">
+                  <a href="../../view/programas_formacion/programas.php" class="px-3 py-2 rounded-l-md text-sm font-medium text-gray-600 hover:text-sena">
+                      Programas Formación
+                  </a>
+                  <button id="btn-menu-programas" type="button" class="btn-toggle px-2 py-2 rounded-r-md text-gray-400 hover:text-green-700" data-permiso="ver_menu_programas_admin">
+                      <svg class="w-3 h-3 chevron transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                      </svg>
+                  </button>
               </div>
-            </a>
-            <?php endif; ?>
+              <div class="zona-seguridad hidden group-hover:block"></div>
+              <div id="submenu-programas" class="submenu hidden absolute left-0 mt-2 w-60 bg-white rounded-lg shadow-xl border border-gray-100 z-50 animate-fadeIn">
+                  <?php if (tienePermiso('ver_areas')): ?>
+                  <a href="../../view/areas/areas.php" data-permiso="ver_areas" class="flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-sena-soft hover:text-sena">
+                      <span class="w-8 h-8 bg-sena-soft rounded-lg flex items-center justify-center text-green-600">
+                          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                          </svg>
+                      </span>
+                      <div>
+                          <p class="font-medium">Áreas</p>
+                          <p class="text-xs text-gray-500">Areas de conocimiento</p>
+                      </div>
+                  </a>
+                  <?php endif; ?>
+              </div>
           </div>
-        </div>
         <?php endif; ?>
 
         <?php if (tienePermiso('ver_tendencias')): ?>
@@ -497,9 +498,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
 });
 </script>
-
-  <!-- Auth global -->
-  <script src="../../assets/js/auth.js"></script>
 
 </body>
 </html>
