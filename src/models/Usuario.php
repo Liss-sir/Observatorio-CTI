@@ -1,22 +1,20 @@
 <?php
-
 class UsuarioModel {
-
     private $conn;
     private $table = "usuarios";
-
+    
     public function __construct(PDO $db) {
         $this->conn = $db;
     }
-
+    
     /* ================= USUARIOS (CRUD BÁSICO) ================= */
-
+    
     /**
      * Listar todos los usuarios activos
      */
     public function listar() {
         try {
-            $sql = "SELECT u.*, r.nombre as rol_nombre 
+            $sql = "SELECT u.*, r.nombre as rol_nombre
                     FROM usuarios u
                     INNER JOIN roles r ON u.id_rol = r.id_rol
                     ORDER BY u.fecha_registro DESC";
@@ -27,13 +25,13 @@ class UsuarioModel {
             return [];
         }
     }
-
+    
     /**
      * Obtener un usuario por ID
      */
     public function obtener($id) {
         try {
-            $sql = "SELECT u.*, r.nombre as rol_nombre 
+            $sql = "SELECT u.*, r.nombre as rol_nombre
                     FROM usuarios u
                     INNER JOIN roles r ON u.id_rol = r.id_rol
                     WHERE u.id_usuario = ?";
@@ -44,13 +42,13 @@ class UsuarioModel {
             return null;
         }
     }
-
+    
     /**
      * Obtener usuario por correo (útil para login)
      */
     public function obtenerPorCorreo($correo) {
         try {
-            $sql = "SELECT u.*, r.nombre as rol_nombre 
+            $sql = "SELECT u.*, r.nombre as rol_nombre
                     FROM usuarios u
                     INNER JOIN roles r ON u.id_rol = r.id_rol
                     WHERE u.correo = ?";
@@ -61,20 +59,82 @@ class UsuarioModel {
             return null;
         }
     }
-
+    
+    /* ================= NUEVO: DATOS COMPLETOS PARA MODAL ================= */
+    
+    /**
+     * Obtener usuario con toda su información (para detalle en modal)
+     * Incluye: datos básicos, tecnologías y perfiles
+     */
+    public function obtenerCompleto($id) {
+        try {
+            $usuario = $this->obtener($id);
+            if (!$usuario) {
+                return null;
+            }
+            
+            // Agregar tecnologías
+            $usuario['tecnologias'] = $this->obtenerTecnologias($id);
+            
+            // Agregar perfiles
+            $usuario['perfiles'] = $this->obtenerPerfiles($id);
+            
+            return $usuario;
+        } catch (Exception $e) {
+            return null;
+        }
+    }
+    
+    /**
+     * Obtener líneas tecnológicas de un usuario
+     * Se obtienen desde la tabla perfiles_ocupaciones (relación usuario-linea)
+     */
+    public function obtenerTecnologias($id_usuario) {
+        try {
+            $sql = "SELECT DISTINCT lt.* 
+                    FROM lineas_tecnologicas lt
+                    INNER JOIN perfiles_ocupaciones po ON lt.id_linea = po.id_linea
+                    WHERE po.id_usuario = ? AND lt.estado = 1";
+            $stmt = $this->conn->prepare($sql);
+            $stmt->execute([$id_usuario]);
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (Exception $e) {
+            return [];
+        }
+    }
+    
+    /**
+     * Obtener perfiles creados por un usuario
+     * Se obtienen desde la tabla perfiles_ocupaciones
+     */
+    public function obtenerPerfiles($id_usuario) {
+        try {
+            $sql = "SELECT po.*, lt.nombre as linea_nombre
+                    FROM perfiles_ocupaciones po
+                    INNER JOIN lineas_tecnologicas lt ON po.id_linea = lt.id_linea
+                    WHERE po.id_usuario = ?
+                    ORDER BY po.fecha_creacion DESC";
+            $stmt = $this->conn->prepare($sql);
+            $stmt->execute([$id_usuario]);
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (Exception $e) {
+            return [];
+        }
+    }
+    
+    /* ================= CREATE ================= */
+    
     /**
      * Crear un nuevo usuario
      */
     public function crear($data) {
         try {
             $sql = "INSERT INTO usuarios (
-                id_rol, nombre_empresa, razon_social, representante_legal,
-                tipo_documento, numero_documento, correo, password_hash,
-                correo_verificado, estado
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-
+                    id_rol, nombre_empresa, razon_social, representante_legal,
+                    tipo_documento, numero_documento, correo, password_hash,
+                    correo_verificado, estado
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
             $stmt = $this->conn->prepare($sql);
-
             $ok = $stmt->execute([
                 $data['id_rol'] ?? 2, // Por defecto, rol EMPRESA (2)
                 $data['nombre_empresa'] ?? null,
@@ -87,14 +147,14 @@ class UsuarioModel {
                 $data['correo_verificado'] ?? 0,
                 $data['estado'] ?? 1
             ]);
-
             return $ok ? (int)$this->conn->lastInsertId() : false;
-
         } catch (Exception $e) {
             return false;
         }
     }
-
+    
+    /* ================= UPDATE ================= */
+    
     /**
      * Actualizar usuario existente
      */
@@ -103,43 +163,40 @@ class UsuarioModel {
             // Construir SQL dinámico (solo actualizar campos presentes)
             $campos = [];
             $valores = [];
-
             $camposPermitidos = [
                 'id_rol', 'nombre_empresa', 'razon_social', 'representante_legal',
                 'tipo_documento', 'numero_documento', 'correo', 'estado'
             ];
-
+            
             foreach ($camposPermitidos as $campo) {
                 if (array_key_exists($campo, $data)) {
                     $campos[] = "$campo = ?";
                     $valores[] = $data[$campo];
                 }
             }
-
+            
             // Si se envía nueva contraseña
             if (!empty($data['password'])) {
                 $campos[] = "password_hash = ?";
                 $valores[] = password_hash($data['password'], PASSWORD_DEFAULT);
             }
-
+            
             // Si no hay campos para actualizar
             if (empty($campos)) {
                 return false;
             }
-
+            
             // Agregar ID al final
             $valores[] = $data['id_usuario'];
-
+            
             $sql = "UPDATE usuarios SET " . implode(", ", $campos) . " WHERE id_usuario = ?";
             $stmt = $this->conn->prepare($sql);
-            
             return $stmt->execute($valores);
-
         } catch (Exception $e) {
             return false;
         }
     }
-
+    
     /**
      * Cambiar estado del usuario (activar/desactivar)
      */
@@ -152,9 +209,9 @@ class UsuarioModel {
             return false;
         }
     }
-
+    
     /* ================= VERIFICACIÓN DE CORREO ================= */
-
+    
     /**
      * Verificar correo electrónico
      */
@@ -167,9 +224,9 @@ class UsuarioModel {
             return false;
         }
     }
-
+    
     /* ================= ROLES ================= */
-
+    
     /**
      * Obtener lista de roles disponibles
      */
@@ -183,7 +240,7 @@ class UsuarioModel {
             return [];
         }
     }
-
+    
     /**
      * Obtener usuarios por rol
      */
@@ -200,9 +257,9 @@ class UsuarioModel {
             return [];
         }
     }
-
+    
     /* ================= TOKENS DE CORREO ================= */
-
+    
     /**
      * Crear token para verificación o recuperación
      */
@@ -211,20 +268,17 @@ class UsuarioModel {
             // Generar token aleatorio
             $token = bin2hex(random_bytes(32));
             $fecha_expiracion = date('Y-m-d H:i:s', strtotime("+$dias_validez days"));
-
+            
             $sql = "INSERT INTO tokens_correo (id_usuario, token, tipo, fecha_expiracion)
                     VALUES (?, ?, ?, ?)";
-            
             $stmt = $this->conn->prepare($sql);
             $ok = $stmt->execute([$id_usuario, $token, $tipo, $fecha_expiracion]);
-
             return $ok ? $token : false;
-
         } catch (Exception $e) {
             return false;
         }
     }
-
+    
     /**
      * Validar token
      */
@@ -233,18 +287,16 @@ class UsuarioModel {
             $sql = "SELECT tc.*, u.correo, u.id_usuario
                     FROM tokens_correo tc
                     INNER JOIN usuarios u ON tc.id_usuario = u.id_usuario
-                    WHERE tc.token = ? AND tc.tipo = ? 
+                    WHERE tc.token = ? AND tc.tipo = ?
                     AND tc.usado = 0 AND tc.fecha_expiracion > NOW()";
-            
             $stmt = $this->conn->prepare($sql);
             $stmt->execute([$token, $tipo]);
             return $stmt->fetch(PDO::FETCH_ASSOC);
-
         } catch (Exception $e) {
             return null;
         }
     }
-
+    
     /**
      * Marcar token como usado
      */
@@ -257,7 +309,7 @@ class UsuarioModel {
             return false;
         }
     }
-
+    
     /**
      * Cambiar contraseña con token válido
      */
@@ -270,9 +322,9 @@ class UsuarioModel {
             return false;
         }
     }
-
+    
     /* ================= MÉTODOS DE AUTENTICACIÓN ================= */
-
+    
     /**
      * Login de usuario
      */
@@ -283,23 +335,22 @@ class UsuarioModel {
             if (!$usuario) {
                 return ['success' => false, 'error' => 'Usuario no encontrado'];
             }
-
+            
             if ($usuario['estado'] != 1) {
                 return ['success' => false, 'error' => 'Usuario inactivo'];
             }
-
+            
             if (password_verify($password, $usuario['password_hash'])) {
                 unset($usuario['password_hash']); // No enviar hash al frontend
                 return ['success' => true, 'usuario' => $usuario];
             }
-
+            
             return ['success' => false, 'error' => 'Contraseña incorrecta'];
-
         } catch (Exception $e) {
             return ['success' => false, 'error' => 'Error en el servidor'];
         }
     }
-
+    
     /**
      * Verificar si el correo ya existe
      */
@@ -307,40 +358,39 @@ class UsuarioModel {
         try {
             $sql = "SELECT COUNT(*) as total FROM usuarios WHERE correo = ?";
             $params = [$correo];
-
+            
             if ($excluir_id) {
                 $sql .= " AND id_usuario != ?";
                 $params[] = $excluir_id;
             }
-
+            
             $stmt = $this->conn->prepare($sql);
             $stmt->execute($params);
             $result = $stmt->fetch(PDO::FETCH_ASSOC);
             
             return $result['total'] > 0;
-
         } catch (Exception $e) {
             return false;
         }
     }
-
+    
+    /* ================= ESTADÍSTICAS ================= */
+    
     /**
      * Obtener estadísticas de usuarios
      */
     public function obtenerEstadisticas() {
         try {
-            $sql = "SELECT 
-                        COUNT(*) as total_usuarios,
-                        SUM(CASE WHEN estado = 1 THEN 1 ELSE 0 END) as usuarios_activos,
-                        SUM(CASE WHEN correo_verificado = 1 THEN 1 ELSE 0 END) as correos_verificados,
-                        (SELECT COUNT(*) FROM usuarios WHERE id_rol = 1) as total_administradores,
-                        (SELECT COUNT(*) FROM usuarios WHERE id_rol = 2) as total_empresas
+            $sql = "SELECT
+                    COUNT(*) as total_usuarios,
+                    SUM(CASE WHEN estado = 1 THEN 1 ELSE 0 END) as usuarios_activos,
+                    SUM(CASE WHEN correo_verificado = 1 THEN 1 ELSE 0 END) as correos_verificados,
+                    (SELECT COUNT(*) FROM usuarios WHERE id_rol = 1) as total_administradores,
+                    (SELECT COUNT(*) FROM usuarios WHERE id_rol = 2) as total_empresas
                     FROM usuarios";
-            
             $stmt = $this->conn->prepare($sql);
             $stmt->execute();
             return $stmt->fetch(PDO::FETCH_ASSOC);
-
         } catch (Exception $e) {
             return [];
         }

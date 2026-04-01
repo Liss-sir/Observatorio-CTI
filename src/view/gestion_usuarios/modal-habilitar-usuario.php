@@ -29,7 +29,7 @@
             ¿Estás seguro de que deseas habilitar el usuario <span class="font-semibold text-sena-text-main" id="nombre-perfil-habilitar">"Desarrollador Full Stack Senior"</span>?
           </p>
           <p class="text-xs text-sena-text-soft mt-3 bg-yellow-50 p-3 rounded-lg border border-yellow-200">
-            <span class="font-medium text-yellow-800">Información:</span> El programa de formacion volverá a estar visible y disponible para su uso.
+            <span class="font-medium text-yellow-800">Información:</span> El usuario volverá a estar visible.
           </p>
         </div>
 
