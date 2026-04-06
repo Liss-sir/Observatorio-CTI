@@ -7,7 +7,7 @@
   <div class="fixed inset-0 overflow-y-auto">
     <div class="flex min-h-full items-center justify-center p-4">
 
-      <div class="relative w-full max-w-2xl transform overflow-hidden rounded-xl border border-sena-border bg-white shadow-2xl transition-all animate-modalFadeIn">
+      <div class="relative w-full max-w-2xl lg:max-w-4xl transform overflow-hidden rounded-xl border border-sena-border bg-white shadow-2xl transition-all animate-modalFadeIn">
 
         <!-- Header -->
         <div class="border-b border-sena-border px-6 py-5 flex justify-between items-center">
@@ -94,8 +94,8 @@
                 >
                   <option value="1">Técnico</option>
                   <option value="2">Tecnólogo</option>
-                  <option value="3">Especialización</option>
-                  <option value="4">Curso</option>
+                  <option value="3">Operario</option>
+                  <option value="4">Auxiliar</option>
                 </select>
               </div>
 

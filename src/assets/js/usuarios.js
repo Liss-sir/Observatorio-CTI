@@ -18,6 +18,13 @@ document.addEventListener("DOMContentLoaded", () => {
     let intervalContadorHabilitado = null;
     let intervalContadorDeshabilitado = null;
     
+    // =========================
+    // ✅ VARIABLES DE PAGINACIÓN
+    // =========================
+    let paginaActual = 1;
+    const elementosPorPagina = 10;
+    let usuariosFiltrados = [];
+    
     const cardActiva = document.getElementById("card-activos");
     if (cardActiva) {
         cardActiva.classList.add("bg-sena-soft");
@@ -28,6 +35,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (buscador) {
         buscador.addEventListener("input", (e) => {
             textoBusqueda = e.target.value.toLowerCase().trim();
+            paginaActual = 1;
             aplicarFiltros();
         });
     }
@@ -52,18 +60,25 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     
     // =========================
-    // RENDER TABLA
+    // RENDER TABLA (CON PAGINACIÓN)
     // =========================
     function renderUsuarios(lista){
         const tabla = document.getElementById("tabla-usuarios");
         const mensajeSinResultados = document.getElementById("mensaje-sin-resultados");
         const textoSinResultados = document.getElementById("texto-sin-resultados");
+        const paginacionContainer = document.getElementById("paginacion-container");
         
         tabla.innerHTML = "";
+        usuariosFiltrados = lista;
         
         if (lista.length === 0) {
             tabla.parentElement.classList.add("hidden");
-            mensajeSinResultados.classList.remove("hidden");
+            if (mensajeSinResultados) {
+                mensajeSinResultados.classList.remove("hidden");
+            }
+            if (paginacionContainer) {
+                paginacionContainer.classList.add("hidden");
+            }
             
             let mensaje = "No hay usuarios registrados";
             
@@ -79,14 +94,31 @@ document.addEventListener("DOMContentLoaded", () => {
                 mensaje = `No hay usuarios con el rol "${rolNombre}"`;
             }
             
-            textoSinResultados.textContent = mensaje;
+            if (textoSinResultados) {
+                textoSinResultados.textContent = mensaje;
+            }
             return;
         }
         
         tabla.parentElement.classList.remove("hidden");
-        mensajeSinResultados.classList.add("hidden");
+        if (mensajeSinResultados) {
+            mensajeSinResultados.classList.add("hidden");
+        }
         
-        lista.forEach(usuario => {
+        // =========================
+        // ✅ PAGINACIÓN: Calcular página actual
+        // =========================
+        const totalPaginas = Math.ceil(lista.length / elementosPorPagina);
+        
+        if (paginaActual > totalPaginas) {
+            paginaActual = totalPaginas;
+        }
+        
+        const inicio = (paginaActual - 1) * elementosPorPagina;
+        const fin = inicio + elementosPorPagina;
+        const usuariosPagina = lista.slice(inicio, fin);
+        
+        usuariosPagina.forEach(usuario => {
             const activo = usuario.estado == 1;
             
             tabla.innerHTML += `
@@ -122,6 +154,187 @@ document.addEventListener("DOMContentLoaded", () => {
                     </td>
                 </tr>
             `;
+        });
+        
+        // =========================
+        // ✅ ACTUALIZAR PAGINACIÓN
+        // =========================
+        actualizarPaginacion(lista.length);
+    }
+    
+    // =========================
+    // ✅ FUNCIÓN PARA ACTUALIZAR PAGINACIÓN
+    // =========================
+    function actualizarPaginacion(totalElementos) {
+        const paginacionContainer = document.getElementById("paginacion-container");
+        if (!paginacionContainer) return;
+        
+        const totalPaginas = Math.ceil(totalElementos / elementosPorPagina);
+        
+        if (totalPaginas <= 1) {
+            paginacionContainer.classList.add("hidden");
+            return;
+        }
+        
+        paginacionContainer.classList.remove("hidden");
+        
+        let paginasHTML = '';
+        
+        // Determinar qué páginas mostrar
+        let inicio = Math.max(1, paginaActual - 2);
+        let fin = Math.min(totalPaginas, paginaActual + 2);
+        
+        // Ajustar si estamos al inicio
+        if (paginaActual <= 3) {
+            fin = Math.min(5, totalPaginas);
+        }
+        
+        // Ajustar si estamos al final
+        if (paginaActual >= totalPaginas - 2) {
+            inicio = Math.max(totalPaginas - 4, 1);
+        }
+        
+        // Primera página y elipsis al inicio
+        if (inicio > 1) {
+            paginasHTML += `
+                <button class="btn-pagina px-3 py-2 rounded-lg transition-all duration-200 border border-sena-border text-sena-text-main hover:bg-sena-soft hover:border-sena/30" data-pagina="1">
+                    1
+                </button>
+            `;
+            if (inicio > 2) {
+                paginasHTML += `<span class="px-2 text-sena-text-soft">...</span>`;
+            }
+        }
+        
+        // Páginas intermedias
+        for (let i = inicio; i <= fin; i++) {
+            const isActive = paginaActual === i;
+            paginasHTML += `
+                <button class="btn-pagina px-3 py-2 rounded-lg transition-all duration-200 ${
+                    isActive 
+                        ? 'bg-sena text-white shadow-md scale-100' 
+                        : 'border border-sena-border text-sena-text-main hover:bg-sena-soft hover:border-sena/30'
+                }" data-pagina="${i}">
+                    ${i}
+                </button>
+            `;
+        }
+        
+        // Última página y elipsis al final
+        if (fin < totalPaginas) {
+            if (fin < totalPaginas - 1) {
+                paginasHTML += `<span class="px-2 text-sena-text-soft">...</span>`;
+            }
+            paginasHTML += `
+                <button class="btn-pagina px-3 py-2 rounded-lg transition-all duration-200 border border-sena-border text-sena-text-main hover:bg-sena-soft hover:border-sena/30" data-pagina="${totalPaginas}">
+                    ${totalPaginas}
+                </button>
+            `;
+        }
+        
+        paginacionContainer.innerHTML = `
+            <div class="flex flex-col items-center gap-3 mb-6">
+                <div class="text-sm text-sena-text-soft">
+                    Mostrando <span class="font-medium text-sena">${inicio + 1}</span> - 
+                    <span class="font-medium text-sena">${Math.min(fin, totalElementos)}</span> de 
+                    <span class="font-medium text-sena">${totalElementos}</span> usuarios
+                </div>
+                
+                <div class="flex items-center gap-2 flex-wrap justify-center">
+                    <!-- Primera página -->
+                    <button class="btn-primera-pagina px-3 py-2 rounded-lg transition-all duration-200 ${
+                        paginaActual === 1 
+                            ? 'bg-gray-100 text-sena-text-soft cursor-not-allowed opacity-50' 
+                            : 'border border-sena-border text-sena-text-main hover:bg-sena-soft hover:border-sena/30'
+                    }" ${paginaActual === 1 ? 'disabled' : ''}>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M11 19l-7-7 7-7M18 19l-7-7 7-7" />
+                        </svg>
+                    </button>
+                    
+                    <!-- Anterior -->
+                    <button class="btn-pagina-anterior px-3 py-2 rounded-lg transition-all duration-200 ${
+                        paginaActual === 1 
+                            ? 'bg-gray-100 text-sena-text-soft cursor-not-allowed opacity-50' 
+                            : 'border border-sena-border text-sena-text-main hover:bg-sena-soft hover:border-sena/30'
+                    }" ${paginaActual === 1 ? 'disabled' : ''}>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+                        </svg>
+                    </button>
+                    
+                    <!-- Botones de páginas -->
+                    ${paginasHTML}
+                    
+                    <!-- Siguiente -->
+                    <button class="btn-pagina-siguiente px-3 py-2 rounded-lg transition-all duration-200 ${
+                        paginaActual === totalPaginas 
+                            ? 'bg-gray-100 text-sena-text-soft cursor-not-allowed opacity-50' 
+                            : 'border border-sena-border text-sena-text-main hover:bg-sena-soft hover:border-sena/30'
+                    }" ${paginaActual === totalPaginas ? 'disabled' : ''}>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+                        </svg>
+                    </button>
+                    
+                    <!-- Última página -->
+                    <button class="btn-ultima-pagina px-3 py-2 rounded-lg transition-all duration-200 ${
+                        paginaActual === totalPaginas 
+                            ? 'bg-gray-100 text-sena-text-soft cursor-not-allowed opacity-50' 
+                            : 'border border-sena-border text-sena-text-main hover:bg-sena-soft hover:border-sena/30'
+                    }" ${paginaActual === totalPaginas ? 'disabled' : ''}>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M13 5l7 7-7 7M6 5l7 7-7 7" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        `;
+        
+        // =========================
+        // ✅ EVENT LISTENERS DE PAGINACIÓN
+        // =========================
+        document.querySelectorAll('.btn-pagina').forEach(btn => {
+            btn.addEventListener('click', () => {
+                paginaActual = parseInt(btn.dataset.pagina);
+                renderUsuarios(usuariosFiltrados);
+            });
+        });
+        
+        document.querySelectorAll('.btn-pagina-anterior').forEach(btn => {
+            btn.addEventListener('click', () => {
+                if (paginaActual > 1) {
+                    paginaActual--;
+                    renderUsuarios(usuariosFiltrados);
+                }
+            });
+        });
+        
+        document.querySelectorAll('.btn-pagina-siguiente').forEach(btn => {
+            btn.addEventListener('click', () => {
+                if (paginaActual < totalPaginas) {
+                    paginaActual++;
+                    renderUsuarios(usuariosFiltrados);
+                }
+            });
+        });
+        
+        document.querySelectorAll('.btn-primera-pagina').forEach(btn => {
+            btn.addEventListener('click', () => {
+                if (paginaActual !== 1) {
+                    paginaActual = 1;
+                    renderUsuarios(usuariosFiltrados);
+                }
+            });
+        });
+        
+        document.querySelectorAll('.btn-ultima-pagina').forEach(btn => {
+            btn.addEventListener('click', () => {
+                if (paginaActual !== totalPaginas) {
+                    paginaActual = totalPaginas;
+                    renderUsuarios(usuariosFiltrados);
+                }
+            });
         });
     }
     
@@ -159,6 +372,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // =========================
     function filtrarUsuarios(tipo){
         filtroActual = tipo;
+        paginaActual = 1;
         aplicarFiltros();
     }
     
@@ -167,6 +381,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // =========================
     window.filtrarPorRol = function(rol) {
         filtroRolActual = rol;
+        paginaActual = 1;
         aplicarFiltros();
     }
     
@@ -210,20 +425,13 @@ document.addEventListener("DOMContentLoaded", () => {
     // =========================
     // CAMBIAR ESTADO
     // =========================
-      window.cambiarEstadoUsuario = function(id, nombre, estado){
+    window.cambiarEstadoUsuario = function(id, nombre, estado){
         usuarioSeleccionado = id;
         
-        // ✅ BUSCAR EL USUARIO EN EL ARRAY GLOBAL PARA OBTENER nombre_empresa
         const usuario = usuariosGlobal.find(u => u.id_usuario == id);
         const nombreEmpresa = usuario?.nombre_empresa ?? nombre;
-
-        const nombreSpan = document.getElementById('nombre-usuario-deshabilitar');
-        if (nombreSpan) {
-            nombreSpan.textContent = nombreEmpresa;
-        }
         
         if(estado == 1){
-            // ✅ ACTUALIZAR NOMBRE EN MODAL DE CONFIRMACIÓN DESHABILITAR
             const spanDeshabilitar = document.getElementById('nombre-perfil-deshabilitar-confirmacion');
             if (spanDeshabilitar) {
                 spanDeshabilitar.textContent = `"${nombreEmpresa}"`;
@@ -231,7 +439,6 @@ document.addEventListener("DOMContentLoaded", () => {
             
             modalDeshabilitar.classList.remove("hidden");
         } else {
-            // ✅ ACTUALIZAR NOMBRE EN MODAL DE CONFIRMACIÓN HABILITAR
             const spanHabilitar = document.getElementById('nombre-perfil-habilitar');
             if (spanHabilitar) {
                 spanHabilitar.textContent = `"${nombreEmpresa}"`;
@@ -240,7 +447,6 @@ document.addEventListener("DOMContentLoaded", () => {
             modalHabilitar.classList.remove("hidden");
         }
     }
-
     
     function abrirModal(modal) {
         if (modal) {
@@ -263,6 +469,34 @@ document.addEventListener("DOMContentLoaded", () => {
             });
         });
     
+    document.querySelectorAll(".cerrar-modal-deshabilitar")
+        .forEach(btn => {
+            btn.addEventListener("click", () => {
+                cerrarModal(document.getElementById("modal-deshabilitar-usuario"));
+            });
+        });
+    
+    document.querySelectorAll(".cerrar-modal-habilitar")
+        .forEach(btn => {
+            btn.addEventListener("click", () => {
+                cerrarModal(document.getElementById("modal-habilitar-usuario"));
+            });
+        });
+    
+    document.querySelectorAll(".cerrar-modal-deshabilitado")
+        .forEach(btn => {
+            btn.addEventListener("click", () => {
+                cerrarModal(document.getElementById("modal-deshabilitado-usuario"));
+            });
+        });
+    
+    document.querySelectorAll(".cerrar-modal-habilitado-confirmacion")
+        .forEach(btn => {
+            btn.addEventListener("click", () => {
+                cerrarModal(document.getElementById("modal-habilitado-usuario"));
+            });
+        });
+    
     // =========================
     // CONFIRMAR DESHABILITAR
     // =========================
@@ -274,11 +508,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 modalDeshabilitar.classList.add("hidden");
                 cargarUsuarios();
                 
-                // ✅ BUSCAR EL USUARIO PARA OBTENER nombre_empresa
                 const usuario = usuariosGlobal.find(u => u.id_usuario == usuarioSeleccionado);
                 const nombreEmpresa = usuario?.nombre_empresa ?? "Usuario";
                 
-                // ✅ PASAR nombre_empresa a la función correcta
                 mostrarModalDeshabilitado(nombreEmpresa);
             });
         });
@@ -295,11 +527,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 modalHabilitar.classList.add("hidden");
                 cargarUsuarios();
                 
-                // ✅ BUSCAR EL USUARIO PARA OBTENER nombre_empresa
                 const usuario = usuariosGlobal.find(u => u.id_usuario == usuarioSeleccionado);
                 const nombreEmpresa = usuario?.nombre_empresa ?? "Usuario";
                 
-                // ✅ PASAR nombre_empresa a la función correcta
                 mostrarModalHabilitado(nombreEmpresa);
             });
         });
@@ -330,7 +560,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
     
     // =========================
-    // CARGAR DETALLE USUARIO (CON TECNOLOGÍAS)
+    // CARGAR DETALLE USUARIO
     // =========================
     function cargarDetalleUsuario(usuario){
         document.getElementById("detalle-nombre").textContent = usuario.representante_legal ?? "Sin nombre";
@@ -358,7 +588,7 @@ document.addEventListener("DOMContentLoaded", () => {
             });
         } else {
             contenedorTecnologias.innerHTML = `
-                <span class="px-2.5 py-1 rounded-full bg-sena-soft text-sena text-xs">
+                <span class="px-2.5 py-1 rounded-full bg-gray-200 text-gray-500 text-xs">
                     Sin líneas tecnológicas
                 </span>
             `;
@@ -475,9 +705,9 @@ document.addEventListener("DOMContentLoaded", () => {
             cerrarModalDeshabilitado();
         }, 3000);
     }
-
+    
     // ===== MODAL HABILITADO =====
-   function mostrarModalHabilitado(nombrePerfil) {
+    function mostrarModalHabilitado(nombrePerfil) {
         if (!modalHabilitado) {
             console.error('Modal habilitado no encontrado');
             return;
@@ -548,50 +778,6 @@ document.addEventListener("DOMContentLoaded", () => {
         const contador = document.getElementById('contador-segundos');
         if (contador) contador.textContent = '3';
     }
-
-    // =========================
-    // EVENT LISTENERS PARA CERRAR MODALES
-    // =========================
-
-    // Modal detalle usuario (YA EXISTE)
-    document.querySelectorAll(".cerrar-modal-detalle-usuario")
-        .forEach(btn => {
-            btn.addEventListener("click", () => {
-                cerrarModal(document.getElementById("modal-detalle-usuario"));
-            });
-        });
-
-    // ✅ AGREGAR: Modal confirmar deshabilitar
-    document.querySelectorAll(".cerrar-modal-deshabilitar")
-        .forEach(btn => {
-            btn.addEventListener("click", () => {
-                cerrarModal(document.getElementById("modal-deshabilitar-usuario"));
-            });
-        });
-
-    // ✅ AGREGAR: Modal confirmar habilitar
-    document.querySelectorAll(".cerrar-modal-habilitar")
-        .forEach(btn => {
-            btn.addEventListener("click", () => {
-                cerrarModal(document.getElementById("modal-habilitar-usuario"));
-            });
-        });
-
-    // ✅ AGREGAR: Modal deshabilitado éxito
-    document.querySelectorAll(".cerrar-modal-deshabilitado")
-        .forEach(btn => {
-            btn.addEventListener("click", () => {
-                cerrarModal(document.getElementById("modal-deshabilitado-usuario"));
-            });
-        });
-
-    // ✅ AGREGAR: Modal habilitado éxito
-    document.querySelectorAll(".cerrar-modal-habilitado-confirmacion")
-        .forEach(btn => {
-            btn.addEventListener("click", () => {
-                cerrarModal(document.getElementById("modal-habilitado-usuario"));
-            });
-        });
     
     window.filtrarUsuarios = filtrarUsuarios;
 });

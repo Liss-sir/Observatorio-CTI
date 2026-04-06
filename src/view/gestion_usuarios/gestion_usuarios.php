@@ -97,6 +97,8 @@ include __DIR__ . '../../../includes/header.php';
                     <p id="texto-sin-resultados" class="text-sm text-sena-text-soft text-center max-w-sm"></p>
                 </div>
             </div>
+            <!-- Contenedor de paginación -->
+          <div id="paginacion-container" class="hidden mt-6"></div>
         </div>
     </div>
     
@@ -108,6 +110,6 @@ include __DIR__ . '../../../includes/header.php';
     
     <!-- JS -->
     <script src="../../assets/js/usuarios.js"></script>
-    <?php include __DIR__ . '../../../includes/footer.php'; ?>
 </body>
 </html>
+<?php include __DIR__ . '../../../includes/footer.php'; ?>

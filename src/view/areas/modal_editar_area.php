@@ -16,6 +16,10 @@
           <div class="mb-4">
             <label class="block text-sm font-medium">Descripción</label>
             <textarea id="descripcion-area" rows="4" class="w-full border rounded-lg px-3 py-2" required></textarea>
+            <div class="flex justify-between mt-1">
+                <span id="alerta-minimo-editar" class="text-xs text-red-500 hidden">Mínimo 30 caracteres</span>
+                <span id="contador-caracteres-editar" class="text-xs text-gray-500">0 / 30</span>
+            </div>
           </div>
           <div class="flex justify-end gap-3 border-t pt-4">
             <button type="button" class="cerrar-modal-editar border px-4 py-2 rounded-lg">Cancelar</button>

@@ -61,7 +61,7 @@ class AreaModel {
             
             // Aseguramos que los datos existan y tengan valor por defecto si vienen vacíos
             $nombre = trim($data['nombre_area'] ?? '');
-            $descripcion = trim($data['descripcion'] ?? '');
+            $descripcion = trim($data['descripcion_area'] ?? '');
             $estado = isset($data['estado']) ? (int)$data['estado'] : 1;
 
             $ok = $stmt->execute([
