@@ -149,6 +149,10 @@
                 class="w-full mt-1 px-3 py-2 border border-sena-border rounded-lg bg-gray-100 text-sm"
                 placeholder="Breve descripción del programa"
               ></textarea>
+              <div class="flex justify-end items-center gap-2 mb-4 mt-1">
+                <span id="contador-caracteres-editar" class="text-xs text-sena-text-soft ml-auto">0 / 30 caracteres</span>
+                <span id="alerta-minimo-editar" class="text-xs text-red-500 hidden">Mínimo 30 caracteres requerido</span>
+              </div>
             </div>
 
           </form>

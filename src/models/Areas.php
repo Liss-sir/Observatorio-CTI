@@ -85,10 +85,7 @@ class AreaModel {
             $campos = [];
             $valores = [];
 
-            $camposPermitidos = ['nombre_area','descripcion','estado'];
-            $columnMap = [
-                'descripcion' => 'descripcion_area'
-            ];
+            $camposPermitidos = ['nombre_area','descripcion_area','estado'];
 
             foreach ($camposPermitidos as $campo) {
                 if (array_key_exists($campo, $data)) {

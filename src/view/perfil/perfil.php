@@ -59,12 +59,27 @@ $esAdmin = ($_SESSION['usuario']['id_rol'] == 1);
 
                 <div class="flex items-center gap-2 mb-2">
                     <i data-lucide="user" class="w-5 h-5 text-green-600"></i>
+                    <p id="infoEmpresa" class="font-medium text-gray-800">Empresa</p>
+                </div>
+
+                <div class="flex items-center gap-2 mb-2">
+                    <i data-lucide="user" class="w-5 h-5 text-green-600"></i>
                     <p id="infoNombre" class="font-medium text-gray-800"></p>
                 </div>
                 
                 <div class="flex items-center gap-2 mb-2">
                     <i data-lucide="mail" class="w-5 h-5 text-green-600"></i>
                     <p id="infoCorreo" class="font-medium text-gray-800"></p>
+                </div>
+
+                <div class="flex items-center gap-2 mb-2">
+                    <i data-lucide="user" class="w-5 h-5 text-green-600"></i>
+                    <p id="infoDoc" class="font-medium text-gray-800">CC - 12345678</p>
+                </div>
+
+                <div class="flex items-center gap-2 mb-2">
+                    <i data-lucide="user" class="w-5 h-5 text-green-600"></i>
+                    <p id="infoRazon" class="font-medium text-gray-800">Razon social: miawmaiwmiaw</p>
                 </div>
             </div>
 

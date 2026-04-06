@@ -16,6 +16,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const btnCrearPrograma = document.getElementById("btn-abrir-crear-programa");
     const modalCrear = document.getElementById("modal-crear-programa");
     const modalEditar = document.getElementById("modal-editar-programa");
+    const modalDetalle = document.getElementById("modal-detalle-programa");
 
     const AREA_URL = '../../controllers/AreaController.php';
     const PRO_URL = '../../controllers/ProgramaFormacionController.php';
@@ -42,6 +43,44 @@ document.addEventListener("DOMContentLoaded", function () {
             return false;
         }
         return true;
+    }
+
+    function actualizarContadorEditar() {
+        const textarea = document.getElementById('descripcionProgramaEditar');
+        const contador = document.getElementById('contador-caracteres-editar');
+        const alerta = document.getElementById('alerta-minimo-editar');
+        
+        if (textarea && contador) {
+            const longitud = textarea.value.length;
+            contador.textContent = `${longitud} / ${MIN_DESCRIPCION_LENGTH} caracteres`;
+            
+            if (longitud >= MIN_DESCRIPCION_LENGTH) {
+                contador.className = 'text-xs text-sena';
+                if (alerta) alerta.classList.add('hidden');
+            } else {
+                contador.className = 'text-xs text-red-500';
+                if (alerta) alerta.classList.remove('hidden');
+            }
+        }
+    }
+
+    function actualizarContadorCrear() {
+        const textarea = document.getElementById('descripcionNuevoPrograma');
+        const contador = document.getElementById('contador-caracteres-crear');
+        const alerta = document.getElementById('alerta-minimo-crear');
+        
+        if (textarea && contador) {
+            const longitud = textarea.value.length;
+            contador.textContent = `${longitud} / ${MIN_DESCRIPCION_LENGTH} caracteres`;
+            
+            if (longitud >= MIN_DESCRIPCION_LENGTH) {
+                contador.className = 'text-xs text-sena';
+                if (alerta) alerta.classList.add('hidden');
+            } else {
+                contador.className = 'text-xs text-red-500';
+                if (alerta) alerta.classList.remove('hidden');
+            }
+        }
     }
 
     // ===== CARGAR ÁREAS =====
@@ -259,16 +298,22 @@ document.addEventListener("DOMContentLoaded", function () {
         
         programasPagina.forEach(programa => {
             const card = document.createElement('div');
-            card.className = 'bg-white border border-gray-200 p-5 rounded-xl shadow-sm hover:shadow-md transition-shadow programa-card';
+            card.className = 'bg-white border border-gray-200 p-5 rounded-xl shadow-sm hover:shadow-md transition-shadow programa-card cursor-pointer';
             card.setAttribute('data-id', programa.id_programa);
-            
-            const nombreStr = String(programa.nombre_programa || '');
-            const codigoStr = String(programa.codigo_programa || '');
-            
-            card.setAttribute('data-nombre', nombreStr.toLowerCase());
-            card.setAttribute('data-codigo', codigoStr.toLowerCase());
+
+            // ✅ Guardamos TODA la info en data-* para el modal de detalle
+            card.setAttribute('data-codigo', programa.codigo_programa || '');
+            card.setAttribute('data-nombre', (programa.nombre_programa || '').replace(/"/g, '&quot;'));
+            card.setAttribute('data-nivel', programa.id_nivel || '');
+            card.setAttribute('data-modalidad', programa.modalidad || '');
+            card.setAttribute('data-cupos', programa.cupos_formacion || '');
+            card.setAttribute('data-area', (programa.nombre_area || '').replace(/"/g, '&quot;'));
+            card.setAttribute('data-fechainicio', programa.fecha_creacion || '');
+            card.setAttribute('data-fechafin', programa.fecha_fin || '');
+            card.setAttribute('data-descripcion', (programa.descripcion || '').replace(/"/g, '&quot;'));
             card.setAttribute('data-estado', programa.estado || 1);
-            
+
+            // ⚠️ CRUCIAL: Estas variables deben mantenerse aquí para el switch y los badges
             const estadoActivo = programa.estado == 1;
             const nombreNivel = getNombreNivel(programa.id_nivel);
             const colorNivel = getColorNivel(programa.id_nivel);
@@ -285,7 +330,7 @@ document.addEventListener("DOMContentLoaded", function () {
             
             if (puedeEditar) {
                 editButtonHTML = `
-                    <button data-permiso="editar_programa" class="btn-editar-programa p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                    <button data-permiso="editar_programa" class="btn-editar-programa p-2 hover:bg-sena-soft hover:text-sena rounded-lg transition-colors"
                         data-id="${programa.id_programa}"
                         data-codigo="${programa.codigo_programa || ''}"
                         data-nombre="${programa.nombre_programa || ''}"
@@ -296,7 +341,7 @@ document.addEventListener("DOMContentLoaded", function () {
                         data-cupos="${programa.cupos_formacion || ''}"
                         data-area="${programa.id_area || ''}"
                         data-descripcion="${programa.descripcion || ''}">
-                        <i data-lucide="pencil" class="w-4 h-4 text-gray-500"></i>
+                        <i data-lucide="pencil" class="w-4 h-4 text-gray-500 hover:text-sena"></i>
                     </button>
                 `;
             }
@@ -358,6 +403,7 @@ document.addEventListener("DOMContentLoaded", function () {
         
         inicializarSwitches();
         inicializarBotonesEditar();
+        inicializarClicksTarjetas();
         
         // Aplicar permisos después de renderizar
         if (typeof Auth !== 'undefined' && Auth.aplicarPermisosPorAccion) {
@@ -448,6 +494,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 if (nombreInput) nombreInput.value = boton.dataset.nombre || '';
                 if (cuposInput) cuposInput.value = boton.dataset.cupos || '';
                 if (descripcionInput) descripcionInput.value = boton.dataset.descripcion || '';
+                actualizarContadorEditar(); 
                 if (nivelSelect) nivelSelect.value = boton.dataset.nivel || '';
                 
                 // ✅ Fechas: usar dataset en minúsculas (como vienen del HTML)
@@ -492,6 +539,49 @@ document.addEventListener("DOMContentLoaded", function () {
                 // ✅ Abrir modal
                 const modal = document.getElementById("modal-editar-programa");
                 if (modal) modal.classList.remove("hidden");
+            });
+        });
+    }
+
+    // ✅ Abre el modal y llena los datos desde la tarjeta
+    function abrirModalDetallePrograma(card) {
+        const modalDetalle = document.getElementById('modal-detalle-programa');
+        if (!modalDetalle) return;
+
+        document.getElementById('detalle-codigo').textContent = card.dataset.codigo || 'N/A';
+        document.getElementById('detalle-nombre').textContent = card.dataset.nombre || 'Sin nombre';
+        document.getElementById('detalle-nivel').textContent = getNombreNivel(card.dataset.nivel);
+        document.getElementById('detalle-modalidad').textContent = card.dataset.modalidad || 'N/A';
+        document.getElementById('detalle-cupos').textContent = card.dataset.cupos || 'N/A';
+        document.getElementById('detalle-area').textContent = card.dataset.area || 'N/A';
+        
+        document.getElementById('detalle-fecha-inicio').textContent = `Inicio: ${formatearFecha(card.dataset.fechainicio)}`;
+        document.getElementById('detalle-fecha-fin').textContent = `Fin: ${formatearFecha(card.dataset.fechafin)}`;
+        document.getElementById('detalle-descripcion').textContent = card.dataset.descripcion || 'Sin descripción disponible.';
+
+        const estado = card.dataset.estado;
+        const esActivo = estado == 1;
+        const badge = document.getElementById('detalle-estado-badge');
+        const indicador = document.getElementById('detalle-estado-indicador');
+        const estadoText = document.getElementById('detalle-estado');
+
+        badge.className = `inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${esActivo ? 'bg-sena/10 text-sena' : 'bg-red-100 text-red-700'}`;
+        indicador.className = `w-1.5 h-1.5 rounded-full mr-1.5 ${esActivo ? 'bg-[#39A900]' : 'bg-red-500'}`;
+        estadoText.textContent = esActivo ? 'Activo' : 'Inactivo';
+
+        abrirModal(modalDetalle);
+    }
+
+    // ✅ Asigna el clic a las tarjetas
+    function inicializarClicksTarjetas() {
+        document.querySelectorAll('.programa-card').forEach(card => {
+            if (card.dataset.inicializadoDetalle === 'true') return;
+            card.dataset.inicializadoDetalle = 'true';
+            
+            card.addEventListener('click', function(e) {
+                // Evita abrir el modal si se hace clic en los botones internos
+                if (e.target.closest('.btn-editar-programa') || e.target.closest('.switch-sena')) return;
+                abrirModalDetallePrograma(this);
             });
         });
     }
@@ -697,11 +787,14 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    // ===== GUARDAR EDITADO =====
+
+    // ===== GUARDAR EDITADA =====
     const btnGuardarEditar = document.getElementById('btn-guardar-programa-editado');
     if (btnGuardarEditar) {
         btnGuardarEditar.addEventListener('click', async () => {
             const nombreInput = document.getElementById("nombreProgramaEditar");
+            const descInput = document.getElementById("descripcionProgramaEditar"); 
+            
             const datos = {
                 id_programa: document.getElementById("idProgramaEditar")?.value,
                 id_area: document.getElementById("areaProgramaEditar")?.value, 
@@ -712,14 +805,15 @@ document.addEventListener("DOMContentLoaded", function () {
                 fecha_creacion: document.getElementById("fechaInicioEditar")?.value,
                 fecha_fin: document.getElementById("fechaFinEditar")?.value,
                 cupos_formacion: document.getElementById("cuposProgramaEditar")?.value,
-                descripcion: document.getElementById("descripcionProgramaEditar")?.value
+                descripcion: descInput?.value 
             };
 
             if (!datos.id_programa) { alert('ID no encontrado'); return; }
             if (!datos.id_area) { alert('El área es requerida'); return; }
 
-            if (!datos.descripcion || !validarDescripcion(datos.descripcion)) {
-                alert(`La descripción debe tener al menos ${MIN_DESCRIPCION_LENGTH} caracteres. Actualmente tiene ${datos.descripcion ? datos.descripcion.length : 0} caracteres.`);
+            // ✅ Validar con el string, no con el elemento DOM
+            if (!validarDescripcion(datos.descripcion)) {
+                alert(`La descripción debe tener al menos ${MIN_DESCRIPCION_LENGTH} caracteres`, 'warning');
                 return;
             }
 
@@ -733,7 +827,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 
                 if (resultado.success) {
                     if (modalEditar) modalEditar.classList.add("hidden");
-                    mostrarModalEditado(datos.nombre_programa); // ✅ ABRE MODAL DE ÉXITO
+                    mostrarModalEditado(datos.nombre_programa);
                     cargarProgramas();
                 } else {
                     alert(resultado.error || 'Error al actualizar');
@@ -743,6 +837,8 @@ document.addEventListener("DOMContentLoaded", function () {
                 alert("Error al actualizar");
             }
         });
+        const descEditar = document.getElementById('descripcionProgramaEditar');
+        if (descEditar) descEditar.addEventListener('input', actualizarContadorEditar);
     }
 
     // ===== ABRIR MODAL CREAR =====
@@ -922,52 +1018,6 @@ document.addEventListener("DOMContentLoaded", function () {
         const c = document.getElementById('contador-segundos-editado'); if (c) c.textContent = '3';
     }
 
-    // ===== ACTUALIZAR CONTADOR DE CARACTERES EN CREACIÓN =====
-    const descripcionCrear = document.getElementById("descripcionNuevoPrograma");
-    const contadorCaracteresCrear = document.createElement('div');
-    contadorCaracteresCrear.className = 'text-xs text-sena text-sena-strong mt-1';
-    contadorCaracteresCrear.id = 'contador-caracteres-crear';
-
-    if (descripcionCrear) {
-        descripcionCrear.parentNode.appendChild(contadorCaracteresCrear);
-        
-        descripcionCrear.addEventListener('input', function() {
-            const longitud = this.value.length;
-            contadorCaracteresCrear.textContent = `${longitud} / ${MIN_DESCRIPCION_LENGTH} caracteres mínimos`;
-            
-            if (longitud >= MIN_DESCRIPCION_LENGTH) {
-                contadorCaracteresCrear.classList.remove('text-red-500');
-                contadorCaracteresCrear.classList.add('text-sena');
-            } else {
-                contadorCaracteresCrear.classList.remove('text-sena');
-                contadorCaracteresCrear.classList.add('text-sena-strong');
-            }
-        });
-    }
-
-    // ===== ACTUALIZAR CONTADOR DE CARACTERES EN EDICIÓN =====
-    const descripcionEditar = document.getElementById("descripcionProgramaEditar");
-    const contadorCaracteresEditar = document.createElement('div');
-    contadorCaracteresEditar.className = 'text-xs text-sena text-sena-strong mt-1';
-    contadorCaracteresEditar.id = 'contador-caracteres-editar';
-
-    if (descripcionEditar) {
-        descripcionEditar.parentNode.appendChild(contadorCaracteresEditar);
-        
-        descripcionEditar.addEventListener('input', function() {
-            const longitud = this.value.length;
-            contadorCaracteresEditar.textContent = `${longitud} / ${MIN_DESCRIPCION_LENGTH} caracteres mínimos`;
-            
-            if (longitud >= MIN_DESCRIPCION_LENGTH) {
-                contadorCaracteresEditar.classList.remove('text-red-500');
-                contadorCaracteresEditar.classList.add('text-sena');
-            } else {
-                contadorCaracteresEditar.classList.remove('text-sena');
-                contadorCaracteresEditar.classList.add('text-sena-strong');
-            }
-        });
-    }
-
     // ===== ACTUALIZAR PAGINACIÓN =====
     function actualizarPaginacion(totalElementos) {
         const totalPaginas = Math.ceil(totalElementos / elementosPorPagina);
@@ -1129,6 +1179,30 @@ document.addEventListener("DOMContentLoaded", function () {
                     renderizarProgramas(window.todosLosProgramas || []);
                 }
             });
+        });
+    }
+
+    // ===== EVENT LISTENERS PARA CONTADORES =====
+    const descCrear = document.getElementById('descripcionNuevoPrograma');
+    if (descCrear) {
+        descCrear.addEventListener('input', actualizarContadorCrear);
+    }
+
+    const descEditar = document.getElementById('descripcionProgramaEditar');
+    if (descEditar) {
+        descEditar.addEventListener('input', actualizarContadorEditar);
+    }
+
+    // Cerrar modal detalle al hacer clic en botón o overlay
+    document.querySelectorAll('.cerrar-modal-detalle-programa').forEach(btn => {
+        btn.addEventListener('click', (e) => { e.preventDefault(); cerrarModal(modalDetalle); });
+    });
+
+    if (modalDetalle) {
+        modalDetalle.addEventListener('click', (e) => {
+            if (e.target === modalDetalle || e.target.classList.contains('overflow-y-auto')) {
+                cerrarModal(modalDetalle);
+            }
         });
     }
 

@@ -98,6 +98,9 @@ const Perfil = {
         // ===== INFO =====
         const infoNombre = document.getElementById('infoNombre'); 
         const infoCorreo = document.getElementById('infoCorreo');
+        const infoEmpresa = document.getElementById('infoEmpresa');
+        const infoDoc = document.getElementById('infoDoc');
+        const infoRazon = document.getElementById('infoRazon');
         const fechaRegistro = document.getElementById('fechaRegistro');
         const tipoCuenta = document.getElementById('tipoCuenta');
         const descripcionCuenta = document.getElementById('descripcionCuenta');
@@ -208,7 +211,7 @@ const Perfil = {
     }
 };
 
-// ===== MODAL =====
+// ===== MODAL EDITAR =====
 const modal = document.getElementById('modalEditar'); 
 const btnCancelar = document.getElementById('btnCancelar');
 const btnGuardar = document.getElementById('btnGuardar');

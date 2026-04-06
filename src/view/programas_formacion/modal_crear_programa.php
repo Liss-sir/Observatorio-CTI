@@ -3,7 +3,7 @@
     <div class="fixed inset-0 bg-black bg-opacity-80"></div>
     <div class="fixed inset-0 flex items-center justify-center p-4">
         <!-- Ancho responsive: móvil → lg → portátil → xl → escritorio -->
-        <div class="bg-white w-full max-w-lg lg:max-w-2xl xl:max-w-3xl rounded-xl shadow-2xl transform transition-all">
+        <div class="bg-white w-full max-w-xl sm:max-w-2xl lg:max-w-4xl xl:max-w-5xl rounded-xl shadow-2xl transform transition-all">
             <!-- HEADER -->
             <div class="border-b px-6 py-5 flex justify-between items-center">
                 <div>
@@ -51,6 +51,10 @@
                         <label class="text-sm font-medium text-gray-700">Descripción</label>
                         <textarea id="descripcionNuevoPrograma" rows="3" placeholder="Breve descripción del programa"
                             class="w-full mt-1 px-3 py-2 border border-sena-border rounded-lg bg-gray-50 focus:ring-2 focus:ring-sena/20 focus:border-sena outline-none transition resize-none"></textarea>
+                        <div class="flex justify-end items-center gap-2 mb-4 mt-1">
+                            <span id="contador-caracteres-crear" class="text-xs text-sena-text-soft ml-auto">0 / 30 caracteres</span>
+                            <span id="alerta-minimo-crear" class="text-xs text-red-500 hidden">Mínimo 30 caracteres requerido</span>
+                        </div>
                     </div>
 
                     <!-- NIVEL Y MODALIDAD -->
@@ -105,3 +109,83 @@
         </div>
     </div>
 </div>
+
+<style>
+
+/* 💻 PORTÁTILES */
+
+#modal-crear-programa > div > div {
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+@media (max-width: 1366px) {
+
+    #modal-crear-programa label {
+        font-size: 0.8rem;
+    }
+
+    #modal-crear-programa input,
+    #modal-crear-programa select,
+    #modal-crear-programa textarea {
+        padding: 6px 10px;
+        font-size: 0.85rem;
+    }
+
+    #modal-crear-programa .px-6 {
+        padding-left: 1.2rem;
+        padding-right: 1.2rem;
+    }
+
+    #modal-crear-programa .py-6 {
+        padding-top: 1.2rem;
+        padding-bottom: 1.2rem;
+    }
+
+    #modal-crear-programa h3 {
+        font-size: 1rem;
+    }
+}
+
+
+/* 📱 TABLET */
+@media (max-width: 1024px) {
+
+    #modal-crear-programa .grid {
+        gap: 0.6rem;
+    }
+
+    #modal-crear-programa input,
+    #modal-crear-programa select,
+    #modal-crear-programa textarea {
+        font-size: 0.8rem;
+        padding: 6px 8px;
+    }
+
+    #modal-crear-programa h3 {
+        font-size: 0.95rem;
+    }
+}
+
+
+/* 📱 MÓVIL */
+@media (max-width: 640px) {
+
+    #modal-crear-programa .grid {
+        grid-template-columns: 1fr !important;
+    }
+
+    #modal-crear-programa {
+        padding: 0.5rem;
+    }
+
+    #modal-crear-programa h3 {
+        font-size: 0.9rem;
+    }
+
+    #modal-crear-programa label {
+        font-size: 0.75rem;
+    }
+}
+
+</style>
