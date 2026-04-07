@@ -91,8 +91,8 @@ const Perfil = {
         const headerNombre = document.getElementById('headerNombre'); 
         const headerRol = document.getElementById('headerRol');
 
-        if (headerInicial) headerInicial.textContent = u.nombre_completo.charAt(0).toUpperCase();
-        if (headerNombre) headerNombre.textContent = u.nombre_completo; 
+        if (headerInicial) headerInicial.textContent = u.nombre_empresa.charAt(0).toUpperCase();
+        if (headerNombre) headerNombre.textContent = u.nombre_empresa || u.nombre_completo;
         if (headerRol) headerRol.textContent = u.tipo_cuenta;
         
         // ===== INFO =====
@@ -105,8 +105,23 @@ const Perfil = {
         const tipoCuenta = document.getElementById('tipoCuenta');
         const descripcionCuenta = document.getElementById('descripcionCuenta');
 
-        if (infoNombre) infoNombre.textContent = u.nombre_completo; 
-        if (infoCorreo) infoCorreo.textContent = u.correo;
+        if (infoNombre) infoNombre.textContent = `Representante legal: ${u.nombre_completo || 'No disponible'}`;
+        if (infoCorreo) infoCorreo.textContent = `Contacto: ${u.correo || 'No disponible'}`;
+        // ===== DATOS EMPRESA / DOCUMENTO =====
+        if (infoEmpresa) {
+            infoEmpresa.textContent = `Nombre empresa: ${u.nombre_empresa || 'Sin empresa'}`;
+        }
+
+        if (infoDoc) {
+            const tipo = u.tipo_documento || '';
+            const numero = u.numero_documento || '';
+            infoDoc.textContent = `${tipo} - ${numero}`;
+        }
+
+        if (infoRazon) {
+            infoRazon.textContent = `Razón social: ${u.razon_social || 'No disponible'}`;
+        }
+
         if (fechaRegistro) fechaRegistro.textContent = `Miembro desde ${u.miembro_desde}`;
         if (tipoCuenta) tipoCuenta.textContent = `Cuenta ${u.tipo_cuenta}`;
         if (descripcionCuenta) descripcionCuenta.textContent = u.descripcion;
