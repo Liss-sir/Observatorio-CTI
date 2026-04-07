@@ -1,4 +1,7 @@
 <?php
+require __DIR__ . '/../../vendor/autoload.php';
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
 
 class LoginModel {
 
@@ -182,14 +185,41 @@ class LoginModel {
      * @param string $cuerpo
      * @return bool
      */
+
     private function enviarCorreo($destinatario, $asunto, $cuerpo) {
-        // Aquí puedes implementar el envío real con mail() o PHPMailer
-        // Por ahora retornamos true simulando éxito
-        // En producción, configurar cabeceras y usar mail() o SMTP
-        $cabeceras = "MIME-Version: 1.0\r\n";
-        $cabeceras .= "Content-type: text/html; charset=utf-8\r\n";
-        $cabeceras .= "From: no-reply@observatoriocti.com\r\n";
-        return mail($destinatario, $asunto, $cuerpo, $cabeceras);
+        $mail = new PHPMailer(true);
+
+        try {
+            // CONFIG SMTP (GMAIL EJEMPLO)
+            $mail->CharSet = 'UTF-8';
+            $mail->isSMTP();
+            $mail->Host = 'smtp.gmail.com';
+            $mail->SMTPAuth = true;
+            $mail->Username = 'observatorio.perfiles@gmail.com';
+            $mail->Password = 'tlrh rwlt tcff banv'; 
+            $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+            $mail->Port = 587;
+            $mail->SMTPOptions = [
+                'ssl' => [
+                    'verify_peer' => false,
+                    'verify_peer_name' => false,
+                    'allow_self_signed' => true
+                ]
+            ];
+
+            $mail->setFrom('observatorio.perfiles@gmail.com', 'Observatorio CTI');
+            $mail->addAddress($destinatario);
+
+            $mail->isHTML(true);
+            $mail->Subject = $asunto;
+            $mail->Body = $cuerpo;
+
+            return $mail->send();
+
+        } catch (Exception $e) {
+            error_log("Error PHPMailer: " . $e->getMessage());
+            return false;
+        }
     }
 
     /**
@@ -199,17 +229,77 @@ class LoginModel {
      * @return bool
      */
     public function enviarVerificacion($id_usuario, $correo_destino) {
-        $token = $this->crearToken($id_usuario, 'VERIFICACION', 1);
-        if (!$token) {
-            return false;
-        }
 
-        $enlace = "http://tusitio.com/verificar?token=" . urlencode($token);
-        $asunto = "Verifica tu cuenta en Observatorio CTI";
-        $cuerpo = "<h1>Bienvenido</h1>
-                   <p>Haz clic en el siguiente enlace para verificar tu cuenta:</p>
-                   <a href='$enlace'>$enlace</a>
-                   <p>Este enlace expirará en 24 horas.</p>";
+    $token = $this->crearToken($id_usuario, 'VERIFICACION', 1);
+    if (!$token) {
+        return false;
+    }
+
+    $enlace = "http://localhost/observatorio/Observatorio-CTI/src/controllers/LogController.php?accion=verificar-cuenta&token=" . urlencode($token);
+
+    $asunto = "Verifica tu cuenta en Observatorio CTI";
+
+    $cuerpo = "
+        <div style='margin:0; padding:0; background:#f4f6f9; font-family:Arial, sans-serif;'>
+
+            <table width='100%' cellpadding='0' cellspacing='0' style='padding: 30px 0;'>
+                <tr>
+                    <td align='center'>
+
+                        <table width='500' cellpadding='0' cellspacing='0' style='background:#ffffff; border-radius:12px; overflow:hidden; box-shadow:0 5px 15px rgba(0,0,0,0.1);'>
+                            
+                            <!-- HEADER -->
+                            <tr>
+                                <td style='background:#39A900; color:#ffffff; padding:20px; text-align:center; font-size:20px; font-weight:bold;'>
+                                    Observatorio CTI
+                                </td>
+                            </tr>
+
+                            <!-- BODY -->
+                            <tr>
+                                <td style='padding:30px; text-align:center; color:#333;'>
+
+                                    <h2 style='margin-top:0;'>¡Bienvenido!</h2>
+
+                                    <p style='font-size:14px; color:#555;'>
+                                        Gracias por registrarte en la plataforma.<br>
+                                        Para activar tu cuenta, confirma tu correo electrónico.
+                                    </p>
+
+                                    <!-- BOTÓN -->
+                                    <a href='$enlace' 
+                                    style='display:inline-block; margin-top:20px; padding:12px 25px; background:#39A900; color:#ffffff; text-decoration:none; border-radius:8px; font-size:14px;'>
+                                        Verificar cuenta
+                                    </a>
+
+                                    <!-- LINK ALTERNATIVO -->
+                                    <p style='font-size:11px; color:#999; margin-top:20px; word-break:break-all;'>
+                                        Si el botón no funciona, copia y pega este enlace:<br>
+                                        $enlace
+                                    </p>
+
+                                    <p style='font-size:12px; color:#888; margin-top:15px;'>
+                                        Este enlace expirará en 24 horas.
+                                    </p>
+
+                                </td>
+                            </tr>
+
+                            <!-- FOOTER -->
+                            <tr>
+                                <td style='background:#f1f1f1; text-align:center; padding:15px; font-size:12px; color:#777;'>
+                                    Si no creaste esta cuenta, puedes ignorar este mensaje.
+                                </td>
+                            </tr>
+
+                        </table>
+
+                    </td>
+                </tr>
+            </table>
+
+        </div>
+        ";
 
         return $this->enviarCorreo($correo_destino, $asunto, $cuerpo);
     }
@@ -230,12 +320,69 @@ class LoginModel {
             return false;
         }
 
-        $enlace = "http://tusitio.com/restablecer?token=" . urlencode($token);
+        $enlace = "http://localhost/observatorio/Observatorio-CTI/src/auth/login/nueva_contra.php?token=" . urlencode($token);
         $asunto = "Recuperación de contraseña - Observatorio CTI";
-        $cuerpo = "<h1>Recupera tu contraseña</h1>
-                   <p>Haz clic en el siguiente enlace para restablecer tu contraseña:</p>
-                   <a href='$enlace'>$enlace</a>
-                   <p>Si no solicitaste este cambio, ignora este mensaje. El enlace expirará en 24 horas.</p>";
+        $cuerpo = "
+            <div style='margin:0; padding:0; background:#f4f6f9; font-family:Arial, sans-serif;'>
+
+                <table width='100%' cellpadding='0' cellspacing='0' style='padding: 30px 0;'>
+                    <tr>
+                        <td align='center'>
+
+                            <table width='500' cellpadding='0' cellspacing='0' style='background:#ffffff; border-radius:12px; overflow:hidden; box-shadow:0 5px 15px rgba(0,0,0,0.1);'>
+                                
+                                <!-- HEADER -->
+                                <tr>
+                                    <td style='background:#39A900; color:#ffffff; padding:20px; text-align:center; font-size:20px; font-weight:bold;'>
+                                        Observatorio CTI
+                                    </td>
+                                </tr>
+
+                                <!-- BODY -->
+                                <tr>
+                                    <td style='padding:30px; text-align:center; color:#333;'>
+
+                                        <h2 style='margin-top:0;'>Recuperación de contraseña</h2>
+
+                                        <p style='font-size:14px; color:#555;'>
+                                            Has solicitado restablecer tu contraseña.<br>
+                                            Haz clic en el botón para crear una nueva.
+                                        </p>
+
+                                        <!-- BOTÓN -->
+                                        <a href='$enlace' 
+                                        style='display:inline-block; margin-top:20px; padding:12px 25px; background:#39A900; color:#ffffff; text-decoration:none; border-radius:8px; font-size:14px;'>
+                                            Restablecer contraseña
+                                        </a>
+
+                                        <!-- LINK FALLBACK -->
+                                        <p style='font-size:11px; color:#999; margin-top:20px; word-break:break-all;'>
+                                            Si el botón no funciona, copia este enlace:<br>
+                                            $enlace
+                                        </p>
+
+                                        <p style='font-size:12px; color:#888; margin-top:15px;'>
+                                            Este enlace expirará en 24 horas.
+                                        </p>
+
+                                    </td>
+                                </tr>
+
+                                <!-- FOOTER -->
+                                <tr>
+                                    <td style='background:#f1f1f1; text-align:center; padding:15px; font-size:12px; color:#777;'>
+                                        Si no solicitaste este cambio, puedes ignorar este mensaje.
+                                    </td>
+                                </tr>
+
+                            </table>
+
+                        </td>
+                    </tr>
+                </table>
+
+            </div>
+            ";
 
         return $this->enviarCorreo($correo, $asunto, $cuerpo);
     }
@@ -318,7 +465,13 @@ class LoginModel {
             }
 
             $id_usuario = $this->conn->lastInsertId();
+            $envio = $this->enviarVerificacion($id_usuario, $data['correo']);
+
+            if (!$envio) {
+                error_log("No se pudo enviar el correo de verificación a: " . $data['correo']);
+            }
             return ['success' => true, 'id_usuario' => $id_usuario];
+
         } catch (Exception $e) {
             return ['success' => false, 'error' => 'Error en el servidor'];
         }

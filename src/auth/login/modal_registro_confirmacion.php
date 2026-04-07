@@ -57,12 +57,6 @@
 
             </div>
           </div>
-
-          <!-- Nota adicional -->
-          <p class="text-xs text-gray-500 text-center">
-            Si no recibes el correo en los próximos minutos, puedes solicitar uno nuevo desde la página de inicio de sesión.
-          </p>
-
         </div>
 
         <!-- Footer -->
@@ -71,7 +65,7 @@
           <a
             href="../../auth/login/login.php"
             id="btn-ir-login"
-            class="inline-flex items-center gap-2 px-6 py-2.5 text-sm font-medium text-white bg-[#39A900] rounded-lg hover:bg-[#2d8a00] transition-colors shadow-lg shadow-[#39A900]/30 focus:outline-none focus:ring-2 focus:ring-[#39A900] focus:ring-offset-2"
+            class="inline-flex items-center gap-2 px-6 py-2.5 text-sm font-medium text-white bg-sena rounded-lg hover:bg-[#2d8a00] transition-colors shadow-lg shadow-[#39A900]/30 focus:outline-none focus:ring-2 focus:ring-[#39A900] focus:ring-offset-2"
           >
             <span>Ir al inicio de sesión</span>
             <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

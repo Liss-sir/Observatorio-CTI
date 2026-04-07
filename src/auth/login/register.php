@@ -315,7 +315,7 @@ $razonesSociales = [
 </div>
 
 <script src="https://unpkg.com/lucide@latest"></script>
-<script src="../../assets/js/register.js"></script>
+<script src="../../assets/js/registro/register.js"></script>
 
 <?php
 include __DIR__ . '/modal_registro_confirmacion.php';;
