@@ -1,4 +1,7 @@
 <?php
+require __DIR__ . '/../../vendor/autoload.php';
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
 
 class LoginModel {
 
@@ -182,14 +185,41 @@ class LoginModel {
      * @param string $cuerpo
      * @return bool
      */
+
     private function enviarCorreo($destinatario, $asunto, $cuerpo) {
-        // Aquí puedes implementar el envío real con mail() o PHPMailer
-        // Por ahora retornamos true simulando éxito
-        // En producción, configurar cabeceras y usar mail() o SMTP
-        $cabeceras = "MIME-Version: 1.0\r\n";
-        $cabeceras .= "Content-type: text/html; charset=utf-8\r\n";
-        $cabeceras .= "From: no-reply@observatoriocti.com\r\n";
-        return mail($destinatario, $asunto, $cuerpo, $cabeceras);
+        $mail = new PHPMailer(true);
+
+        try {
+            // CONFIG SMTP (GMAIL EJEMPLO)
+            $mail->CharSet = 'UTF-8';
+            $mail->isSMTP();
+            $mail->Host = 'smtp.gmail.com';
+            $mail->SMTPAuth = true;
+            $mail->Username = 'observatorio.perfiles@gmail.com';
+            $mail->Password = 'tlrh rwlt tcff banv'; 
+            $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+            $mail->Port = 587;
+            $mail->SMTPOptions = [
+                'ssl' => [
+                    'verify_peer' => false,
+                    'verify_peer_name' => false,
+                    'allow_self_signed' => true
+                ]
+            ];
+
+            $mail->setFrom('observatorio.perfiles@gmail.com', 'Observatorio CTI');
+            $mail->addAddress($destinatario);
+
+            $mail->isHTML(true);
+            $mail->Subject = $asunto;
+            $mail->Body = $cuerpo;
+
+            return $mail->send();
+
+        } catch (Exception $e) {
+            error_log("Error PHPMailer: " . $e->getMessage());
+            return false;
+        }
     }
 
     /**
@@ -204,7 +234,7 @@ class LoginModel {
             return false;
         }
 
-        $enlace = "http://tusitio.com/verificar?token=" . urlencode($token);
+        $enlace = "http://localhost/observatorio/Observatorio-CTI/src/controllers/LogController.php?accion=verificar-cuenta&token=" . urlencode($token);
         $asunto = "Verifica tu cuenta en Observatorio CTI";
         $cuerpo = "<h1>Bienvenido</h1>
                    <p>Haz clic en el siguiente enlace para verificar tu cuenta:</p>
@@ -230,7 +260,7 @@ class LoginModel {
             return false;
         }
 
-        $enlace = "http://tusitio.com/restablecer?token=" . urlencode($token);
+        $enlace = "http://localhost/observatorio/Observatorio-CTI/src/controllers/LogController.php?accion=recuperar&token=" . urlencode($token);
         $asunto = "Recuperación de contraseña - Observatorio CTI";
         $cuerpo = "<h1>Recupera tu contraseña</h1>
                    <p>Haz clic en el siguiente enlace para restablecer tu contraseña:</p>
@@ -318,7 +348,13 @@ class LoginModel {
             }
 
             $id_usuario = $this->conn->lastInsertId();
+            $envio = $this->enviarVerificacion($id_usuario, $data['correo']);
+
+            if (!$envio) {
+                error_log("No se pudo enviar el correo de verificación a: " . $data['correo']);
+            }
             return ['success' => true, 'id_usuario' => $id_usuario];
+
         } catch (Exception $e) {
             return ['success' => false, 'error' => 'Error en el servidor'];
         }

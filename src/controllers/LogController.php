@@ -108,6 +108,7 @@ class LogController {
         ]);
     }
 
+
     /**
      * Procesa la verificación mediante token (normalmente se accede desde el enlace del correo)
      */
@@ -123,7 +124,13 @@ class LogController {
         }
 
         $resultado = $this->model->procesarVerificacion($token);
-        echo json_encode($resultado);
+
+        if ($resultado['success']) {
+            header("Location: ../auth/login/verificacion_exitosa.php");
+        } else {
+            header("Location: ../auth/login/error_verificacion.php");
+        }
+        exit;
     }
 
     /**
@@ -312,8 +319,6 @@ class LogController {
         $resultado = $this->model->registrar($input);
 
         if ($resultado['success']) {
-            // Enviar correo de verificación automáticamente
-            $this->model->enviarVerificacion($resultado['id_usuario'], $input['correo']);
             echo json_encode([
                 'success' => true,
                 'message' => 'Usuario registrado correctamente. Se ha enviado un correo de verificación.'
@@ -369,6 +374,10 @@ switch ($accion) {
 
     case 'register':
         $controller->register();
+        break;
+
+    case 'sesion':
+        $controller->verificarSesion();
         break;
 
     default:
