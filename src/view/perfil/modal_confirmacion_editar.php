@@ -1,10 +1,10 @@
 <!-- modal_confirmacion_editar_pf.php -->
-<div id="modal-editado-confirmacion" class="hidden fixed inset-0 z-50 overflow-y-auto" aria-hidden="true">
+<div id="modal-editado-confirmacion" class="hidden fixed inset-0 z-[999] overflow-y-auto" aria-hidden="true">
   <div class="fixed inset-0 bg-black bg-opacity-80 transition-opacity"></div>
 
   <div class="fixed inset-0 overflow-y-auto">
     <div class="flex min-h-full items-center justify-center p-4">
-      <div class="relative w-full max-w-lg transform overflow-hidden rounded-xl border border-sena-border bg-white shadow-2xl transition-all animate-modalFadeIn">
+      <div class="relative w-full max-w-md transform overflow-hidden rounded-xl border border-sena-border bg-white shadow-2xl transition-all animate-modalFadeIn">
 
         <div class="border-b border-sena-border px-6 py-5 flex items-center gap-4">
           <div class="w-12 h-12 rounded-full bg-[#39A900] bg-opacity-10 flex items-center justify-center flex-shrink-0">
@@ -13,14 +13,14 @@
             </svg>
           </div>
           <div>
-            <h3 class="text-lg font-semibold text-sena-text-main">¡Programa de formacion Actualizado!</h3>
+            <h3 class="text-lg font-semibold text-sena-text-main">¡Perfil actualizado!</h3>
             <p class="text-sm text-sena-text-soft">La operación se realizó correctamente</p>
           </div>
         </div>
 
         <div class="px-6 py-5">
           <p class="text-sm text-sena-text-soft leading-relaxed">
-            El programa de formacion <span class="text-sena" id="nombre-proyeccion-editado"></span> ha sido actualizado correctamente.
+            El perfil <span class="text-sena" id="nombre-perfil-editado"></span> ha sido actualizada correctamente.
           </p>
           <div class="mt-4 flex items-center gap-2 text-xs text-sena-text-soft">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -47,3 +47,19 @@
     </div>
   </div>
 </div>
+
+<style>
+  @keyframes modalFadeIn {
+    from {
+      opacity: 0;
+      transform: scale(0.95) translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1) translateY(0);
+    }
+  }
+  .animate-modalFadeIn {
+    animation: modalFadeIn 0.3s ease-out;
+  }
+</style>

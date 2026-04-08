@@ -260,6 +260,54 @@ if (modal) {
     });
 }
 
+function mostrarModalConfirmacion(nombre) {
+    const modal = document.getElementById('modal-editado-confirmacion');
+    const nombreSpan = document.getElementById('nombre-perfil-editado');
+    const contador = document.getElementById('contador-segundos-editado');
+    const progress = document.getElementById('progress-bar-editado');
+
+    if (!modal) return;
+
+    // Set nombre
+    if (nombreSpan) nombreSpan.textContent = nombre;
+
+    // Mostrar modal
+    modal.classList.remove('hidden');
+
+    // Reset barra
+    progress.style.width = '0%';
+
+    // Forzar animación
+    setTimeout(() => {
+        progress.style.width = '100%';
+    }, 50);
+
+    // Contador
+    let segundos = 3;
+    contador.textContent = segundos;
+
+    const intervalo = setInterval(() => {
+        segundos--;
+        contador.textContent = segundos;
+
+        if (segundos <= 0) {
+            clearInterval(intervalo);
+            cerrarModalConfirmacion();
+        }
+    }, 1000);
+}
+
+function cerrarModalConfirmacion() {
+    const modal = document.getElementById('modal-editado-confirmacion');
+    if (modal) {
+        modal.classList.add('hidden');
+    }
+}
+
+document.querySelectorAll('.cerrar-modal-editado').forEach(btn => {
+    btn.addEventListener('click', cerrarModalConfirmacion);
+});
+
 if (btnGuardar) {
     btnGuardar.addEventListener('click', async () => { 
         const nombre_completo = inputNombre.value.trim();
@@ -286,8 +334,10 @@ if (btnGuardar) {
             if (data.success) {
                 modal.classList.add('hidden');
                 modal.classList.remove('flex');
+
                 await Perfil.cargarDatos();
-                alert('Perfil actualizado correctamente');
+
+                mostrarModalConfirmacion(Perfil.datos.usuario.nombre_empresa);
             } else {
                 alert(data.error || 'Error al guardar');
             }

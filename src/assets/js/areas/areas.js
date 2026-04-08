@@ -31,6 +31,9 @@ document.addEventListener('DOMContentLoaded', function() {
     const contadorTexto = document.getElementById('contador-areas');
 
     let areasData = [];
+    let paginaActual = 1;
+    const elementosPorPagina = 9; // puedes ajustar
+    let areasFiltradas = [];
     let timeoutEditado = null, intervalContadorEditado = null;
     let timeoutDeshabilitado = null, intervalContadorDeshabilitado = null;
     let timeoutHabilitado = null, intervalContadorHabilitado = null;
@@ -142,12 +145,24 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!gridAreas) return;
         gridAreas.innerHTML = '';
 
+        areasFiltradas = areas;
+
         if (areas.length === 0) {
             gridAreas.innerHTML = '<div class="col-span-full text-center text-gray-500">No hay áreas registradas.</div>';
             return;
         }
 
-        areas.forEach(area => {
+        const totalPaginas = Math.ceil(areas.length / elementosPorPagina);
+
+        if (paginaActual > totalPaginas) {
+            paginaActual = totalPaginas;
+        }
+
+        const inicio = (paginaActual - 1) * elementosPorPagina;
+        const fin = inicio + elementosPorPagina;
+        const areasPagina = areas.slice(inicio, fin);
+
+        areasPagina.forEach(area => {
             const isActive = area.estado == 1;
             const estadoClass = isActive ? 'active' : '';
             const estadoTitle = isActive ? 'Activo' : 'Inactivo';
@@ -176,6 +191,121 @@ document.addEventListener('DOMContentLoaded', function() {
         
         if (typeof lucide !== 'undefined') lucide.createIcons();
         asignarEventosDinamicos();
+        actualizarPaginacionAreas(areas.length);
+    }
+
+    function actualizarPaginacionAreas(totalElementos) {
+        const contenedor = document.getElementById("paginacion-areas");
+        if (!contenedor) return;
+
+        const totalPaginas = Math.ceil(totalElementos / elementosPorPagina);
+
+        if (totalPaginas <= 1) {
+            contenedor.classList.add("hidden");
+            return;
+        }
+
+        contenedor.classList.remove("hidden");
+
+        let paginasHTML = '';
+
+        let inicio = Math.max(1, paginaActual - 2);
+        let fin = Math.min(totalPaginas, paginaActual + 2);
+
+        if (paginaActual <= 3) {
+            fin = Math.min(5, totalPaginas);
+        }
+
+        if (paginaActual >= totalPaginas - 2) {
+            inicio = Math.max(totalPaginas - 4, 1);
+        }
+
+        // Primera página
+        if (inicio > 1) {
+            paginasHTML += `<button class="btn-pagina-area px-3 py-2 rounded-lg border">${1}</button>`;
+            if (inicio > 2) paginasHTML += `<span>...</span>`;
+        }
+
+        // Intermedias
+        for (let i = inicio; i <= fin; i++) {
+            paginasHTML += `
+                <button class="btn-pagina-area px-3 py-2 rounded-lg ${
+                    paginaActual === i 
+                    ? 'bg-sena text-white' 
+                    : 'border border-gray-300 hover:bg-sena-soft'
+                }" data-pagina="${i}">
+                    ${i}
+                </button>
+            `;
+        }
+
+        // Última página
+        if (fin < totalPaginas) {
+            if (fin < totalPaginas - 1) paginasHTML += `<span>...</span>`;
+            paginasHTML += `<button class="btn-pagina-area px-3 py-2 rounded-lg border">${totalPaginas}</button>`;
+        }
+
+        contenedor.innerHTML = `
+            <div class="flex flex-col items-center gap-3">
+
+                <div class="text-sm text-gray-500">
+                    Mostrando 
+                    <span class="font-semibold">${(paginaActual - 1) * elementosPorPagina + 1}</span> -
+                    <span class="font-semibold">${Math.min(paginaActual * elementosPorPagina, totalElementos)}</span>
+                    de <span class="font-semibold">${totalElementos}</span> áreas
+                </div>
+
+                <div class="flex items-center gap-2 flex-wrap justify-center">
+
+                    <!-- Primera -->
+                    <button class="btn-primera-area px-3 py-2 rounded-lg border">«</button>
+
+                    <!-- Anterior -->
+                    <button class="btn-anterior-area px-3 py-2 rounded-lg border">‹</button>
+
+                    ${paginasHTML}
+
+                    <!-- Siguiente -->
+                    <button class="btn-siguiente-area px-3 py-2 rounded-lg border">›</button>
+
+                    <!-- Última -->
+                    <button class="btn-ultima-area px-3 py-2 rounded-lg border">»</button>
+
+                </div>
+            </div>
+        `;
+
+        // EVENTOS
+        document.querySelectorAll('.btn-pagina-area').forEach(btn => {
+            btn.addEventListener('click', () => {
+                paginaActual = parseInt(btn.dataset.pagina);
+                renderizarAreas(areasFiltradas);
+            });
+        });
+
+        document.querySelector('.btn-anterior-area')?.addEventListener('click', () => {
+            if (paginaActual > 1) {
+                paginaActual--;
+                renderizarAreas(areasFiltradas);
+            }
+        });
+
+        document.querySelector('.btn-siguiente-area')?.addEventListener('click', () => {
+            if (paginaActual < totalPaginas) {
+                paginaActual++;
+                renderizarAreas(areasFiltradas);
+            }
+        });
+
+        document.querySelector('.btn-primera-area')?.addEventListener('click', () => {
+            paginaActual = 1;
+            renderizarAreas(areasFiltradas);
+        });
+
+        document.querySelector('.btn-ultima-area')?.addEventListener('click', () => {
+            paginaActual = totalPaginas;
+            renderizarAreas(areasFiltradas);
+        });
     }
 
     const buscador = document.getElementById("buscador-areas");
@@ -190,6 +320,7 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Si está vacío, cargar todas
             if (texto.length === 0) {
+                paginaActual = 1;
                 cargarAreas();
                 return;
             }
@@ -263,6 +394,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             }
                         } else {
                             // Renderizar resultados
+                            paginaActual = 1;
                             renderizarAreas(result.data);
                         } 
                     } else {
