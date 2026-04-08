@@ -19,6 +19,9 @@ document.addEventListener("DOMContentLoaded", () => {
   const detalleEstadoTexto = document.getElementById("detalle-estado-texto");
   const STORAGE_KEY = "observatorio_lineas_tecnologicas_v1";
   const isListadoView = Boolean(inputBuscarLinea && cardsGrid);
+  const paginacionContainer = document.getElementById("paginacion-container");
+  let paginaActual = 1;
+  const elementosPorPagina = 9;
 
   const areasDisponibles = [];
   const programasFormacionDisponibles = [];
@@ -165,22 +168,24 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function normalizarLineaDesdeBackend(row) {
-    const idLinea = String(row?.id_linea ?? "").trim();
-    const nombreLinea = String(row?.nombre_linea ?? "").trim();
-    const nombrePrograma = String(row?.nombre_programa ?? "").trim();
-    const nombreTendencia = String(row?.nombre_tendencia ?? "").trim();
-    const nombreEtapa = String(row?.nombre_etapa ?? "").trim();
-    const nombreArea = String(row?.nombre_area ?? "").trim();
-    const anioProyeccion = String(row?.anio_proyeccion ?? row?.anio ?? "").trim();
+    const idLinea = String(row?.id_linea ?? row?.idLinea ?? "").trim();
+    const nombreLinea = String(
+      row?.nombre_linea
+      ?? row?.nombreLinea
+      ?? row?.linea
+      ?? row?.nombre
+      ?? ""
+    ).trim();
+    const nombrePrograma = String(row?.nombre_programa ?? row?.nombrePrograma ?? "").trim();
+    const nombreTendencia = String(row?.nombre_tendencia ?? row?.nombreTendencia ?? "").trim();
+    const nombreEtapa = String(row?.nombre_etapa ?? row?.nombreEtapa ?? "").trim();
+    const nombreArea = String(row?.nombre_area ?? row?.nombreArea ?? "").trim();
+    const anioProyeccion = String(row?.anio_proyeccion ?? row?.anioProyeccion ?? row?.anio ?? "").trim();
     const descripcionProyeccion = String(
       row?.descripcion_proyeccion ?? row?.nombre_proyeccion ?? row?.nombre_proyeccion_futuro ?? row?.nombre ?? ""
     ).trim();
 
-    const nombre =
-      nombreLinea
-      || nombrePrograma
-      || nombreTendencia
-      || (idLinea ? `Linea ${idLinea}` : "Linea Tecnologica");
+    const nombre = nombreLinea || (idLinea ? `Linea ${idLinea}` : "Linea Tecnologica");
 
     const proyeccionTexto = descripcionProyeccion && anioProyeccion
       ? `${descripcionProyeccion}: ${anioProyeccion}`
@@ -188,17 +193,18 @@ document.addEventListener("DOMContentLoaded", () => {
 
     return {
       idLinea,
+      nombreLinea,
       nombre,
       active: Number(row?.estado ?? 1) === 1,
-      idArea: String(row?.id_area ?? ""),
+      idArea: String(row?.id_area ?? row?.idArea ?? ""),
       area: nombreArea,
-      idPrograma: String(row?.id_programa ?? ""),
+      idPrograma: String(row?.id_programa ?? row?.idPrograma ?? ""),
       programaFormacion: nombrePrograma,
-      idEtapa: String(row?.id_etapa ?? ""),
+      idEtapa: String(row?.id_etapa ?? row?.idEtapa ?? ""),
       etapa: nombreEtapa,
-      idTendencia: String(row?.id_tendencia ?? ""),
+      idTendencia: String(row?.id_tendencia ?? row?.idTendencia ?? ""),
       tendencia: nombreTendencia,
-      idProyeccion: String(row?.id_proyeccion ?? ""),
+      idProyeccion: String(row?.id_proyeccion ?? row?.idProyeccion ?? ""),
       proyeccion: anioProyeccion,
       proyecciones: proyeccionTexto ? [proyeccionTexto] : [],
       tecnologiasEmergentes: nombreTendencia ? [nombreTendencia] : [],
@@ -288,6 +294,26 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const found = options.find((item) => String(item?.value || item?.id || "").trim() === objetivo);
     return String(found?.label || "").trim();
+  }
+
+  function resolveOptionValue(options, rawValue) {
+    const objetivo = String(rawValue || "").trim();
+    if (!objetivo || !Array.isArray(options)) {
+      return "";
+    }
+
+    const byValue = options.find((item) => String(item?.value || item?.id || "").trim() === objetivo);
+    if (byValue) {
+      return String(byValue.value || byValue.id || "").trim();
+    }
+
+    const normalizado = normalizarTexto(objetivo);
+    const byLabel = options.find((item) => normalizarTexto(String(item?.label || "")) === normalizado);
+    if (byLabel) {
+      return String(byLabel.value || byLabel.id || "").trim();
+    }
+
+    return "";
   }
 
   function normalizarNombreArea(area, idArea = "") {
@@ -448,7 +474,8 @@ document.addEventListener("DOMContentLoaded", () => {
       fillSelect(targetSelect, opciones, "Seleccionar programa de formacion...");
 
       if (selectedValue) {
-        targetSelect.value = String(selectedValue);
+        const selectedResolved = resolveOptionValue(opciones, selectedValue);
+        targetSelect.value = selectedResolved || "";
       }
     } catch (error) {
       fillSelect(targetSelect, [], "Seleccionar programa de formacion...");
@@ -812,26 +839,201 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function aplicarFiltroBusqueda() {
     const termino = normalizarTexto(inputBuscarLinea?.value || "");
-    let visibles = 0;
-
-    cards.forEach((card) => {
+    const cardsFiltradas = cards.filter((card) => {
       const titleEl = card.querySelector("h3");
       const searchableText = normalizarTexto(titleEl?.textContent || "");
-      const visible = termino === "" || searchableText.includes(termino);
-      card.style.display = visible ? "flex" : "none";
-      if (visible) {
-        visibles += 1;
-      }
+      return termino === "" || searchableText.includes(termino);
+    });
+
+    const totalFiltradas = cardsFiltradas.length;
+    const totalPaginas = Math.max(1, Math.ceil(totalFiltradas / elementosPorPagina));
+
+    if (paginaActual > totalPaginas) {
+      paginaActual = totalPaginas;
+    }
+
+    const inicio = (paginaActual - 1) * elementosPorPagina;
+    const fin = inicio + elementosPorPagina;
+    const cardsPagina = cardsFiltradas.slice(inicio, fin);
+
+    cards.forEach((card) => {
+      card.style.display = "none";
+    });
+
+    cardsPagina.forEach((card) => {
+      card.style.display = "flex";
     });
 
     if (lineasEncontradasCount) {
-      lineasEncontradasCount.textContent = String(visibles);
+      lineasEncontradasCount.textContent = String(totalFiltradas);
     }
     if (lineasEncontradasLabel) {
-      lineasEncontradasLabel.textContent = visibles === 1 ? "linea encontrada" : "lineas encontradas";
+      lineasEncontradasLabel.textContent = totalFiltradas === 1 ? "linea encontrada" : "lineas encontradas";
     }
-    actualizarNoResultadosBusqueda(termino, visibles);
+
+    actualizarPaginacion(totalFiltradas);
+    actualizarNoResultadosBusqueda(termino, totalFiltradas);
     actualizarEmptyState();
+  }
+
+  function actualizarPaginacion(totalElementos) {
+    if (!paginacionContainer) {
+      return;
+    }
+
+    const totalPaginas = Math.ceil(totalElementos / elementosPorPagina);
+
+    if (totalPaginas <= 1) {
+      paginacionContainer.classList.add("hidden");
+      paginacionContainer.innerHTML = "";
+      return;
+    }
+
+    paginacionContainer.classList.remove("hidden");
+
+    let paginasHTML = "";
+    let inicio = Math.max(1, paginaActual - 2);
+    let fin = Math.min(totalPaginas, paginaActual + 2);
+
+    if (paginaActual <= 3) {
+      fin = Math.min(5, totalPaginas);
+    }
+
+    if (paginaActual >= totalPaginas - 2) {
+      inicio = Math.max(totalPaginas - 4, 1);
+    }
+
+    if (inicio > 1) {
+      paginasHTML += `
+        <button class="btn-pagina px-3 py-2 rounded-lg transition-all duration-200 border border-sena-border text-sena-text-main hover:bg-sena-soft hover:border-sena/30" data-pagina="1">
+          1
+        </button>
+      `;
+      if (inicio > 2) {
+        paginasHTML += `<span class="px-2 text-sena-text-soft">...</span>`;
+      }
+    }
+
+    for (let i = inicio; i <= fin; i += 1) {
+      const isActive = paginaActual === i;
+      paginasHTML += `
+        <button class="btn-pagina px-3 py-2 rounded-lg transition-all duration-200 ${
+          isActive
+            ? "bg-sena text-white shadow-md scale-100"
+            : "border border-sena-border text-sena-text-main hover:bg-sena-soft hover:border-sena/30"
+        }" data-pagina="${i}">
+          ${i}
+        </button>
+      `;
+    }
+
+    if (fin < totalPaginas) {
+      if (fin < totalPaginas - 1) {
+        paginasHTML += `<span class="px-2 text-sena-text-soft">...</span>`;
+      }
+      paginasHTML += `
+        <button class="btn-pagina px-3 py-2 rounded-lg transition-all duration-200 border border-sena-border text-sena-text-main hover:bg-sena-soft hover:border-sena/30" data-pagina="${totalPaginas}">
+          ${totalPaginas}
+        </button>
+      `;
+    }
+
+    paginacionContainer.innerHTML = `
+      <div class="flex flex-col items-center gap-3 mb-6 mt-6">
+        <div class="text-sm text-sena-text-soft">
+          Mostrando <span class="font-medium text-sena">${((paginaActual - 1) * elementosPorPagina) + 1}</span> -
+          <span class="font-medium text-sena">${Math.min(paginaActual * elementosPorPagina, totalElementos)}</span> de
+          <span class="font-medium text-sena">${totalElementos}</span> lineas
+        </div>
+
+        <div class="flex items-center gap-2 flex-wrap justify-center">
+          <button class="btn-primera-pagina px-3 py-2 rounded-lg transition-all duration-200 ${
+            paginaActual === 1
+              ? "bg-gray-100 text-sena-text-soft cursor-not-allowed opacity-50"
+              : "border border-sena-border text-sena-text-main hover:bg-sena-soft hover:border-sena/30"
+          }" ${paginaActual === 1 ? "disabled" : ""}>
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path d="M11 19l-7-7 7-7M18 19l-7-7 7-7" />
+            </svg>
+          </button>
+          <button class="btn-pagina-anterior px-3 py-2 rounded-lg transition-all duration-200 ${
+            paginaActual === 1
+              ? "bg-gray-100 text-sena-text-soft cursor-not-allowed opacity-50"
+              : "border border-sena-border text-sena-text-main hover:bg-sena-soft hover:border-sena/30"
+          }" ${paginaActual === 1 ? "disabled" : ""}>
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path d="M15 19l-7-7 7-7" />
+            </svg>
+          </button>
+          ${paginasHTML}
+          <button class="btn-pagina-siguiente px-3 py-2 rounded-lg transition-all duration-200 ${
+            paginaActual === totalPaginas
+              ? "bg-gray-100 text-sena-text-soft cursor-not-allowed opacity-50"
+              : "border border-sena-border text-sena-text-main hover:bg-sena-soft hover:border-sena/30"
+          }" ${paginaActual === totalPaginas ? "disabled" : ""}>
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
+          <button class="btn-ultima-pagina px-3 py-2 rounded-lg transition-all duration-200 ${
+            paginaActual === totalPaginas
+              ? "bg-gray-100 text-sena-text-soft cursor-not-allowed opacity-50"
+              : "border border-sena-border text-sena-text-main hover:bg-sena-soft hover:border-sena/30"
+          }" ${paginaActual === totalPaginas ? "disabled" : ""}>
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path d="M13 5l7 7-7 7M6 5l7 7-7 7" />
+            </svg>
+          </button>
+        </div>
+      </div>
+    `;
+
+    paginacionContainer.querySelectorAll(".btn-pagina").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        paginaActual = Number.parseInt(btn.dataset.pagina || "1", 10);
+        aplicarFiltroBusqueda();
+      });
+    });
+
+    const btnAnterior = paginacionContainer.querySelector(".btn-pagina-anterior");
+    if (btnAnterior) {
+      btnAnterior.addEventListener("click", () => {
+        if (paginaActual > 1) {
+          paginaActual -= 1;
+          aplicarFiltroBusqueda();
+        }
+      });
+    }
+
+    const btnSiguiente = paginacionContainer.querySelector(".btn-pagina-siguiente");
+    if (btnSiguiente) {
+      btnSiguiente.addEventListener("click", () => {
+        if (paginaActual < totalPaginas) {
+          paginaActual += 1;
+          aplicarFiltroBusqueda();
+        }
+      });
+    }
+
+    const btnPrimera = paginacionContainer.querySelector(".btn-primera-pagina");
+    if (btnPrimera) {
+      btnPrimera.addEventListener("click", () => {
+        if (paginaActual !== 1) {
+          paginaActual = 1;
+          aplicarFiltroBusqueda();
+        }
+      });
+    }
+
+    const btnUltima = paginacionContainer.querySelector(".btn-ultima-pagina");
+    if (btnUltima) {
+      btnUltima.addEventListener("click", () => {
+        if (paginaActual !== totalPaginas) {
+          paginaActual = totalPaginas;
+          aplicarFiltroBusqueda();
+        }
+      });
+    }
   }
 
   function actualizarNoResultadosBusqueda(terminoNormalizado, visibles) {
@@ -882,6 +1084,9 @@ document.addEventListener("DOMContentLoaded", () => {
     if (emptyState) {
       if (totalCards === 0) {
         emptyState.classList.remove("hidden");
+        if (paginacionContainer) {
+          paginacionContainer.classList.add("hidden");
+        }
       } else {
         emptyState.classList.add("hidden");
       }
@@ -1339,20 +1544,29 @@ document.addEventListener("DOMContentLoaded", () => {
     card.dataset.idTendencia = String(state.idTendencia || "");
     card.dataset.idProyeccion = String(state.idProyeccion || "");
     card.innerHTML = `
-      <div class="flex justify-between items-start">
-        <div class="w-11 h-11 bg-sena-soft rounded-xl flex items-center justify-center">
-          <svg class="w-5 h-5 text-sena-strong" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 0 1 6 3.75h2.25A2.25 2.25 0 0 1 10.5 6v2.25a2.25 2.25 0 0 1-2.25 2.25H6a2.25 2.25 0 0 1-2.25-2.25V6ZM3.75 15.75A2.25 2.25 0 0 1 6 13.5h2.25a2.25 2.25 0 0 1 2.25 2.25V18a2.25 2.25 0 0 1-2.25 2.25H6A2.25 2.25 0 0 1 3.75 18v-2.25ZM13.5 6a2.25 2.25 0 0 1 2.25-2.25H18A2.25 2.25 0 0 1 20.25 6v2.25A2.25 2.25 0 0 1 18 10.5h-2.25a2.25 2.25 0 0 1-2.25-2.25V6ZM13.5 15.75a2.25 2.25 0 0 1 2.25-2.25H18a2.25 2.25 0 0 1 2.25 2.25V18A2.25 2.25 0 0 1 18 20.25h-2.25a2.25 2.25 0 0 1-2.25-2.25v-2.25Z" />
-          </svg>
+      <div class="flex justify-between items-start gap-3">
+        <div class="flex items-center gap-3 min-w-0 flex-1">
+          <div class="w-11 h-11 bg-sena-soft rounded-xl flex items-center justify-center flex-shrink-0">
+            <svg class="w-5 h-5 text-sena-strong" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 0 1 6 3.75h2.25A2.25 2.25 0 0 1 10.5 6v2.25a2.25 2.25 0 0 1-2.25 2.25H6a2.25 2.25 0 0 1-2.25-2.25V6ZM3.75 15.75A2.25 2.25 0 0 1 6 13.5h2.25a2.25 2.25 0 0 1 2.25 2.25V18a2.25 2.25 0 0 1-2.25 2.25H6A2.25 2.25 0 0 1 3.75 18v-2.25ZM13.5 6a2.25 2.25 0 0 1 2.25-2.25H18A2.25 2.25 0 0 1 20.25 6v2.25A2.25 2.25 0 0 1 18 10.5h-2.25a2.25 2.25 0 0 1-2.25-2.25V6ZM13.5 15.75a2.25 2.25 0 0 1 2.25-2.25H18a2.25 2.25 0 0 1 2.25 2.25V18A2.25 2.25 0 0 1 18 20.25h-2.25a2.25 2.25 0 0 1-2.25-2.25v-2.25Z" />
+            </svg>
+          </div>
+          <h3 class="min-w-0 flex-1 font-['Montserrat'] text-base font-semibold text-sena-text-main leading-snug truncate"></h3>
         </div>
         <span class="text-sm text-sena-text-soft">0 perfiles</span>
       </div>
-      <h3 class="font-['Montserrat'] text-base font-semibold text-sena-text-main leading-snug"></h3>
+      <p class="linea-tec-programa text-sm font-medium text-sena-text-soft leading-snug break-words [overflow-wrap:anywhere]"></p>
       <div class="flex flex-wrap gap-2"></div>
       <a href="#" class="text-sm text-sena-strong font-medium mt-auto inline-flex items-center gap-1 hover:underline">Ver perfiles &rarr;</a>
     `;
 
     card.querySelector("h3").textContent = nombre;
+    card.querySelector("h3").title = nombre;
+    const programaLabel = String(state.programaFormacion || "").trim();
+    const programaEl = card.querySelector(".linea-tec-programa");
+    if (programaEl) {
+      programaEl.textContent = programaLabel || "Programa no registrado";
+    }
     const chipsWrap = card.querySelector(".flex.flex-wrap.gap-2");
     chipsWrap.className = "flex flex-wrap gap-2 max-w-full";
 
@@ -1381,6 +1595,13 @@ document.addEventListener("DOMContentLoaded", () => {
     const titleEl = card.querySelector("h3");
     if (titleEl) {
       titleEl.textContent = nombre;
+      titleEl.title = nombre;
+    }
+
+    const programaEl = card.querySelector(".linea-tec-programa");
+    if (programaEl) {
+      const programaLabel = String(state.programaFormacion || "").trim();
+      programaEl.textContent = programaLabel || "Programa no registrado";
     }
 
     card.dataset.idLinea = String(state.idLinea || card.dataset.idLinea || "");
@@ -1408,6 +1629,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function setSwitchState(switchBtn, isActive) {
     switchBtn.dataset.active = isActive ? "true" : "false";
+    switchBtn.setAttribute("title", isActive ? "Activo" : "Inactivo");
+
+    if (switchBtn.classList.contains("switch-sena")) {
+      switchBtn.classList.toggle("active", isActive);
+      return;
+    }
+
     switchBtn.setAttribute("aria-pressed", isActive ? "true" : "false");
     switchBtn.classList.toggle("bg-sena", isActive);
     switchBtn.classList.toggle("bg-gray-300", !isActive);
@@ -1424,6 +1652,75 @@ document.addEventListener("DOMContentLoaded", () => {
         switchBtn.classList.toggle("justify-start", !isActive);
       }
     }
+  }
+
+  async function abrirModalEdicionConEstado(lineaContext, estadoBase) {
+    const nombreActual = String(lineaContext?.oldName || lineaContext?.titleEl?.textContent || "").trim() || "Linea Tecnologica";
+    const estadoFallback = {
+      active: true,
+      area: "",
+      programaFormacion: "",
+      tendencia: getOptionValue(tendenciasEmergentesDisponibles[0]) || "",
+      etapa: getOptionValue(etapasDisponibles[0]) || "",
+      proyeccion: getOptionValue(proyeccionesDisponibles[0]) || "",
+      idLinea: String(lineaContext?.card?.dataset?.idLinea || ""),
+      idArea: String(lineaContext?.card?.dataset?.idArea || ""),
+      idPrograma: String(lineaContext?.card?.dataset?.idPrograma || ""),
+      idEtapa: String(lineaContext?.card?.dataset?.idEtapa || ""),
+      idTendencia: String(lineaContext?.card?.dataset?.idTendencia || ""),
+      idProyeccion: String(lineaContext?.card?.dataset?.idProyeccion || ""),
+    };
+
+    let estadoActual = { ...estadoFallback, ...(estadoBase || {}) };
+    const idLinea = String(estadoActual.idLinea || lineaContext?.card?.dataset?.idLinea || getLineaIdFromQuery() || "").trim();
+
+    if (idLinea) {
+      try {
+        const fila = await obtenerLineaBackend(idLinea);
+        if (fila) {
+          const normalizada = normalizarLineaDesdeBackend(fila);
+          estadoActual = {
+            ...estadoActual,
+            active: normalizada.active,
+            area: normalizada.area,
+            programaFormacion: normalizada.programaFormacion,
+            tendencia: normalizada.tendencia,
+            etapa: normalizada.etapa,
+            proyeccion: normalizada.proyecciones?.[0] || normalizada.proyeccion || "",
+            idLinea: normalizada.idLinea,
+            idArea: normalizada.idArea,
+            idPrograma: normalizada.idPrograma,
+            idEtapa: normalizada.idEtapa,
+            idTendencia: normalizada.idTendencia,
+            idProyeccion: normalizada.idProyeccion,
+          };
+        }
+      } catch (error) {
+        // If fetch fails, continue with local state.
+      }
+    }
+
+    lineaEnEdicion = { ...lineaContext, oldName: nombreActual };
+
+    modals.editInput.value = nombreActual;
+
+    const areaValue = resolveOptionValue(areasDisponibles, estadoActual.idArea || estadoActual.area);
+    const tendenciaValue = resolveOptionValue(tendenciasEmergentesDisponibles, estadoActual.idTendencia || estadoActual.tendencia);
+    const etapaValue = resolveOptionValue(etapasDisponibles, estadoActual.idEtapa || estadoActual.etapa);
+    const proyeccionValue = resolveOptionValue(proyeccionesDisponibles, estadoActual.idProyeccion || estadoActual.proyeccion);
+
+    modals.editArea.value = areaValue;
+    modals.editTendencia.value = tendenciaValue;
+    modals.editEtapa.value = etapaValue;
+    modals.editProyeccion.value = proyeccionValue;
+
+    await cargarProgramasPorArea(
+      areaValue,
+      modals.editPrograma,
+      estadoActual.idPrograma || estadoActual.programaFormacion || ""
+    );
+
+    abrirModal(modals.editModal);
   }
 
   function abrirModalEdicionLinea(card, titleEl) {
@@ -1443,15 +1740,7 @@ document.addEventListener("DOMContentLoaded", () => {
       idProyeccion: String(card?.dataset?.idProyeccion || ""),
     };
 
-    lineaEnEdicion = { card, titleEl, oldName: nombreActual };
-
-    modals.editInput.value = nombreActual;
-    modals.editArea.value = estadoActual.idArea || estadoActual.area || "";
-    modals.editTendencia.value = estadoActual.idTendencia || estadoActual.tendencia;
-    modals.editEtapa.value = estadoActual.idEtapa || estadoActual.etapa;
-    modals.editProyeccion.value = estadoActual.idProyeccion || estadoActual.proyeccion;
-    cargarProgramasPorArea(modals.editArea.value, modals.editPrograma, estadoActual.idPrograma || estadoActual.programaFormacion || "");
-    abrirModal(modals.editModal);
+    abrirModalEdicionConEstado({ card, titleEl, oldName: nombreActual }, estadoActual);
   }
 
   function manejarToggleLinea(switchBtn, titleEl) {
@@ -1647,7 +1936,7 @@ document.addEventListener("DOMContentLoaded", () => {
     actualizarEstadoDetalleUI(detalleActivo);
 
     if (btnDetalleEditar) {
-      btnDetalleEditar.addEventListener("click", () => {
+      btnDetalleEditar.addEventListener("click", async () => {
         const nombreActual = (detalleTitulo?.textContent || "Linea Tecnologica").trim();
         const estadoActual = estadoLineas[nombreActual] || {
           active: detalleActivo,
@@ -1656,17 +1945,13 @@ document.addEventListener("DOMContentLoaded", () => {
           tendencia: getOptionValue(tendenciasEmergentesDisponibles[0]) || "",
           etapa: getOptionValue(etapasDisponibles[0]) || "",
           proyeccion: getOptionValue(proyeccionesDisponibles[0]) || "",
+          idLinea: String(getLineaIdFromQuery() || ""),
         };
 
-        lineaEnEdicion = { card: null, titleEl: detalleTitulo, oldName: nombreActual, isDetalle: true };
-
-        modals.editInput.value = nombreActual;
-        modals.editArea.value = estadoActual.idArea || estadoActual.area || "";
-        modals.editTendencia.value = estadoActual.idTendencia || estadoActual.tendencia;
-        modals.editEtapa.value = estadoActual.idEtapa || estadoActual.etapa;
-        modals.editProyeccion.value = estadoActual.idProyeccion || estadoActual.proyeccion;
-        cargarProgramasPorArea(modals.editArea.value, modals.editPrograma, estadoActual.idPrograma || estadoActual.programaFormacion || "");
-        abrirModal(modals.editModal);
+        await abrirModalEdicionConEstado(
+          { card: null, titleEl: detalleTitulo, oldName: nombreActual, isDetalle: true },
+          estadoActual
+        );
       });
     }
 
@@ -1751,23 +2036,16 @@ document.addEventListener("DOMContentLoaded", () => {
     editarBtn.innerHTML =
       '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/></svg>';
 
-    const switchEstadoBtn = document.createElement("button");
-    switchEstadoBtn.type = "button";
-    switchEstadoBtn.className =
-      "linea-tec-switch relative w-9 h-5 rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-sena/20";
-    switchEstadoBtn.setAttribute("aria-label", `Cambiar estado de ${nombreTecnologia}`);
-
-    const switchThumb = document.createElement("span");
-    switchThumb.className =
-      "absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white shadow-sm transition-transform";
-    switchEstadoBtn.appendChild(switchThumb);
+    const switchEstadoBtn = document.createElement("div");
+    switchEstadoBtn.className = "switch-sena";
+    switchEstadoBtn.setAttribute("data-nombre", nombreTecnologia);
     setSwitchState(switchEstadoBtn, true);
 
     editarBtn.addEventListener("click", () => abrirModalEdicionLinea(card, titleEl));
     switchEstadoBtn.addEventListener("click", () => manejarToggleLinea(switchEstadoBtn, titleEl));
 
     const controlsContainer = document.createElement("div");
-    controlsContainer.className = "linea-tec-controls flex items-center gap-1";
+    controlsContainer.className = "linea-tec-controls flex items-center gap-1 flex-shrink-0";
     controlsContainer.appendChild(editarBtn);
     controlsContainer.appendChild(switchEstadoBtn);
     controlsContainer.appendChild(perfilCounter);
@@ -1789,7 +2067,10 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   if (isListadoView && inputBuscarLinea) {
-    inputBuscarLinea.addEventListener("input", aplicarFiltroBusqueda);
+    inputBuscarLinea.addEventListener("input", () => {
+      paginaActual = 1;
+      aplicarFiltroBusqueda();
+    });
   }
 
   if (modals.createArea) {
@@ -1876,7 +2157,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
     try {
       const creado = await crearLineaBackend(payloadCrear);
-      const idCreado = String(creado?.id_linea || "").trim();
+      const nombreCreado = String(
+        creado?.nombre_linea
+        || creado?.data?.nombre_linea
+        || creado?.data?.nombreLinea
+        || nombreNuevaLinea
+      ).trim();
 
       // Sincroniza siempre desde backend tras crear para evitar desajustes visuales.
       if (isListadoView) {
@@ -1886,9 +2172,7 @@ document.addEventListener("DOMContentLoaded", () => {
       cerrarModal(modals.createModal);
       mostrarAlertaFinal({
         title: "Linea Creada",
-        message: idCreado
-          ? `La linea \"${nombreNuevaLinea}\" fue creada correctamente (ID ${idCreado}).`
-          : `La linea \"${nombreNuevaLinea}\" fue creada correctamente.`,
+        message: `La linea \"${nombreCreado}\" fue creada correctamente.`,
         color: "#39A900",
         seconds: 3,
       });
@@ -2054,6 +2338,28 @@ document.addEventListener("DOMContentLoaded", () => {
       proyeccion: getOptionValue(proyeccionesDisponibles[0]) || "",
     };
 
+    const areaId = String(modals.editArea.value || "").trim();
+    const programaId = String(modals.editPrograma.value || "").trim();
+    const etapaId = String(modals.editEtapa.value || "").trim();
+    const tendenciaId = String(modals.editTendencia.value || "").trim();
+    const proyeccionId = String(modals.editProyeccion.value || "").trim();
+
+    if (!areaId || !programaId || !etapaId || !tendenciaId || !proyeccionId) {
+      mostrarAlertaFinal({
+        title: "Datos incompletos",
+        message: "Debes completar Area, Programa, Etapa, Tendencia y Proyeccion para editar.",
+        color: "#e65100",
+        seconds: 3,
+      });
+      return;
+    }
+
+    const programaTexto = String(
+      modals.editPrograma.options?.[modals.editPrograma.selectedIndex]?.textContent || ""
+    ).trim();
+    const tendenciaTexto = getOptionLabelByValue(tendenciasEmergentesDisponibles, tendenciaId) || tendenciaId;
+    const etapaTexto = getOptionLabelByValue(etapasDisponibles, etapaId) || etapaId;
+
     const idLineaEditar = String(
       oldState.idLinea
       || lineaEnEdicion?.card?.dataset?.idLinea
@@ -2063,17 +2369,17 @@ document.addEventListener("DOMContentLoaded", () => {
     delete estadoLineas[lineaEnEdicion.oldName];
     estadoLineas[nuevoNombre] = {
       active: oldState.active,
-      area: getOptionLabelByValue(areasDisponibles, modals.editArea.value),
-      programaFormacion: modals.editPrograma.value,
-      tendencia: modals.editTendencia.value,
-      etapa: modals.editEtapa.value,
-      proyeccion: getOptionLabelByValue(proyeccionesDisponibles, modals.editProyeccion.value),
+      area: getOptionLabelByValue(areasDisponibles, areaId),
+      programaFormacion: programaTexto,
+      tendencia: tendenciaTexto,
+      etapa: etapaTexto,
+      proyeccion: getOptionLabelByValue(proyeccionesDisponibles, proyeccionId),
       idLinea: idLineaEditar,
-      idArea: modals.editArea.value,
-      idPrograma: modals.editPrograma.value,
-      idEtapa: modals.editEtapa.value,
-      idTendencia: modals.editTendencia.value,
-      idProyeccion: modals.editProyeccion.value,
+      idArea: areaId,
+      idPrograma: programaId,
+      idEtapa: etapaId,
+      idTendencia: tendenciaId,
+      idProyeccion: proyeccionId,
     };
 
     let nombreFinalEdicion = nuevoNombre;
@@ -2083,11 +2389,11 @@ document.addEventListener("DOMContentLoaded", () => {
         const payloadActualizar = {
           id_linea: idLineaEditar,
           nombre_linea: nuevoNombre,
-          id_area: modals.editArea.value,
-          id_programa: modals.editPrograma.value,
-          id_etapa: modals.editEtapa.value,
-          id_tendencia: modals.editTendencia.value,
-          id_proyeccion: modals.editProyeccion.value,
+          id_area: areaId,
+          id_programa: programaId,
+          id_etapa: etapaId,
+          id_tendencia: tendenciaId,
+          id_proyeccion: proyeccionId,
           estado: oldState.active ? 1 : 0,
         };
 
