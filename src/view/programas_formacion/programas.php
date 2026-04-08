@@ -7,10 +7,14 @@ include __DIR__ . '../../../includes/header.php';
 include __DIR__ . '/modal_deshabilitar_perfiles.php';
 include __DIR__ . '/modal_habilitar_perfiles.php';
 include __DIR__ . '/modal_habilitado_confirmacion.php';
-include __DIR__ . '/modal_confirmacion_deshabilitar_perfiles.php';
+include __DIR__ . '/modal_confirmacion_deshabilitar.php';
 include __DIR__ . '/modal_editar_programa.php';
 include __DIR__ . '/modal_crear_programa.php';
+include __DIR__ . '/modal_confirmacion_crear.php';
+include __DIR__ . '/modal_confirmacion_editar.php';
+include __DIR__ . '/modal_detalle_programa.php';
 ?>
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -51,13 +55,12 @@ include __DIR__ . '/modal_crear_programa.php';
             <p>Cargando programas...</p>
         </div>
     </div>
+
+    <div id="paginacion-container" class="mt-6"></div>
 </div>
 
-<script>
-    lucide.createIcons();
-</script>
+<script src="../../assets/js/programas/programas.js"></script>
 
-<script src="../../assets/js/programas.js"></script>
 </body>
 </html>
 <?php include __DIR__ . '../../../includes/footer.php'; ?>

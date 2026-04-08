@@ -34,7 +34,7 @@ include __DIR__ . '/modal_detalle_tendencia_act.php';
 
       <!-- TENDENCIAS ACTUALES CONTENT -->
       <div class="section-heading mb-6">
-        <h2 class="font-['Montserrat'] text-2xl font-bold text-sena-text-main">Tendencias Actuales</h2>
+        <h2 class="text-2xl font-bold text-sena-text-main">Tendencias Actuales</h2>
         <p class="text-sm text-sena-text-soft mt-1">Innovaciones tecnológicas emergentes que influyen en los perfiles y necesidades del sector productivo risaraldense.</p>
       </div>
 
@@ -62,39 +62,12 @@ include __DIR__ . '/modal_detalle_tendencia_act.php';
         </div>
       </div>
     </div>
+
+      <!-- Contenedor para la paginación -->
+    <div id="paginacion-container" class="hidden"></div>
+    
   </main>
 
-  <!-- Template para tarjeta de tendencia -->
-  <template id="template-tendencia">
-    <div class="tarjeta-tecnologia border border-sena-border rounded-lg bg-white p-4 hover:border-sena/30 hover:shadow-sm transition-all cursor-pointer">
-      <div class="flex items-start justify-between mb-2">
-        <div class="w-10 h-10 bg-sena-soft rounded-lg flex items-center justify-center flex-shrink-0">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 text-sena">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 0 1 3 19.875v-6.75ZM9.75 6.75h2.25c.621 0 1.125.504 1.125 1.125v12.75c0 .621-.504 1.125-1.125 1.125h-2.25A1.125 1.125 0 0 1 8.625 20.625V7.875c0-.621.504-1.125 1.125-1.125ZM16.5 3.75h2.25c.621 0 1.125.504 1.125 1.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25A1.125 1.125 0 0 1 15.375 20.625V4.875c0-.621.504-1.125 1.125-1.125Z" />
-          </svg>
-        </div>
-        <div class="flex items-center gap-1">
-          <button class="btn-editar-tendencia p-1.5 rounded-lg text-sena-text-soft hover:bg-sena-soft hover:text-sena transition-colors" title="Editar tendencia">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4">
-              <path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/>
-            </svg>
-          </button>
-          <div class="switch-sena" title="Activo"></div>
-        </div>
-      </div>
-      <h3 class="font-['Montserrat'] text-sm font-semibold text-sena-text-main mb-1"></h3>
-      <p class="text-xs text-sena-text-soft line-clamp-2"></p>
-    <div class="mt-2 text-xs text-sena-text-soft">
-      <hr class="my-1 border-sena-border mb-2">
-      <div class="flex items-center gap-2">
-        <span class="estado-bolita w-2 h-2 rounded-full flex-shrink-0"></span>
-        <span class="badge-area"></span>
-      </div>
-    </div>
-    </div>
-  </template>
-
-  
   <!-- Script de funcionalidad -->
   <script src="../../assets/js/tendencias_actuales/tendencias_actuales.js"></script>
 

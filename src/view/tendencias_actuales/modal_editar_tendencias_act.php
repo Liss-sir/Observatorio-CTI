@@ -17,15 +17,15 @@
 
         <!-- Header -->
         <div class="border-b border-sena-border px-6 py-4">
-          <h3 class="text-lg font-semibold text-sena-text-main">Editar Etapa de Desarrollo</h3>
-          <p class="mt-1 text-sm text-sena-text-soft">Modifica los datos de la etapa de desarrollo.</p>
+          <h3 class="text-lg font-semibold text-sena-text-main">Editar Tendencia Actual</h3>
+          <p class="mt-1 text-sm text-sena-text-soft">Modifica los datos de la Tendencia actual.</p>
         </div>
 
         <!-- Form -->
         <form id="form-editar-tendencia" class="px-6 py-4">
           <!-- Área (select) -->
           <div class="mb-4">
-            <label class="mb-1 block text-sm font-medium text-sena-text-main">Área <span class="text-red-500">*</span></label>
+            <label class="mb-1 block text-sm font-medium text-sena-text-main">Área</label>
             <div class="select-container">
               <select name="area" id="area-tendencia" class="custom-select w-full rounded-lg border border-sena-border px-3 py-2 text-sm text-sena-text-main focus:border-sena focus:ring-2 focus:ring-sena focus:ring-opacity-20 focus:outline-none">
                 <option value="">Selecciona un área</option>
@@ -47,21 +47,23 @@
 
           <!-- Nombre de la etapa (este es el campo "nombre" en la BD que equivale a la descripción en frontend) -->
           <div class="mb-2">
-            <label class="mb-1 block text-sm font-medium text-sena-text-main">Descripción <span class="text-red-500">*</span></label>
+            <label class="mb-1 block text-sm font-medium text-sena-text-main">Descripción</label>
             <textarea 
                 name="nombre" 
                 id="nombre-tendencia"
                 rows="4"  
-                placeholder="Describe la etapa de desarrollo..."
+                placeholder="Describe la Tendencia actual."
                 class="w-full rounded-lg border border-sena-border px-3 py-2 text-sm text-sena-text-main placeholder-sena-text-soft focus:border-sena focus:ring-2 focus:ring-sena focus:ring-opacity-20 focus:outline-none resize-none"></textarea>
           </div>
 
           
           <!-- Contador de caracteres -->
-          <div class="flex justify-between items-center gap-2 mb-4">
-            <span id="alerta-minimo-editar" class="text-xs text-red-500 hidden">⚠️ Mínimo 30 caracteres requerido</span>
-            <span id="contador-caracteres-editar" class="text-xs text-sena-text-soft ml-auto">0 / 30 caracteres</span>
+          <div class="flex justify-end items-center gap-2 mb-4">
+            <span id="contador-caracteres-editar" class="text-xs text-sena-text-soft">0 / 30 caracteres</span>
+            <span id="alerta-minimo-editar" class="text-xs text-sena-text-soft hidden">Mínimo 30 caracteres requerido</span>
           </div>
+
+
 
 
           <!-- Footer buttons -->
@@ -69,7 +71,7 @@
             <button type="button" class="cerrar-modal-editar rounded-lg border border-sena-border px-4 py-2 text-sm font-medium text-sena-text-main hover:bg-sena-soft transition-colors">
               Cancelar
             </button>
-            <button type="submit" id="btn-submit-editar-etapa" class="rounded-lg bg-sena px-4 py-2 text-sm font-medium text-white hover:bg-sena-hover transition-all">
+            <button type="submit" id="btn-submit-editar-etapa" class="rounded-lg bg-sena px-4 py-2 text-sm font-medium text-white hover:opacity-90 transition-opacity">
               Guardar Cambios
             </button>
           </div>

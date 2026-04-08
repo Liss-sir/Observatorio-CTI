@@ -11,12 +11,9 @@
         <!-- Header con icono de creación y verde SENA -->
         <div class="border-b border-sena-border px-6 py-5 flex items-center gap-4">
           <!-- Círculo con el verde SENA al 10% de opacidad -->
-          <div class="w-14 h-14 rounded-full flex items-center justify-center flex-shrink-0" style="background-color: rgba(57, 169, 0, 0.1);">
-            <!-- Icono de "plus" con círculo (para creación) -->
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" style="color: #39A900;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="12" cy="12" r="10"></circle>
-              <path d="M12 8v8"></path>
-              <path d="M8 12h8"></path>
+          <div class="w-12 h-12 rounded-full bg-[#39A900] bg-opacity-10 flex items-center justify-center flex-shrink-0">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 text-[#39A900]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <polyline points="20 6 9 17 4 12"></polyline>
             </svg>
           </div>
           <div>
@@ -28,7 +25,7 @@
         <!-- Content -->
         <div class="px-6 py-5">
           <p class="text-sm text-sena-text-soft leading-relaxed">
-            La tendencia actual <span class="font-semibold" style="color: #39A900;" id="nombre-tendencia-creada">"Desarrollador Full Stack Senior"</span> ha sido creada correctamente.
+            La tendencia actual <span class="text-sena"  id="nombre-tendencia-creada">"Desarrollador Full Stack Senior"</span> ha sido creada correctamente.
           </p>
           <div class="mt-4 flex items-center gap-2 text-xs text-sena-text-soft">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -40,8 +37,8 @@
         </div>
 
         <!-- Barra de progreso animada con verde SENA -->
-        <div class="h-2 bg-gray-100 w-full rounded-b-xl overflow-hidden">
-          <div id="progress-bar-creado" class="h-1 transition-all duration-[3000ms] ease-linear" style="width: 0%; background-color: #39A900;"></div>
+        <div class="h-1.5 bg-gray-100 w-full rounded-b-xl overflow-hidden">
+          <div id="progress-bar-creado" class="h-1 bg-[#39A900] transition-all duration-[3000ms] ease-linear" style="width: 0%;"></div>
         </div>
 
         <!-- Botón para cerrar manualmente -->

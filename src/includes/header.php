@@ -1,3 +1,4 @@
+<script src="../../assets/js/auth.js"></script>
 <?php
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
@@ -23,6 +24,9 @@ function nav_classes(string $target): string {
 }
 
 require_once __DIR__ . '/../helpers/permisos.php';
+
+// Obtener rol actual para mostrar/ocultar elementos
+$rolActual = obtenerRolActual();
 ?>
 
 <!DOCTYPE html>
@@ -35,8 +39,8 @@ require_once __DIR__ . '/../helpers/permisos.php';
   <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
 
-  <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
+
   <script>
     tailwind.config = {
       theme: {
@@ -151,7 +155,7 @@ require_once __DIR__ . '/../helpers/permisos.php';
   </style>
 </head>
 
-<body class="font-[Inter] antialiased bg-white text-gray-800">
+<body id="body" class="opacity-0 font-[Inter] antialiased bg-white text-gray-800 transition-opacity duration-200">
 
   <!-- HEADER -->
   <header class="sticky top-0 z-50 border-b border-gray-200 bg-white/95 backdrop-blur-sm shadow-sm">
@@ -167,45 +171,50 @@ require_once __DIR__ . '/../helpers/permisos.php';
       <!-- NAVEGACIÓN -->
       <nav class="flex items-center gap-1 justify-self-center whitespace-nowrap" id="main-nav">
         
-        <!-- PÚBLICO: Inicio -->
+        <!-- PÚBLICO: Inicio (todos pueden ver) -->
         <a href="../../view/landing/landing.php" class="<?= nav_classes('landing.php') ?>">
           Inicio
         </a>
 
-        <!-- PÚBLICO: Perfiles -->
+        <!-- PÚBLICO: Perfiles (todos pueden ver) -->
         <a href="../../view/perfiles/perfiles.php" class="<?= nav_classes('perfiles.php') ?>">
           Perfiles
         </a>
 
-        <!-- PÚBLICO: Menú Programas Formación -->
-        <div class="relative group menu-container <?= (in_array($current, ['programas.php','areas.php'])) ? 'bg-sena-soft text-sena-strong rounded-md' : '' ?>" id="menu-programas">
-          <div class="flex items-center rounded-md hover:bg-sena-soft hover:text-sena transition">
-            <a href="../../view/programas_formacion/programas.php" class="px-3 py-2 rounded-l-md text-sm font-medium text-gray-600 hover:text-sena">
-              Programas Formación
-            </a>
-            <button id="btn-menu-programas" type="button" class="btn-toggle px-2 py-2 rounded-r-md text-gray-400 hover:text-green-700" data-permiso="ver_menu_programas_admin">
-              <svg class="w-3 h-3 chevron transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-              </svg>
-            </button>
-          </div>
-          <div class="zona-seguridad hidden group-hover:block"></div>
-          <div id="submenu-programas" class="submenu hidden absolute left-0 mt-2 w-60 bg-white rounded-lg shadow-xl border border-gray-100 z-50 animate-fadeIn">
-            <a href="../../view/areas/areas.php" data-permiso="ver_areas" class="flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-sena-soft hover:text-sena">
-              <span class="w-8 h-8 bg-sena-soft rounded-lg flex items-center justify-center text-green-600">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
-                </svg>
-              </span>
-              <div>
-                <p class="font-medium">Áreas</p>
-                <p class="text-xs text-gray-500">Areas de conocimiento</p>
+        <?php if (tienePermiso('ver_programas')): ?>
+        <!-- PROTEGIDO: Menú Programas Formación -->
+          <div class="relative group menu-container <?= (in_array($current, ['programas.php','areas.php'])) ? 'bg-sena-soft text-sena-strong rounded-md' : '' ?>" id="menu-programas" data-permiso="ver_programas">
+              <div class="flex items-center rounded-md hover:bg-sena-soft hover:text-sena transition">
+                  <a href="../../view/programas_formacion/programas.php" class="px-3 py-2 rounded-l-md text-sm font-medium text-gray-600 hover:text-sena">
+                      Programas Formación
+                  </a>
+                  <button id="btn-menu-programas" type="button" class="btn-toggle px-2 py-2 rounded-r-md text-gray-400 hover:text-green-700" data-permiso="ver_menu_programas_admin">
+                      <svg class="w-3 h-3 chevron transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                      </svg>
+                  </button>
               </div>
-            </a>
+              <div class="zona-seguridad hidden group-hover:block"></div>
+              <div id="submenu-programas" class="submenu hidden absolute left-0 mt-2 w-60 bg-white rounded-lg shadow-xl border border-gray-100 z-50 animate-fadeIn">
+                  <?php if (tienePermiso('ver_areas')): ?>
+                  <a href="../../view/areas/areas.php" data-permiso="ver_areas" class="flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-sena-soft hover:text-sena">
+                      <span class="w-8 h-8 bg-sena-soft rounded-lg flex items-center justify-center text-green-600">
+                          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                          </svg>
+                      </span>
+                      <div>
+                          <p class="font-medium">Áreas</p>
+                          <p class="text-xs text-gray-500">Areas de conocimiento</p>
+                      </div>
+                  </a>
+                  <?php endif; ?>
+              </div>
           </div>
-        </div>
+        <?php endif; ?>
 
-        <!-- PÚBLICO: Menú Tendencias Actuales -->
+        <?php if (tienePermiso('ver_tendencias')): ?>
+        <!-- PROTEGIDO: Menú Tendencias Actuales -->
         <div class="relative group menu-container <?= (in_array($current, ['tendencias_actuales.php','tecnologias_emergentes.php','proyeccion_futuro.php'])) ? 'bg-sena-soft text-sena rounded-md' : '' ?>" id="menu-tendencias">
           <div class="flex items-center rounded-md hover:bg-sena-soft transition">
             <a href="../../view/tendencias_actuales/tendencias_actuales.php" class="px-3 py-2 rounded-l-md text-sm font-medium text-gray-600 hover:text-sena">
@@ -219,6 +228,7 @@ require_once __DIR__ . '/../helpers/permisos.php';
           </div>
           <div class="zona-seguridad hidden group-hover:block"></div>
           <div id="submenu-tendencias" class="submenu hidden absolute left-0 mt-2 w-60 bg-white rounded-lg shadow-xl border border-gray-100 z-50 animate-fadeIn">
+            <?php if (tienePermiso('ver_tecnologias_emergentes')): ?>
             <a href="../../view/tecnologias_emergentes/tecnologias_emergentes.php" class="flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-sena-soft hover:text-sena ">
               <span class="w-8 h-8 bg-sena-soft rounded-lg flex items-center justify-center text-green-600 flex-shrink-0">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -230,6 +240,8 @@ require_once __DIR__ . '/../helpers/permisos.php';
                 <p class="text-xs text-gray-500">Innovación y vanguardia</p>
               </div>
             </a>
+            <?php endif; ?>
+            <?php if (tienePermiso('ver_proyeccion_futuro')): ?>
             <div class="border-t border-gray-100 mx-3"></div>
             <a href="../../view/proyeccion_futuro/proyeccion_futuro.php" class="flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-sena-soft hover:text-sena rounded-lg">
               <span class="w-8 h-8 bg-sena-soft rounded-lg flex items-center justify-center text-green-600">
@@ -242,42 +254,55 @@ require_once __DIR__ . '/../helpers/permisos.php';
                 <p class="text-xs text-gray-500">Tendencias 2026-2036</p>
               </div>
             </a>
+            <?php endif; ?>
           </div>
         </div>
+        <?php endif; ?>
 
-        <!-- PÚBLICO: Líneas Tecnológicas -->
+        <?php if (tienePermiso('ver_lineas_tecnologicas')): ?>
+        <!-- PROTEGIDO: Líneas Tecnológicas -->
         <a href="../../view/lineas_tecnologicas/lineas_tecnologicas.php" class="<?= nav_classes('lineas_tecnologicas.php') ?>">
           Líneas Tecnológicas
         </a>
+        <?php endif; ?>
         
-        <!-- PÚBLICO: Sugerencias -->
+        <?php if (tienePermiso('ver_sugerencias')): ?>
+        <!-- PROTEGIDO: Sugerencias -->
         <a href="../../view/sugerencias/sugerencias.php" class="<?= nav_classes('sugerencias.php') ?>">
           Sugerencias
         </a>
+        <?php endif; ?>
 
+        <?php if (tienePermiso('gestionar_usuarios')): ?>
         <!-- ADMIN: Gestión Perfiles -->
         <a href="../../view/gestion_usuarios/gestion_usuarios.php" 
            class="<?= nav_classes('gestion_usuarios.php') ?>" 
            data-permiso="gestionar_usuarios">
           Gestión Usuarios
         </a>
+        <?php endif; ?>
 
+        <?php if (tienePermiso('ver_historial')): ?>
         <!-- ADMIN: Historial -->
         <a href="../../view/historial/historial.php" 
            class="<?= nav_classes('historial.php') ?>" 
            data-permiso="ver_historial">
           Historial
         </a>
+        <?php endif; ?>
 
+        <?php if (tienePermiso('ver_estadisticas')): ?>
         <a href="../../view/estadisticas/estadisticas.php" class="<?= nav_classes('estadisticas.php') ?>">
           Estadisticas
         </a>
+        <?php endif; ?>
 
       </nav>
 
       <!-- BOTONES / MENÚ USUARIO -->
       <div class="flex items-center gap-3">
         
+        <?php if (!estaAutenticado()): ?>
         <!-- INVITADO: Login/Register -->
         <div id="nav-guest" class="flex items-center gap-2">
           <a href="../../auth/login/login.php" class="px-4 py-2 text-sm font-medium text-green-700 border border-green-600 rounded-md hover:bg-green-50 transition">
@@ -287,9 +312,9 @@ require_once __DIR__ . '/../helpers/permisos.php';
             Registrarse
           </a>
         </div>
-
-        <!-- USUARIO AUTENTICADO (oculto inicialmente) -->
-        <div id="nav-user" class="hidden flex items-center gap-3">
+        <?php else: ?>
+        <!-- USUARIO AUTENTICADO -->
+        <div id="nav-user" class="flex items-center gap-3">
           
 
           <!-- Menú desplegable usuario -->
@@ -301,8 +326,8 @@ require_once __DIR__ . '/../helpers/permisos.php';
                 </svg>
               </div>
               <div class="text-left flex-shrink-0 min-w-0">
-                <p id="user-name" class="text-sm font-medium text-gray-900 leading-none">Usuario</p>
-                <p id="user-role" class="text-xs text-gray-500 mt-0.5">Rol</p>
+                <p id="user-name" class="text-sm font-medium text-gray-900 leading-none"><?= htmlspecialchars($_SESSION['nombre_empresa'] ?? 'Usuario') ?></p>
+                <p id="user-role" class="text-xs text-gray-500 mt-0.5"><?= htmlspecialchars($_SESSION['rol_nombre'] ?? 'Rol') ?></p>
               </div>
               <svg id="user-chevron" class="w-4 h-4 text-gray-400 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
@@ -338,6 +363,7 @@ require_once __DIR__ . '/../helpers/permisos.php';
             </div>
           </div>
         </div>
+        <?php endif; ?>
       </div>
 
     </div>
@@ -473,8 +499,11 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 </script>
 
-  <!-- Auth global -->
-  <script src="../../assets/js/auth.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('body').classList.remove('opacity-0');
+  });
+</script>
 
 </body>
 </html>

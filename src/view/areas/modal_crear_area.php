@@ -2,7 +2,7 @@
   <div class="fixed inset-0 bg-black bg-opacity-80 transition-opacity"></div>
   <div class="fixed inset-0 overflow-y-auto">
     <div class="flex min-h-full items-center justify-center p-4">
-      <div class="relative w-full max-w-2xl transform overflow-hidden rounded-xl border border-sena-border bg-white shadow-xl">
+      <div class="relative w-full max-w-2xl transform overflow-hidden rounded-xl border border-sena-border bg-white shadow-xl transform transition-all animate-modalFadeIn">
         <!-- HEADER -->
         <div class="flex justify-between items-center border-b px-6 py-4">
           <h3 class="font-semibold">Nueva Área</h3>
@@ -33,6 +33,10 @@
                         class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sena/20 focus:border-sena transition-all resize-none"
                         placeholder="Breve descripción de las funciones del área..."
                     ></textarea>
+                    <div class="flex justify-end items-center gap-2 mb-4 mt-1">
+                       <span id="contador-caracteres-crear" class="text-xs text-sena-text-soft">0 / 30</span>
+                      <span id="alerta-minimo-crear" class="text-xs text-red-500 hidden">Mínimo 30 caracteres requerido</span>
+                    </div>
                 </div>
           </div>
           <!-- FOOTER -->
@@ -45,3 +49,19 @@
     </div>
   </div>
 </div>
+
+<style>
+  @keyframes modalFadeIn {
+    from {
+      opacity: 0;
+      transform: scale(0.95) translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1) translateY(0);
+    }
+  }
+  .animate-modalFadeIn {
+    animation: modalFadeIn 0.3s ease-out;
+  }
+</style>

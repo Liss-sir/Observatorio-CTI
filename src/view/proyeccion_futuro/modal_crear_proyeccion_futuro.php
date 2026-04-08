@@ -47,12 +47,12 @@
 
           <!-- Nombre de la Proyección (antes descripción) - name="nombre" para que coincida con el backend -->
           <div class="mb-2">
-            <label class="mb-1 block text-sm font-medium text-sena-text-main">Nombre de la Proyección</label>
+            <label class="mb-1 block text-sm font-medium text-sena-text-main">Descripción</label>
             <textarea 
                 name="nombre" 
                 id="nombre-crear"
                 rows="4"  
-                placeholder="Describe la proyección a futuro..."
+                placeholder="Describe la proyección a futuro."
                 class="w-full rounded-lg border border-sena-border px-3 py-2 text-sm text-sena-text-main placeholder-sena-text-soft focus:border-sena focus:ring-2 focus:ring-sena focus:ring-opacity-20 focus:outline-none resize-none"></textarea>
           </div>
           

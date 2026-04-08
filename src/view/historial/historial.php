@@ -64,7 +64,7 @@ include __DIR__ . '../../../includes/header.php';
               </svg>
             </div>
             <div class="flex items-center gap-2 whitespace-nowrap">
-              <p class="text-2xl font-bold text-sena-text-main">4</p>
+              <p id="historial-stat-creaciones" class="text-2xl font-bold text-sena-text-main">0</p>
               <p class="text-sm text-sena-text-main">Creaciones</p>
             </div>
           </div>
@@ -78,7 +78,7 @@ include __DIR__ . '../../../includes/header.php';
               </svg>
             </div>
             <div class="flex items-center gap-2 whitespace-nowrap">
-              <p class="text-2xl font-bold text-sena-text-main">3</p>
+              <p id="historial-stat-ediciones" class="text-2xl font-bold text-sena-text-main">0</p>
               <p class="text-sm text-sena-text-main">Ediciones</p>
             </div>
           </div>
@@ -93,23 +93,8 @@ include __DIR__ . '../../../includes/header.php';
               </svg>
             </div>
             <div class="flex items-center gap-2 whitespace-nowrap">
-              <p class="text-2xl font-bold text-sena-text-main">1</p>
+              <p id="historial-stat-desactivaciones" class="text-2xl font-bold text-sena-text-main">0</p>
               <p class="text-sm text-sena-text-main">Desactivaciones</p>
-            </div>
-          </div>
-        </div>
-        <!-- Sesiones / Registros -->
-        <div class="min-w-[230px] flex-1 bg-white rounded-xl border border-sena-border px-4 h-20 flex items-center">
-          <div class="flex items-center gap-3 w-full justify-center">
-            <div class="w-10 h-10 shrink-0 rounded-full bg-sky-100 flex items-center justify-center">
-              <svg class="w-5 h-5 text-sky-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 1 1-8 0 4 4 0 0 1 8 0Z"/>
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14a7 7 0 0 0-7 7h14a7 7 0 0 0-7-7Z"/>
-              </svg>
-            </div>
-            <div class="flex items-center gap-2 whitespace-nowrap">
-              <p class="text-2xl font-bold text-sena-text-main">2</p>
-              <p class="text-sm text-sena-text-main">Sesiones / Registros</p>
             </div>
           </div>
         </div>
@@ -130,199 +115,27 @@ include __DIR__ . '../../../includes/header.php';
         </div>
         <div class="min-w-[200px]">
           <select id="historial-filter-modulo" class="linea-tec-select w-full rounded-lg border border-sena-border pl-3 pr-10 py-2 text-sm text-sena-text-main bg-white focus:border-sena focus:ring-2 focus:ring-sena/20 focus:outline-none">
-            <option>Todos los módulos...</option>
+            <option value="">Todos los módulos...</option>
           </select>
         </div>
         <div class="min-w-[170px]">
           <select id="historial-filter-rol" class="linea-tec-select w-full rounded-lg border border-sena-border pl-3 pr-10 py-2 text-sm text-sena-text-main bg-white focus:border-sena focus:ring-2 focus:ring-sena/20 focus:outline-none">
-            <option>Todos los roles...</option>
+            <option value="">Todos los roles...</option>
           </select>
         </div>
       </div>
-      <p id="historial-results" class="text-sm text-sena-text-soft m-4 mb-3">Mostrando 10 de 10 registros</p>
+      <p id="historial-results" class="text-sm text-sena-text-soft m-4 mb-3">Mostrando 0 de 0 registros</p>
 
-      <!-- Lunes, 23 De Febrero De 2026 -->
-      <div class="historial-day-section mb-4">
-        <div class="flex items-center gap-2 mb-3">
-          <svg class="w-5 h-5 text-sena-text-soft" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6l4 2"/>
-            <circle cx="12" cy="12" r="9" stroke-width="2"/>
-          </svg>
-          <span class="text-sm font-medium text-sena-text-main">Lunes, 23 De Febrero De 2026</span>
-          <span class="historial-day-count bg-sena text-white text-xs font-medium px-2 py-0.5 rounded-full">2</span>
-        </div>
-        <div class="bg-white rounded-xl border border-sena-border overflow-hidden">
-          <table class="w-full">
-            <thead>
-              <tr class="border-b border-sena-border">
-                <th class="text-left px-4 py-3 text-xs font-medium text-sena-text-soft uppercase tracking-wide">Hora</th>
-                <th class="text-left px-4 py-3 text-xs font-medium text-sena-text-soft uppercase tracking-wide">Usuario</th>
-                <th class="text-left px-4 py-3 text-xs font-medium text-sena-text-soft uppercase tracking-wide">Rol</th>
-                <th class="text-left px-4 py-3 text-xs font-medium text-sena-text-soft uppercase tracking-wide">Acción</th>
-                <th class="text-left px-4 py-3 text-xs font-medium text-sena-text-soft uppercase tracking-wide">Módulo</th>
-                <th class="text-left px-4 py-3 text-xs font-medium text-sena-text-soft uppercase tracking-wide">Detalle</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr class="border-b border-sena-border">
-                <td class="px-4 py-3 text-sm text-sena-text-soft">09:28</td>
-                <td class="px-4 py-3">
-                  <p class="text-sm font-medium text-sena-text-main">Administrador SENA</p>
-                  <p class="text-xs text-sena-text-soft">admin@sena.edu.co</p>
-                </td>
-                <td class="px-4 py-3 text-sm text-sena-text-main">Administrador</td>
-                <td class="px-4 py-3">
-                  <span class="inline-block bg-sena-soft text-sena-strong text-xs font-medium px-2.5 py-1 rounded-md">Creación</span>
-                </td>
-                <td class="px-4 py-3 text-sm text-sena-text-main">Perfil</td>
-                <td class="px-4 py-3 text-sm text-sena-text-main">Creo el perfil 'Desarrollador Full Stack Senior'</td>
-              </tr>
-              <tr>
-                <td class="px-4 py-3 text-sm text-sena-text-soft">09:15</td>
-                <td class="px-4 py-3">
-                  <p class="text-sm font-medium text-sena-text-main">Administrador SENA</p>
-                  <p class="text-xs text-sena-text-soft">admin@sena.edu.co</p>
-                </td>
-                <td class="px-4 py-3 text-sm text-sena-text-main">Administrador</td>
-                <td class="px-4 py-3">
-                  <span class="inline-block bg-sena-soft text-sena-strong text-xs font-medium px-2.5 py-1 rounded-md">Creación</span>
-                </td>
-                <td class="px-4 py-3 text-sm text-sena-text-main">Empresa</td>
-                <td class="px-4 py-3 text-sm text-sena-text-main">Creo la empresa 'TechColombia S.A.S.'</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
+      <div id="historial-list" class="space-y-4"></div>
 
-      <!-- Domingo, 22 De Febrero De 2026 -->
-      <div class="historial-day-section mb-4">
-        <div class="flex items-center gap-2 mb-3">
-          <svg class="w-5 h-5 text-sena-text-soft" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6l4 2"/>
-            <circle cx="12" cy="12" r="9" stroke-width="2"/>
-          </svg>
-          <span class="text-sm font-medium text-sena-text-main">Domingo, 22 De Febrero De 2026</span>
-          <span class="historial-day-count bg-sena text-white text-xs font-medium px-2 py-0.5 rounded-full">2</span>
-        </div>
-        <div class="bg-white rounded-xl border border-sena-border overflow-hidden">
-          <table class="w-full">
-            <thead>
-              <tr class="border-b border-sena-border">
-                <th class="text-left px-4 py-3 text-xs font-medium text-sena-text-soft uppercase tracking-wide">Hora</th>
-                <th class="text-left px-4 py-3 text-xs font-medium text-sena-text-soft uppercase tracking-wide">Usuario</th>
-                <th class="text-left px-4 py-3 text-xs font-medium text-sena-text-soft uppercase tracking-wide">Rol</th>
-                <th class="text-left px-4 py-3 text-xs font-medium text-sena-text-soft uppercase tracking-wide">Acción</th>
-                <th class="text-left px-4 py-3 text-xs font-medium text-sena-text-soft uppercase tracking-wide">Módulo</th>
-                <th class="text-left px-4 py-3 text-xs font-medium text-sena-text-soft uppercase tracking-wide">Detalle</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr class="border-b border-sena-border">
-                <td class="px-4 py-3 text-sm text-sena-text-soft">14:30</td>
-                <td class="px-4 py-3">
-                  <p class="text-sm font-medium text-sena-text-main">Carlos Mendoza</p>
-                  <p class="text-xs text-sena-text-soft">carlos@techcolombia.co</p>
-                </td>
-                <td class="px-4 py-3 text-sm text-sena-text-main">Empresa</td>
-                <td class="px-4 py-3">
-                  <span class="inline-block bg-amber-100 text-amber-700 text-xs font-medium px-2.5 py-1 rounded-md">Edición</span>
-                </td>
-                <td class="px-4 py-3 text-sm text-sena-text-main">Perfil</td>
-                <td class="px-4 py-3 text-sm text-sena-text-main">Editó el perfil 'Analista de Datos'</td>
-              </tr>
-              <tr>
-                <td class="px-4 py-3 text-sm text-sena-text-soft">11:45</td>
-                <td class="px-4 py-3">
-                  <p class="text-sm font-medium text-sena-text-main">Administrador SENA</p>
-                  <p class="text-xs text-sena-text-soft">admin@sena.edu.co</p>
-                </td>
-                <td class="px-4 py-3 text-sm text-sena-text-main">Administrador</td>
-                <td class="px-4 py-3">
-                  <span class="inline-block bg-sena-soft text-sena-strong text-xs font-medium px-2.5 py-1 rounded-md">Creación</span>
-                </td>
-                <td class="px-4 py-3">
-                  <p class="text-sm text-sena-text-main">Linea</p>
-                  <p class="text-xs text-sena-text-soft">Tecnológica</p>
-                </td>
-                <td class="px-4 py-3 text-sm text-sena-text-main">Creo la linea tecnológica 'Inteligencia Artificial Avanzada'</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      <!-- Sábado, 21 De Febrero De 2026 -->
-      <div class="historial-day-section mb-4">
-        <div class="flex items-center gap-2 mb-3">
-          <svg class="w-5 h-5 text-sena-text-soft" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6l4 2"/>
-            <circle cx="12" cy="12" r="9" stroke-width="2"/>
-          </svg>
-          <span class="text-sm font-medium text-sena-text-main">Sábado, 21 De Febrero De 2026</span>
-          <span class="historial-day-count bg-sena text-white text-xs font-medium px-2 py-0.5 rounded-full">3</span>
-        </div>
-        <div class="bg-white rounded-xl border border-sena-border overflow-hidden">
-          <table class="w-full">
-            <thead>
-              <tr class="border-b border-sena-border">
-                <th class="text-left px-4 py-3 text-xs font-medium text-sena-text-soft uppercase tracking-wide">Hora</th>
-                <th class="text-left px-4 py-3 text-xs font-medium text-sena-text-soft uppercase tracking-wide">Usuario</th>
-                <th class="text-left px-4 py-3 text-xs font-medium text-sena-text-soft uppercase tracking-wide">Rol</th>
-                <th class="text-left px-4 py-3 text-xs font-medium text-sena-text-soft uppercase tracking-wide">Acción</th>
-                <th class="text-left px-4 py-3 text-xs font-medium text-sena-text-soft uppercase tracking-wide">Módulo</th>
-                <th class="text-left px-4 py-3 text-xs font-medium text-sena-text-soft uppercase tracking-wide">Detalle</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr class="border-b border-sena-border">
-                <td class="px-4 py-3 text-sm text-sena-text-soft">16:42</td>
-                <td class="px-4 py-3">
-                  <p class="text-sm font-medium text-sena-text-main">María Lopez</p>
-                  <p class="text-xs text-sena-text-soft">maria.lopez@gmail.com</p>
-                </td>
-                <td class="px-4 py-3 text-sm text-sena-text-main">Persona</td>
-                <td class="px-4 py-3">
-                  <span class="inline-block bg-sky-100 text-sky-700 text-xs font-medium px-2.5 py-1 rounded-md">Registro</span>
-                </td>
-                <td class="px-4 py-3 text-sm text-sena-text-main">Usuario</td>
-                <td class="px-4 py-3 text-sm text-sena-text-main">Se registró como Persona Natural - Soluciones Digitales ML</td>
-              </tr>
-              <tr class="border-b border-sena-border">
-                <td class="px-4 py-3 text-sm text-sena-text-soft">14:28</td>
-                <td class="px-4 py-3">
-                  <p class="text-sm font-medium text-sena-text-main">Administrador SENA</p>
-                  <p class="text-xs text-sena-text-soft">admin@sena.edu.co</p>
-                </td>
-                <td class="px-4 py-3 text-sm text-sena-text-main">Administrador</td>
-                <td class="px-4 py-3">
-                  <span class="inline-block bg-rose-100 text-rose-700 text-xs font-medium px-2.5 py-1 rounded-md">Desactivación</span>
-                </td>
-                <td class="px-4 py-3 text-sm text-sena-text-main">Perfil</td>
-                <td class="px-4 py-3 text-sm text-sena-text-main">Desactivó el perfil 'Técnico en Redes'</td>
-              </tr>
-              <tr>
-                <td class="px-4 py-3 text-sm text-sena-text-soft">18:15</td>
-                <td class="px-4 py-3">
-                  <p class="text-sm font-medium text-sena-text-main">Carlos Mendoza</p>
-                  <p class="text-xs text-sena-text-soft">carlos@techcolombia.co</p>
-                </td>
-                <td class="px-4 py-3 text-sm text-sena-text-main">Empresa</td>
-                <td class="px-4 py-3">
-                  <span class="inline-block bg-amber-100 text-amber-700 text-xs font-medium px-2.5 py-1 rounded-md">Edición</span>
-                </td>
-                <td class="px-4 py-3 text-sm text-sena-text-main">Empresa</td>
-                <td class="px-4 py-3 text-sm text-sena-text-main">Editó los datos de la empresa 'TechColombia S.A.S.'</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+      <div id="historial-empty-state" class="bg-white rounded-xl border border-sena-border p-8 text-center">
+        <p class="text-sm text-sena-text-soft">No hay acciones registradas por el momento.</p>
       </div>
 
     </div>
   </main>
 
-  <script src="../../assets/js/historial.js"></script>
+  <script src="../../assets/js/historial/historial.js"></script>
 
 <?php include __DIR__ . '../../../includes/footer.php'; ?>
 </body>

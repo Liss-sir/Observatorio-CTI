@@ -691,7 +691,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                 <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
                             </svg>
                         </div>
-                        <h3 class="font-['Montserrat'] text-lg font-semibold text-sena-text-main mb-2">No se encontraron resultados</h3>
+                        <h3 class=" text-lg font-semibold text-sena-text-main mb-2">No se encontraron resultados</h3>
                         <p class="text-sm text-sena-text-soft text-center max-w-sm">
                             ${filtrarDesactivadosActivo ? 'No hay tecnologías deshabilitadas.' : `No hay tecnologías que coincidan con "${terminoBusqueda}".`}
                         </p>
@@ -701,11 +701,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 contenedor.innerHTML = `
                     <div class="w-full flex flex-col items-center justify-center py-20 px-4 bg-white border border-gray-200 rounded-xl">
                         <div class="w-20 h-20 mb-5 bg-sena-soft rounded-2xl flex items-center justify-center">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10 text-sena" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                                <path d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 0 1 3 19.875v-6.75ZM9.75 6.75h2.25c.621 0 1.125.504 1.125 1.125v12.75c0 .621-.504 1.125-1.125 1.125h-2.25A1.125 1.125 0 0 1 8.625 20.625V7.875c0-.621.504-1.125 1.125-1.125ZM16.5 3.75h2.25c.621 0 1.125.504 1.125 1.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25A1.125 1.125 0 0 1 15.375 20.625V4.875c0-.621.504-1.125 1.125-1.125Z"/>
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-10 h-10 text-sena">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18L9 11.25l4.306 4.307a11.95 11.95 0 015.814-5.519l2.74-1.22m0 0l-5.94-2.28m5.94 2.28l-2.28 5.941" />
                             </svg>
                         </div>
-                        <h3 class="font-['Montserrat'] text-lg font-semibold text-sena-text-main mb-2">No hay tecnologías emergentes</h3>
+                        <h3 class=" text-lg font-semibold text-sena-text-main mb-2">No hay tecnologías emergentes</h3>
                         <p class="text-sm text-sena-text-soft text-center max-w-sm mb-6">Comienza creando tu primera tecnología emergente.</p>
                         <button id="btn-crear-desde-empty" class="flex items-center gap-2 px-5 py-2.5 text-sm font-medium text-white bg-sena rounded-lg hover:opacity-90 transition-opacity shadow-sm">
                             <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14"/><path d="M12 5v14"/></svg>

@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const cerrarModalDeshabilitarBtns = document.querySelectorAll('.cerrar-modal-deshabilitar');
     const cerrarModalDeshabilitadoBtns = document.querySelectorAll('.cerrar-modal-deshabilitado');
     const cerrarModalHabilitarBtns = document.querySelectorAll('.cerrar-modal-habilitar');
-    const cerrarModalHabilitadoBtns = document.querySelectorAll('.cerrar-modal-habilitado');
+    const cerrarModalHabilitadoBtns = document.querySelectorAll('.cerrar-modal-habilitado-confirmacion');
     const cerrarModalCrearBtns = document.querySelectorAll('.cerrar-modal-crear');
     const cerrarModalCreadoBtns = document.querySelectorAll('.cerrar-modal-creado');
     const cerrarModalDetalleBtns = document.querySelectorAll('.cerrar-modal-detalle');
@@ -35,6 +35,82 @@ document.addEventListener('DOMContentLoaded', function() {
     let timeoutDeshabilitado = null, intervalContadorDeshabilitado = null;
     let timeoutHabilitado = null, intervalContadorHabilitado = null;
     let timeoutCreado = null, intervalContadorCreado = null;
+
+    // ===== FUNCIÓN PARA MOSTRAR ALERTAS BONITAS (TOASTS) =====
+    function mostrarToastValidacion(mensaje, tipo = 'warning') {
+        // Si no existe el contenedor, lo crea
+        let toastContainer = document.getElementById('toast-container');
+        if (!toastContainer) {
+            toastContainer = document.createElement('div');
+            toastContainer.id = 'toast-container';
+            toastContainer.className = 'fixed top-4 right-4 z-[99999] flex flex-col gap-3 pointer-events-none';
+            document.body.appendChild(toastContainer);
+        }
+
+        const toastId = 'toast-' + Date.now();
+        const toast = document.createElement('div');
+        
+        // Colores según el tipo (warning, error, success)
+        let bgClass = tipo === 'error' ? 'bg-red-50 border-red-200 text-red-800' : 
+                    tipo === 'success' ? 'bg-green-50 border-green-200 text-green-800' : 'bg-yellow-50 border-yellow-200 text-yellow-800';
+        
+        toast.id = toastId;
+        toast.className = `pointer-events-auto flex items-start gap-3 p-4 rounded-lg border shadow-lg ${bgClass} animate-fade-in-down`;
+        toast.innerHTML = `
+            <div class="flex-shrink-0 font-bold">${tipo === 'error' ? '✕' : tipo === 'success' ? '✓' : '⚠'}</div>
+            <div class="text-sm">${mensaje}</div>
+        `;
+        
+        toastContainer.appendChild(toast);
+        setTimeout(() => { toast.remove(); }, 3000);
+    }
+
+    // ===== VALIDACIÓN DE DESCRIPCIÓN =====
+    const MIN_DESCRIPCION_LENGTH = 30;
+
+    function validarDescripcion(descripcion) {
+        return descripcion && descripcion.length >= MIN_DESCRIPCION_LENGTH;
+    }
+
+    // ===== ACTUALIZAR CONTADOR EN CREACIÓN =====
+    function actualizarContadorCrear() {
+        const textarea = document.getElementById('descripcion-nueva');
+        const contador = document.getElementById('contador-caracteres-crear');
+        const alerta = document.getElementById('alerta-minimo-crear');
+        
+        if (textarea && contador) {
+            const longitud = textarea.value.length;
+            contador.textContent = `${longitud} / ${MIN_DESCRIPCION_LENGTH} caracteres`;
+            
+            if (longitud >= MIN_DESCRIPCION_LENGTH) {
+                contador.className = 'text-xs text-sena';
+                if (alerta) alerta.classList.add('hidden');
+            } else {
+                contador.className = 'text-xs text-red-500';
+                if (alerta) alerta.classList.remove('hidden');
+            }
+        }
+    }
+
+    // ===== ACTUALIZAR CONTADOR EN EDICIÓN =====
+    function actualizarContadorEditar() {
+        const textarea = document.getElementById('descripcion-area');
+        const contador = document.getElementById('contador-caracteres-editar');
+        const alerta = document.getElementById('alerta-minimo-editar');
+        
+        if (textarea && contador) {
+            const longitud = textarea.value.length;
+            contador.textContent = `${longitud} / ${MIN_DESCRIPCION_LENGTH} caracteres`;
+            
+            if (longitud >= MIN_DESCRIPCION_LENGTH) {
+                contador.className = 'text-xs text-sena';
+                if (alerta) alerta.classList.add('hidden');
+            } else {
+                contador.className = 'text-xs text-red-500';
+                if (alerta) alerta.classList.remove('hidden');
+            }
+        }
+    }
 
     // ===== 1. CARGAR DATOS =====
     async function cargarAreas() {
@@ -142,12 +218,53 @@ document.addEventListener('DOMContentLoaded', function() {
                         if (result.data.length === 0) {
                             // No hay resultados
                             if (gridAreas) {
-                                gridAreas.innerHTML = '<div class="col-span-full text-center py-10 text-gray-500">No se encontraron áreas con ese término.</div>';
+                                const buscador = document.getElementById("buscador-areas");
+                                const hayBusqueda = buscador && buscador.value.trim().length > 0;
+                                const textoBusqueda = document.getElementById('buscador-areas')?.value?.toLowerCase()?.trim() || '';
+
+                                if (hayBusqueda) {
+                                    // ✅ Mensaje: No se encontraron resultados
+                                    gridAreas.innerHTML = `
+                                        <div class="col-span-full flex flex-col items-center justify-center py-10 px-4 bg-white border border-gray-200 rounded-xl">
+                                            <div class="w-20 h-20 mb-5 bg-sena-soft rounded-full flex items-center justify-center">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10 text-sena" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                                    <circle cx="11" cy="11" r="8"></circle>
+                                                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                                                </svg>
+                                            </div>
+                                            <h3 class="text-lg font-semibold text-gray-800 mb-2">No se encontraron resultados</h3>
+                                            <p class="text-sm text-gray-500 text-center max-w-sm">No hay áreas que coincidan con "${textoBusqueda}".</p>
+                                        </div>
+                                    `;
+                                }else {
+                                // ✅ Mensaje: No hay registros
+                                gridAreas.innerHTML = `
+                                    <div class="col-span-full flex flex-col items-center justify-center py-10 px-4 bg-white border border-gray-200 rounded-xl">
+                                        <div class="w-20 h-20 mb-5 bg-sena-soft rounded-full flex items-center justify-center">
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-10 h-10 text-sena">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12.75V12A2.25 2.25 0 014.5 9.75h15A2.25 2.25 0 0121.75 12v.75m-8.69-6.44l-2.12-2.12a1.5 1.5 0 00-1.061-.44H4.5A2.25 2.25 0 002.25 6v12a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9a2.25 2.25 0 00-2.25-2.25h-5.379a1.5 1.5 0 01-1.06-.44z" />
+                                            </svg>
+                                        </div>
+                                        <h3 class="text-lg font-semibold text-gray-800 mb-2">No hay áreas registradas</h3>
+                                        <p class="text-sm text-gray-500 text-center max-w-sm mb-6">Comienza creando tu primera área.</p>
+                                        <button id="btn-crear-desde-empty" class="flex items-center gap-2 px-5 py-2.5 text-sm font-medium text-white bg-sena rounded-lg hover:opacity-90 transition-opacity shadow-sm">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                                <path d="M12 4v16m8-8H4"></path>
+                                            </svg>
+                                            Crear primera área
+                                        </button>
+                                    </div>
+                                `;
+                                }
+                                const btnEmpty = document.getElementById('btn-crear-desde-empty');
+                                if (btnEmpty) btnEmpty.addEventListener('click', () => {
+                                    modalCrear.classList.remove('hidden');
+                                });
                             }
                         } else {
                             // Renderizar resultados
                             renderizarAreas(result.data);
-                        }
+                        } 
                     } else {
                         console.error('Estructura de respuesta inesperada:', result);
                         if (gridAreas) {
@@ -203,7 +320,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 const nombreArea = card.querySelector('h3').textContent;
                 
                 if (this.classList.contains('active')) {
-                    const span = modalDeshabilitar.querySelector('span.font-medium');
+                    const span = modalDeshabilitar.querySelector('span.font-bold');
                     if(span) span.textContent = ` "${nombreArea} "`;
                     modalDeshabilitar.setAttribute('data-switch-id', idArea);
                     abrirModal(modalDeshabilitar);
@@ -226,7 +343,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 const descripcionArea = this.querySelector('p').textContent.trim();
                 const switchEl = this.querySelector('.switch-sena');
                 const estadoArea = switchEl.classList.contains('active') ? 'Activo' : 'Inactivo';
-                const colorEstado = switchEl.classList.contains('active') ? '#39A900' : '#9ca3af';
+                const colorEstado = switchEl.classList.contains('active') ? '#39A900' : '#787878';
                  
                 document.getElementById('detalle-titulo').textContent = `Detalle de: ${nombreArea}`;
                 document.getElementById('detalle-nombre').textContent = nombreArea;
@@ -305,59 +422,48 @@ document.addEventListener('DOMContentLoaded', function() {
         formCrear.addEventListener('submit', async function(e) {
             e.preventDefault();
             const btn = this.querySelector('button[type="submit"]');
-            const oldText = btn ? btn.textContent : 'Guardar';
-            if(btn) { btn.disabled = true; btn.textContent = 'Guardando...'; }
+            
+            const nombreVal = document.getElementById('area-nueva').value.trim();
+            const descVal = document.getElementById('descripcion-nueva').value.trim();
 
-            // Obtener valores directamente de los inputs por ID para evitar errores de name
-            const nombreVal = document.getElementById('area-nueva')?.value || document.querySelector('input[name="area"]')?.value;
-            const descVal = document.getElementById('descripcion-nueva')?.value || document.querySelector('textarea[name="descripcion"]')?.value;
-
-            // Validación básica
-            if (!nombreVal || nombreVal.trim() === '') {
-                alert('El nombre del área es obligatorio');
-                if(btn) { btn.disabled = false; btn.textContent = oldText; }
+            if (!nombreVal) {
+                mostrarToastValidacion('El nombre del área es obligatorio', 'warning');
+                return;
+            }
+            if (!validarDescripcion(descVal)) {
+                mostrarToastValidacion(`La descripción debe tener al menos ${MIN_DESCRIPCION_LENGTH} caracteres`, 'warning');
                 return;
             }
 
-            const data = {
-                nombre_area: nombreVal.trim(),
-                descripcion_area: descVal ? descVal.trim() : ''
-            };
-
-            console.log('Enviando datos:', data); // Para depurar
+            const oldText = btn.textContent;
+            btn.disabled = true; btn.textContent = 'Guardando...';
 
             try {
-                const res = await fetch(`${API_URL}?accion=crear`, { 
-                    method: 'POST', 
-                    headers: { 'Content-Type': 'application/json' }, 
-                    body: JSON.stringify(data) 
+                const res = await fetch(`${API_URL}?accion=crear`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ nombre_area: nombreVal, descripcion_area: descVal })
                 });
-                
-                // Leer respuesta texto primero para ver errores de PHP si los hay
-                const textResponse = await res.text();
-                console.log('Respuesta raw:', textResponse);
-                
-                let result;
-                try {
-                    result = JSON.parse(textResponse);
-                } catch (e) {
-                    throw new Error('La respuesta no es JSON válido: ' + textResponse);
-                }
-
-                if(result.success) {
+                const result = await res.json();
+                if (result.success) {
                     cerrarModal(modalCrear);
-                    mostrarModalCreado(data.nombre_area);
+                    mostrarModalCreado(nombreVal);
                     cargarAreas();
                     this.reset();
+                    if(document.getElementById('contador-caracteres-crear')) document.getElementById('contador-caracteres-crear').textContent = `0 / ${MIN_DESCRIPCION_LENGTH}`;
                 } else {
-                    alert(result.error || result.message || 'Error desconocido al crear');
+                    mostrarToastValidacion(result.error || 'Error desconocido', 'error');
                 }
-            } catch(err) { 
-                console.error(err); 
-                alert('Error de conexión: ' + err.message); 
+            } catch (err) {
+                mostrarToastValidacion('Error de conexión', 'error');
+            } finally {
+                btn.disabled = false; btn.textContent = oldText;
             }
-            finally { if(btn) { btn.disabled = false; btn.textContent = oldText; } }
         });
+        
+        // Listeners contadores creación
+        const descCrear = document.getElementById('descripcion-nueva');
+        if (descCrear) descCrear.addEventListener('input', actualizarContadorCrear);
     }
 
     // 2. EDITAR
@@ -366,21 +472,27 @@ document.addEventListener('DOMContentLoaded', function() {
         formEditar.addEventListener('submit', async function(e) {
             e.preventDefault();
             const idArea = modalEditar ? modalEditar.getAttribute('data-card-id') : null;
-            if(!idArea) return alert("Error: ID no encontrado");
+            if (!idArea) return;
 
             const btn = this.querySelector('button[type="submit"]');
-            const oldText = btn ? btn.textContent : 'Guardar Cambios';
-            if(btn) { btn.disabled = true; btn.textContent = 'Actualizando...'; }
+            const oldText = btn.textContent;
 
-            const nombreVal = document.getElementById('nombre-area')?.value || '';
-            const descVal = document.getElementById('descripcion-area')?.value || '';
-            const estadoVal = document.getElementById('estado-area')?.value || 'activo';
+            const nombreVal = document.getElementById('nombre-area').value.trim();
+            const descVal = document.getElementById('descripcion-area').value.trim();
+
+            if (!nombreVal) {
+                mostrarToastValidacion('El nombre del área es obligatorio', 'warning');
+                return;
+            }
+            if (!validarDescripcion(descVal)) {
+                mostrarToastValidacion(`La descripción debe tener al menos ${MIN_DESCRIPCION_LENGTH} caracteres`, 'warning');
+                return;
+            }
 
             const data = {
                 id_area: idArea,
                 nombre_area: nombreVal,
                 descripcion_area: descVal,
-                estado: estadoVal === 'activo' ? 1 : 0
             };
 
             try {
@@ -392,21 +504,23 @@ document.addEventListener('DOMContentLoaded', function() {
                     mostrarModalEditado(data.nombre_area);
                     cargarAreas();
                 } else {
-                    alert(result.message || result.error);
+                   mostrarToastValidacion(result.message || result.error);
                 }
             } catch(err) { 
                 console.error(err); 
-                alert('Error al conectar con el servidor'); 
+                mostrarToastValidacion('Error al conectar con el servidor'); 
             }
-            finally { if(btn) { btn.disabled = false; btn.textContent = oldText; } }
         });
+
+        const descEditar = document.getElementById('descripcion-area');
+        if (descEditar) descEditar.addEventListener('input', actualizarContadorEditar);
     }
 
     // 3. DESHABILITAR
     if (btnConfirmarDeshabilitar) {
         btnConfirmarDeshabilitar.addEventListener('click', async function() {
             const id = modalDeshabilitar ? modalDeshabilitar.getAttribute('data-switch-id') : null;
-            const span = modalDeshabilitar ? modalDeshabilitar.querySelector('span.font-medium') : null;
+            const span = modalDeshabilitar ? modalDeshabilitar.querySelector('span.font-bold') : null;
             const nombre = span ? span.textContent.replace(/"/g,'').trim() : '';
             if(!id) return;
             
@@ -417,7 +531,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     cerrarModal(modalDeshabilitar);
                     if(nombre) mostrarModalDeshabilitado(nombre);
                     cargarAreas();
-                } else alert(result.error);
+                } else mostrarToastValidacion(result.error);
             } catch(err) { console.error(err); }
         });
     }
@@ -436,7 +550,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     cerrarModal(modalHabilitar);
                     if(nombre) mostrarModalHabilitado(nombre);
                     cargarAreas();
-                } else alert(result.error);
+                } else mostrarToastValidacion(result.error);
             } catch(err) { console.error(err); }
         });
     }
@@ -486,6 +600,31 @@ document.addEventListener('DOMContentLoaded', function() {
             const form = document.getElementById('form-nueva-area');
             if(form) form.reset();
             abrirModal(modalCrear);
+        });
+    }
+
+    // ===== LÓGICA DEL CONTADOR DE CARACTERES =====
+    const descCrear = document.getElementById('descripcion-nueva');
+    const contadorCrear = document.getElementById('contador-caracteres-crear'); // Asegúrate que este ID exista en tu HTML
+    const descEditar = document.getElementById('descripcion-area');
+    const contadorEditar = document.getElementById('contador-caracteres-editar'); // Asegúrate que este ID exista en tu HTML
+
+    if (descCrear) {
+        descCrear.addEventListener('input', function() {
+            const len = this.value.length;
+            if (contadorCrear) contadorCrear.textContent = `${len} / 30 caracteres`;
+            // Cambia color si es válido o inválido
+            if (len >= 30) contadorCrear.classList.replace('text-red-500', 'text-green-600');
+            else contadorCrear.classList.replace('text-green-600', 'text-red-500');
+        });
+    }
+
+    if (descEditar) {
+        descEditar.addEventListener('input', function() {
+            const len = this.value.length;
+            if (contadorEditar) contadorEditar.textContent = `${len} / 30 caracteres`;
+            if (len >= 30) contadorEditar.classList.replace('text-red-500', 'text-green-600');
+            else contadorEditar.classList.replace('text-green-600', 'text-red-500');
         });
     }
 

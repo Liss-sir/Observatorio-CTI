@@ -211,6 +211,10 @@
                         Cargando...
                     </span>
                 </button>
+                <a href="../../auth/login/rec_contra.php"  
+                    class="block text-sena hover:text-sena-strong transition">
+                        Olvidaste tu contraseña?
+                </a>
             </form>
 
             <!-- Links -->
@@ -232,7 +236,6 @@
     </div>
 </div>
 
-<!-- JavaScript separado -->
 <script src="../../assets/js/login.js"></script>
 
 </body>

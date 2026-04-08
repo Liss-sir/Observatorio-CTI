@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 // filepath: c:\wamp64\www\Observatorio-CTI\src\view\tendencias\tecnologias_emergentes.php
 include __DIR__ . '../../../includes/header.php';
 ?>
@@ -13,6 +13,7 @@ include __DIR__ . '../../../includes/header.php';
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="../../../assets/css/output.css">
   <link rel="stylesheet" href="../../assets/css/globals.css">
+  <link rel="stylesheet" href="../../assets/css/style_toast_alert.css">
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="font-['Inter'] text-sena-text-main antialiased min-h-screen flex flex-col">
@@ -44,268 +45,49 @@ include __DIR__ . '../../../includes/header.php';
       </p>
 
       <!-- Cards Grid -->
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-
-        <!-- Card 1: Computacion en la Nube -->
-        <div class="tarjeta-tecnologia bg-white border border-sena-border rounded-xl p-6 flex flex-col gap-3">
-          <div class="flex justify-between items-start">
-            <div class="w-11 h-11 bg-sena-soft rounded-xl flex items-center justify-center">
-              <svg class="w-5 h-5 text-sena-strong" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 0 1 6 3.75h2.25A2.25 2.25 0 0 1 10.5 6v2.25a2.25 2.25 0 0 1-2.25 2.25H6a2.25 2.25 0 0 1-2.25-2.25V6ZM3.75 15.75A2.25 2.25 0 0 1 6 13.5h2.25a2.25 2.25 0 0 1 2.25 2.25V18a2.25 2.25 0 0 1-2.25 2.25H6A2.25 2.25 0 0 1 3.75 18v-2.25ZM13.5 6a2.25 2.25 0 0 1 2.25-2.25H18A2.25 2.25 0 0 1 20.25 6v2.25A2.25 2.25 0 0 1 18 10.5h-2.25a2.25 2.25 0 0 1-2.25-2.25V6ZM13.5 15.75a2.25 2.25 0 0 1 2.25-2.25H18a2.25 2.25 0 0 1 2.25 2.25V18A2.25 2.25 0 0 1 18 20.25h-2.25a2.25 2.25 0 0 1-2.25-2.25v-2.25Z" />
-              </svg>
-            </div>
-            <div class="flex items-center gap-1 shrink-0">
-              <button type="button" aria-label="Editar linea" class="p-1.5 rounded-lg text-sena-text-soft hover:bg-sena-soft hover:text-sena transition-colors">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z" />
-                </svg>
-              </button>
-              <button type="button" aria-label="Cambiar estado" class="linea-tec-switch relative inline-flex w-9 h-5 items-center rounded-full bg-sena transition-colors">
-                <span class="absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white shadow-sm transition-transform"></span>
-              </button>
-            </div>
-          </div>
-          <h3 class="font-['Montserrat'] text-base font-semibold text-sena-text-main leading-snug">Computacion en la Nube</h3>
-          <p class="text-sm text-sena-text-soft">4 vigentes &middot; 2 lineas &middot; 4 perfiles</p>
-          <div class="flex flex-wrap gap-2">
-            <span class="text-xs text-sena-strong bg-sena-soft rounded-full px-2.5 py-0.5">Tecnologias de la</span>
-            <span class="text-xs text-sena-strong bg-sena-soft rounded-full px-2.5 py-0.5">Servicios y Gestion</span>
-          </div>
-          <a href="#" class="text-sm text-sena-strong font-medium mt-auto inline-flex items-center gap-1 hover:underline">
-            Ver perfiles &rarr;
-          </a>
+      <div id="lineas-cards-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+        <div class="col-span-full text-center py-10 text-gray-500" id="lineas-loading-state">
+          <svg class="w-8 h-8 mx-auto mb-2 animate-spin text-sena" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4.93 4.93a10 10 0 1 1-1.42 1.42" />
+          </svg>
+          <p>Cargando lineas...</p>
         </div>
+      </div>
 
-        <!-- Card 2: Ciberseguridad Avanzada -->
-        <div class="tarjeta-tecnologia bg-white border border-sena-border rounded-xl p-6 flex flex-col gap-3">
-          <div class="flex justify-between items-start">
-            <div class="w-11 h-11 bg-sena-soft rounded-xl flex items-center justify-center">
-              <svg class="w-5 h-5 text-sena-strong" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 0 1 6 3.75h2.25A2.25 2.25 0 0 1 10.5 6v2.25a2.25 2.25 0 0 1-2.25 2.25H6a2.25 2.25 0 0 1-2.25-2.25V6ZM3.75 15.75A2.25 2.25 0 0 1 6 13.5h2.25a2.25 2.25 0 0 1 2.25 2.25V18a2.25 2.25 0 0 1-2.25 2.25H6A2.25 2.25 0 0 1 3.75 18v-2.25ZM13.5 6a2.25 2.25 0 0 1 2.25-2.25H18A2.25 2.25 0 0 1 20.25 6v2.25A2.25 2.25 0 0 1 18 10.5h-2.25a2.25 2.25 0 0 1-2.25-2.25V6ZM13.5 15.75a2.25 2.25 0 0 1 2.25-2.25H18a2.25 2.25 0 0 1 2.25 2.25V18A2.25 2.25 0 0 1 18 20.25h-2.25a2.25 2.25 0 0 1-2.25-2.25v-2.25Z" />
-              </svg>
-            </div>
-            <div class="flex items-center gap-1 shrink-0">
-              <button type="button" aria-label="Editar linea" class="p-1.5 rounded-lg text-sena-text-soft hover:bg-sena-soft hover:text-sena transition-colors">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z" />
-                </svg>
-              </button>
-              <button type="button" aria-label="Cambiar estado" class="linea-tec-switch relative inline-flex w-9 h-5 items-center rounded-full bg-sena transition-colors">
-                <span class="absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white shadow-sm transition-transform"></span>
-              </button>
-            </div>
-          </div>
-          <h3 class="font-['Montserrat'] text-base font-semibold text-sena-text-main leading-snug">Ciberseguridad Avanzada</h3>
-          <p class="text-sm text-sena-text-soft">4 vigentes &middot; 1 linea &middot; 4 perfiles</p>
-          <div class="flex flex-wrap gap-2">
-            <span class="text-xs text-sena-strong bg-sena-soft rounded-full px-2.5 py-0.5">Tecnologias de la</span>
-          </div>
-          <a href="#" class="text-sm text-sena-strong font-medium mt-auto inline-flex items-center gap-1 hover:underline">
-            Ver perfiles &rarr;
-          </a>
+      <div id="linea-search-empty-state" class="hidden w-full flex flex-col items-center justify-center py-20 px-4 bg-white border border-gray-200 rounded-xl">
+        <div class="w-20 h-20 mb-5 bg-sena-soft rounded-2xl flex items-center justify-center">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10 text-sena" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            <line x1="11" y1="8" x2="11" y2="14"></line>
+            <line x1="8" y1="11" x2="14" y2="11"></line>
+          </svg>
         </div>
+        <h3 class="font-['Montserrat'] text-lg font-semibold text-sena-text-main mb-2">No se encontraron resultados</h3>
+        <p class="text-sm text-sena-text-soft text-center max-w-sm">
+          No hay lineas que coincidan con <span id="linea-search-empty-term" class="font-medium text-sena"></span>. Prueba con otras palabras clave.
+        </p>
+      </div>
 
-        <!-- Card 3: Big Data y Analitica -->
-        <div class="tarjeta-tecnologia bg-white border border-sena-border rounded-xl p-6 flex flex-col gap-3">
-          <div class="flex justify-between items-start">
-            <div class="w-11 h-11 bg-sena-soft rounded-xl flex items-center justify-center">
-              <svg class="w-5 h-5 text-sena-strong" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 0 1 6 3.75h2.25A2.25 2.25 0 0 1 10.5 6v2.25a2.25 2.25 0 0 1-2.25 2.25H6a2.25 2.25 0 0 1-2.25-2.25V6ZM3.75 15.75A2.25 2.25 0 0 1 6 13.5h2.25a2.25 2.25 0 0 1 2.25 2.25V18a2.25 2.25 0 0 1-2.25 2.25H6A2.25 2.25 0 0 1 3.75 18v-2.25ZM13.5 6a2.25 2.25 0 0 1 2.25-2.25H18A2.25 2.25 0 0 1 20.25 6v2.25A2.25 2.25 0 0 1 18 10.5h-2.25a2.25 2.25 0 0 1-2.25-2.25V6ZM13.5 15.75a2.25 2.25 0 0 1 2.25-2.25H18a2.25 2.25 0 0 1 2.25 2.25V18A2.25 2.25 0 0 1 18 20.25h-2.25a2.25 2.25 0 0 1-2.25-2.25v-2.25Z" />
-              </svg>
-            </div>
-            <div class="flex items-center gap-1 shrink-0">
-              <button type="button" aria-label="Editar linea" class="p-1.5 rounded-lg text-sena-text-soft hover:bg-sena-soft hover:text-sena transition-colors">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z" />
-                </svg>
-              </button>
-              <button type="button" aria-label="Cambiar estado" class="linea-tec-switch relative inline-flex w-9 h-5 items-center rounded-full bg-sena transition-colors">
-                <span class="absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white shadow-sm transition-transform"></span>
-              </button>
-            </div>
-          </div>
-          <h3 class="font-['Montserrat'] text-base font-semibold text-sena-text-main leading-snug">Big Data y Analitica</h3>
-          <p class="text-sm text-sena-text-soft">3 vigentes &middot; 2 lineas &middot; 3 perfiles</p>
-          <div class="flex flex-wrap gap-2">
-            <span class="text-xs text-sena-strong bg-sena-soft rounded-full px-2.5 py-0.5">Tecnologias de la</span>
-            <span class="text-xs text-sena-strong bg-sena-soft rounded-full px-2.5 py-0.5">Biotecnologia y Nanotecnologia</span>
-          </div>
-          <a href="#" class="text-sm text-sena-strong font-medium mt-auto inline-flex items-center gap-1 hover:underline">
-            Ver perfiles &rarr;
-          </a>
+      <!-- Empty State -->
+      <div id="linea-empty-state" class="hidden w-full flex flex-col items-center justify-center py-20 px-4 bg-white border border-gray-200 rounded-xl">
+        <div class="w-20 h-20 mb-5 bg-sena-soft rounded-2xl flex items-center justify-center">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10 text-sena" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="3"></circle>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33h.09a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51h.09a1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82v.09a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+          </svg>
         </div>
-
-        <!-- Card 4: Inteligencia Artificial -->
-        <div class="tarjeta-tecnologia bg-white border border-sena-border rounded-xl p-6 flex flex-col gap-3">
-          <div class="flex justify-between items-start">
-            <div class="w-11 h-11 bg-sena-soft rounded-xl flex items-center justify-center">
-              <svg class="w-5 h-5 text-sena-strong" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 0 1 6 3.75h2.25A2.25 2.25 0 0 1 10.5 6v2.25a2.25 2.25 0 0 1-2.25 2.25H6a2.25 2.25 0 0 1-2.25-2.25V6ZM3.75 15.75A2.25 2.25 0 0 1 6 13.5h2.25a2.25 2.25 0 0 1 2.25 2.25V18a2.25 2.25 0 0 1-2.25 2.25H6A2.25 2.25 0 0 1 3.75 18v-2.25ZM13.5 6a2.25 2.25 0 0 1 2.25-2.25H18A2.25 2.25 0 0 1 20.25 6v2.25A2.25 2.25 0 0 1 18 10.5h-2.25a2.25 2.25 0 0 1-2.25-2.25V6ZM13.5 15.75a2.25 2.25 0 0 1 2.25-2.25H18a2.25 2.25 0 0 1 2.25 2.25V18A2.25 2.25 0 0 1 18 20.25h-2.25a2.25 2.25 0 0 1-2.25-2.25v-2.25Z" />
-              </svg>
-            </div>
-            <div class="flex items-center gap-1 shrink-0">
-              <button type="button" aria-label="Editar linea" class="p-1.5 rounded-lg text-sena-text-soft hover:bg-sena-soft hover:text-sena transition-colors">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z" />
-                </svg>
-              </button>
-              <button type="button" aria-label="Cambiar estado" class="linea-tec-switch relative inline-flex w-9 h-5 items-center rounded-full bg-sena transition-colors">
-                <span class="absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white shadow-sm transition-transform"></span>
-              </button>
-            </div>
-          </div>
-          <h3 class="font-['Montserrat'] text-base font-semibold text-sena-text-main leading-snug">Inteligencia Artificial</h3>
-          <p class="text-sm text-sena-text-soft">2 vigentes &middot; 2 lineas &middot; 2 perfiles</p>
-          <div class="flex flex-wrap gap-2">
-            <span class="text-xs text-sena-strong bg-sena-soft rounded-full px-2.5 py-0.5">Tecnologias de la</span>
-            <span class="text-xs text-sena-strong bg-sena-soft rounded-full px-2.5 py-0.5">Biotecnologia y Nanotecnologia</span>
-          </div>
-          <a href="#" class="text-sm text-sena-strong font-medium mt-auto inline-flex items-center gap-1 hover:underline">
-            Ver perfiles &rarr;
-          </a>
-        </div>
-
-        <!-- Card 5: Blockchain -->
-        <div class="tarjeta-tecnologia bg-white border border-sena-border rounded-xl p-6 flex flex-col gap-3">
-          <div class="flex justify-between items-start">
-            <div class="w-11 h-11 bg-sena-soft rounded-xl flex items-center justify-center">
-              <svg class="w-5 h-5 text-sena-strong" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 0 1 6 3.75h2.25A2.25 2.25 0 0 1 10.5 6v2.25a2.25 2.25 0 0 1-2.25 2.25H6a2.25 2.25 0 0 1-2.25-2.25V6ZM3.75 15.75A2.25 2.25 0 0 1 6 13.5h2.25a2.25 2.25 0 0 1 2.25 2.25V18a2.25 2.25 0 0 1-2.25 2.25H6A2.25 2.25 0 0 1 3.75 18v-2.25ZM13.5 6a2.25 2.25 0 0 1 2.25-2.25H18A2.25 2.25 0 0 1 20.25 6v2.25A2.25 2.25 0 0 1 18 10.5h-2.25a2.25 2.25 0 0 1-2.25-2.25V6ZM13.5 15.75a2.25 2.25 0 0 1 2.25-2.25H18a2.25 2.25 0 0 1 2.25 2.25V18A2.25 2.25 0 0 1 18 20.25h-2.25a2.25 2.25 0 0 1-2.25-2.25v-2.25Z" />
-              </svg>
-            </div>
-            <div class="flex items-center gap-1 shrink-0">
-              <button type="button" aria-label="Editar linea" class="p-1.5 rounded-lg text-sena-text-soft hover:bg-sena-soft hover:text-sena transition-colors">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z" />
-                </svg>
-              </button>
-              <button type="button" aria-label="Cambiar estado" class="linea-tec-switch relative inline-flex w-9 h-5 items-center rounded-full bg-sena transition-colors">
-                <span class="absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white shadow-sm transition-transform"></span>
-              </button>
-            </div>
-          </div>
-          <h3 class="font-['Montserrat'] text-base font-semibold text-sena-text-main leading-snug">Blockchain</h3>
-          <p class="text-sm text-sena-text-soft">2 vigentes &middot; 1 linea &middot; 2 perfiles</p>
-          <div class="flex flex-wrap gap-2">
-            <span class="text-xs text-sena-strong bg-sena-soft rounded-full px-2.5 py-0.5">Tecnologias de la</span>
-          </div>
-          <a href="#" class="text-sm text-sena-strong font-medium mt-auto inline-flex items-center gap-1 hover:underline">
-            Ver perfiles &rarr;
-          </a>
-        </div>
-
-        <!-- Card 6: Internet de las Cosas (IoT) -->
-        <div class="tarjeta-tecnologia bg-white border border-sena-border rounded-xl p-6 flex flex-col gap-3">
-          <div class="flex justify-between items-start">
-            <div class="w-11 h-11 bg-sena-soft rounded-xl flex items-center justify-center">
-              <svg class="w-5 h-5 text-sena-strong" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 0 1 6 3.75h2.25A2.25 2.25 0 0 1 10.5 6v2.25a2.25 2.25 0 0 1-2.25 2.25H6a2.25 2.25 0 0 1-2.25-2.25V6ZM3.75 15.75A2.25 2.25 0 0 1 6 13.5h2.25a2.25 2.25 0 0 1 2.25 2.25V18a2.25 2.25 0 0 1-2.25 2.25H6A2.25 2.25 0 0 1 3.75 18v-2.25ZM13.5 6a2.25 2.25 0 0 1 2.25-2.25H18A2.25 2.25 0 0 1 20.25 6v2.25A2.25 2.25 0 0 1 18 10.5h-2.25a2.25 2.25 0 0 1-2.25-2.25V6ZM13.5 15.75a2.25 2.25 0 0 1 2.25-2.25H18a2.25 2.25 0 0 1 2.25 2.25V18A2.25 2.25 0 0 1 18 20.25h-2.25a2.25 2.25 0 0 1-2.25-2.25v-2.25Z" />
-              </svg>
-            </div>
-            <div class="flex items-center gap-1 shrink-0">
-              <button type="button" aria-label="Editar linea" class="p-1.5 rounded-lg text-sena-text-soft hover:bg-sena-soft hover:text-sena transition-colors">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z" />
-                </svg>
-              </button>
-              <button type="button" aria-label="Cambiar estado" class="linea-tec-switch relative inline-flex w-9 h-5 items-center rounded-full bg-sena transition-colors">
-                <span class="absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white shadow-sm transition-transform"></span>
-              </button>
-            </div>
-          </div>
-          <h3 class="font-['Montserrat'] text-base font-semibold text-sena-text-main leading-snug">Internet de las Cosas (IoT)</h3>
-          <p class="text-sm text-sena-text-soft">1 vigente &middot; 1 linea &middot; 1 perfil</p>
-          <div class="flex flex-wrap gap-2">
-            <span class="text-xs text-sena-strong bg-sena-soft rounded-full px-2.5 py-0.5">Electronica y Automatizacion</span>
-          </div>
-          <a href="#" class="text-sm text-sena-strong font-medium mt-auto inline-flex items-center gap-1 hover:underline">
-            Ver perfiles &rarr;
-          </a>
-        </div>
-
-        <!-- Card 7: Manufactura Aditiva (Impresion 3D) -->
-        <div class="tarjeta-tecnologia bg-white border border-sena-border rounded-xl p-6 flex flex-col gap-3">
-          <div class="flex justify-between items-start">
-            <div class="w-11 h-11 bg-sena-soft rounded-xl flex items-center justify-center">
-              <svg class="w-5 h-5 text-sena-strong" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 0 1 6 3.75h2.25A2.25 2.25 0 0 1 10.5 6v2.25a2.25 2.25 0 0 1-2.25 2.25H6a2.25 2.25 0 0 1-2.25-2.25V6ZM3.75 15.75A2.25 2.25 0 0 1 6 13.5h2.25a2.25 2.25 0 0 1 2.25 2.25V18a2.25 2.25 0 0 1-2.25 2.25H6A2.25 2.25 0 0 1 3.75 18v-2.25ZM13.5 6a2.25 2.25 0 0 1 2.25-2.25H18A2.25 2.25 0 0 1 20.25 6v2.25A2.25 2.25 0 0 1 18 10.5h-2.25a2.25 2.25 0 0 1-2.25-2.25V6ZM13.5 15.75a2.25 2.25 0 0 1 2.25-2.25H18a2.25 2.25 0 0 1 2.25 2.25V18A2.25 2.25 0 0 1 18 20.25h-2.25a2.25 2.25 0 0 1-2.25-2.25v-2.25Z" />
-              </svg>
-            </div>
-            <div class="flex items-center gap-1 shrink-0">
-              <button type="button" aria-label="Editar linea" class="p-1.5 rounded-lg text-sena-text-soft hover:bg-sena-soft hover:text-sena transition-colors">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z" />
-                </svg>
-              </button>
-              <button type="button" aria-label="Cambiar estado" class="linea-tec-switch relative inline-flex w-9 h-5 items-center rounded-full bg-sena transition-colors">
-                <span class="absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white shadow-sm transition-transform"></span>
-              </button>
-            </div>
-          </div>
-          <h3 class="font-['Montserrat'] text-base font-semibold text-sena-text-main leading-snug">Manufactura Aditiva (Impresion 3D)</h3>
-          <p class="text-sm text-sena-text-soft">1 vigente &middot; 1 linea &middot; 1 perfil</p>
-          <a href="#" class="text-sm text-sena-strong font-medium mt-auto inline-flex items-center gap-1 hover:underline">
-            Ver perfiles &rarr;
-          </a>
-        </div>
-
-        <!-- Card 8: Realidad Aumentada/Virtual -->
-        <div class="tarjeta-tecnologia bg-white border border-sena-border rounded-xl p-6 flex flex-col gap-3">
-          <div class="flex justify-between items-start">
-            <div class="w-11 h-11 bg-sena-soft rounded-xl flex items-center justify-center">
-              <svg class="w-5 h-5 text-sena-strong" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 0 1 6 3.75h2.25A2.25 2.25 0 0 1 10.5 6v2.25a2.25 2.25 0 0 1-2.25 2.25H6a2.25 2.25 0 0 1-2.25-2.25V6ZM3.75 15.75A2.25 2.25 0 0 1 6 13.5h2.25a2.25 2.25 0 0 1 2.25 2.25V18a2.25 2.25 0 0 1-2.25 2.25H6A2.25 2.25 0 0 1 3.75 18v-2.25ZM13.5 6a2.25 2.25 0 0 1 2.25-2.25H18A2.25 2.25 0 0 1 20.25 6v2.25A2.25 2.25 0 0 1 18 10.5h-2.25a2.25 2.25 0 0 1-2.25-2.25V6ZM13.5 15.75a2.25 2.25 0 0 1 2.25-2.25H18a2.25 2.25 0 0 1 2.25 2.25V18A2.25 2.25 0 0 1 18 20.25h-2.25a2.25 2.25 0 0 1-2.25-2.25v-2.25Z" />
-              </svg>
-            </div>
-            <div class="flex items-center gap-1 shrink-0">
-              <button type="button" aria-label="Editar linea" class="p-1.5 rounded-lg text-sena-text-soft hover:bg-sena-soft hover:text-sena transition-colors">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z" />
-                </svg>
-              </button>
-              <button type="button" aria-label="Cambiar estado" class="linea-tec-switch relative inline-flex w-9 h-5 items-center rounded-full bg-sena transition-colors">
-                <span class="absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white shadow-sm transition-transform"></span>
-              </button>
-            </div>
-          </div>
-          <h3 class="font-['Montserrat'] text-base font-semibold text-sena-text-main leading-snug">Realidad Aumentada/Virtual</h3>
-          <p class="text-sm text-sena-text-soft">0 vigentes &middot; 1 linea &middot; 1 perfil</p>
-          <a href="#" class="text-sm text-sena-strong font-medium mt-auto inline-flex items-center gap-1 hover:underline">
-            Ver perfiles &rarr;
-          </a>
-        </div>
-
-        <!-- Card 9: Robotica Colaborativa -->
-        <div class="tarjeta-tecnologia bg-white border border-sena-border rounded-xl p-6 flex flex-col gap-3">
-          <div class="flex justify-between items-start">
-            <div class="w-11 h-11 bg-sena-soft rounded-xl flex items-center justify-center">
-              <svg class="w-5 h-5 text-sena-strong" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 0 1 6 3.75h2.25A2.25 2.25 0 0 1 10.5 6v2.25a2.25 2.25 0 0 1-2.25 2.25H6a2.25 2.25 0 0 1-2.25-2.25V6ZM3.75 15.75A2.25 2.25 0 0 1 6 13.5h2.25a2.25 2.25 0 0 1 2.25 2.25V18a2.25 2.25 0 0 1-2.25 2.25H6A2.25 2.25 0 0 1 3.75 18v-2.25ZM13.5 6a2.25 2.25 0 0 1 2.25-2.25H18A2.25 2.25 0 0 1 20.25 6v2.25A2.25 2.25 0 0 1 18 10.5h-2.25a2.25 2.25 0 0 1-2.25-2.25V6ZM13.5 15.75a2.25 2.25 0 0 1 2.25-2.25H18a2.25 2.25 0 0 1 2.25 2.25V18A2.25 2.25 0 0 1 18 20.25h-2.25a2.25 2.25 0 0 1-2.25-2.25v-2.25Z" />
-              </svg>
-            </div>
-            <div class="flex items-center gap-1 shrink-0">
-              <button type="button" aria-label="Editar linea" class="p-1.5 rounded-lg text-sena-text-soft hover:bg-sena-soft hover:text-sena transition-colors">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z" />
-                </svg>
-              </button>
-              <button type="button" aria-label="Cambiar estado" class="linea-tec-switch relative inline-flex w-9 h-5 items-center rounded-full bg-sena transition-colors">
-                <span class="absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white shadow-sm transition-transform"></span>
-              </button>
-            </div>
-          </div>
-          <h3 class="font-['Montserrat'] text-base font-semibold text-sena-text-main leading-snug">Robotica Colaborativa</h3>
-          <p class="text-sm text-sena-text-soft">1 vigente &middot; 1 linea &middot; 2 perfiles</p>
-          <a href="#" class="text-sm text-sena-strong font-medium mt-auto inline-flex items-center gap-1 hover:underline">
-            Ver perfiles &rarr;
-          </a>
-        </div>
-
+        <h3 class="font-['Montserrat'] text-lg font-semibold text-sena-text-main mb-2">No hay líneas tecnológicas</h3>
+        <p data-permiso="crear_linea" class="text-sm text-sena-text-soft text-center max-w-sm mb-6">Comienza creando tu primera línea tecnológica.</p>
+        <button data-permiso="crear_linea" id="btn-crear-desde-empty" class="flex items-center gap-2 px-5 py-2.5 text-sm font-medium text-white bg-sena rounded-lg hover:opacity-90 transition-opacity shadow-sm">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+          Crear primera línea
+        </button>
       </div>
     </div>
   </main>
 
-  <script src="../../assets/js/lineas_tecnologicas.js"></script>
+  <script src="../../assets/js/lineas_tecnologicas/lineas_tecnologicas.js"></script>
 </body>
 </html>
 <?php include __DIR__ . '../../../includes/footer.php'; ?>

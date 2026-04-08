@@ -140,7 +140,7 @@ class ProgramaFormacionController {
         }
         
         // Validate dates
-        $errores_fechas = $this->model->validarFechas($input['fecha_creacion'], $input['fecha_fin']);
+        $errores_fechas = $this->model->validarFechas($input['fecha_creacion'], $input['fecha_fin'], true);
         if (!empty($errores_fechas)) {
             echo json_encode([
                 'success' => false,
@@ -217,7 +217,7 @@ class ProgramaFormacionController {
         
         // Validate dates if they are being updated
         if (isset($input['fecha_creacion']) && isset($input['fecha_fin'])) {
-            $errores_fechas = $this->model->validarFechas($input['fecha_creacion'], $input['fecha_fin']);
+            $errores_fechas = $this->model->validarFechas($input['fecha_creacion'], $input['fecha_fin'], false);
             if (!empty($errores_fechas)) {
                 echo json_encode([
                     'success' => false,

@@ -25,7 +25,7 @@
         <!-- Content -->
         <div class="px-6 py-5">
           <p class="text-sm text-sena-text-soft leading-relaxed">
-            La tendencia actual <span class="font-semibold text-sena-text-main" id="nombre-tendencia-act-deshabilitado">"Desarrollador Full Stack Senior"</span> ha sido deshabilitada correctamente.
+            La tendencia actual <span class="text-sena" id="nombre-tendencia-act-deshabilitado">"Desarrollador Full Stack Senior"</span> ha sido deshabilitada correctamente.
           </p>
           
           <!-- Contador de segundos (NUEVO) -->

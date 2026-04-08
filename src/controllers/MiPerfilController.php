@@ -43,19 +43,32 @@ class MiPerfilController {
         }
 
         // Estadísticas
-        $stats = $this->model->getStats();
+        // Determinar tipo de cuenta
+        $esAdmin = ($user['id_rol'] == 1);
 
-        // Últimos perfiles ocupacionales
-        $latestProfiles = $this->model->getLatestProfiles(2);
+        if ($esAdmin) {
+            $stats = $this->model->getStats();
+            $latestProfiles = $this->model->getLatestProfiles(5);
+        } else {
+            try {
+                $stats = $this->model->getStatsByEmpresa($userId);
+                $latestProfiles = $this->model->getLatestProfilesByEmpresa($userId, 5);
+            } catch (Exception $e) {
+                echo json_encode([
+                    'error' => $e->getMessage()
+                ]);
+                exit;
+            }
+        }
 
         // Formatear fecha de registro (ej. "febrero 2026")
-        $registro = date('F Y', strtotime($user['fecha_registro']));
+        $registro = date('d \d\e F \d\e Y', strtotime($user['fecha_registro']));
 
         // Determinar tipo de cuenta (según rol)
         $tipoCuenta = ($user['id_rol'] == 1) ? 'Administrador' : 'Empresa';
         $descripcionCuenta = ($user['id_rol'] == 1)
             ? 'Acceso completo a la plataforma'
-            : 'Acceso a módulos de empresa';
+            : 'Acceso parcial a la plataforma';
 
         $response = [
             'usuario' => [
@@ -64,6 +77,10 @@ class MiPerfilController {
                 'miembro_desde'   => $registro,
                 'tipo_cuenta'     => $tipoCuenta,
                 'descripcion'     => $descripcionCuenta,
+                'tipo_documento'   => $user['tipo_documento'] ?? '',
+                'numero_documento' => $user['numero_documento'] ?? '',
+                'nombre_empresa'   => $user['nombre_empresa'] ?? '',
+                'razon_social'     => $user['razon_social'] ?? '',
             ],
             'estadisticas' => $stats,
             'ultimos_perfiles' => $latestProfiles,

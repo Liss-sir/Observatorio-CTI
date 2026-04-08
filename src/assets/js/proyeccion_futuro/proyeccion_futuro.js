@@ -462,7 +462,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                 <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
                             </svg>
                         </div>
-                        <h3 class="font-['Montserrat'] text-lg font-semibold text-sena-text-main mb-2">No se encontraron resultados</h3>
+                        <h3 class=" text-lg font-semibold text-sena-text-main mb-2">No se encontraron resultados</h3>
                         <p class="text-sm text-sena-text-soft text-center max-w-sm">
                             ${filtrarDesactivadosActivo ? 'No hay proyecciones deshabilitadas.' : `No hay proyecciones que coincidan con "${terminoBusqueda}".`}
                         </p>
@@ -477,7 +477,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                 <polyline points="12 6 12 12 16 14" stroke="currentColor"/>
                             </svg>
                         </div>
-                        <h3 class="font-['Montserrat'] text-lg font-semibold text-sena-text-main mb-2">No hay proyecciones a futuro</h3>
+                        <h3 class=" text-lg font-semibold text-sena-text-main mb-2">No hay proyecciones a futuro</h3>
                         <p class="text-sm text-sena-text-soft text-center max-w-sm mb-6">Comienza creando tu primera proyección a futuro.</p>
                         <button id="btn-crear-desde-empty" class="flex items-center gap-2 px-5 py-2.5 text-sm font-medium text-white bg-sena rounded-lg hover:opacity-90 transition-opacity shadow-sm">
                             <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
