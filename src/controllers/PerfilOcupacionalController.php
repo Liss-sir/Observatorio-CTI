@@ -489,6 +489,24 @@ class PerfilOcupacionalController {
             'message' => $resultado ? 'Cupo disminuido correctamente' : 'No hay cupos disponibles'
         ]);
     }
+
+    // Get programs by technological line
+    public function obtenerProgramasPorLinea($id_linea) {
+        if (!$id_linea) {
+            echo json_encode([
+                'success' => false,
+                'error' => 'ID de línea tecnológica requerido'
+            ]);
+            return;
+        }
+        
+        $programas = $this->model->obtenerProgramasPorLinea($id_linea);
+        
+        echo json_encode([
+            'success' => true,
+            'data' => $programas
+        ]);
+    }
 }
 
 
@@ -597,6 +615,10 @@ switch ($accion) {
         
     case "disminuirCupo":
         $controller->disminuirCupo($id);
+        break;
+
+    case "obtenerProgramasPorLinea":
+        $controller->obtenerProgramasPorLinea($id_linea);
         break;
 
     default:
