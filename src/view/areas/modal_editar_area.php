@@ -11,11 +11,11 @@
         <form id="form-editar-area" class="px-6 py-4">
           <div class="mb-4">
             <label class="block text-sm font-medium">Nombre del área</label>
-            <input type="text" id="nombre-area" class="w-full border rounded-lg px-3 py-2" required>
+            <input type="text" id="nombre-area" class="w-full rounded-lg px-3 py-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-sena/40 focus:border-sena" required>
           </div>
           <div class="mb-4">
             <label class="block text-sm font-medium">Descripción</label>
-            <textarea id="descripcion-area" rows="4" class="w-full border rounded-lg px-3 py-2" required></textarea>
+            <textarea id="descripcion-area" rows="4" class="w-full border rounded-lg px-3 py-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-sena/40 focus:border-sena" required></textarea>
             <div class="flex justify-end items-center gap-2 mb-4 mt-1">
               <span id="contador-caracteres-editar" class="text-xs text-sena-text-soft">0 / 30</span>
               <span id="alerta-minimo-editar" class="text-xs text-red-500 hidden">Mínimo 30 caracteres</span>  
