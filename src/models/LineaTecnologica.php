@@ -19,8 +19,7 @@ class LineaTecnologicaModel {
                         p.codigo_programa,
                         e.nombre as nombre_etapa,
                         t.nombre as nombre_tendencia,
-                        pf.anio as anio_proyeccion,
-                        pf.descripcion as descripcion_proyeccion
+                        pf.anio as anio_proyeccion
                     FROM lineas_tecnologicas l
                     INNER JOIN areas a ON l.id_area = a.id_area
                     INNER JOIN programas_formacion p ON l.id_programa = p.id_programa
@@ -47,8 +46,7 @@ class LineaTecnologicaModel {
                         p.codigo_programa,
                         e.nombre as nombre_etapa,
                         t.nombre as nombre_tendencia,
-                        pf.anio as anio_proyeccion,
-                        pf.descripcion as descripcion_proyeccion
+                        pf.anio as anio_proyeccion
                     FROM lineas_tecnologicas l
                     INNER JOIN areas a ON l.id_area = a.id_area
                     INNER JOIN programas_formacion p ON l.id_programa = p.id_programa
@@ -74,8 +72,7 @@ class LineaTecnologicaModel {
                         p.codigo_programa,
                         e.nombre as nombre_etapa,
                         t.nombre as nombre_tendencia,
-                        pf.anio as anio_proyeccion,
-                        pf.descripcion as descripcion_proyeccion
+                        pf.anio as anio_proyeccion
                     FROM lineas_tecnologicas l
                     INNER JOIN areas a ON l.id_area = a.id_area
                     INNER JOIN programas_formacion p ON l.id_programa = p.id_programa
@@ -95,11 +92,12 @@ class LineaTecnologicaModel {
     public function crear($data) {
         try {
             $sql = "INSERT INTO lineas_tecnologicas 
-                    (id_area, id_programa, id_etapa, id_tendencia, id_proyeccion, estado) 
-                    VALUES (?, ?, ?, ?, ?, ?)";
+                    (nombre_linea, id_area, id_programa, id_etapa, id_tendencia, id_proyeccion, estado) 
+                    VALUES (?, ?, ?, ?, ?, ?, ?)";
             $stmt = $this->conn->prepare($sql);
             $estado = isset($data['estado']) ? $data['estado'] : 1;
             $ok = $stmt->execute([
+                trim($data['nombre_linea']),
                 $data['id_area'],
                 $data['id_programa'],
                 $data['id_etapa'],
@@ -119,12 +117,12 @@ class LineaTecnologicaModel {
             $campos = [];
             $valores = [];
 
-            $camposPermitidos = ['id_area', 'id_programa', 'id_etapa', 'id_tendencia', 'id_proyeccion', 'estado'];
+            $camposPermitidos = ['nombre_linea', 'id_area', 'id_programa', 'id_etapa', 'id_tendencia', 'id_proyeccion', 'estado'];
 
             foreach ($camposPermitidos as $campo) {
                 if (array_key_exists($campo, $data)) {
                     $campos[] = "$campo = ?";
-                    $valores[] = $data[$campo];
+                    $valores[] = $campo === 'nombre_linea' ? trim($data[$campo]) : $data[$campo];
                 }
             }
 
@@ -298,7 +296,7 @@ class LineaTecnologicaModel {
             $result = $stmt->fetch(PDO::FETCH_ASSOC);
             return $result['total'] > 0;
         } catch (Exception $e) {
-            return true; // Assume dependencies to avoid deletion on error
+            return true;
         }
     }
 
@@ -307,14 +305,12 @@ class LineaTecnologicaModel {
         try {
             $sql = "SELECT 
                         l.id_linea,
-                        CONCAT(a.nombre_area, ' - ', p.codigo_programa, ' - ', p.nombre_programa, 
-                               ' (', e.nombre, ')') as texto
+                        CONCAT(l.nombre_linea, ' - ', a.nombre_area, ' - ', p.codigo_programa) as texto
                     FROM lineas_tecnologicas l
                     INNER JOIN areas a ON l.id_area = a.id_area
                     INNER JOIN programas_formacion p ON l.id_programa = p.id_programa
-                    INNER JOIN etapa_desarrollo e ON l.id_etapa = e.id_etapa
                     WHERE l.estado = 1
-                    ORDER BY a.nombre_area, p.nombre_programa";
+                    ORDER BY l.nombre_linea ASC";
             $stmt = $this->conn->prepare($sql);
             $stmt->execute();
             $resultados = [];
@@ -332,12 +328,11 @@ class LineaTecnologicaModel {
         try {
             $sql = "SELECT 
                         l.id_linea,
-                        CONCAT(p.codigo_programa, ' - ', p.nombre_programa, ' (', e.nombre, ')') as texto
+                        CONCAT(l.nombre_linea, ' - ', p.codigo_programa, ' - ', p.nombre_programa) as texto
                     FROM lineas_tecnologicas l
                     INNER JOIN programas_formacion p ON l.id_programa = p.id_programa
-                    INNER JOIN etapa_desarrollo e ON l.id_etapa = e.id_etapa
                     WHERE l.id_area = ? AND l.estado = 1
-                    ORDER BY p.codigo_programa";
+                    ORDER BY l.nombre_linea ASC";
             $stmt = $this->conn->prepare($sql);
             $stmt->execute([$id_area]);
             $resultados = [];
@@ -438,8 +433,8 @@ class LineaTecnologicaModel {
                     INNER JOIN tendencias_emergentes t ON l.id_tendencia = t.id_tendencia
                     INNER JOIN proyeccion_futuro pf ON l.id_proyeccion = pf.id_proyeccion
                     WHERE l.estado = 1 
-                      AND (a.nombre_area LIKE ? OR p.nombre_programa LIKE ? OR e.nombre LIKE ? 
-                           OR t.nombre LIKE ? OR pf.descripcion LIKE ?)
+                      AND (l.nombre_linea LIKE ? OR a.nombre_area LIKE ? OR p.nombre_programa LIKE ? OR e.nombre LIKE ? 
+                           OR t.nombre LIKE ?)
                     ORDER BY l.fecha_creacion DESC";
             $stmt = $this->conn->prepare($sql);
             $termino_busqueda = "%$termino%";
@@ -469,6 +464,10 @@ class LineaTecnologicaModel {
                     WHERE 1=1";
             $params = [];
 
+            if (!empty($filtros['nombre_linea'])) {
+                $sql .= " AND l.nombre_linea LIKE ?";
+                $params[] = "%" . $filtros['nombre_linea'] . "%";
+            }
             if (!empty($filtros['id_area'])) {
                 $sql .= " AND l.id_area = ?";
                 $params[] = $filtros['id_area'];
