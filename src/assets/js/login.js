@@ -1,7 +1,4 @@
 document.addEventListener("DOMContentLoaded", () => {
-
-    lucide.createIcons();
-
     // ========== REFERENCIAS DOM ==========
     const loginForm = document.getElementById("loginForm");
     const correoInput = document.getElementById("correo");
@@ -12,6 +9,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const btnText = document.getElementById("btnText");
     const btnLoading = document.getElementById("btnLoading");
     const formContainer = document.getElementById("formContainer");
+    const formRecuperar = document.getElementById("form-recuperar");
 
     // ========== CONFIGURACIÓN ==========
     const API_URL = "../../controllers/LogController.php?accion=login";
@@ -36,81 +34,53 @@ document.addEventListener("DOMContentLoaded", () => {
     // ========== LOGIN FORM ==========
     if (!loginForm) {
         console.error("❌ No se encontró el formulario de login");
-        return;
     }
 
-    loginForm.addEventListener("submit", async (e) => {
-        e.preventDefault();
+    if (loginForm) {
+        loginForm.addEventListener("submit", async (e) => {
+            e.preventDefault();
 
-        // Limpiar error previo
-        ocultarError();
+            ocultarError();
 
-        // Obtener valores
-        const correo = correoInput?.value.trim();
-        const password = passwordInput?.value;
+            const correo = correoInput?.value.trim();
+            const password = passwordInput?.value;
 
-        // Validación básica
-        if (!correo || !password) {
-            mostrarError("Correo y contraseña son requeridos");
-            return;
-        }
-
-        // Validar formato de correo
-        if (!validarEmail(correo)) {
-            mostrarError("Por favor ingresa un correo válido");
-            return;
-        }
-
-        // Estado de carga
-        setLoading(true);
-
-        try {
-            console.log("📤 Enviando petición a:", API_URL);
-            console.log("📧 Correo:", correo);
-            
-            const response = await fetch(API_URL, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ 
-                    correo: correo, 
-                    password: password 
-                }),
-            });
-
-            console.log("📥 Status:", response.status);
-
-            // Verificar si la respuesta es JSON
-            const contentType = response.headers.get("content-type");
-            console.log("📄 Content-Type:", contentType);
-
-            if (!contentType || !contentType.includes("application/json")) {
-                const text = await response.text();
-                console.error("❌ Respuesta no JSON:", text.substring(0, 500));
-                throw new Error("El servidor no retornó JSON válido. Revisa la ruta del controller.");
+            if (!correo || !password) {
+                mostrarError("Correo y contraseña son requeridos");
+                return;
             }
 
-            const data = await response.json();
-            console.log("✅ Datos recibidos:", data);
+            if (!validarEmail(correo)) {
+                mostrarError("Por favor ingresa un correo válido");
+                return;
+            }
 
-            if (data.success === true) {
-                // Login exitoso
-                console.log("🎉 Login exitoso!");
-                manejarLoginExitoso(data);
-            } else {
-                // Error de autenticación
-                console.log("❌ Error del servidor:", data.error);
-                mostrarError(data.error || "Error al iniciar sesión");
+            setLoading(true);
+
+            try {
+                const response = await fetch(API_URL, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({ correo, password }),
+                });
+
+                const data = await response.json();
+
+                if (data.success === true) {
+                    manejarLoginExitoso(data);
+                } else {
+                    mostrarError(data.error || "Error al iniciar sesión");
+                    setLoading(false);
+                }
+
+            } catch (error) {
+                mostrarError("Error de conexión");
                 setLoading(false);
             }
-
-        } catch (error) {
-            console.error("💥 Error en login:", error);
-            mostrarError(error.message || "Error de conexión. Verifica tu conexión a internet.");
-            setLoading(false);
-        }
-    });
+        });
+    }
 
     // ========== FUNCIONES AUXILIARES ==========
 
@@ -177,6 +147,52 @@ document.addEventListener("DOMContentLoaded", () => {
     function validarEmail(email) {
         const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         return re.test(email);
+    }
+
+    //ENVIO CORREO RECUPERAR
+    if (formRecuperar) {
+        formRecuperar.addEventListener("submit", function(e) {
+            e.preventDefault();
+
+            const correo = document.getElementById("correo").value;
+
+            fetch("../../controllers/LogController.php?accion=recuperar", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ correo })
+            })
+            .then(res => res.json())
+            .then(data => console.log(data));
+        });
+    }
+
+    //ESTABLECER NUEVA CONTRASEÑA
+    const btnCambiar = document.getElementById("btnCambiarPassword");
+
+    if (btnCambiar) {
+        btnCambiar.addEventListener("click", cambiarPassword);
+    }
+
+    function cambiarPassword() {
+        const password = document.getElementById("password").value;
+        const token = new URLSearchParams(window.location.search).get("token");
+
+        fetch("../../controllers/LogController.php?accion=restablecer", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                token: token,
+                nueva_password: password
+            })
+        })
+        .then(res => res.json())
+        .then(data => {
+            console.log(data);
+        });
     }
 
 });

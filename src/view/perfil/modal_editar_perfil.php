@@ -1,7 +1,7 @@
 <!-- Modal Editar Perfil -->
 <div id="modalEditar" class="hidden fixed inset-0 z-[9999] overflow-y-auto" aria-hidden="true">
     <!-- Overlay SEPARADO (fondo negro) -->
-    <div class="fixed inset-0 bg-black bg-opacity-30 transition-opacity"></div>
+    <div class="fixed inset-0 bg-black bg-opacity-80 transition-opacity"></div>
     
     <!-- Contenedor del contenido -->
     <div class="fixed inset-0 overflow-y-auto">
