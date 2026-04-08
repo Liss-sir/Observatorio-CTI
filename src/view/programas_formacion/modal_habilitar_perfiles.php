@@ -52,7 +52,6 @@
   </div>
 </div>
 
-<!-- Estilos necesarios (agrégalos al bloque <style> de tu página principal si no los tienes) -->
 <style>
   @keyframes modalFadeIn {
     from {

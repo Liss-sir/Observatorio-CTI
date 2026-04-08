@@ -150,7 +150,7 @@ class LogController {
                     'id_usuario' => $_SESSION['id_usuario'],
                     'correo' => $_SESSION['correo'],
                     'rol_nombre' => $_SESSION['rol_nombre'],
-                    'nombre' => $_SESSION['usuario']['representante_legal'] ?? $_SESSION['usuario']['nombre_empresa'] ?? 'Usuario'
+                    'nombre_empresa' => $_SESSION['usuario']['nombre_empresa'] ?? 'Usuario'
                 ]
             ]);
         } else {

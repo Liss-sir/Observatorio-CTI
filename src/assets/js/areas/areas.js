@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const cerrarModalDeshabilitarBtns = document.querySelectorAll('.cerrar-modal-deshabilitar');
     const cerrarModalDeshabilitadoBtns = document.querySelectorAll('.cerrar-modal-deshabilitado');
     const cerrarModalHabilitarBtns = document.querySelectorAll('.cerrar-modal-habilitar');
-    const cerrarModalHabilitadoBtns = document.querySelectorAll('.cerrar-modal-habilitado');
+    const cerrarModalHabilitadoBtns = document.querySelectorAll('.cerrar-modal-habilitado-confirmacion');
     const cerrarModalCrearBtns = document.querySelectorAll('.cerrar-modal-crear');
     const cerrarModalCreadoBtns = document.querySelectorAll('.cerrar-modal-creado');
     const cerrarModalDetalleBtns = document.querySelectorAll('.cerrar-modal-detalle');
@@ -320,7 +320,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 const nombreArea = card.querySelector('h3').textContent;
                 
                 if (this.classList.contains('active')) {
-                    const span = modalDeshabilitar.querySelector('span.font-medium');
+                    const span = modalDeshabilitar.querySelector('span.font-bold');
                     if(span) span.textContent = ` "${nombreArea} "`;
                     modalDeshabilitar.setAttribute('data-switch-id', idArea);
                     abrirModal(modalDeshabilitar);
@@ -520,7 +520,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (btnConfirmarDeshabilitar) {
         btnConfirmarDeshabilitar.addEventListener('click', async function() {
             const id = modalDeshabilitar ? modalDeshabilitar.getAttribute('data-switch-id') : null;
-            const span = modalDeshabilitar ? modalDeshabilitar.querySelector('span.font-medium') : null;
+            const span = modalDeshabilitar ? modalDeshabilitar.querySelector('span.font-bold') : null;
             const nombre = span ? span.textContent.replace(/"/g,'').trim() : '';
             if(!id) return;
             

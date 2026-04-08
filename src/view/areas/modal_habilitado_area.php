@@ -32,7 +32,7 @@
               <circle cx="12" cy="12" r="10"/>
               <polyline points="12 6 12 12 16 14"/>
             </svg>
-            <span>Esta ventana se cerrará automáticamente en <span id="contador-segundos-habilitado">6</span> segundos</span>
+            <span>Esta ventana se cerrará automáticamente en <span id="contador-segundos-habilitado">3</span> segundos</span>
           </div>
         </div>
 

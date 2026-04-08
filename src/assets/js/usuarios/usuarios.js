@@ -432,7 +432,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const nombreEmpresa = usuario?.nombre_empresa ?? nombre;
         
         if(estado == 1){
-            const spanDeshabilitar = document.getElementById('nombre-perfil-deshabilitar-confirmacion');
+            const spanDeshabilitar = document.getElementById('nombre-usuario-deshabilitar');
             if (spanDeshabilitar) {
                 spanDeshabilitar.textContent = `"${nombreEmpresa}"`;
             }

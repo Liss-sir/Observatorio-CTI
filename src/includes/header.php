@@ -39,8 +39,8 @@ $rolActual = obtenerRolActual();
   <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
 
-  <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
+
   <script>
     tailwind.config = {
       theme: {
@@ -155,7 +155,7 @@ $rolActual = obtenerRolActual();
   </style>
 </head>
 
-<body class="font-[Inter] antialiased bg-white text-gray-800">
+<body id="body" class="opacity-0 font-[Inter] antialiased bg-white text-gray-800 transition-opacity duration-200">
 
   <!-- HEADER -->
   <header class="sticky top-0 z-50 border-b border-gray-200 bg-white/95 backdrop-blur-sm shadow-sm">
@@ -326,7 +326,7 @@ $rolActual = obtenerRolActual();
                 </svg>
               </div>
               <div class="text-left flex-shrink-0 min-w-0">
-                <p id="user-name" class="text-sm font-medium text-gray-900 leading-none"><?= htmlspecialchars($_SESSION['nombre'] ?? 'Usuario') ?></p>
+                <p id="user-name" class="text-sm font-medium text-gray-900 leading-none"><?= htmlspecialchars($_SESSION['nombre_empresa'] ?? 'Usuario') ?></p>
                 <p id="user-role" class="text-xs text-gray-500 mt-0.5"><?= htmlspecialchars($_SESSION['rol_nombre'] ?? 'Rol') ?></p>
               </div>
               <svg id="user-chevron" class="w-4 h-4 text-gray-400 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -497,6 +497,12 @@ document.addEventListener('DOMContentLoaded', function () {
   inicializarUserDropdown();
 
 });
+</script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('body').classList.remove('opacity-0');
+  });
 </script>
 
 </body>

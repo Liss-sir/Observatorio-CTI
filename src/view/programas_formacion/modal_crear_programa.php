@@ -3,7 +3,7 @@
     <div class="fixed inset-0 bg-black bg-opacity-80"></div>
     <div class="fixed inset-0 flex items-center justify-center p-4">
         <!-- Ancho responsive: móvil → lg → portátil → xl → escritorio -->
-        <div class="bg-white w-full max-w-xl sm:max-w-2xl lg:max-w-4xl xl:max-w-5xl rounded-xl shadow-2xl transform transition-all">
+        <div class="bg-white w-full max-w-xl sm:max-w-2xl lg:max-w-4xl xl:max-w-5xl rounded-xl shadow-2xl transform transition-all animate-modalFadeIn">
             <!-- HEADER -->
             <div class="border-b px-6 py-5 flex justify-between items-center">
                 <div>
@@ -111,6 +111,21 @@
 </div>
 
 <style>
+
+@keyframes modalFadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.95) translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+.animate-modalFadeIn {
+    animation: modalFadeIn 0.3s ease-out;
+}
+
 
 /* 💻 PORTÁTILES */
 
