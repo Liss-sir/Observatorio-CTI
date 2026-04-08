@@ -72,20 +72,90 @@ document.addEventListener("DOMContentLoaded", () => {
     return url.toString();
   }
 
+  // Acepta controladores que responden con success (bool) o status (string).
+  function esRespuestaExitosa(payload) {
+    if (!payload || typeof payload !== "object") {
+      return false;
+    }
+
+    if (typeof payload.success === "boolean") {
+      return payload.success;
+    }
+
+    if (typeof payload.status === "string") {
+      return payload.status.toLowerCase() === "success";
+    }
+
+    return true;
+  }
+
+  // Wrapper central para fetch JSON con validacion de errores funcionales del API.
   async function fetchJson(base, params = {}, options = {}) {
     const response = await fetch(buildApiUrl(base, params), options);
     if (!response.ok) {
       throw new Error(`HTTP ${response.status}`);
     }
-    return response.json();
+    const payload = await response.json();
+
+    if (!esRespuestaExitosa(payload)) {
+      const mensaje = String(payload?.error || payload?.message || "Error en respuesta del backend").trim();
+      throw new Error(mensaje || "Error en respuesta del backend");
+    }
+
+    return payload;
   }
 
-  function toOptionList(payload) {
+  function extraerValorPorClaves(item, keys = []) {
+    for (const key of keys) {
+      if (Object.prototype.hasOwnProperty.call(item, key)) {
+        const value = String(item[key] ?? "").trim();
+        if (value) {
+          return value;
+        }
+      }
+    }
+    return "";
+  }
+
+  function extraerIdDinamico(item) {
+    const key = Object.keys(item || {}).find((k) => /^id(_|[A-Z])/.test(k) || k.toLowerCase().startsWith("id_"));
+    if (!key) {
+      return "";
+    }
+    return String(item[key] ?? "").trim();
+  }
+
+  function extraerLabelDinamico(item) {
+    const posibles = Object.keys(item || {}).filter((k) => {
+      const lower = k.toLowerCase();
+      return lower === "nombre" || lower.startsWith("nombre_") || lower.includes("titulo") || lower.includes("descripcion");
+    });
+
+    for (const key of posibles) {
+      const value = String(item[key] ?? "").trim();
+      if (value) {
+        return value;
+      }
+    }
+
+    return "";
+  }
+
+  // Normaliza catálogos heterogéneos a un formato único: [{ value, label }].
+  function toOptionList(payload, idKeys = [], labelKeys = []) {
     const source = Array.isArray(payload?.data) ? payload.data : [];
     return source
       .map((item) => {
-        const value = String(item?.id ?? item?.value ?? "").trim();
-        const label = String(item?.text ?? item?.label ?? item?.nombre ?? "").trim();
+        const value = (
+          extraerValorPorClaves(item, [...idKeys, "id", "value"]) ||
+          extraerIdDinamico(item)
+        ).trim();
+
+        const label = (
+          extraerValorPorClaves(item, [...labelKeys, "text", "label", "nombre"]) ||
+          extraerLabelDinamico(item)
+        ).trim();
+
         if (!value || !label) {
           return null;
         }
@@ -96,15 +166,19 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function normalizarLineaDesdeBackend(row) {
     const idLinea = String(row?.id_linea ?? "").trim();
+    const nombreLinea = String(row?.nombre_linea ?? "").trim();
     const nombrePrograma = String(row?.nombre_programa ?? "").trim();
     const nombreTendencia = String(row?.nombre_tendencia ?? "").trim();
     const nombreEtapa = String(row?.nombre_etapa ?? "").trim();
     const nombreArea = String(row?.nombre_area ?? "").trim();
-    const anioProyeccion = String(row?.anio_proyeccion ?? "").trim();
-    const descripcionProyeccion = String(row?.descripcion_proyeccion ?? "").trim();
+    const anioProyeccion = String(row?.anio_proyeccion ?? row?.anio ?? "").trim();
+    const descripcionProyeccion = String(
+      row?.descripcion_proyeccion ?? row?.nombre_proyeccion ?? row?.nombre_proyeccion_futuro ?? row?.nombre ?? ""
+    ).trim();
 
     const nombre =
-      nombrePrograma
+      nombreLinea
+      || nombrePrograma
       || nombreTendencia
       || (idLinea ? `Linea ${idLinea}` : "Linea Tecnologica");
 
@@ -366,7 +440,11 @@ document.addEventListener("DOMContentLoaded", () => {
         id_area: idArea,
       });
 
-      const opciones = toOptionList(payload);
+      const opciones = toOptionList(
+        payload,
+        ["id_programa", "idPrograma"],
+        ["nombre_programa", "nombrePrograma", "text"]
+      );
       fillSelect(targetSelect, opciones, "Seleccionar programa de formacion...");
 
       if (selectedValue) {
@@ -387,10 +465,22 @@ document.addEventListener("DOMContentLoaded", () => {
         fetchJson(API_ROUTES.proyecciones, { accion: "paraSelect" }),
       ]);
 
-      reemplazarCatalogo(areasDisponibles, toOptionList(areasPayload));
-      reemplazarCatalogo(etapasDisponibles, toOptionList(etapasPayload));
-      reemplazarCatalogo(tendenciasEmergentesDisponibles, toOptionList(tendenciasPayload));
-      reemplazarCatalogo(proyeccionesDisponibles, toOptionList(proyeccionesPayload));
+      reemplazarCatalogo(
+        areasDisponibles,
+        toOptionList(areasPayload, ["id_area", "idArea"], ["nombre_area", "nombreArea", "text"])
+      );
+      reemplazarCatalogo(
+        etapasDisponibles,
+        toOptionList(etapasPayload, ["id_etapa", "idEtapa"], ["nombre_etapa", "nombreEtapa", "nombre", "text"])
+      );
+      reemplazarCatalogo(
+        tendenciasEmergentesDisponibles,
+        toOptionList(tendenciasPayload, ["id_tendencia", "idTendencia"], ["nombre_tendencia", "nombreTendencia", "nombre", "text"])
+      );
+      reemplazarCatalogo(
+        proyeccionesDisponibles,
+        toOptionList(proyeccionesPayload, ["id_proyeccion", "idProyeccion"], ["nombre_proyeccion", "nombreProyeccion", "nombre", "anio", "text"])
+      );
 
       fillSelect(modals.createArea, areasDisponibles, "Seleccionar area...");
       fillSelect(modals.createTendencia, tendenciasEmergentesDisponibles, "Seleccionar tendencia tecnologica emergente...");
@@ -1239,8 +1329,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     const card = document.createElement("div");
-    const estadoActivo = state.active !== false;
-    const estadoTexto = estadoActivo ? "0 vigentes" : "0 vigentes";
     const chips = [state.programaFormacion, state.tendencia].filter(Boolean).slice(0, 2);
 
     card.className = "tarjeta-tecnologia bg-white border border-sena-border rounded-xl p-6 flex flex-col gap-3";
@@ -1260,18 +1348,19 @@ document.addEventListener("DOMContentLoaded", () => {
         <span class="text-sm text-sena-text-soft">0 perfiles</span>
       </div>
       <h3 class="font-['Montserrat'] text-base font-semibold text-sena-text-main leading-snug"></h3>
-      <p class="text-sm text-sena-text-soft">${estadoTexto} &middot; 1 linea</p>
       <div class="flex flex-wrap gap-2"></div>
       <a href="#" class="text-sm text-sena-strong font-medium mt-auto inline-flex items-center gap-1 hover:underline">Ver perfiles &rarr;</a>
     `;
 
     card.querySelector("h3").textContent = nombre;
     const chipsWrap = card.querySelector(".flex.flex-wrap.gap-2");
+    chipsWrap.className = "flex flex-wrap gap-2 max-w-full";
 
     chips.forEach((chipText) => {
       const chip = document.createElement("span");
-      chip.className = "text-xs text-sena-strong bg-sena-soft rounded-full px-2.5 py-0.5";
+      chip.className = "text-xs text-sena-strong bg-sena-soft rounded-full px-2.5 py-0.5 truncate min-w-0";
       chip.textContent = chipText;
+      chip.title = chipText;
       chipsWrap.appendChild(chip);
     });
 
@@ -1304,10 +1393,12 @@ document.addEventListener("DOMContentLoaded", () => {
     const chipsWrap = card.querySelector(".flex.flex-wrap.gap-2");
     if (chipsWrap) {
       chipsWrap.innerHTML = "";
+      chipsWrap.className = "flex flex-wrap gap-2 max-w-full";
       [state.programaFormacion, state.tendencia].filter(Boolean).slice(0, 2).forEach((chipText) => {
         const chip = document.createElement("span");
-        chip.className = "text-xs text-sena-strong bg-sena-soft rounded-full px-2.5 py-0.5";
+        chip.className = "text-xs text-sena-strong bg-sena-soft rounded-full px-2.5 py-0.5 truncate min-w-0";
         chip.textContent = chipText;
+        chip.title = chipText;
         chipsWrap.appendChild(chip);
       });
     }
@@ -1433,9 +1524,16 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function mostrarAlertaFinal(config) {
-    const { title, message, color = "#39A900", seconds = 3 } = config;
+    const { title, message, subtitle = "", color = "#39A900", seconds = 3 } = config;
+
+    const subtitleResolved = subtitle || (String(title).toLowerCase() === "error"
+      ? "La operacion no se completo"
+      : "Operacion realizada correctamente");
 
     modals.successTitle.textContent = title;
+    if (modals.successSubtitle) {
+      modals.successSubtitle.textContent = subtitleResolved;
+    }
     modals.successText.textContent = message;
     modals.successText.style.color = color;
     modals.successIconWrap.style.backgroundColor = `${color}1A`;
@@ -1757,6 +1855,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     const payloadCrear = {
+      nombre_linea: nombreNuevaLinea,
       id_area: modals.createArea.value,
       id_programa: modals.createPrograma.value,
       id_etapa: modals.createEtapa.value,
@@ -1778,76 +1877,32 @@ document.addEventListener("DOMContentLoaded", () => {
     try {
       const creado = await crearLineaBackend(payloadCrear);
       const idCreado = String(creado?.id_linea || "").trim();
-      const fila = await obtenerLineaBackend(idCreado);
 
-      if (!fila) {
-        throw new Error("No fue posible obtener la linea creada");
-      }
-
-      const normalizada = normalizarLineaDesdeBackend(fila);
-      const nombreFinal = normalizada.nombre || nombreNuevaLinea;
-
-      const nuevaState = {
-        active: normalizada.active,
-        area: normalizada.area,
-        programaFormacion: normalizada.programaFormacion,
-        tendencia: normalizada.tendencia,
-        etapa: normalizada.etapa,
-        proyeccion: normalizada.proyecciones?.[0] || normalizada.proyeccion || normalizarProyeccionTexto("", normalizada.idProyeccion),
-        idLinea: normalizada.idLinea,
-        idArea: normalizada.idArea,
-        idPrograma: normalizada.idPrograma,
-        idEtapa: normalizada.idEtapa,
-        idTendencia: normalizada.idTendencia,
-        idProyeccion: normalizada.idProyeccion,
-      };
-
-      estadoLineas[nombreFinal] = nuevaState;
-      const nuevaCard = crearCardLinea(nombreFinal, nuevaState);
-      if (nuevaCard) {
-        aplicarFiltroBusqueda();
+      // Sincroniza siempre desde backend tras crear para evitar desajustes visuales.
+      if (isListadoView) {
+        await cargarLineasDesdeBackend();
       }
 
       cerrarModal(modals.createModal);
       mostrarAlertaFinal({
         title: "Linea Creada",
-        message: `La linea \"${nombreFinal}\" fue creada correctamente.`,
+        message: idCreado
+          ? `La linea \"${nombreNuevaLinea}\" fue creada correctamente (ID ${idCreado}).`
+          : `La linea \"${nombreNuevaLinea}\" fue creada correctamente.`,
         color: "#39A900",
         seconds: 3,
       });
       return;
     } catch (error) {
-      // Fallback visual temporal when API fails.
+      const backendMsg = String(error?.message || "").trim();
+      mostrarAlertaFinal({
+        title: "Error",
+        message: backendMsg || "No fue posible crear la linea en el backend.",
+        color: "#e65100",
+        seconds: 3,
+      });
+      return;
     }
-
-    const nuevaState = {
-      active: true,
-      area: getOptionLabelByValue(areasDisponibles, modals.createArea.value),
-      programaFormacion: modals.createPrograma.value,
-      tendencia: modals.createTendencia.value,
-      etapa: modals.createEtapa.value,
-      proyeccion: getOptionLabelByValue(proyeccionesDisponibles, modals.createProyeccion.value),
-      idArea: modals.createArea.value,
-      idPrograma: modals.createPrograma.value,
-      idEtapa: modals.createEtapa.value,
-      idTendencia: modals.createTendencia.value,
-      idProyeccion: modals.createProyeccion.value,
-    };
-
-    estadoLineas[nombreNuevaLinea] = nuevaState;
-    const nuevaCard = crearCardLinea(nombreNuevaLinea, nuevaState);
-    if (nuevaCard) {
-      // Temporal: creacion solo visual (sin persistencia en storage).
-      aplicarFiltroBusqueda();
-    }
-
-    cerrarModal(modals.createModal);
-    mostrarAlertaFinal({
-      title: "Linea Creada",
-      message: `La linea \"${nombreNuevaLinea}\" fue creada visualmente.`,
-      color: "#39A900",
-      seconds: 3,
-    });
   });
 
   modals.disableClose.forEach((btn) => {
@@ -2027,6 +2082,7 @@ document.addEventListener("DOMContentLoaded", () => {
       try {
         const payloadActualizar = {
           id_linea: idLineaEditar,
+          nombre_linea: nuevoNombre,
           id_area: modals.editArea.value,
           id_programa: modals.editPrograma.value,
           id_etapa: modals.editEtapa.value,
@@ -2341,7 +2397,7 @@ document.addEventListener("DOMContentLoaded", () => {
               </div>
               <div>
                 <h3 id="linea-success-title" class="text-lg font-semibold text-sena-text-main">Accion completada</h3>
-                <p class="text-xs text-sena-text-soft">Operacion realizada correctamente</p>
+                <p id="linea-success-subtitle" class="text-xs text-sena-text-soft">Operacion realizada correctamente</p>
               </div>
               <button type="button" class="linea-close-success ml-auto text-sena-text-soft hover:text-sena-text-main">&times;</button>
             </div>
@@ -2398,6 +2454,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       successModal: document.getElementById("linea-modal-success"),
       successTitle: document.getElementById("linea-success-title"),
+      successSubtitle: document.getElementById("linea-success-subtitle"),
       successIconWrap: document.getElementById("linea-success-icon-wrap"),
       successIcon: document.getElementById("linea-success-icon"),
       successCounter: document.getElementById("linea-success-counter"),
