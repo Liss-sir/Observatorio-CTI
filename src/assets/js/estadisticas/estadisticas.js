@@ -13,126 +13,79 @@ const monthNames = {
   '12': 'Diciembre'
 };
 
-const dataByPeriod = {
-  all: {
-    bar: {
-      labels: [
-        'Tecnologías de la Información',
-        'Automatización Industrial',
-        'Energías Renovables',
-        'Biotecnología',
-        'Nanotecnología',
-        'Materiales Avanzados',
-        'Robótica',
-        'Inteligencia Artificial'
-      ],
-      demand: [28, 18, 15, 20, 14, 22, 16, 18],
-      offer: [24, 16, 13, 18, 12, 20, 14, 16]
-    },
-    pie: {
-      labels: [
-        'Tecnologías de la Información',
-        'Automatización Industrial',
-        'Energías Renovables',
-        'Biotecnología',
-        'Nanotecnología',
-        'Materiales Avanzados'
-      ],
-      values: [28, 18, 15, 20, 14, 22]
-    },
-    programsCount: 64
-  },
-  '2026-01': {
-    bar: {
-      labels: [
-        'Tecnologías de la Información',
-        'Automatización Industrial',
-        'Energías Renovables',
-        'Biotecnología',
-        'Nanotecnología',
-        'Materiales Avanzados',
-        'Robótica',
-        'Inteligencia Artificial'
-      ],
-      demand: [21, 14, 11, 15, 10, 16, 13, 14],
-      offer: [19, 12, 10, 13, 9, 15, 11, 13]
-    },
-    pie: {
-      labels: [
-        'Tecnologías de la Información',
-        'Automatización Industrial',
-        'Energías Renovables',
-        'Biotecnología',
-        'Nanotecnología',
-        'Materiales Avanzados'
-      ],
-      values: [21, 14, 11, 15, 10, 16]
-    },
-    programsCount: 62
-  },
-  '2026-02': {
-    bar: {
-      labels: [
-        'Tecnologías de la Información',
-        'Automatización Industrial',
-        'Energías Renovables',
-        'Biotecnología',
-        'Nanotecnología',
-        'Materiales Avanzados',
-        'Robótica',
-        'Inteligencia Artificial'
-      ],
-      demand: [24, 16, 13, 18, 12, 19, 14, 16],
-      offer: [21, 14, 11, 16, 10, 17, 12, 14]
-    },
-    pie: {
-      labels: [
-        'Tecnologías de la Información',
-        'Automatización Industrial',
-        'Energías Renovables',
-        'Biotecnología',
-        'Nanotecnología',
-        'Materiales Avanzados'
-      ],
-      values: [24, 16, 13, 18, 12, 19]
-    },
-    programsCount: 63
-  },
-  '2026-03': {
-    bar: {
-      labels: [
-        'Tecnologías de la Información',
-        'Automatización Industrial',
-        'Energías Renovables',
-        'Biotecnología',
-        'Nanotecnología',
-        'Materiales Avanzados',
-        'Robótica',
-        'Inteligencia Artificial'
-      ],
-      demand: [28, 18, 15, 20, 14, 22, 16, 18],
-      offer: [24, 16, 13, 18, 12, 20, 14, 16]
-    },
-    pie: {
-      labels: [
-        'Tecnologías de la Información',
-        'Automatización Industrial',
-        'Energías Renovables',
-        'Biotecnología',
-        'Nanotecnología',
-        'Materiales Avanzados'
-      ],
-      values: [28, 18, 15, 20, 14, 22]
-    },
-    programsCount: 64
-  }
-};
-
 const pieColors = ['#22c55e', '#3b82f6', '#eab308', '#ef4444', '#8b5cf6', '#f97316'];
+const API_URL = new URL('../../controllers/EstadisticaController.php', window.location.href).toString();
 
-let currentPeriodKey = 'all';
 let barChart;
 let pieChart;
+const statsState = {
+  summary: {
+    total_perfiles_activos: 0,
+    total_lineas_activas: 0,
+    total_cupos_demandados: 0,
+  },
+  bar: {
+    labels: [],
+    demand: [],
+    offer: [],
+  },
+  pie: {
+    labels: [],
+    values: [],
+  },
+};
+
+function getEmptyPeriodData() {
+  return {
+    bar: { labels: [], demand: [], offer: [] },
+    pie: { labels: [], values: [] },
+  };
+}
+
+function getCurrentPeriodData() {
+  return {
+    bar: {
+      labels: statsState.bar.labels,
+      demand: statsState.bar.demand,
+      offer: statsState.bar.offer,
+    },
+    pie: {
+      labels: statsState.pie.labels,
+      values: statsState.pie.values,
+    },
+  };
+}
+
+function showStatsError(message) {
+  const existing = document.getElementById('stats-error-banner');
+  if (existing) {
+    existing.textContent = message;
+    existing.classList.remove('hidden');
+    return;
+  }
+
+  const mainTitle = document.querySelector('main h1');
+  if (!mainTitle) {
+    return;
+  }
+
+  const banner = document.createElement('div');
+  banner.id = 'stats-error-banner';
+  banner.className = 'mt-3 rounded-lg border border-orange-300 bg-orange-50 px-3 py-2 text-sm text-orange-700';
+  banner.textContent = message;
+
+  const container = mainTitle.closest('div');
+  if (container) {
+    container.appendChild(banner);
+  }
+}
+
+function hideStatsError() {
+  const existing = document.getElementById('stats-error-banner');
+  if (existing) {
+    existing.classList.add('hidden');
+  }
+}
 
 function buildBarData(periodData) {
   return {
@@ -173,7 +126,7 @@ function buildPieData(periodData) {
     // Configuración de la gráfica de barras
 const barConfig = {
       type: 'bar',
-      data: buildBarData(dataByPeriod[currentPeriodKey]),
+  data: buildBarData(getEmptyPeriodData()),
       options: {
         responsive: true,
         maintainAspectRatio: false,
@@ -238,7 +191,7 @@ const barConfig = {
               stepSize: 2
             },
             beginAtZero: true,
-            max: 32
+            max: 10
           }
         }
       }
@@ -247,7 +200,7 @@ const barConfig = {
     // Configuración de la gráfica circular
 const pieConfig = {
       type: 'doughnut',
-      data: buildPieData(dataByPeriod[currentPeriodKey]),
+  data: buildPieData(getEmptyPeriodData()),
       options: {
         responsive: true,
         maintainAspectRatio: true,
@@ -280,35 +233,102 @@ const pieConfig = {
       }
     };
 
-function getPeriodData(month, year) {
-  if (month === 'all' && year === 'all') {
-    return { key: 'all', data: dataByPeriod.all };
+function adaptComparativaToBarData(payload) {
+  const areas = Array.isArray(payload?.por_area) ? payload.por_area : [];
+  return {
+    labels: areas.map((item) => String(item?.nombre_area || 'Sin área')),
+    demand: areas.map((item) => Number(item?.necesidades_empresariales?.cupos_demandados || 0)),
+    offer: areas.map((item) => Number(item?.ofertas_formacion?.cupos_ofertados || 0)),
+  };
+}
+
+function adaptDistribucionToPieData(payload) {
+  const distribucion = Array.isArray(payload?.distribucion) ? payload.distribucion : [];
+  return {
+    labels: distribucion.map((item) => String(item?.nombre_linea || 'Sin línea')),
+    values: distribucion.map((item) => Number(item?.estadisticas?.total_cupos_solicitados || 0)),
+  };
+}
+
+async function fetchJson(url) {
+  const response = await fetch(url);
+  if (!response.ok) {
+    throw new Error(`HTTP ${response.status}`);
   }
 
-  if (month !== 'all' && year !== 'all') {
-    const exactKey = `${year}-${month}`;
-    return { key: exactKey, data: dataByPeriod[exactKey] || dataByPeriod.all };
+  const contentType = String(response.headers.get('content-type') || '').toLowerCase();
+  const raw = await response.text();
+
+  let payload = null;
+  try {
+    payload = JSON.parse(raw);
+  } catch (error) {
+    const snippet = raw.slice(0, 180).replace(/\s+/g, ' ').trim();
+    throw new Error(`Respuesta no JSON desde backend (${contentType || 'sin content-type'}): ${snippet || 'vacía'}`);
   }
 
-  if (month === 'all' && year !== 'all') {
-    const yearKeys = Object.keys(dataByPeriod).filter((k) => k.startsWith(`${year}-`));
-    if (!yearKeys.length) {
-      return { key: 'all', data: dataByPeriod.all };
+  const success = payload?.success === true || payload?.status === 'success';
+  if (!success) {
+    throw new Error(String(payload?.error || payload?.message || 'Error al consultar estadísticas'));
+  }
+
+  return payload;
+}
+
+async function cargarEstadisticasDesdeBackend() {
+  const resultados = await Promise.allSettled([
+    fetchJson(`${API_URL}?accion=completas`),
+    fetchJson(`${API_URL}?accion=comparativa`),
+    fetchJson(`${API_URL}?accion=distribucion`),
+  ]);
+
+  const [completasResult, comparativaResult, distribucionResult] = resultados;
+
+  if (completasResult.status === 'fulfilled') {
+    const completas = completasResult.value?.data || {};
+    statsState.summary = completas?.resumen || statsState.summary;
+
+    const comparativaCompleta = completas?.comparativa_perfiles_vs_ofertas;
+    if (comparativaCompleta && !comparativaCompleta.error) {
+      statsState.bar = adaptComparativaToBarData(comparativaCompleta);
     }
 
-    const base = JSON.parse(JSON.stringify(dataByPeriod[yearKeys[0]]));
-    for (let i = 1; i < yearKeys.length; i += 1) {
-      const entry = dataByPeriod[yearKeys[i]];
-      base.bar.demand = base.bar.demand.map((v, idx) => v + entry.bar.demand[idx]);
-      base.bar.offer = base.bar.offer.map((v, idx) => v + entry.bar.offer[idx]);
-      base.pie.values = base.pie.values.map((v, idx) => v + entry.pie.values[idx]);
-      base.programsCount += entry.programsCount;
+    const distribucionCompleta = completas?.distribucion_lineas_tecnologicas;
+    if (distribucionCompleta && !distribucionCompleta.error) {
+      statsState.pie = adaptDistribucionToPieData(distribucionCompleta);
     }
-
-    return { key: `${year}-all`, data: base };
   }
 
-  return { key: 'all', data: dataByPeriod.all };
+  if (comparativaResult.status === 'fulfilled') {
+    const barFromComparativa = adaptComparativaToBarData(comparativaResult.value?.data || {});
+    if ((statsState.bar.labels || []).length === 0 || barFromComparativa.labels.length > 0) {
+      statsState.bar = barFromComparativa;
+    }
+  }
+
+  if (distribucionResult.status === 'fulfilled') {
+    const pieFromDistribucion = adaptDistribucionToPieData(distribucionResult.value?.data || {});
+    if ((statsState.pie.labels || []).length === 0 || pieFromDistribucion.labels.length > 0) {
+      statsState.pie = pieFromDistribucion;
+    }
+  }
+
+  const errores = resultados
+    .filter((item) => item.status === 'rejected')
+    .map((item) => String(item.reason?.message || item.reason || 'Error desconocido'));
+
+  if (errores.length) {
+    console.error('Errores al cargar estadísticas:', errores);
+    showStatsError(`No se pudieron cargar algunas fuentes de estadísticas: ${errores[0]}`);
+  }
+
+  const sinDatosBarra = (statsState.bar.labels || []).length === 0;
+  const sinDatosPie = (statsState.pie.labels || []).length === 0;
+  if (sinDatosBarra && sinDatosPie) {
+    throw new Error(errores[0] || 'El backend no devolvió datos para estadísticas.');
+  }
+
+  hideStatsError();
 }
 
 function getAppliedFiltersText() {
@@ -356,18 +376,16 @@ function renderPieLegend(labels, values, colors) {
 }
 
 function updateCounters(periodData) {
-  const totalPerfiles = periodData.bar.demand.reduce((acc, value) => acc + value, 0);
-  const totalSolicitudes = periodData.pie.values.reduce((acc, value) => acc + value, 0);
-
   const totalPerfilesEl = document.getElementById('totalPerfilesCount');
   const lineasCountEl = document.getElementById('lineasCount');
-
-  const programasCountEl = document.getElementById('programasCount');
   const solicitudesCountEl = document.getElementById('solicitudesCount');
 
+  const totalPerfiles = Number(statsState.summary?.total_perfiles_activos || 0);
+  const totalLineas = Number(statsState.summary?.total_lineas_activas || periodData.pie.labels.length || 0);
+  const totalSolicitudes = Number(statsState.summary?.total_cupos_demandados || periodData.pie.values.reduce((acc, value) => acc + value, 0));
+
   if (totalPerfilesEl) totalPerfilesEl.textContent = String(totalPerfiles);
-  if (lineasCountEl) lineasCountEl.textContent = String(periodData.pie.labels.length);
-  if (programasCountEl) programasCountEl.textContent = String(periodData.programsCount);
+  if (lineasCountEl) lineasCountEl.textContent = String(totalLineas);
   if (solicitudesCountEl) solicitudesCountEl.textContent = String(totalSolicitudes);
 }
 
@@ -384,11 +402,9 @@ function updateCharts(periodData) {
 
 function updateBarChart(periodData) {
   barChart.data = buildBarData(periodData);
+  const maxSerie = Math.max(...periodData.bar.demand, ...periodData.bar.offer, 0);
+  barChart.options.scales.y.max = Math.max(10, Math.ceil(maxSerie * 1.2));
   barChart.update();
-
-  const totalPerfiles = periodData.bar.demand.reduce((acc, value) => acc + value, 0);
-  const totalPerfilesEl = document.getElementById('totalPerfilesCount');
-  if (totalPerfilesEl) totalPerfilesEl.textContent = String(totalPerfiles);
 }
 
 function reportStyles() {
@@ -460,11 +476,8 @@ function openReportWindow(reportType) {
   const time = now.toLocaleTimeString('es-CO');
   const filtersText = getAppliedFiltersTextForReport(reportType);
 
-  const barPeriodData = getPeriodData(
-    document.getElementById('monthFilter')?.value || 'all',
-    document.getElementById('yearFilter')?.value || 'all'
-  ).data;
-  const piePeriodData = dataByPeriod.all;
+  const barPeriodData = getCurrentPeriodData();
+  const piePeriodData = getCurrentPeriodData();
 
   const reportWindow = window.open('', '_blank');
   if (!reportWindow) return;
@@ -543,15 +556,10 @@ document.addEventListener('DOMContentLoaded', function() {
   const barReportBtn = document.getElementById('barReportBtn');
   const pieReportBtn = document.getElementById('pieReportBtn');
 
-  updateCharts(dataByPeriod[currentPeriodKey]);
-
   const applyBarFilter = function() {
-    const month = monthFilter?.value || 'all';
-    const year = yearFilter?.value || 'all';
-
-    const result = getPeriodData(month, year);
-    currentPeriodKey = result.key;
-    updateBarChart(result.data);
+    // El backend actual expone estadísticas consolidadas, por lo que el filtro
+    // de mes/año se conserva visualmente y reutiliza el dataset vigente.
+    updateBarChart(getCurrentPeriodData());
   };
 
   monthFilter?.addEventListener('change', applyBarFilter);
@@ -568,6 +576,17 @@ document.addEventListener('DOMContentLoaded', function() {
   pieReportBtn?.addEventListener('click', function() {
     openReportWindow('pie');
   });
+
+  cargarEstadisticasDesdeBackend()
+    .then(() => {
+      updateCharts(getCurrentPeriodData());
+      applyBarFilter();
+    })
+    .catch((error) => {
+      console.error('Error cargando estadísticas:', error);
+      showStatsError(`No fue posible cargar estadísticas desde backend: ${String(error?.message || error)}`);
+      updateCharts(getEmptyPeriodData());
+    });
 
   if (typeof lucide !== 'undefined') {
     lucide.createIcons();
