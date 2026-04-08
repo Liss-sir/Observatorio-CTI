@@ -631,27 +631,4 @@ class PerfilOcupacionalModel {
             return false;
         }
     }
-
-        // Get formation programs associated with a technological line
-    public function obtenerProgramasPorLinea($id_linea) {
-        try {
-            $sql = "SELECT DISTINCT 
-                        pf.id_programa, 
-                        pf.nombre_programa, 
-                        pf.codigo_programa,
-                        pf.modalidad,
-                        nf.nombre_nivel as nivel_formacion
-                    FROM lineas_tecnologicas lt
-                    INNER JOIN programas_formacion pf ON lt.id_programa = pf.id_programa
-                    INNER JOIN niveles_formacion nf ON pf.id_nivel = nf.id_nivel
-                    WHERE lt.id_linea = ? AND lt.estado = 1 AND pf.estado = 1
-                    ORDER BY pf.nombre_programa ASC";
-        
-            $stmt = $this->conn->prepare($sql);
-            $stmt->execute([$id_linea]);
-            return $stmt->fetchAll(PDO::FETCH_ASSOC);
-        } catch (Exception $e) {
-            return [];
-        }
-    }
 }
