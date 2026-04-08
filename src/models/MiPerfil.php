@@ -10,7 +10,7 @@ class MiPerfil {
      * Obtiene los datos básicos de un usuario por su ID
      */
     public function getUser($userId) {
-        $stmt = $this->db->prepare("SELECT id_usuario, id_rol, representante_legal, correo, fecha_registro FROM usuarios WHERE id_usuario = ?");
+        $stmt = $this->db->prepare("SELECT id_usuario, id_rol, nombre_empresa, representante_legal, correo, fecha_registro, tipo_documento, numero_documento, razon_social FROM usuarios WHERE id_usuario = ?");
         $stmt->execute([$userId]);
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }

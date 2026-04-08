@@ -41,7 +41,7 @@ class ProgramaFormacionModel {
                     FROM programas_formacion p
                     INNER JOIN areas a ON p.id_area = a.id_area
                     INNER JOIN niveles_formacion n ON p.id_nivel = n.id_nivel
-                    ORDER BY a.nombre_area, p.nombre_programa ASC";
+                    ORDER BY fecha_creacion DESC";
             $stmt = $this->conn->prepare($sql);
             $stmt->execute();
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -357,14 +357,17 @@ class ProgramaFormacionModel {
     }
 
     // Validate program dates
-    public function validarFechas($fecha_creacion, $fecha_fin) {
+    public function validarFechas($fecha_creacion, $fecha_fin, $esCreacion = true) {
         $errores = [];
         
+        // Validar que fecha inicio no sea mayor que fecha fin (siempre)
         if (strtotime($fecha_creacion) > strtotime($fecha_fin)) {
             $errores[] = 'La fecha de inicio no puede ser mayor a la fecha de fin';
         }
         
-        if (strtotime($fecha_creacion) < strtotime(date('Y-m-d'))) {
+        // Solo validar que fecha inicio no sea anterior a hoy si es CREACIÓN
+        // Si es EDICIÓN, permitir fechas pasadas (el programa ya pudo haber empezado)
+        if ($esCreacion && strtotime($fecha_creacion) < strtotime(date('Y-m-d'))) {
             $errores[] = 'La fecha de inicio no puede ser anterior a la fecha actual';
         }
         

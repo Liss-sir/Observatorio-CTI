@@ -1,7 +1,7 @@
 <!-- Modal Editar Perfil -->
 <div id="modalEditar" class="hidden fixed inset-0 z-[9999] overflow-y-auto" aria-hidden="true">
     <!-- Overlay SEPARADO (fondo negro) -->
-    <div class="fixed inset-0 bg-black bg-opacity-30 transition-opacity"></div>
+    <div class="fixed inset-0 bg-black bg-opacity-80 transition-opacity"></div>
     
     <!-- Contenedor del contenido -->
     <div class="fixed inset-0 overflow-y-auto">
@@ -27,12 +27,12 @@
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">
                                 <i data-lucide="user" class="w-4 h-4 inline mr-1"></i>
-                                Nombre completo
+                                Nombre Representante Legal
                             </label>
                             <input
                                 type="text"
                                 id="inputNombre"
-                                class="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-sena focus:border-transparent transition-all"
+                                class="w-full px-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-sena/40 focus:border-sena"
                                 placeholder="Tu nombre completo"
                             >
                         </div>
@@ -40,12 +40,12 @@
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">
                                 <i data-lucide="mail" class="w-4 h-4 inline mr-1"></i>
-                                Correo electrónico
+                                Contacto Empresa
                             </label>
                             <input
                                 type="email"
                                 id="inputCorreo"
-                                class="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-sena focus:border-transparent transition-all"
+                                class="w-full px-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-sena/40 focus:border-sena"
                                 placeholder="tu@correo.com"
                             >
                         </div>

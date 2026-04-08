@@ -33,6 +33,10 @@
                         class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sena/20 focus:border-sena transition-all resize-none"
                         placeholder="Breve descripción de las funciones del área..."
                     ></textarea>
+                    <div class="flex justify-end items-center gap-2 mb-4 mt-1">
+                       <span id="contador-caracteres-crear" class="text-xs text-sena-text-soft">0 / 30</span>
+                      <span id="alerta-minimo-crear" class="text-xs text-red-500 hidden">Mínimo 30 caracteres requerido</span>
+                    </div>
                 </div>
           </div>
           <!-- FOOTER -->

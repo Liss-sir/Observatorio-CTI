@@ -26,7 +26,7 @@
         <!-- Content -->
         <div class="px-6 py-5">
           <p class="text-sm text-sena-text-soft leading-relaxed">
-            ¿Estás seguro de que deseas habilitar el programa <span class="font-semibold text-sena-text-main" id="nombre-perfil-habilitar">"Desarrollador Full Stack Senior"</span>?
+            ¿Estás seguro de que deseas habilitar el programa <span class="font-semibold text-sena-text-main" id="nombre-programa-habilitar">"Desarrollador Full Stack Senior"</span>?
           </p>
           <p class="text-xs text-sena-text-soft mt-3 bg-yellow-50 p-3 rounded-lg border border-yellow-200">
             <span class="font-medium text-yellow-800">Información:</span> El programa de formacion volverá a estar visible y disponible para su uso.
