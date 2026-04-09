@@ -5,7 +5,7 @@ const controllerUrl = '../../controllers/LandingController.php';
 // Rutas de destino por módulo
 const routes = {
   perfiles: '../perfiles/perfiles.php',
-  lineas: '../tecnologias_emergentes/tecnologias_emergentes.php',
+  lineas: '../lineas_tecnologicas/lineas_tecnologicas.php',
   programas: '../programas_formacion/programas.php'
 };
 
@@ -36,6 +36,21 @@ function getInitials(text = '') {
   }
 
   return (words[0][0] + words[1][0]).toUpperCase();
+}
+
+function getProgramInitials(text = '') {
+  const clean = text.trim();
+  if (!clean) return 'NA';
+
+  const ignoredWords = ['de', 'del', 'la', 'el', 'en', 'y', 'para'];
+  const words = clean
+    .split(/\s+/)
+    .filter(word => !ignoredWords.includes(word.toLowerCase()));
+
+  if (words.length === 0) return 'NA';
+  if (words.length === 1) return words[0].substring(0, 2).toUpperCase();
+
+  return words.slice(0, 2).map(word => word[0]).join('').toUpperCase();
 }
 
 // ================= EMPTY STATE =================
@@ -149,8 +164,8 @@ function renderLineas(lineas) {
   if (!lineas || lineas.length === 0) {
     renderEmptyState('lineas-tecnologicas', {
       icon: 'bar-chart-3',
-      title: 'No hay tecnologías emergentes',
-      subtitle: 'Haz clic para ir a la vista de tecnologías emergentes.',
+      title: 'No hay líneas tecnológicas',
+      subtitle: 'Haz clic para ir a la vista de líneas tecnológicas.',
       href: routes.lineas
     });
     return;
@@ -203,8 +218,8 @@ function renderProgramas(programas) {
       <article class="tarjeta-tecnologia group cursor-pointer rounded-xl border border-sena-border bg-white p-5 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-sena-strong hover:shadow-md">
         
         <div class="flex items-center gap-4">
-          <div class="flex h-11 w-11 items-center justify-center rounded-lg bg-sena-soft text-sm font-bold text-sena-strong">
-            ${escapeHtml(programa.codigo_programa || getInitials(programa.nombre_programa))}
+          <div class="flex h-14 w-14 min-h-[56px] min-w-[56px] items-center justify-center rounded-xl bg-sena-soft text-sm font-bold text-sena-strong">
+            ${escapeHtml(getProgramInitials(programa.nombre_programa))}
           </div>
 
           <div>
@@ -275,8 +290,8 @@ async function cargarLanding() {
 
     renderEmptyState('lineas-tecnologicas', {
       icon: 'bar-chart-3',
-      title: 'No se pudieron cargar las tecnologías emergentes',
-      subtitle: 'Haz clic para ir a la vista de tecnologías emergentes.',
+      title: 'No se pudieron cargar las líneas tecnológicas',
+      subtitle: 'Haz clic para ir a la vista de líneas tecnológicas.',
       href: routes.lineas
     });
 
