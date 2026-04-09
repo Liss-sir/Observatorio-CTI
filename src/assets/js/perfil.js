@@ -28,12 +28,12 @@ const Componentes = {
 
     perfilItem(p) {
         return `
-             <div class="flex justify-between items-center border-b py-3 last:border-none">
+             <div class="flex justify-between items-center rounded-full py-3 px-3 bg-gray-100">
                  <div class="flex items-center gap-3">
                      <i data-lucide="briefcase" class="w-4 h-4 text-gray-400"></i>
                      <span>${p.nombre}</span>
                  </div>
-                 <span class="px-3 py-1 text-xs rounded-full bg-sena-soft text-green-700">
+                 <span class="px-3 py-1 text-xs rounded-full border border-sena bg-sena-soft text-green-700">
                     ${p.estado === '1' ? 'Activo' : 'Inactivo'}
                  </span>
              </div>
