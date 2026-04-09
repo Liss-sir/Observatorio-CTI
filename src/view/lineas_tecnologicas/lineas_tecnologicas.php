@@ -84,6 +84,9 @@ include __DIR__ . '../../../includes/header.php';
           Crear primera línea
         </button>
       </div>
+
+      <!-- Contenedor para la paginacion -->
+      <div id="paginacion-container" class="hidden"></div>
     </div>
   </main>
 
