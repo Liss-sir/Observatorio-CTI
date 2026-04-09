@@ -482,6 +482,155 @@ class PerfilOcupacionalModel {
         }
     }
 
+    // List all active emerging technologies
+    public function listarTecnologiasEmergentes() {
+        try {
+            $sql = "SELECT id_tendencia, id_area, nombre, estado
+                    FROM tendencias_emergentes
+                    WHERE estado = 1
+                    ORDER BY nombre ASC";
+            
+            $stmt = $this->conn->prepare($sql);
+            $stmt->execute();
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (Exception $e) {
+            return [];
+        }
+    }
+
+    // List all current trends (alias of emerging technologies)
+    public function listarTendenciasActuales() {
+        try {
+            $sql = "SELECT id_tendencia, id_area, nombre, estado
+                    FROM tendencias_emergentes
+                    WHERE estado = 1
+                    ORDER BY nombre ASC";
+            
+            $stmt = $this->conn->prepare($sql);
+            $stmt->execute();
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (Exception $e) {
+            return [];
+        }
+    }
+
+    // List all future projections
+    public function listarProyeccionesFuturo() {
+        try {
+            $sql = "SELECT p.id_proyeccion, p.id_area, p.nombre, p.anio, p.estado,
+                           a.nombre_area
+                    FROM proyeccion_futuro p
+                    INNER JOIN areas a ON p.id_area = a.id_area
+                    WHERE p.estado = 1
+                    ORDER BY CAST(p.anio AS UNSIGNED) ASC, p.nombre ASC";
+            
+            $stmt = $this->conn->prepare($sql);
+            $stmt->execute();
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (Exception $e) {
+            return [];
+        }
+    }
+
+    // Get a specific emerging technology by ID
+    public function obtenerTecnologiaEmergente($id_tendencia) {
+        try {
+            $sql = "SELECT id_tendencia, id_area, nombre, estado
+                    FROM tendencias_emergentes
+                    WHERE id_tendencia = ? AND estado = 1";
+            
+            $stmt = $this->conn->prepare($sql);
+            $stmt->execute([$id_tendencia]);
+            return $stmt->fetch(PDO::FETCH_ASSOC);
+        } catch (Exception $e) {
+            return null;
+        }
+    }
+
+    // Get a specific future projection by ID
+    public function obtenerProyeccionFuturo($id_proyeccion) {
+        try {
+            $sql = "SELECT p.id_proyeccion, p.id_area, p.nombre, p.anio, p.estado,
+                           a.nombre_area
+                    FROM proyeccion_futuro p
+                    INNER JOIN areas a ON p.id_area = a.id_area
+                    WHERE p.id_proyeccion = ? AND p.estado = 1";
+            
+            $stmt = $this->conn->prepare($sql);
+            $stmt->execute([$id_proyeccion]);
+            return $stmt->fetch(PDO::FETCH_ASSOC);
+        } catch (Exception $e) {
+            return null;
+        }
+    }
+
+    // Disable profiles that exceed 12 months of validity
+    // Profiles have a validity of 12 months from their creation date
+    public function deshabilitarPerfilesVencidos() {
+        try {
+            // Profiles with more than 12 months of seniority and that are active
+            $sql = "UPDATE perfiles_ocupacionales 
+                    SET estado = 0 
+                    WHERE estado = 1 
+                    AND fecha_creacion <= DATE_SUB(NOW(), INTERVAL 12 MONTH)";
+            
+            $stmt = $this->conn->prepare($sql);
+            $stmt->execute();
+            $cantidad = $stmt->rowCount();
+            
+            return $cantidad;
+        } catch (Exception $e) {
+            return 0;
+        }
+    }
+
+    // Get profiles that are about to expire (less than X months from expiration)
+    public function obtenerPerfilesProximosVencer($meses = 1) {
+        try {
+            $sql = "SELECT p.*, 
+                           u.nombre_empresa, u.representante_legal, u.correo,
+                           l.nombre_linea,
+                           pr.nombre_programa, pr.codigo_programa,
+                           n.nombre_nivel,
+                           DATEDIFF(DATE_ADD(p.fecha_creacion, INTERVAL 12 MONTH), NOW()) as dias_restantes
+                    FROM perfiles_ocupacionales p
+                    INNER JOIN usuarios u ON p.id_usuario = u.id_usuario
+                    INNER JOIN lineas_tecnologicas l ON p.id_linea = l.id_linea
+                    INNER JOIN programas_formacion pr ON p.id_programa = pr.id_programa
+                    INNER JOIN niveles_formacion n ON p.id_nivel = n.id_nivel
+                    WHERE p.estado = 1 
+                    AND fecha_creacion <= DATE_SUB(DATE_ADD(NOW(), INTERVAL ? MONTH), INTERVAL 12 MONTH)
+                    AND fecha_creacion > DATE_SUB(NOW(), INTERVAL 12 MONTH)
+                    ORDER BY fecha_creacion ASC";
+            
+            $stmt = $this->conn->prepare($sql);
+            $stmt->execute([$meses]);
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (Exception $e) {
+            return [];
+        }
+    }
+
+    // Get statistics of validity of profiles
+    public function obtenerEstadisticasVigencia() {
+        try {
+            $sql = "SELECT 
+                        COUNT(*) as total_perfiles_activos,
+                        SUM(CASE WHEN fecha_creacion <= DATE_SUB(NOW(), INTERVAL 11 MONTH) THEN 1 ELSE 0 END) as perfiles_por_vencer,
+                        SUM(CASE WHEN fecha_creacion <= DATE_SUB(NOW(), INTERVAL 12 MONTH) THEN 1 ELSE 0 END) as perfiles_vencidos,
+                        SUM(CASE WHEN fecha_creacion > DATE_SUB(NOW(), INTERVAL 6 MONTH) THEN 1 ELSE 0 END) as perfiles_recientes,
+                        MIN(DATE_ADD(fecha_creacion, INTERVAL 12 MONTH)) as fecha_vencimiento_mas_cercana
+                    FROM perfiles_ocupacionales
+                    WHERE estado = 1";
+            
+            $stmt = $this->conn->prepare($sql);
+            $stmt->execute();
+            return $stmt->fetch(PDO::FETCH_ASSOC);
+        } catch (Exception $e) {
+            return [];
+        }
+    }
+
     // Get statistics for profiles
     public function obtenerEstadisticas() {
         try {
