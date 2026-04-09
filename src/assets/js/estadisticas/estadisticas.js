@@ -32,13 +32,14 @@ const statsState = {
   pie: {
     labels: [],
     values: [],
+    inactive: [],  // Líneas sin actividad (0%)
   },
 };
 
 function getEmptyPeriodData() {
   return {
     bar: { labels: [], demand: [], offer: [] },
-    pie: { labels: [], values: [] },
+    pie: { labels: [], values: [], inactive: [] },
   };
 }
 
@@ -52,6 +53,7 @@ function getCurrentPeriodData() {
     pie: {
       labels: statsState.pie.labels,
       values: statsState.pie.values,
+      inactive: statsState.pie.inactive,
     },
   };
 }
@@ -244,9 +246,25 @@ function adaptComparativaToBarData(payload) {
 
 function adaptDistribucionToPieData(payload) {
   const distribucion = Array.isArray(payload?.distribucion) ? payload.distribucion : [];
+  
+  const active = [];
+  const inactive = [];
+  
+  distribucion.forEach((item) => {
+    const label = String(item?.nombre_linea || 'Sin línea');
+    const value = Number(item?.estadisticas?.total_cupos_solicitados || 0);
+    
+    if (value > 0) {
+      active.push({ label, value });
+    } else {
+      inactive.push(label);
+    }
+  });
+  
   return {
-    labels: distribucion.map((item) => String(item?.nombre_linea || 'Sin línea')),
-    values: distribucion.map((item) => Number(item?.estadisticas?.total_cupos_solicitados || 0)),
+    labels: active.map(item => item.label),
+    values: active.map(item => item.value),
+    inactive: inactive,
   };
 }
 
@@ -349,13 +367,13 @@ function getAppliedFiltersTextForReport(reportType) {
   return getAppliedFiltersText();
 }
 
-function renderPieLegend(labels, values, colors) {
+function renderPieLegend(labels, values, colors, inactiveLines = []) {
   const legend = document.getElementById('pieLegend');
   if (!legend) return;
 
   const total = values.reduce((acc, value) => acc + value, 0);
 
-  legend.innerHTML = labels
+  const activeHtml = labels
     .map((label, index) => {
       const value = values[index] || 0;
       const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : '0.0';
@@ -373,6 +391,25 @@ function renderPieLegend(labels, values, colors) {
       `;
     })
     .join('');
+
+  const inactiveHtml = inactiveLines.length > 0 ? `
+    <div class="mt-4 pt-3 border-t border-slate-200">
+      <p class="text-[10px] font-semibold text-slate-500 mb-2">Líneas Tecnológicas sin solicitudes registradas</p>
+      <div class="grid grid-cols-2 gap-1">
+        ${inactiveLines
+          .map((label) => `
+            <div class="flex items-center gap-1 px-2 py-0.5 bg-slate-50 rounded border border-slate-200">
+              <div class="w-1.5 h-1.5 rounded-full flex-shrink-0" style="background-color:#d1d5db"></div>
+              <span class="text-[10px] text-slate-500 truncate">${label}</span>
+              <span class="text-[9px] text-slate-400 flex-shrink-0">(0)</span>
+          </div>
+          `)
+          .join('')}
+      </div>
+    </div>
+  ` : '';
+
+  legend.innerHTML = activeHtml + inactiveHtml;
 }
 
 function updateCounters(periodData) {
@@ -396,7 +433,7 @@ function updateCharts(periodData) {
   barChart.update();
   pieChart.update();
 
-  renderPieLegend(periodData.pie.labels, periodData.pie.values, pieColors);
+  renderPieLegend(periodData.pie.labels, periodData.pie.values, pieColors, periodData.pie.inactive);
   updateCounters(periodData);
 }
 
