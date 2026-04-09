@@ -26,11 +26,9 @@
         </div>
 
         <!-- Content -->
-         <h3 class="text-lg font-semibold text-sena-text-main">¡Programa de formacion creado!</h3>
-          <p class="text-sm text-sena-text-soft">El programa de formacion se ha creado exitosamente</p>
         <div class="px-6 py-5">
           <p class="text-sm text-sena-text-soft leading-relaxed">
-            El programa de formacion <span class="text-sena" id="nombre-proyeccion-creada">"Programa X"</span> ha sido creado correctamente.
+            El programa de formacion <span class="text-sena" id="nombre-proyeccion-creada">"...."</span> ha sido creado correctamente.
           </p>
           <div class="mt-4 flex items-center gap-2 text-xs text-sena-text-soft">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">

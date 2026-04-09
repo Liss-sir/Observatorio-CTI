@@ -101,15 +101,14 @@ include __DIR__ . '../../../includes/header.php';
           <div id="paginacion-container" class="hidden mt-6"></div>
         </div>
     </div>
-    
-    <?php include 'modal-deshabilitar-usuario.php'; ?>
-    <?php include 'modal-habilitar-usuario.php'; ?>
-    <?php include 'modal-habilitado-usuario.php'; ?>
-    <?php include 'modal-deshabilitado-usuario.php'; ?>
-    <?php include 'modal-detalle-usuario.php'; ?>
-    
     <!-- JS -->
-    <script src="../../assets/js/usuarios.js"></script>
+    <script src="../../assets/js/usuarios/usuarios.js"></script>
 </body>
 </html>
 <?php include __DIR__ . '../../../includes/footer.php'; ?>
+<?php include 'modal-deshabilitar-usuario.php'; ?>
+<?php include 'modal-habilitar-usuario.php'; ?>
+<?php include 'modal-habilitado-usuario.php'; ?>
+<?php include 'modal-deshabilitado-usuario.php'; ?>
+<?php include 'modal-detalle-usuario.php'; ?>
+    

@@ -7,7 +7,7 @@
     <div class="fixed inset-0 overflow-y-auto">
         <div class="flex min-h-full items-center justify-center p-4">
             <!-- Contenido del modal -->
-            <div class="relative w-full max-w-md transform overflow-hidden rounded-2xl bg-white shadow-2xl transition-all">
+            <div class="relative w-full max-w-md transform overflow-hidden rounded-2xl bg-white shadow-2xl transition-all animate-modalFadeIn">
                 <!-- Header -->
                 <div class="flex justify-between items-center mb-6 px-8 pt-8">
                     <div>
@@ -85,3 +85,19 @@ if (typeof lucide !== 'undefined') {
     lucide.createIcons();
 }
 </script>
+
+<style>
+  @keyframes modalFadeIn {
+    from {
+      opacity: 0;
+      transform: scale(0.95) translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1) translateY(0);
+    }
+  }
+  .animate-modalFadeIn {
+    animation: modalFadeIn 0.3s ease-out;
+  }
+</style>

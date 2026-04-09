@@ -311,7 +311,7 @@ document.addEventListener("DOMContentLoaded", function () {
             card.setAttribute('data-fechainicio', programa.fecha_creacion || '');
             card.setAttribute('data-fechafin', programa.fecha_fin || '');
             card.setAttribute('data-descripcion', (programa.descripcion || '').replace(/"/g, '&quot;'));
-            card.setAttribute('data-estado', programa.estado || 1);
+            card.setAttribute('data-estado', programa.estado ?? 1);
 
             // ⚠️ CRUCIAL: Estas variables deben mantenerse aquí para el switch y los badges
             const estadoActivo = programa.estado == 1;
@@ -559,8 +559,9 @@ document.addEventListener("DOMContentLoaded", function () {
         document.getElementById('detalle-fecha-fin').textContent = `Fin: ${formatearFecha(card.dataset.fechafin)}`;
         document.getElementById('detalle-descripcion').textContent = card.dataset.descripcion || 'Sin descripción disponible.';
 
+
         const estado = card.dataset.estado;
-        const esActivo = estado == 1;
+        const esActivo = Number(estado) === 1;
         const badge = document.getElementById('detalle-estado-badge');
         const indicador = document.getElementById('detalle-estado-indicador');
         const estadoText = document.getElementById('detalle-estado');
