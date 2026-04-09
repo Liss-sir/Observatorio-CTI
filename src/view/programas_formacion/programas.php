@@ -24,6 +24,7 @@ include __DIR__ . '/modal_detalle_programa.php';
     <script src="https://unpkg.com/lucide@latest"></script>
     <link rel="stylesheet" href="../../../assets/css/output.css">
     <link rel="stylesheet" href="../../assets/css/globals.css">
+    <link rel="stylesheet" href="../../assets/css/style_toast_alert.css">
 </head>
 <body class="opacity-0" id="app">
 <body class="bg-gray-100">

@@ -87,43 +87,51 @@ class UsuarioModel {
     
     /**
      * Obtener líneas tecnológicas de un usuario
-     * Se obtienen desde la tabla perfiles_ocupaciones (relación usuario-linea)
      */
     public function obtenerTecnologias($id_usuario) {
         try {
-            $sql = "SELECT DISTINCT lt.* 
+            // 1. Usamos 'nombre_linea AS nombre' para que el JS lo reconozca
+            // 2. Quitamos 'AND lt.estado = 1' temporalmente para asegurar que traiga datos
+            $sql = "SELECT DISTINCT lt.id_linea, lt.nombre_linea as nombre, lt.estado
                     FROM lineas_tecnologicas lt
-                    INNER JOIN perfiles_ocupaciones po ON lt.id_linea = po.id_linea
-                    WHERE po.id_usuario = ? AND lt.estado = 1";
+                    INNER JOIN perfiles_ocupacionales po ON lt.id_linea = po.id_linea
+                    WHERE po.id_usuario = ?";
+                    
             $stmt = $this->conn->prepare($sql);
             $stmt->execute([$id_usuario]);
-            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $resultados = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                        
+            return $resultados;
         } catch (Exception $e) {
+            error_log("Error obtenerTecnologias: " . $e->getMessage());
             return [];
         }
     }
-    
-    /**
-     * Obtener perfiles creados por un usuario
-     * Se obtienen desde la tabla perfiles_ocupaciones
-     */
+
     public function obtenerPerfiles($id_usuario) {
         try {
-            $sql = "SELECT po.*, lt.nombre as linea_nombre
-                    FROM perfiles_ocupaciones po
+            $sql = "SELECT po.*, lt.nombre_linea as linea_nombre
+                    FROM perfiles_ocupacionales po
                     INNER JOIN lineas_tecnologicas lt ON po.id_linea = lt.id_linea
                     WHERE po.id_usuario = ?
                     ORDER BY po.fecha_creacion DESC";
+            
             $stmt = $this->conn->prepare($sql);
             $stmt->execute([$id_usuario]);
-            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $resultados = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            
+            // DEBUG: Imprimir en error_log
+            error_log("🔍 obtenerPerfiles - Usuario: $id_usuario - Resultados: " . count($resultados));
+            error_log("🔍 SQL: $sql");
+            
+            return $resultados;
         } catch (Exception $e) {
+            error_log("❌ Error en obtenerPerfiles: " . $e->getMessage());
             return [];
         }
     }
-    
+
     /* ================= CREATE ================= */
-    
     /**
      * Crear un nuevo usuario
      */

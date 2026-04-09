@@ -41,31 +41,56 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // ===== FUNCIÓN PARA MOSTRAR ALERTAS BONITAS (TOASTS) =====
     function mostrarToastValidacion(mensaje, tipo = 'warning') {
-        // Si no existe el contenedor, lo crea
-        let toastContainer = document.getElementById('toast-container');
+        const toastContainer = document.getElementById('toast-container');
+        
         if (!toastContainer) {
-            toastContainer = document.createElement('div');
-            toastContainer.id = 'toast-container';
-            toastContainer.className = 'fixed top-4 right-4 z-[99999] flex flex-col gap-3 pointer-events-none';
-            document.body.appendChild(toastContainer);
+            const container = document.createElement('div');
+            container.id = 'toast-container';
+            container.className = 'fixed top-4 right-4 z-[99999] flex flex-col gap-3 pointer-events-none';
+            document.body.appendChild(container);
         }
-
-        const toastId = 'toast-' + Date.now();
+        
+        const container = document.getElementById('toast-container');
+        
+        const titulo = tipo === 'warning' ? 'Campo requerido' : 
+                       tipo === 'error' ? 'Error' : 
+                       tipo === 'info' ? 'Información' : 'Éxito';
+        
+        const toastId = 'toast-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
         const toast = document.createElement('div');
-        
-        // Colores según el tipo (warning, error, success)
-        let bgClass = tipo === 'error' ? 'bg-red-50 border-red-200 text-red-800' : 
-                    tipo === 'success' ? 'bg-green-50 border-green-200 text-green-800' : 'bg-yellow-50 border-yellow-200 text-yellow-800';
-        
         toast.id = toastId;
-        toast.className = `pointer-events-auto flex items-start gap-3 p-4 rounded-lg border shadow-lg ${bgClass} animate-fade-in-down`;
+        toast.className = `toast-validation ${tipo}`;
+        
+        const iconos = {
+            info: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>`,
+            warning: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4"/><path d="M12 17h.01"/><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2z"/></svg>`,
+            error: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`,
+            success: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`
+        };
+        
         toast.innerHTML = `
-            <div class="flex-shrink-0 font-bold">${tipo === 'error' ? '✕' : tipo === 'success' ? '✓' : '⚠'}</div>
-            <div class="text-sm">${mensaje}</div>
+            <div class="toast-contenido">
+                <div class="toast-icono-wrapper">
+                    <div class="toast-icono">${iconos[tipo] || iconos.warning}</div>
+                </div>
+                <div class="toast-mensaje-wrapper">
+                    <div class="toast-titulo">${titulo}</div>
+                    <div class="toast-mensaje">${mensaje}</div>
+                </div>
+            </div>
         `;
         
-        toastContainer.appendChild(toast);
-        setTimeout(() => { toast.remove(); }, 3000);
+        container.appendChild(toast);
+        
+        setTimeout(() => {
+            const toastElement = document.getElementById(toastId);
+            if (toastElement) {
+                toastElement.classList.add('exit');
+                setTimeout(() => {
+                    if (toastElement.parentNode) toastElement.remove();
+                }, 200);
+            }
+        }, 3000);
     }
 
     // ===== VALIDACIÓN DE DESCRIPCIÓN =====

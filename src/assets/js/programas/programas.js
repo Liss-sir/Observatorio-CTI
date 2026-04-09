@@ -83,6 +83,59 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
+    function mostrarToastValidacion(mensaje, tipo = 'warning') {
+        const toastContainer = document.getElementById('toast-container');
+        
+        if (!toastContainer) {
+            const container = document.createElement('div');
+            container.id = 'toast-container';
+            container.className = 'fixed top-4 right-4 z-[99999] flex flex-col gap-3 pointer-events-none';
+            document.body.appendChild(container);
+        }
+        
+        const container = document.getElementById('toast-container');
+        
+        const titulo = tipo === 'warning' ? 'Campo requerido' : 
+                       tipo === 'error' ? 'Error' : 
+                       tipo === 'info' ? 'Información' : 'Éxito';
+        
+        const toastId = 'toast-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+        const toast = document.createElement('div');
+        toast.id = toastId;
+        toast.className = `toast-validation ${tipo}`;
+        
+        const iconos = {
+            info: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>`,
+            warning: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4"/><path d="M12 17h.01"/><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2z"/></svg>`,
+            error: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`,
+            success: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`
+        };
+        
+        toast.innerHTML = `
+            <div class="toast-contenido">
+                <div class="toast-icono-wrapper">
+                    <div class="toast-icono">${iconos[tipo] || iconos.warning}</div>
+                </div>
+                <div class="toast-mensaje-wrapper">
+                    <div class="toast-titulo">${titulo}</div>
+                    <div class="toast-mensaje">${mensaje}</div>
+                </div>
+            </div>
+        `;
+        
+        container.appendChild(toast);
+        
+        setTimeout(() => {
+            const toastElement = document.getElementById(toastId);
+            if (toastElement) {
+                toastElement.classList.add('exit');
+                setTimeout(() => {
+                    if (toastElement.parentNode) toastElement.remove();
+                }, 200);
+            }
+        }, 3000);
+    }
+
     // ===== CARGAR ÁREAS =====
     async function cargarAreas() {
         try {
@@ -758,12 +811,22 @@ document.addEventListener("DOMContentLoaded", function () {
                 descripcion: document.getElementById("descripcionNuevoPrograma")?.value
             };
 
+            // =========================
+            // 1. VALIDACIÓN DE CAMPOS REQUERIDOS
+            // =========================
             if (!datos.id_area || !datos.codigo_programa || !datos.nombre_programa || !datos.id_nivel) {
-                alert('Complete los campos requeridos'); return;
+                // 🚨 ANTES: alert('Complete los campos requeridos');
+                mostrarToastValidacion('Complete los campos requeridos (*)', 'error'); 
+                return;
             }
 
+            // =========================
+            // 2. VALIDACIÓN DE DESCRIPCIÓN
+            // =========================
             if (!datos.descripcion || !validarDescripcion(datos.descripcion)) {
-                alert(`La descripción debe tener al menos ${MIN_DESCRIPCION_LENGTH} caracteres. Actualmente tiene ${datos.descripcion ? datos.descripcion.length : 0} caracteres.`);
+                // 🚨 ANTES: alert('La descripción debe tener...');
+                const longitud = datos.descripcion ? datos.descripcion.length : 0;
+                mostrarToastValidacion(`La descripción es muy corta (${longitud}/30 caracteres)`, 'warning');
                 return;
             }
 
@@ -809,12 +872,27 @@ document.addEventListener("DOMContentLoaded", function () {
                 descripcion: descInput?.value 
             };
 
-            if (!datos.id_programa) { alert('ID no encontrado'); return; }
-            if (!datos.id_area) { alert('El área es requerida'); return; }
+            // =========================
+            // 1. VALIDACIÓN DE ID Y ÁREA
+            // =========================
+            if (!datos.id_programa) { 
+                // 🚨 ANTES: alert('ID no encontrado');
+                mostrarToastValidacion('Error interno: ID del programa no encontrado', 'error'); 
+                return; 
+            }
 
-            // ✅ Validar con el string, no con el elemento DOM
+            if (!datos.id_area) { 
+                // 🚨 ANTES: alert('El área es requerida');
+                mostrarToastValidacion('El area es requerida', 'warning'); 
+                return; 
+            }
+
+            // =========================
+            // 2. VALIDACIÓN DE DESCRIPCIÓN
+            // =========================
             if (!validarDescripcion(datos.descripcion)) {
-                alert(`La descripción debe tener al menos ${MIN_DESCRIPCION_LENGTH} caracteres`, 'warning');
+                // 🚨 ANTES: alert('La descripción debe tener...', 'warning');
+                mostrarToastValidacion('La descripción debe tener al menos 30 caracteres', 'warning');
                 return;
             }
 

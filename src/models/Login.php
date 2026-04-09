@@ -305,14 +305,14 @@ class LoginModel {
     }
 
     /**
-     * Enviar correo de recuperaciÛn de contraseÒa
+     * Enviar correo de recuperacion de contraseña
      * @param string $correo
      * @return bool
      */
     public function enviarRecuperacion($correo) {
         $usuario = $this->obtenerUsuarioPorCorreo($correo);
         if (!$usuario) {
-            return false; // Usuario no existe (podrÌas devolver true por seguridad)
+            return false; 
         }
 
         $token = $this->crearToken($usuario['id_usuario'], 'RECUPERACION', 1);

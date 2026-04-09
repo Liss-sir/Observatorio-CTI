@@ -49,12 +49,15 @@ class UsuarioController {
     /* ================= NUEVO: OBTENER DETALLE COMPLETO ================= */
     public function obtenerDetalle() {
         try {
-            global $id; // Usar la variable global del router
+            $id = $_GET['id_usuario'] ?? null;
+
             if (!$id) {
                 echo json_encode(['status' => 'error', 'message' => 'id_usuario requerido']);
                 return;
             }
+
             $usuario = $this->model->obtenerCompleto($id);
+
             echo json_encode([
                 'status' => 'success',
                 'data' => $usuario

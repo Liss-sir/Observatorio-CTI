@@ -3,6 +3,7 @@
 <main class="flex-1">
     <link rel="stylesheet" href="../../../assets/css/output.css">
     <link rel="stylesheet" href="../../assets/css/globals.css">
+    <link rel="stylesheet" href="../../assets/css/style_toast_alert.css">
     <script src="https://unpkg.com/lucide@latest"></script>
 
     <div class="max-w-[80rem] mx-auto px-4 py-8 lg:px-8">
