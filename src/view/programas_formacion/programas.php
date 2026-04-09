@@ -43,7 +43,9 @@ include __DIR__ . '/modal_detalle_programa.php';
             <input type="text" id="buscador" class="w-full h-10 pl-10 pr-3 text-sm border border-sena-border rounded-lg bg-white text-sena-text-main placeholder:text-sena-text-soft focus:border-sena focus:ring-2 focus:ring-sena/15 outline-none transition-all" placeholder="Buscar por nombre o código">
         </div>
         <button data-permiso="crear_programa" id="btn-abrir-crear-programa" class="flex items-center gap-2 px-5 py-2 text-sm font-medium text-white bg-sena rounded-lg whitespace-nowrap h-10 hover:opacity-90 transition-opacity">
-            <i data-lucide="plus" class="w-4 h-4"></i>
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <path d="M12 4v16m8-8H4"></path>
+            </svg>
             Nuevo Programa
         </button>
     </div>

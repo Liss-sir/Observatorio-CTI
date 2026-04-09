@@ -66,7 +66,7 @@ $footerFragment = extract_tag_from_include(__DIR__ . '/../../includes/footer.php
       <!-- ============ TITLE + ACTIONS ROW ============ -->
       <div class="flex items-start justify-between gap-6 flex-wrap">
         <div class="min-w-0">
-          <h1 id="detalle-linea-titulo" class="text-2xl lg:text-3xl font-bold text-sena-text-main">
+          <h1 id="detalle-linea-titulo" class="text-2xl lg:text-3xl font-bold text-sena-text-main break-words [overflow-wrap:anywhere]">
             Linea Tecnologica
           </h1>
         </div>
@@ -95,7 +95,7 @@ $footerFragment = extract_tag_from_include(__DIR__ . '/../../includes/footer.php
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" class="w-4 h-4 text-sena"><path stroke-linecap="round" stroke-linejoin="round" d="M6.429 9.75 2.25 12l4.179 2.25m0-4.5 5.571 3 5.571-3m-11.142 0L2.25 7.5 12 2.25l9.75 5.25-4.179 2.25m0 0L12 12.75 6.429 9.75m11.142 0 4.179 2.25-9.75 5.25-9.75-5.25 4.179-2.25" /></svg>
             Tendencia Actual
           </h3>
-          <p id="detalle-tendencia-texto" class="text-sm font-medium text-sena-text-main">No registrada</p>
+          <p id="detalle-tendencia-texto" class="text-sm font-medium text-sena-text-main break-words [overflow-wrap:anywhere]">No registrada</p>
         </div>
 
         <div class="border border-sena-border rounded-xl bg-white p-5">
@@ -103,7 +103,7 @@ $footerFragment = extract_tag_from_include(__DIR__ . '/../../includes/footer.php
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" class="w-4 h-4 text-sena"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" /></svg>
             Proyección a Futuro
           </h3>
-          <ul id="detalle-proyeccion-list" class="list-disc pl-5 space-y-2 text-sm text-sena-text-main">
+          <ul id="detalle-proyeccion-list" class="list-disc pl-5 space-y-2 text-sm text-sena-text-main break-words [overflow-wrap:anywhere]">
             <li>No registrada</li>
           </ul>
         </div>
@@ -113,7 +113,7 @@ $footerFragment = extract_tag_from_include(__DIR__ . '/../../includes/footer.php
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" class="w-4 h-4 text-sena"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6l4 2" /><path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg>
             Tecnologias Emergentes Relacionadas
           </h3>
-          <ul id="detalle-tecnologias-list" class="list-disc pl-5 space-y-2 text-sm text-sena-text-main">
+          <ul id="detalle-tecnologias-list" class="list-disc pl-5 space-y-2 text-sm text-sena-text-main break-words [overflow-wrap:anywhere]">
             <li>No registradas</li>
           </ul>
         </div>
@@ -127,7 +127,7 @@ $footerFragment = extract_tag_from_include(__DIR__ . '/../../includes/footer.php
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" class="w-4 h-4 text-sena"><path stroke-linecap="round" stroke-linejoin="round" d="M3 7.5 12 3l9 4.5M3 7.5V12l9 4.5 9-4.5V7.5M3 12l9 4.5M21 12l-9 4.5" /></svg>
             Área Relacionada
           </h3>
-          <p id="detalle-area-texto" class="text-sm font-medium text-sena-text-main">No registrada</p>
+          <p id="detalle-area-texto" class="text-sm font-medium text-sena-text-main break-words [overflow-wrap:anywhere]">No registrada</p>
         </div>
 
         <div class="border border-sena-border rounded-xl bg-white p-5">
@@ -135,7 +135,7 @@ $footerFragment = extract_tag_from_include(__DIR__ . '/../../includes/footer.php
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" class="w-4 h-4 text-sena"><path stroke-linecap="round" stroke-linejoin="round" d="M12 14 21 9l-9-5-9 5 9 5Zm0 0v6" /><path stroke-linecap="round" stroke-linejoin="round" d="M7.5 12.5v4.5c0 .6 2 2 4.5 2s4.5-1.4 4.5-2v-4.5" /></svg>
             Programa de Formación
           </h3>
-          <p id="detalle-programa-formacion-texto" class="text-sm font-medium text-sena-text-main">No registrado</p>
+          <p id="detalle-programa-formacion-texto" class="text-sm font-medium text-sena-text-main break-words [overflow-wrap:anywhere]">No registrado</p>
         </div>
 
         <!-- Linea Vigente -->
