@@ -119,7 +119,7 @@ include __DIR__ . '../../../includes/header.php';
 
   </main>
 
-  <script src="../../assets/js/landing/landing.js"></script>
+  <script src="../../assets/js/landing/landing.js?v=<?php echo time(); ?>"></script>
   <script>
     if (window.lucide) {
       lucide.createIcons();
