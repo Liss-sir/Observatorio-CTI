@@ -34,7 +34,28 @@ class EstadisticasController {
     public function comparativaPerfilesVsOfertas() {
         verificarPermiso('ver_estadisticas');
         
-        $data = $this->model->obtenerComparativaPerfilesVsOfertas();
+        // Parámetros opcionales de filtro por mes y año
+        $mes = isset($_GET['mes']) ? (int)$_GET['mes'] : null;
+        $anio = isset($_GET['anio']) ? (int)$_GET['anio'] : null;
+        
+        // Validaciones básicas
+        if ($mes !== null && ($mes < 1 || $mes > 12)) {
+            echo json_encode([
+                'success' => false,
+                'error' => 'El mes debe estar entre 1 y 12'
+            ]);
+            return;
+        }
+        
+        if ($anio !== null && ($anio < 2000 || $anio > 2100)) {
+            echo json_encode([
+                'success' => false,
+                'error' => 'Año inválido'
+            ]);
+            return;
+        }
+        
+        $data = $this->model->obtenerComparativaPerfilesVsOfertas($mes, $anio);
         
         if (isset($data['error'])) {
             echo json_encode([
@@ -140,7 +161,9 @@ class EstadisticasController {
         
         switch ($tipo) {
             case 'comparativa':
-                $data = $this->model->obtenerComparativaPerfilesVsOfertas();
+                $mes = isset($_GET['mes']) ? (int)$_GET['mes'] : null;
+                $anio = isset($_GET['anio']) ? (int)$_GET['anio'] : null;
+                $data = $this->model->obtenerComparativaPerfilesVsOfertas($mes, $anio);
                 $this->generarCSVComparativa($data);
                 break;
             case 'lineas':

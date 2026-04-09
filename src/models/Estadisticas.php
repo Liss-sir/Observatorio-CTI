@@ -8,10 +8,33 @@ class EstadisticasModel {
         $this->conn = $db;
     }
 
-    // Get statistics of profiles vs offers
-    public function obtenerComparativaPerfilesVsOfertas() {
+    /**
+     * Obtiene comparativa de perfiles ocupacionales (demanda) vs programas de formación (oferta).
+     * Permite filtrar por mes y año.
+     *
+     * @param int|null $mes  Mes (1-12)
+     * @param int|null $anio Año (ej. 2026)
+     * @return array
+     */
+    public function obtenerComparativaPerfilesVsOfertas($mes = null, $anio = null) {
         try {
-            // Estadísticas de perfiles ocupacionales por área
+            // Construir condiciones y parámetros para el filtro de fecha en la demanda
+            $condicionesDemanda = "";
+            $parametrosDemanda = [];
+            
+            if ($anio !== null) {
+                if ($mes !== null) {
+                    // Filtrar por año y mes específico
+                    $condicionesDemanda = " AND YEAR(po.fecha_creacion) = ? AND MONTH(po.fecha_creacion) = ?";
+                    $parametrosDemanda = [$anio, $mes];
+                } else {
+                    // Filtrar solo por año
+                    $condicionesDemanda = " AND YEAR(po.fecha_creacion) = ?";
+                    $parametrosDemanda = [$anio];
+                }
+            }
+            
+            // Estadísticas de demanda (perfiles ocupacionales) con filtro de fecha
             $sqlPerfiles = "
                 SELECT 
                     a.id_area,
@@ -22,16 +45,37 @@ class EstadisticasModel {
                 FROM areas a
                 LEFT JOIN lineas_tecnologicas lt ON a.id_area = lt.id_area AND lt.estado = 1
                 LEFT JOIN perfiles_ocupacionales po ON lt.id_linea = po.id_linea AND po.estado = 1
+                    {$condicionesDemanda}
                 WHERE a.estado = 1
                 GROUP BY a.id_area, a.nombre_area
                 ORDER BY total_perfiles DESC
             ";
             
             $stmt = $this->conn->prepare($sqlPerfiles);
-            $stmt->execute();
+            $stmt->execute($parametrosDemanda);
             $perfilesPorArea = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-            // Get statistics of programs by area
+            // Para la oferta, consideramos los programas que estuvieron activos durante el período:
+            
+            // fecha_creacion <= fin_periodo AND fecha_fin >= inicio_periodo
+            $condicionesOferta = "";
+            $parametrosOferta = [];
+            
+            if ($anio !== null) {
+                if ($mes !== null) {
+                    // Último día del mes
+                    $ultimoDia = date('t', strtotime("{$anio}-{$mes}-01"));
+                    $fechaInicio = "{$anio}-{$mes}-01";
+                    $fechaFin = "{$anio}-{$mes}-{$ultimoDia}";
+                } else {
+                    $fechaInicio = "{$anio}-01-01";
+                    $fechaFin = "{$anio}-12-31";
+                }
+                
+                $condicionesOferta = " AND pf.fecha_creacion <= ? AND pf.fecha_fin >= ?";
+                $parametrosOferta = [$fechaFin, $fechaInicio];
+            }
+            
             $sqlProgramas = "
                 SELECT 
                     a.id_area,
@@ -41,16 +85,17 @@ class EstadisticasModel {
                     COUNT(DISTINCT pf.id_nivel) as niveles_formacion
                 FROM areas a
                 LEFT JOIN programas_formacion pf ON a.id_area = pf.id_area AND pf.estado = 1
+                    {$condicionesOferta}
                 WHERE a.estado = 1
                 GROUP BY a.id_area, a.nombre_area
                 ORDER BY total_programas DESC
             ";
             
             $stmt = $this->conn->prepare($sqlProgramas);
-            $stmt->execute();
+            $stmt->execute($parametrosOferta);
             $programasPorArea = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-            // Combine results
+            // Combinar resultados
             $comparativa = [];
             foreach ($perfilesPorArea as $perfil) {
                 $comparativa[$perfil['id_area']] = [
@@ -69,7 +114,6 @@ class EstadisticasModel {
                 ];
             }
 
-            // Add data of programs
             foreach ($programasPorArea as $programa) {
                 if (isset($comparativa[$programa['id_area']])) {
                     $comparativa[$programa['id_area']]['ofertas_formacion'] = [
@@ -95,7 +139,7 @@ class EstadisticasModel {
                 }
             }
 
-            // Calculate additional indicators
+            // Calcular totales
             $totales = [
                 'total_necesidades' => 0,
                 'total_ofertas' => 0,
@@ -115,9 +159,18 @@ class EstadisticasModel {
                 ? round(($totales['total_necesidades'] / $totales['total_ofertas']) * 100, 2)
                 : 0;
 
+            // Añadir metadatos del filtro aplicado
+            $filtroAplicado = null;
+            if ($anio !== null) {
+                $filtroAplicado = $mes !== null 
+                    ? sprintf('%04d-%02d', $anio, $mes)
+                    : (string)$anio;
+            }
+
             return [
                 'por_area' => array_values($comparativa),
                 'totales' => $totales,
+                'filtro' => $filtroAplicado,
                 'fecha_consulta' => date('Y-m-d H:i:s')
             ];
 
