@@ -249,33 +249,15 @@ class PerfilOcupacionalModel {
         }
     }
 
-    // Search profiles for term
+    // Search profiles for term (simple, redirige a buscarAvanzado)
     public function buscar($termino) {
-        try {
-            $sql = "SELECT p.*, 
-                           u.nombre_empresa, u.representante_legal,
-                           l.nombre_linea,
-                           pr.nombre_programa,
-                           n.nombre_nivel
-                    FROM perfiles_ocupacionales p
-                    INNER JOIN usuarios u ON p.id_usuario = u.id_usuario
-                    INNER JOIN lineas_tecnologicas l ON p.id_linea = l.id_linea
-                    INNER JOIN programas_formacion pr ON p.id_programa = pr.id_programa
-                    INNER JOIN niveles_formacion n ON p.id_nivel = n.id_nivel
-                    WHERE (p.nombre LIKE ? OR p.descripcion LIKE ? OR u.nombre_empresa LIKE ?)
-                    AND p.estado = 1
-                    ORDER BY p.fecha_creacion DESC";
-            $stmt = $this->conn->prepare($sql);
-            $termino_busqueda = "%$termino%";
-            $stmt->execute([$termino_busqueda, $termino_busqueda, $termino_busqueda]);
-            return $stmt->fetchAll(PDO::FETCH_ASSOC);
-        } catch (Exception $e) {
-            return [];
-        }
+        // Se utiliza buscarAvanzado con filtros vacíos y el término de búsqueda
+        return $this->buscarAvanzado([], $termino);
     }
 
-    // Advanced search with filters
-    public function buscarAvanzado($filtros) {
+    // Advanced search with filters and optional search term
+    // MODIFICACIÓN: ahora acepta un parámetro $termino para combinar filtros y búsqueda textual
+    public function buscarAvanzado($filtros = [], $termino = null) {
         try {
             $sql = "SELECT p.*, 
                            u.nombre_empresa, u.representante_legal,
@@ -290,6 +272,7 @@ class PerfilOcupacionalModel {
                     WHERE 1=1";
             $params = [];
 
+            // Filtros estándar
             if (!empty($filtros['id_usuario'])) {
                 $sql .= " AND p.id_usuario = ?";
                 $params[] = $filtros['id_usuario'];
@@ -310,7 +293,8 @@ class PerfilOcupacionalModel {
                 $params[] = $filtros['id_nivel'];
             }
 
-            if (!empty($filtros['estado'])) {
+            // Permitir filtrar por estado específico (si se envía, incluso vacío se omite)
+            if (isset($filtros['estado']) && $filtros['estado'] !== '') {
                 $sql .= " AND p.estado = ?";
                 $params[] = $filtros['estado'];
             }
@@ -328,6 +312,15 @@ class PerfilOcupacionalModel {
             if (!empty($filtros['fecha_hasta'])) {
                 $sql .= " AND DATE(p.fecha_creacion) <= ?";
                 $params[] = $filtros['fecha_hasta'];
+            }
+
+            // *** NUEVO: Aplicar búsqueda por texto si se proporciona ***
+            if (!empty($termino)) {
+                $sql .= " AND (p.nombre LIKE ? OR p.descripcion LIKE ? OR u.nombre_empresa LIKE ?)";
+                $termino_busqueda = "%$termino%";
+                $params[] = $termino_busqueda;
+                $params[] = $termino_busqueda;
+                $params[] = $termino_busqueda;
             }
 
             $sql .= " ORDER BY p.fecha_creacion DESC";
@@ -500,18 +493,7 @@ class PerfilOcupacionalModel {
 
     // List all current trends (alias of emerging technologies)
     public function listarTendenciasActuales() {
-        try {
-            $sql = "SELECT id_tendencia, id_area, nombre, estado
-                    FROM tendencias_emergentes
-                    WHERE estado = 1
-                    ORDER BY nombre ASC";
-            
-            $stmt = $this->conn->prepare($sql);
-            $stmt->execute();
-            return $stmt->fetchAll(PDO::FETCH_ASSOC);
-        } catch (Exception $e) {
-            return [];
-        }
+        return $this->listarTecnologiasEmergentes();
     }
 
     // List all future projections
@@ -565,10 +547,8 @@ class PerfilOcupacionalModel {
     }
 
     // Disable profiles that exceed 12 months of validity
-    // Profiles have a validity of 12 months from their creation date
     public function deshabilitarPerfilesVencidos() {
         try {
-            // Profiles with more than 12 months of seniority and that are active
             $sql = "UPDATE perfiles_ocupacionales 
                     SET estado = 0 
                     WHERE estado = 1 
@@ -584,7 +564,7 @@ class PerfilOcupacionalModel {
         }
     }
 
-    // Get profiles that are about to expire (less than X months from expiration)
+    // Get profiles that are about to expire
     public function obtenerPerfilesProximosVencer($meses = 1) {
         try {
             $sql = "SELECT p.*, 
@@ -698,7 +678,7 @@ class PerfilOcupacionalModel {
             $stmt->execute();
             $estadisticas['perfiles_recientes'] = $stmt->fetchAll(PDO::FETCH_ASSOC);
             
-            // Profiles expiring soon (by event)
+            // Profiles expiring soon
             $sql_proximos_deshabilitar = "SELECT COUNT(*) as total
                                          FROM perfiles_ocupacionales
                                          WHERE estado = 1
