@@ -380,6 +380,108 @@ class PerfilOcupacionalModel {
         }
     }
 
+    // List all active technological lines
+    public function listarLineasTecnologicas() {
+        try {
+            $sql = "SELECT l.id_linea, l.nombre_linea, l.id_area, l.id_programa, 
+                           l.id_etapa, l.id_tendencia, l.id_proyeccion, l.estado,
+                           a.nombre_area
+                    FROM lineas_tecnologicas l
+                    INNER JOIN areas a ON l.id_area = a.id_area
+                    WHERE l.estado = 1
+                    ORDER BY l.nombre_linea ASC";
+            
+            $stmt = $this->conn->prepare($sql);
+            $stmt->execute();
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (Exception $e) {
+            return [];
+        }
+    }
+
+    // List programs filtered by technological line
+    public function listarProgramasPorLinea($id_linea) {
+        try {
+            $sql = "SELECT p.id_programa, p.nombre_programa, p.codigo_programa, 
+                           p.id_nivel, p.modalidad, p.cupos_formacion,
+                           n.nombre_nivel
+                    FROM programas_formacion p
+                    INNER JOIN lineas_tecnologicas l ON p.id_programa = l.id_programa
+                    INNER JOIN niveles_formacion n ON p.id_nivel = n.id_nivel
+                    WHERE l.id_linea = ? AND l.estado = 1 AND p.estado = 1
+                    ORDER BY p.nombre_programa ASC";
+            
+            $stmt = $this->conn->prepare($sql);
+            $stmt->execute([$id_linea]);
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (Exception $e) {
+            return [];
+        }
+    }
+
+    // List all active training levels
+    public function listarNivelesFormacion() {
+        try {
+            $sql = "SELECT id_nivel, nombre_nivel, estado
+                    FROM niveles_formacion
+                    WHERE estado = 1
+                    ORDER BY id_nivel ASC";
+            
+            $stmt = $this->conn->prepare($sql);
+            $stmt->execute();
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (Exception $e) {
+            return [];
+        }
+    }
+
+    // Get the details of a specific technological line
+    public function obtenerLineaTecnologica($id_linea) {
+        try {
+            $sql = "SELECT l.*, a.nombre_area
+                    FROM lineas_tecnologicas l
+                    INNER JOIN areas a ON l.id_area = a.id_area
+                    WHERE l.id_linea = ? AND l.estado = 1";
+            
+            $stmt = $this->conn->prepare($sql);
+            $stmt->execute([$id_linea]);
+            return $stmt->fetch(PDO::FETCH_ASSOC);
+        } catch (Exception $e) {
+            return null;
+        }
+    }
+
+    // Get the details of a specific training program
+    public function obtenerProgramaFormacion($id_programa) {
+        try {
+            $sql = "SELECT p.*, n.nombre_nivel
+                    FROM programas_formacion p
+                    INNER JOIN niveles_formacion n ON p.id_nivel = n.id_nivel
+                    WHERE p.id_programa = ? AND p.estado = 1";
+            
+            $stmt = $this->conn->prepare($sql);
+            $stmt->execute([$id_programa]);
+            return $stmt->fetch(PDO::FETCH_ASSOC);
+        } catch (Exception $e) {
+            return null;
+        }
+    }
+
+    // Get the details of a specific training level
+    public function obtenerNivelFormacion($id_nivel) {
+        try {
+            $sql = "SELECT id_nivel, nombre_nivel, estado
+                    FROM niveles_formacion
+                    WHERE id_nivel = ? AND estado = 1";
+            
+            $stmt = $this->conn->prepare($sql);
+            $stmt->execute([$id_nivel]);
+            return $stmt->fetch(PDO::FETCH_ASSOC);
+        } catch (Exception $e) {
+            return null;
+        }
+    }
+
     // Get statistics for profiles
     public function obtenerEstadisticas() {
         try {

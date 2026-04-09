@@ -12,8 +12,8 @@ class LoginModel {
     }
 
     /**
-     * Iniciar sesión con correo y contraseña
-     * Soporta contraseñas hasheadas y en texto plano (con rehasheo automático)
+     * Iniciar sesiÛn con correo y contraseÒa
+     * Soporta contraseÒas hasheadas y en texto plano (con rehasheo autom·tico)
      * @param string $correo
      * @param string $password
      * @return array ['success' => bool, 'usuario' => array|null, 'error' => string|null]
@@ -40,28 +40,28 @@ class LoginModel {
 
             // Verificar correo verificado
             if ($usuario['correo_verificado'] != 1) {
-                return ['success' => false, 'error' => 'Correo electrónico no verificado'];
+                return ['success' => false, 'error' => 'Correo electrÛnico no verificado'];
             }
 
-            // --- Verificación de contraseña (hash + texto plano legacy) ---
+            // --- VerificaciÛn de contraseÒa (hash + texto plano legacy) ---
             $passwordValid = false;
 
             // 1. Intentar con password_verify (para hashes)
             if (password_verify($password, $usuario['password_hash'])) {
                 $passwordValid = true;
             }
-            // 2. Si falla, comparar en texto plano (soporte para contraseñas legacy)
+            // 2. Si falla, comparar en texto plano (soporte para contraseÒas legacy)
             elseif ($password === $usuario['password_hash']) {
                 $passwordValid = true;
-                // Rehashear la contraseña y actualizar en la BD para migrar a hash
+                // Rehashear la contraseÒa y actualizar en la BD para migrar a hash
                 $this->cambiarPassword($usuario['id_usuario'], $password);
             }
 
             if (!$passwordValid) {
-                return ['success' => false, 'error' => 'Contraseña incorrecta'];
+                return ['success' => false, 'error' => 'ContraseÒa incorrecta'];
             }
 
-            // Contraseña válida: devolver datos sin el hash
+            // ContraseÒa v·lida: devolver datos sin el hash
             unset($usuario['password_hash']);
             return ['success' => true, 'usuario' => $usuario];
 
@@ -71,7 +71,7 @@ class LoginModel {
     }
 
     /**
-     * Crear un token para verificación de correo
+     * Crear un token para verificaciÛn de correo
      * @param int $id_usuario
      * @param string $tipo 'VERIFICACION' o 'RECUPERACION'
      * @param int $dias_validez
@@ -145,7 +145,7 @@ class LoginModel {
     }
 
     /**
-     * Cambiar contraseña de un usuario (genera hash automáticamente)
+     * Cambiar contraseÒa de un usuario (genera hash autom·ticamente)
      * @param int $id_usuario
      * @param string $nueva_password
      * @return bool
@@ -179,7 +179,7 @@ class LoginModel {
     }
 
     /**
-     * Enviar correo electrónico (simulado)
+     * Enviar correo electrÛnico (simulado)
      * @param string $destinatario
      * @param string $asunto
      * @param string $cuerpo
@@ -223,96 +223,36 @@ class LoginModel {
     }
 
     /**
-     * Enviar correo de verificación de cuenta
+     * Enviar correo de verificaciÛn de cuenta
      * @param int $id_usuario
      * @param string $correo_destino
      * @return bool
      */
     public function enviarVerificacion($id_usuario, $correo_destino) {
+        $token = $this->crearToken($id_usuario, 'VERIFICACION', 1);
+        if (!$token) {
+            return false;
+        }
 
-    $token = $this->crearToken($id_usuario, 'VERIFICACION', 1);
-    if (!$token) {
-        return false;
-    }
-
-    $enlace = "http://localhost/observatorio/Observatorio-CTI/src/controllers/LogController.php?accion=verificar-cuenta&token=" . urlencode($token);
-
-    $asunto = "Verifica tu cuenta en Observatorio CTI";
-
-    $cuerpo = "
-        <div style='margin:0; padding:0; background:#f4f6f9; font-family:Arial, sans-serif;'>
-
-            <table width='100%' cellpadding='0' cellspacing='0' style='padding: 30px 0;'>
-                <tr>
-                    <td align='center'>
-
-                        <table width='500' cellpadding='0' cellspacing='0' style='background:#ffffff; border-radius:12px; overflow:hidden; box-shadow:0 5px 15px rgba(0,0,0,0.1);'>
-                            
-                            <!-- HEADER -->
-                            <tr>
-                                <td style='background:#39A900; color:#ffffff; padding:20px; text-align:center; font-size:20px; font-weight:bold;'>
-                                    Observatorio CTI
-                                </td>
-                            </tr>
-
-                            <!-- BODY -->
-                            <tr>
-                                <td style='padding:30px; text-align:center; color:#333;'>
-
-                                    <h2 style='margin-top:0;'>¡Bienvenido!</h2>
-
-                                    <p style='font-size:14px; color:#555;'>
-                                        Gracias por registrarte en la plataforma.<br>
-                                        Para activar tu cuenta, confirma tu correo electrónico.
-                                    </p>
-
-                                    <!-- BOTÓN -->
-                                    <a href='$enlace' 
-                                    style='display:inline-block; margin-top:20px; padding:12px 25px; background:#39A900; color:#ffffff; text-decoration:none; border-radius:8px; font-size:14px;'>
-                                        Verificar cuenta
-                                    </a>
-
-                                    <!-- LINK ALTERNATIVO -->
-                                    <p style='font-size:11px; color:#999; margin-top:20px; word-break:break-all;'>
-                                        Si el botón no funciona, copia y pega este enlace:<br>
-                                        $enlace
-                                    </p>
-
-                                    <p style='font-size:12px; color:#888; margin-top:15px;'>
-                                        Este enlace expirará en 24 horas.
-                                    </p>
-
-                                </td>
-                            </tr>
-
-                            <!-- FOOTER -->
-                            <tr>
-                                <td style='background:#f1f1f1; text-align:center; padding:15px; font-size:12px; color:#777;'>
-                                    Si no creaste esta cuenta, puedes ignorar este mensaje.
-                                </td>
-                            </tr>
-
-                        </table>
-
-                    </td>
-                </tr>
-            </table>
-
-        </div>
-        ";
+        $enlace = "http://localhost/observatorio/Observatorio-CTI/src/controllers/LogController.php?accion=verificar-cuenta&token=" . urlencode($token);
+        $asunto = "Verifica tu cuenta en Observatorio CTI";
+        $cuerpo = "<h1>Bienvenido</h1>
+                   <p>Haz clic en el siguiente enlace para verificar tu cuenta:</p>
+                   <a href='$enlace'>$enlace</a>
+                   <p>Este enlace expirar· en 24 horas.</p>";
 
         return $this->enviarCorreo($correo_destino, $asunto, $cuerpo);
     }
 
     /**
-     * Enviar correo de recuperación de contraseña
+     * Enviar correo de recuperaciÛn de contraseÒa
      * @param string $correo
      * @return bool
      */
     public function enviarRecuperacion($correo) {
         $usuario = $this->obtenerUsuarioPorCorreo($correo);
         if (!$usuario) {
-            return false; // Usuario no existe (podrías devolver true por seguridad)
+            return false; // Usuario no existe (podrÌas devolver true por seguridad)
         }
 
         $token = $this->crearToken($usuario['id_usuario'], 'RECUPERACION', 1);
@@ -320,82 +260,25 @@ class LoginModel {
             return false;
         }
 
-        $enlace = "http://localhost/observatorio/Observatorio-CTI/src/auth/login/nueva_contra.php?token=" . urlencode($token);
-        $asunto = "Recuperación de contraseña - Observatorio CTI";
-        $cuerpo = "
-            <div style='margin:0; padding:0; background:#f4f6f9; font-family:Arial, sans-serif;'>
-
-                <table width='100%' cellpadding='0' cellspacing='0' style='padding: 30px 0;'>
-                    <tr>
-                        <td align='center'>
-
-                            <table width='500' cellpadding='0' cellspacing='0' style='background:#ffffff; border-radius:12px; overflow:hidden; box-shadow:0 5px 15px rgba(0,0,0,0.1);'>
-                                
-                                <!-- HEADER -->
-                                <tr>
-                                    <td style='background:#39A900; color:#ffffff; padding:20px; text-align:center; font-size:20px; font-weight:bold;'>
-                                        Observatorio CTI
-                                    </td>
-                                </tr>
-
-                                <!-- BODY -->
-                                <tr>
-                                    <td style='padding:30px; text-align:center; color:#333;'>
-
-                                        <h2 style='margin-top:0;'>Recuperación de contraseña</h2>
-
-                                        <p style='font-size:14px; color:#555;'>
-                                            Has solicitado restablecer tu contraseña.<br>
-                                            Haz clic en el botón para crear una nueva.
-                                        </p>
-
-                                        <!-- BOTÓN -->
-                                        <a href='$enlace' 
-                                        style='display:inline-block; margin-top:20px; padding:12px 25px; background:#39A900; color:#ffffff; text-decoration:none; border-radius:8px; font-size:14px;'>
-                                            Restablecer contraseña
-                                        </a>
-
-                                        <!-- LINK FALLBACK -->
-                                        <p style='font-size:11px; color:#999; margin-top:20px; word-break:break-all;'>
-                                            Si el botón no funciona, copia este enlace:<br>
-                                            $enlace
-                                        </p>
-
-                                        <p style='font-size:12px; color:#888; margin-top:15px;'>
-                                            Este enlace expirará en 24 horas.
-                                        </p>
-
-                                    </td>
-                                </tr>
-
-                                <!-- FOOTER -->
-                                <tr>
-                                    <td style='background:#f1f1f1; text-align:center; padding:15px; font-size:12px; color:#777;'>
-                                        Si no solicitaste este cambio, puedes ignorar este mensaje.
-                                    </td>
-                                </tr>
-
-                            </table>
-
-                        </td>
-                    </tr>
-                </table>
-
-            </div>
-            ";
+        $enlace = "http://localhost/observatorio/Observatorio-CTI/src/controllers/LogController.php?accion=recuperar&token=" . urlencode($token);
+        $asunto = "RecuperaciÛn de contraseÒa - Observatorio CTI";
+        $cuerpo = "<h1>Recupera tu contraseÒa</h1>
+                   <p>Haz clic en el siguiente enlace para restablecer tu contraseÒa:</p>
+                   <a href='$enlace'>$enlace</a>
+                   <p>Si no solicitaste este cambio, ignora este mensaje. El enlace expirar· en 24 horas.</p>";
 
         return $this->enviarCorreo($correo, $asunto, $cuerpo);
     }
 
     /**
-     * Procesar verificación de cuenta mediante token
+     * Procesar verificaciÛn de cuenta mediante token
      * @param string $token
      * @return array ['success' => bool, 'message' => string]
      */
     public function procesarVerificacion($token) {
         $data = $this->validarToken($token, 'VERIFICACION');
         if (!$data) {
-            return ['success' => false, 'message' => 'Token inválido o expirado'];
+            return ['success' => false, 'message' => 'Token inv·lido o expirado'];
         }
 
         // Activar cuenta
@@ -408,7 +291,7 @@ class LoginModel {
     }
 
     /**
-     * Procesar restablecimiento de contraseña mediante token
+     * Procesar restablecimiento de contraseÒa mediante token
      * @param string $token
      * @param string $nueva_password
      * @return array ['success' => bool, 'message' => string]
@@ -416,14 +299,14 @@ class LoginModel {
     public function procesarRestablecimiento($token, $nueva_password) {
         $data = $this->validarToken($token, 'RECUPERACION');
         if (!$data) {
-            return ['success' => false, 'message' => 'Token inválido o expirado'];
+            return ['success' => false, 'message' => 'Token inv·lido o expirado'];
         }
 
         if ($this->cambiarPassword($data['id_usuario'], $nueva_password)) {
             $this->marcarTokenUsado($data['id_token']);
-            return ['success' => true, 'message' => 'Contraseña actualizada correctamente'];
+            return ['success' => true, 'message' => 'ContraseÒa actualizada correctamente'];
         } else {
-            return ['success' => false, 'message' => 'Error al actualizar la contraseña'];
+            return ['success' => false, 'message' => 'Error al actualizar la contraseÒa'];
         }
     }
 
@@ -437,10 +320,10 @@ class LoginModel {
             // Verificar si el correo ya existe
             $existe = $this->obtenerUsuarioPorCorreo($data['correo']);
             if ($existe) {
-                return ['success' => false, 'error' => 'El correo ya está registrado'];
+                return ['success' => false, 'error' => 'El correo ya est· registrado'];
             }
 
-            // Hash de la contraseña
+            // Hash de la contraseÒa
             $hash = password_hash($data['password'], PASSWORD_DEFAULT);
 
             // Insertar usuario
@@ -468,7 +351,7 @@ class LoginModel {
             $envio = $this->enviarVerificacion($id_usuario, $data['correo']);
 
             if (!$envio) {
-                error_log("No se pudo enviar el correo de verificación a: " . $data['correo']);
+                error_log("No se pudo enviar el correo de verificaciÛn a: " . $data['correo']);
             }
             return ['success' => true, 'id_usuario' => $id_usuario];
 
