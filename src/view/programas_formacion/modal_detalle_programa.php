@@ -46,8 +46,8 @@
                   <div class="bg-gray-50 rounded-lg p-3">
                       <span class="text-xs font-medium text-sena-text-soft uppercase">Estado</span>
                       <div class="mt-1">
-                          <span id="detalle-estado-badge" class="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold bg-green-100 text-green-700 shadow-sm">
-                              <span id="detalle-estado-indicador" class="w-2 h-2 rounded-full bg-green-500"></span>
+                          <span id="detalle-estado-badge" class="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold bg-gray-100 text-gray-700 shadow-sm">
+                              <span id="detalle-estado-indicador" class="w-2 h-2 rounded-full bg-gray-500"></span>
                               <span id="detalle-estado">estado</span>
                           </span>
                       </div>

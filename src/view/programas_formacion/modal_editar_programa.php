@@ -40,7 +40,7 @@
               <label class="text-sm text-sena-text-main">Área</label>
               <select
                 id="areaProgramaEditar"
-                class="w-full mt-1 px-3 py-2 rounded-lg text-sm border border-gray-300 focus:outline-none focus:ring-2 focus:ring-sena/40 focus:border-sena"
+                class="w-full mt-1 px-3 py-2 rounded-lg text-sm border border-sena-border bg-gray-50 focus:ring-2 focus:ring-sena/20 focus:border-sena outline-none transition"
               >
                 <option value="">Seleccione un área</option>
               </select>
@@ -54,7 +54,7 @@
                 <input
                   type="text"
                   id="codigoProgramaEditar"
-                  class="w-full mt-1 px-3 py-2 rounded-lg text-sm border border-gray-300 focus:outline-none focus:ring-2 focus:ring-sena/40 focus:border-sena"
+                  class="w-full mt-1 px-3 py-2 rounded-lg text-sm border border-sena-border bg-gray-50 focus:ring-2 focus:ring-sena/20 focus:border-sena outline-none transition"
                   required
                 >
               </div>
@@ -64,7 +64,7 @@
                 <input
                   type="number"
                   id="cuposProgramaEditar"
-                  class="w-full mt-1 px-3 py-2 rounded-lg text-sm border border-gray-300 focus:outline-none focus:ring-2 focus:ring-sena/40 focus:border-sena"
+                  class="w-full mt-1 px-3 py-2 rounded-lg text-sm border border-sena-border bg-gray-50 focus:ring-2 focus:ring-sena/20 focus:border-sena outline-none transition"
                   required
                 >
               </div>
@@ -77,7 +77,7 @@
               <input
                 type="text"
                 id="nombreProgramaEditar"
-                class="w-full mt-1 px-3 py-2 rounded-lg text-sm border border-gray-300 focus:outline-none focus:ring-2 focus:ring-sena/40 focus:border-sena"
+                class="w-full mt-1 px-3 py-2 rounded-lg text-sm border border-sena-border bg-gray-50 focus:ring-2 focus:ring-sena/20 focus:border-sena outline-none transition"
                 required
               >
             </div>
@@ -89,7 +89,7 @@
                 <label class="text-sm text-sena-text-main">Nivel de Formación</label>
                 <select
                   id="nivelFormacionEditar"
-                  class="w-full mt-1 px-3 py-2 rounded-lg text-sm border border-gray-300 focus:outline-none focus:ring-2 focus:ring-sena/40 focus:border-sena"
+                  class="w-full mt-1 px-3 py-2 rounded-lg text-sm border border-sena-border bg-gray-50 focus:ring-2 focus:ring-sena/20 focus:border-sena outline-none transition"
                   required
                 >
                   <option value="1">Técnico</option>
@@ -103,7 +103,7 @@
                 <label class="text-sm text-sena-text-main">Modalidad</label>
                 <select
                   id="modalidadProgramaEditar"
-                  class="w-full mt-1 px-3 py-2 rounded-lg text-sm border border-gray-300 focus:outline-none focus:ring-2 focus:ring-sena/40 focus:border-sena"
+                  class="w-full mt-1 px-3 py-2 rounded-lg text-sm border border-sena-border bg-gray-50 focus:ring-2 focus:ring-sena/20 focus:border-sena outline-none transition"
                   required
                 >
                   <option value="PRESENCIAL">Presencial</option>
@@ -123,7 +123,7 @@
                 <input
                   type="date"
                   id="fechaInicioEditar"
-                  class="w-full mt-1 px-3 py-2 rounded-lg text-sm border border-gray-300 focus:outline-none focus:ring-2 focus:ring-sena/40 focus:border-sena"
+                  class="w-full mt-1 px-3 py-2 rounded-lg text-sm border border-sena-border bg-gray-50 focus:ring-2 focus:ring-sena/20 focus:border-sena outline-none transition"
                   required
                 >
               </div>
@@ -133,7 +133,7 @@
                 <input
                   type="date"
                   id="fechaFinEditar"
-                  class="w-full mt-1 px-3 py-2 rounded-lg text-sm border border-gray-300 focus:outline-none focus:ring-2 focus:ring-sena/40 focus:border-sena"
+                  class="w-full mt-1 px-3 py-2 rounded-lg text-sm border border-sena-border bg-gray-50 focus:ring-2 focus:ring-sena/20 focus:border-sena outline-none transition"
                   required
                 >
               </div>
@@ -146,7 +146,7 @@
               <textarea
                 id="descripcionProgramaEditar"
                 rows="3"
-                class="w-full mt-1 px-3 py-2 rounded-lg text-sm border border-gray-300 focus:outline-none focus:ring-2 focus:ring-sena/40 focus:border-sena"
+                class="w-full mt-1 px-3 py-2 rounded-lg text-sm border border-sena-border bg-gray-50 focus:ring-2 focus:ring-sena/20 focus:border-sena outline-none transition"
                 placeholder="Breve descripción del programa"
               ></textarea>
               <div class="flex justify-end items-center gap-2 mb-4 mt-1">

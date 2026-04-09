@@ -1,7 +1,5 @@
 <!-- modal_confirmacion_crear_pf.php -->
-<!-- Modal de éxito - Proyección futura creada correctamente (desaparece en 3 segundos) -->
 <div id="modal-creado-confirmacion-proyeccion-futura" class="hidden fixed inset-0 z-50 overflow-y-auto" aria-hidden="true">
-  <!-- Overlay -->
   <div class="fixed inset-0 bg-black bg-opacity-80 transition-opacity"></div>
 
   <div class="fixed inset-0 overflow-y-auto">

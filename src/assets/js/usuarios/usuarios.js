@@ -432,7 +432,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const nombreEmpresa = usuario?.nombre_empresa ?? nombre;
         
         if(estado == 1){
-            const spanDeshabilitar = document.getElementById('nombre-perfil-deshabilitar-confirmacion');
+            const spanDeshabilitar = document.getElementById('nombre-usuario-deshabilitar');
             if (spanDeshabilitar) {
                 spanDeshabilitar.textContent = `"${nombreEmpresa}"`;
             }
@@ -572,7 +572,7 @@ document.addEventListener("DOMContentLoaded", () => {
         document.getElementById("detalle-numero-documento").textContent = usuario.numero_documento ?? "Sin número";
         document.getElementById("detalle-fecha-registro").textContent = usuario.fecha_registro ? formatearFecha(usuario.fecha_registro) : "Sin fecha";
         
-        const iniciales = (usuario.representante_legal ?? "US").split(" ").map(n => n[0]).join("").substring(0, 2).toUpperCase();
+        const iniciales = (usuario.nombre_empresa ?? "US").split(" ").map(n => n[0]).join("").substring(0, 2).toUpperCase();
         document.getElementById("detalle-avatar").textContent = iniciales;
         
         // TECNOLOGÍAS

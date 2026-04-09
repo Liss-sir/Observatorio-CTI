@@ -30,11 +30,10 @@
         <div>
           <h4 class="text-sm font-semibold text-sena-text-main mb-3">Navegacion</h4>
           <ul class="flex flex-col gap-2">
-            <li><a href="inicio.html" class="text-sm text-sena-text-muted hover:text-sena-hover transition-colors duration-200">Inicio</a></li>
-            <li><a href="busqueda.html" class="text-sm text-sena-text-muted hover:text-sena-hover transition-colors duration-200">Perfiles</a></li>
-            <li><a href="busqueda.html" class="text-sm text-sena-text-muted hover:text-sena-hover transition-colors duration-200">Lineas Tecnologicas</a></li>
-            <li><a href="tecnologias-emergentes.html" class="text-sm text-sena-text-muted hover:text-sena-hover transition-colors duration-200">Tecnologias Emergentes</a></li>
-            <li><a href="tecnologias-emergentes.html" class="text-sm text-sena-text-muted hover:text-sena-hover transition-colors duration-200">Gestión Usuarios</a></li>
+            <li><a href="../../view/landing/landing.php" class="text-sm text-sena-text-muted hover:text-sena-hover transition-colors duration-200">Inicio</a></li>
+            <li><a href="../../view/perfiles/perfiles.php" class="text-sm text-sena-text-muted hover:text-sena-hover transition-colors duration-200">Perfiles</a></li>
+            <li><a href="../../view/lineas_tecnologicas/lineas_tecnologicas.php" class="text-sm text-sena-text-muted hover:text-sena-hover transition-colors duration-200">Lineas Tecnologicas</a></li>
+            <li><a href="../../view/tecnologias_emergentes/tecnologias_emergentes.php" class="text-sm text-sena-text-muted hover:text-sena-hover transition-colors duration-200">Tecnologias Emergentes</a></li>
             <li><a href="../../view/creditos/creditos.php" class="text-sm text-sena-text-muted hover:text-sena-hover transition-colors duration-200">Creditos</a></li>
           </ul>
         </div>

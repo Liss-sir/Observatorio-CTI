@@ -43,6 +43,8 @@
             <!-- El contenido se generará automáticamente mediante JavaScript al cargar la página -->
             <!-- Si hay error, el JS mostrará un mensaje aquí -->
         </div>
+
+        <div id="paginacion-areas" class="flex justify-center mt-6 gap-2"></div>
     </div>
 
     <!-- MODALES -->

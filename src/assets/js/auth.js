@@ -2,8 +2,8 @@ const Auth = {
     API_URL: "../../controllers/LogController.php",
     usuario: null,
     autenticado: false,
-    listo: false,  // ✅ Flag para saber cuando Auth está listo
-    callbacks: [], // ✅ Cola de callbacks
+    listo: false, 
+    callbacks: [],
     permisosPorRol: {
         INVITADO: [
             'ver_inicio',
@@ -12,7 +12,7 @@ const Auth = {
             'ver_programas'
         ],
         ADMINISTRADOR: [
-            'crear_programa',           // ✅ SIN ESPACIOS
+            'crear_programa',           
             'editar_programa',
             'desactivar_programa',
             'ver_programas',
@@ -127,7 +127,7 @@ const Auth = {
             if (navGuest) navGuest.classList.add('hidden');
             const userName = document.getElementById('user-name');
             const userRole = document.getElementById('user-role');
-            if (userName) userName.textContent = this.usuario.nombre || 'Usuario';
+            if (userName) userName.textContent = this.usuario.nombre_empresa || 'Usuario';
             if (userRole) userRole.textContent = this.usuario.rol_nombre || 'Rol';
         } else {
             if (navUser) navUser.classList.add('hidden');

@@ -5,7 +5,7 @@
     <!-- Modal panel -->
     <div class="fixed inset-0 overflow-y-auto">
         <div class="flex min-h-full items-center justify-center p-4">
-            <div class="relative w-full max-w-md transform overflow-hidden rounded-xl border border-sena-border bg-white shadow-xl transition-all">
+            <div class="relative w-full max-w-md transform overflow-hidden rounded-xl border border-sena-border bg-white shadow-xl transition-all animate-modalFadeIn">
                 <!-- Close button -->
                 <button class="cerrar-modal-deshabilitar absolute right-4 top-4 text-sena-text-soft hover:text-sena-text-main">
                     <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -36,3 +36,19 @@
         </div>
     </div>
 </div>
+
+<style>
+  @keyframes modalFadeIn {
+    from {
+      opacity: 0;
+      transform: scale(0.95) translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1) translateY(0);
+    }
+  }
+  .animate-modalFadeIn {
+    animation: modalFadeIn 0.3s ease-out;
+  }
+</style>
