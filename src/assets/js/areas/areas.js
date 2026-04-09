@@ -31,6 +31,9 @@ document.addEventListener('DOMContentLoaded', function() {
     const contadorTexto = document.getElementById('contador-areas');
 
     let areasData = [];
+    let paginaActual = 1;
+    const elementosPorPagina = 9; // puedes ajustar
+    let areasFiltradas = [];
     let timeoutEditado = null, intervalContadorEditado = null;
     let timeoutDeshabilitado = null, intervalContadorDeshabilitado = null;
     let timeoutHabilitado = null, intervalContadorHabilitado = null;
@@ -142,12 +145,48 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!gridAreas) return;
         gridAreas.innerHTML = '';
 
+        areasFiltradas = areas;
+
         if (areas.length === 0) {
-            gridAreas.innerHTML = '<div class="col-span-full text-center text-gray-500">No hay áreas registradas.</div>';
+            gridAreas.innerHTML = `
+                <div class="col-span-full flex flex-col items-center justify-center py-10 px-4 bg-white border border-gray-200 rounded-xl">
+                    <div class="w-20 h-20 mb-5 bg-sena-soft rounded-full flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-10 h-10 text-sena">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12.75V12A2.25 2.25 0 014.5 9.75h15A2.25 2.25 0 0121.75 12v.75m-8.69-6.44l-2.12-2.12a1.5 1.5 0 00-1.061-.44H4.5A2.25 2.25 0 002.25 6v12a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9a2.25 2.25 0 00-2.25-2.25h-5.379a1.5 1.5 0 01-1.06-.44z" />
+                        </svg>
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-800 mb-2">No hay áreas registradas</h3>
+                    <p class="text-sm text-gray-500 text-center max-w-sm mb-6">Comienza creando tu primera área.</p>
+                    <button id="btn-crear-desde-empty" class="flex items-center gap-2 px-5 py-2.5 text-sm font-medium text-white bg-sena rounded-lg hover:opacity-90 transition-opacity shadow-sm">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                            <path d="M12 4v16m8-8H4"></path>
+                        </svg>
+                        Crear primera área
+                    </button>
+                </div>
+            `;
+
+            const btnEmpty = document.getElementById('btn-crear-desde-empty');
+            if (btnEmpty) {
+                btnEmpty.addEventListener('click', () => {
+                    modalCrear.classList.remove('hidden');
+                });
+            }
+
             return;
         }
 
-        areas.forEach(area => {
+        const totalPaginas = Math.ceil(areas.length / elementosPorPagina);
+
+        if (paginaActual > totalPaginas) {
+            paginaActual = totalPaginas;
+        }
+
+        const inicio = (paginaActual - 1) * elementosPorPagina;
+        const fin = inicio + elementosPorPagina;
+        const areasPagina = areas.slice(inicio, fin);
+
+        areasPagina.forEach(area => {
             const isActive = area.estado == 1;
             const estadoClass = isActive ? 'active' : '';
             const estadoTitle = isActive ? 'Activo' : 'Inactivo';
@@ -176,6 +215,121 @@ document.addEventListener('DOMContentLoaded', function() {
         
         if (typeof lucide !== 'undefined') lucide.createIcons();
         asignarEventosDinamicos();
+        actualizarPaginacionAreas(areas.length);
+    }
+
+    function actualizarPaginacionAreas(totalElementos) {
+        const contenedor = document.getElementById("paginacion-areas");
+        if (!contenedor) return;
+
+        const totalPaginas = Math.ceil(totalElementos / elementosPorPagina);
+
+        if (totalPaginas <= 1) {
+            contenedor.classList.add("hidden");
+            return;
+        }
+
+        contenedor.classList.remove("hidden");
+
+        let paginasHTML = '';
+
+        let inicio = Math.max(1, paginaActual - 2);
+        let fin = Math.min(totalPaginas, paginaActual + 2);
+
+        if (paginaActual <= 3) {
+            fin = Math.min(5, totalPaginas);
+        }
+
+        if (paginaActual >= totalPaginas - 2) {
+            inicio = Math.max(totalPaginas - 4, 1);
+        }
+
+        // Primera página
+        if (inicio > 1) {
+            paginasHTML += `<button class="btn-pagina-area px-3 py-2 rounded-lg border">${1}</button>`;
+            if (inicio > 2) paginasHTML += `<span>...</span>`;
+        }
+
+        // Intermedias
+        for (let i = inicio; i <= fin; i++) {
+            paginasHTML += `
+                <button class="btn-pagina-area px-3 py-2 rounded-lg ${
+                    paginaActual === i 
+                    ? 'bg-sena text-white' 
+                    : 'border border-gray-300 hover:bg-sena-soft'
+                }" data-pagina="${i}">
+                    ${i}
+                </button>
+            `;
+        }
+
+        // Última página
+        if (fin < totalPaginas) {
+            if (fin < totalPaginas - 1) paginasHTML += `<span>...</span>`;
+            paginasHTML += `<button class="btn-pagina-area px-3 py-2 rounded-lg border">${totalPaginas}</button>`;
+        }
+
+        contenedor.innerHTML = `
+            <div class="flex flex-col items-center gap-3">
+
+                <div class="text-sm text-gray-500">
+                    Mostrando 
+                    <span class="font-semibold">${(paginaActual - 1) * elementosPorPagina + 1}</span> -
+                    <span class="font-semibold">${Math.min(paginaActual * elementosPorPagina, totalElementos)}</span>
+                    de <span class="font-semibold">${totalElementos}</span> áreas
+                </div>
+
+                <div class="flex items-center gap-2 flex-wrap justify-center">
+
+                    <!-- Primera -->
+                    <button class="btn-primera-area px-3 py-2 rounded-lg border">«</button>
+
+                    <!-- Anterior -->
+                    <button class="btn-anterior-area px-3 py-2 rounded-lg border">‹</button>
+
+                    ${paginasHTML}
+
+                    <!-- Siguiente -->
+                    <button class="btn-siguiente-area px-3 py-2 rounded-lg border">›</button>
+
+                    <!-- Última -->
+                    <button class="btn-ultima-area px-3 py-2 rounded-lg border">»</button>
+
+                </div>
+            </div>
+        `;
+
+        // EVENTOS
+        document.querySelectorAll('.btn-pagina-area').forEach(btn => {
+            btn.addEventListener('click', () => {
+                paginaActual = parseInt(btn.dataset.pagina);
+                renderizarAreas(areasFiltradas);
+            });
+        });
+
+        document.querySelector('.btn-anterior-area')?.addEventListener('click', () => {
+            if (paginaActual > 1) {
+                paginaActual--;
+                renderizarAreas(areasFiltradas);
+            }
+        });
+
+        document.querySelector('.btn-siguiente-area')?.addEventListener('click', () => {
+            if (paginaActual < totalPaginas) {
+                paginaActual++;
+                renderizarAreas(areasFiltradas);
+            }
+        });
+
+        document.querySelector('.btn-primera-area')?.addEventListener('click', () => {
+            paginaActual = 1;
+            renderizarAreas(areasFiltradas);
+        });
+
+        document.querySelector('.btn-ultima-area')?.addEventListener('click', () => {
+            paginaActual = totalPaginas;
+            renderizarAreas(areasFiltradas);
+        });
     }
 
     const buscador = document.getElementById("buscador-areas");
@@ -185,97 +339,64 @@ document.addEventListener('DOMContentLoaded', function() {
         buscador.addEventListener("keyup", function () {
             clearTimeout(timeoutBusqueda);
             const texto = this.value.trim();
-            
-            console.log('Texto ingresado:', texto);
-            
-            // Si está vacío, cargar todas
+
+            // Si está vacío → recargar todo
             if (texto.length === 0) {
+                paginaActual = 1;
                 cargarAreas();
                 return;
             }
-            
-            // Esperar al menos 2 caracteres
-            if (texto.length < 2) {
-                return;
-            }
-            
+
+            // Esperar mínimo 2 caracteres
+            if (texto.length < 2) return;
+
             timeoutBusqueda = setTimeout(async () => {
                 try {
-                    const url = `${API_URL}?accion=buscar&q=${encodeURIComponent(texto)}`;
-                    console.log('URL de búsqueda:', url);
-                    
-                    const response = await fetch(url);
-                    
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! status: ${response.status}`);
-                    }
-                    
-                    const result = await response.json();
-                    console.log('Respuesta del servidor:', result);
-                    
-                    // Verificar la estructura de la respuesta
-                    if (result.success === true && Array.isArray(result.data)) {
-                        if (result.data.length === 0) {
-                            // No hay resultados
-                            if (gridAreas) {
-                                const buscador = document.getElementById("buscador-areas");
-                                const hayBusqueda = buscador && buscador.value.trim().length > 0;
-                                const textoBusqueda = document.getElementById('buscador-areas')?.value?.toLowerCase()?.trim() || '';
+                    const response = await fetch(`${API_URL}?accion=buscar&q=${encodeURIComponent(texto)}`);
+                    if (!response.ok) throw new Error('Error de red');
 
-                                if (hayBusqueda) {
-                                    // ✅ Mensaje: No se encontraron resultados
-                                    gridAreas.innerHTML = `
-                                        <div class="col-span-full flex flex-col items-center justify-center py-10 px-4 bg-white border border-gray-200 rounded-xl">
-                                            <div class="w-20 h-20 mb-5 bg-sena-soft rounded-full flex items-center justify-center">
-                                                <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10 text-sena" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                                                    <circle cx="11" cy="11" r="8"></circle>
-                                                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                                                </svg>
-                                            </div>
-                                            <h3 class="text-lg font-semibold text-gray-800 mb-2">No se encontraron resultados</h3>
-                                            <p class="text-sm text-gray-500 text-center max-w-sm">No hay áreas que coincidan con "${textoBusqueda}".</p>
-                                        </div>
-                                    `;
-                                }else {
-                                // ✅ Mensaje: No hay registros
-                                gridAreas.innerHTML = `
-                                    <div class="col-span-full flex flex-col items-center justify-center py-10 px-4 bg-white border border-gray-200 rounded-xl">
-                                        <div class="w-20 h-20 mb-5 bg-sena-soft rounded-full flex items-center justify-center">
-                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-10 h-10 text-sena">
-                                                <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12.75V12A2.25 2.25 0 014.5 9.75h15A2.25 2.25 0 0121.75 12v.75m-8.69-6.44l-2.12-2.12a1.5 1.5 0 00-1.061-.44H4.5A2.25 2.25 0 002.25 6v12a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9a2.25 2.25 0 00-2.25-2.25h-5.379a1.5 1.5 0 01-1.06-.44z" />
-                                            </svg>
-                                        </div>
-                                        <h3 class="text-lg font-semibold text-gray-800 mb-2">No hay áreas registradas</h3>
-                                        <p class="text-sm text-gray-500 text-center max-w-sm mb-6">Comienza creando tu primera área.</p>
-                                        <button id="btn-crear-desde-empty" class="flex items-center gap-2 px-5 py-2.5 text-sm font-medium text-white bg-sena rounded-lg hover:opacity-90 transition-opacity shadow-sm">
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                                                <path d="M12 4v16m8-8H4"></path>
-                                            </svg>
-                                            Crear primera área
-                                        </button>
+                    const result = await response.json();
+
+                    if (result.success === true && Array.isArray(result.data)) {
+
+                        // 🔴 CASO: SIN RESULTADOS
+                        if (result.data.length === 0) {
+                            gridAreas.innerHTML = `
+                                <div class="col-span-full flex flex-col items-center justify-center py-10 px-4 bg-white border border-gray-200 rounded-xl">
+                                    <div class="w-20 h-20 mb-5 bg-sena-soft rounded-full flex items-center justify-center">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10 text-sena" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                            <circle cx="11" cy="11" r="8"></circle>
+                                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                                        </svg>
                                     </div>
-                                `;
-                                }
-                                const btnEmpty = document.getElementById('btn-crear-desde-empty');
-                                if (btnEmpty) btnEmpty.addEventListener('click', () => {
-                                    modalCrear.classList.remove('hidden');
-                                });
-                            }
-                        } else {
-                            // Renderizar resultados
-                            renderizarAreas(result.data);
-                        } 
-                    } else {
-                        console.error('Estructura de respuesta inesperada:', result);
-                        if (gridAreas) {
-                            gridAreas.innerHTML = '<div class="col-span-full text-center py-10 text-red-500">Error en la respuesta del servidor.</div>';
+                                    <h3 class="text-lg font-semibold text-gray-800 mb-2">No se encontraron resultados</h3>
+                                    <p class="text-sm text-gray-500 text-center max-w-sm">
+                                        No hay áreas que coincidan con "${texto}".
+                                    </p>
+                                </div>
+                            `;
+                            return;
                         }
+
+                        // ✅ CASO: CON RESULTADOS
+                        paginaActual = 1;
+                        renderizarAreas(result.data);
+
+                    } else {
+                        gridAreas.innerHTML = `
+                            <div class="col-span-full text-center py-10 text-red-500">
+                                Error en la respuesta del servidor.
+                            </div>
+                        `;
                     }
+
                 } catch (error) {
-                    console.error('Error en búsqueda:', error);
-                    if (gridAreas) {
-                        gridAreas.innerHTML = '<div class="col-span-full text-center py-10 text-red-500">Error de conexión.</div>';
-                    }
+                    console.error(error);
+                    gridAreas.innerHTML = `
+                        <div class="col-span-full text-center py-10 text-red-500">
+                            Error de conexión.
+                        </div>
+                    `;
                 }
             }, 300);
         });

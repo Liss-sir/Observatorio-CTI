@@ -489,6 +489,122 @@ class PerfilOcupacionalController {
             'message' => $resultado ? 'Cupo disminuido correctamente' : 'No hay cupos disponibles'
         ]);
     }
+
+    // List all active technological lines
+    public function listarLineasTecnologicas() {
+        $lineas = $this->model->listarLineasTecnologicas();
+        
+        echo json_encode([
+            'success' => true,
+            'data' => $lineas
+        ]);
+    }
+
+    // List programs filtered by technological line
+    public function listarProgramasPorLinea() {
+        $id_linea = $_GET['id_linea'] ?? null;
+        
+        if (!$id_linea) {
+            echo json_encode([
+                'success' => false,
+                'error' => 'ID de línea tecnológica requerido'
+            ]);
+            return;
+        }
+        
+        $programas = $this->model->listarProgramasPorLinea($id_linea);
+        
+        echo json_encode([
+            'success' => true,
+            'data' => $programas
+        ]);
+    }
+
+    // List all active training levels
+    public function listarNivelesFormacion() {
+        $niveles = $this->model->listarNivelesFormacion();
+        
+        echo json_encode([
+            'success' => true,
+            'data' => $niveles
+        ]);
+    }
+
+    // Get a specific technological line by ID
+    public function obtenerLineaTecnologica($id_linea) {
+        if (!$id_linea) {
+            echo json_encode([
+                'success' => false,
+                'error' => 'ID de línea tecnológica requerido'
+            ]);
+            return;
+        }
+        
+        $linea = $this->model->obtenerLineaTecnologica($id_linea);
+        
+        if ($linea) {
+            echo json_encode([
+                'success' => true,
+                'data' => $linea
+            ]);
+        } else {
+            echo json_encode([
+                'success' => false,
+                'error' => 'Línea tecnológica no encontrada'
+            ]);
+        }
+    }
+
+    // Get a specific training program by ID
+    public function obtenerProgramaFormacion($id_programa) {
+        if (!$id_programa) {
+            echo json_encode([
+                'success' => false,
+                'error' => 'ID de programa requerido'
+            ]);
+            return;
+        }
+        
+        $programa = $this->model->obtenerProgramaFormacion($id_programa);
+        
+        if ($programa) {
+            echo json_encode([
+                'success' => true,
+                'data' => $programa
+            ]);
+        } else {
+            echo json_encode([
+                'success' => false,
+                'error' => 'Programa de formación no encontrado'
+            ]);
+        }
+    }
+
+    // Get a specific training level by ID
+    public function obtenerNivelFormacion($id_nivel) {
+        if (!$id_nivel) {
+            echo json_encode([
+                'success' => false,
+                'error' => 'ID de nivel requerido'
+            ]);
+            return;
+        }
+        
+        $nivel = $this->model->obtenerNivelFormacion($id_nivel);
+        
+        if ($nivel) {
+            echo json_encode([
+                'success' => true,
+                'data' => $nivel
+            ]);
+        } else {
+            echo json_encode([
+                'success' => false,
+                'error' => 'Nivel de formación no encontrado'
+            ]);
+        }
+    }
+
 }
 
 
@@ -582,7 +698,6 @@ switch ($accion) {
         $controller->obtenerEstadisticas();
         break;
         
-    // Additional methods
     case "paraSelectPorUsuario":
         $controller->obtenerParaSelectPorUsuario($id_usuario);
         break;
@@ -598,6 +713,32 @@ switch ($accion) {
     case "disminuirCupo":
         $controller->disminuirCupo($id);
         break;
+
+    case "listarLineasTecnologicas":
+        $controller->listarLineasTecnologicas();
+        break;
+        
+    case "listarProgramasPorLinea":
+        $controller->listarProgramasPorLinea();
+        break;
+        
+    case "listarNivelesFormacion":
+        $controller->listarNivelesFormacion();
+        break;
+        
+    case "obtenerLineaTecnologica":
+        $controller->obtenerLineaTecnologica($id_linea);
+        break;
+        
+    case "obtenerProgramaFormacion":
+        $controller->obtenerProgramaFormacion($id_programa);
+        break;
+        
+    case "obtenerNivelFormacion":
+        $controller->obtenerNivelFormacion($id_nivel);
+        break;
+        
+
 
     default:
         echo json_encode([

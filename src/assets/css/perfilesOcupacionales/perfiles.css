@@ -1,0 +1,35 @@
+.switch-sena {
+  position: relative;
+  width: 36px;
+  height: 20px;
+  background-color: #9ca3af;
+  border-radius: 9999px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  display: inline-block;
+}
+.switch-sena::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 16px;
+  height: 16px;
+  background-color: white;
+  border-radius: 9999px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+  transition: transform 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
+}
+.switch-sena.active {
+  background-color: #39A900;
+}
+.switch-sena.active::after {
+  transform: translateX(16px);
+}
+.switch-sena:active::after {
+  width: 20px;
+}
+.switch-sena.active:active::after {
+  transform: translateX(12px);
+}
+

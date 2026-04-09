@@ -60,7 +60,7 @@ class LineaTecnologicaController {
         $input = json_decode(file_get_contents("php://input"), true);
 
         // Required fields validation
-        $required = ['id_area', 'id_programa', 'id_etapa', 'id_tendencia', 'id_proyeccion'];
+        $required = ['nombre_linea', 'id_area', 'id_programa', 'id_etapa', 'id_tendencia', 'id_proyeccion'];
         foreach ($required as $field) {
             if (empty($input[$field])) {
                 echo json_encode([
