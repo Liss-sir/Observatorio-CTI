@@ -500,7 +500,7 @@ async function cargarEstadisticasDesdeBackend() {
   hideStatsError();
 }
 
-async function cargarBarChartDesdeBackend() {
+async function cargarBarChartDesdeBackend(animate = true) {
   const filters = getSelectedBarFilters();
 
   if (!hasValidBarFilters(filters)) {
@@ -514,7 +514,7 @@ async function cargarBarChartDesdeBackend() {
 
     if (!comparativa.error) {
       statsState.bar = adaptComparativaToBarData(comparativa);
-      updateBarChart(getCurrentPeriodData());
+      updateBarChart(getCurrentPeriodData(), animate);
     }
 
     hideStatsError();
@@ -528,11 +528,11 @@ async function cargarBarChartDesdeBackend() {
 async function ensureReportDataReady(reportType) {
   if (!statsBootstrapped) {
     await cargarEstadisticasDesdeBackend();
-    updateCharts(getCurrentPeriodData());
+    updateCharts(getCurrentPeriodData(), false);
   }
 
   if (reportType === 'global' || reportType === 'bar') {
-    const barOk = await cargarBarChartDesdeBackend();
+    const barOk = await cargarBarChartDesdeBackend(false);
     if (!barOk) {
       return false;
     }
@@ -542,7 +542,37 @@ async function ensureReportDataReady(reportType) {
   barChart?.update('none');
   pieChart?.update('none');
 
+  await waitForStableCharts({ forceScroll: true });
+
   return true;
+}
+
+function waitMs(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+async function waitForStableCharts({ forceScroll = false } = {}) {
+  const originalScrollTop = window.scrollY || document.documentElement.scrollTop || 0;
+  const barContainer = barChart?.canvas?.parentElement;
+
+  if (forceScroll && barContainer) {
+    barContainer.scrollIntoView({ behavior: 'auto', block: 'center' });
+    await waitMs(180);
+  }
+
+  barChart?.update('none');
+  pieChart?.update('none');
+  await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+  await waitMs(220);
+
+  barChart?.update('none');
+  pieChart?.update('none');
+  await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+  await waitMs(220);
+
+  if (forceScroll) {
+    window.scrollTo(0, originalScrollTop);
+  }
 }
 
 function getAppliedFiltersText() {
@@ -622,23 +652,23 @@ function updateCounters(periodData) {
   if (solicitudesCountEl) solicitudesCountEl.textContent = String(totalSolicitudes);
 }
 
-function updateCharts(periodData) {
+function updateCharts(periodData, animate = true) {
   barChart.data = buildBarData(periodData);
   pieChart.data = buildPieData(periodData);
 
-  barChart.update();
-  pieChart.update();
+  barChart.update(animate ? undefined : 'none');
+  pieChart.update(animate ? undefined : 'none');
 
   renderPieLegend(periodData.pie.labels, periodData.pie.values, pieColors, periodData.pie.inactive);
   updateCounters(periodData);
 }
 
-function updateBarChart(periodData) {
+function updateBarChart(periodData, animate = true) {
   barChart.data = buildBarData(periodData);
   const maxSerie = Math.max(...periodData.bar.demand, ...periodData.bar.offer, 0);
   // Aumenta el margen superior para que las barras no se corten
   barChart.options.scales.y.max = Math.max(10, Math.ceil(maxSerie * 1.15));
-  barChart.update();
+  barChart.update(animate ? undefined : 'none');
 }
 
 function reportStyles() {
@@ -802,11 +832,16 @@ function buildReportModel(reportType) {
 
   const barPeriodData = getCurrentPeriodData();
   const piePeriodData = getCurrentPeriodData();
+
   // Forzar renderizado completo antes de capturar
   barChart.update('none');
   pieChart.update('none');
+
+  // Capturar imágenes
   const barImage = barChart.toBase64Image('image/png', 2);
-  const pieImage = pieChart.toBase64Image('image/png', 2);  const hasBarRows = Array.isArray(barPeriodData.bar.labels) && barPeriodData.bar.labels.length > 0;
+  const pieImage = pieChart.toBase64Image('image/png', 2);
+
+  const hasBarRows = Array.isArray(barPeriodData.bar.labels) && barPeriodData.bar.labels.length > 0;
   const hasPieRows = Array.isArray(piePeriodData.pie.labels) && piePeriodData.pie.labels.length > 0;
 
   let title = 'Reporte Estadístico Global';
@@ -936,6 +971,103 @@ function buildReportPdfFileName(reportType) {
   return `${safeBase}-${filters.year}-${filters.month}.pdf`;
 }
 
+function createLoadingScreen() {
+  const existing = document.getElementById('pdf-loading-screen');
+  if (existing) return existing;
+
+  const overlay = document.createElement('div');
+  overlay.id = 'pdf-loading-screen';
+  overlay.style.cssText = `
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    backdrop-filter: blur(4px);
+  `;
+
+  const container = document.createElement('div');
+  container.style.cssText = `
+    background: white;
+    border-radius: 12px;
+    padding: 40px;
+    text-align: center;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    max-width: 400px;
+  `;
+
+  container.innerHTML = `
+    <div style="margin-bottom: 24px;">
+      <div style="
+        display: inline-block;
+        width: 48px;
+        height: 48px;
+        border: 4px solid #e2e8f0;
+        border-top-color: #22c55e;
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+      "></div>
+    </div>
+    <h3 style="margin: 16px 0; color: #1e293b; font-size: 18px; font-weight: 600;">
+      Generando reporte
+    </h3>
+    <p id="loading-message" style="color: #64748b; font-size: 14px; margin-bottom: 12px;">
+      Preparando gráficas...
+    </p>
+    <div style="
+      width: 100%;
+      height: 4px;
+      background: #e2e8f0;
+      border-radius: 2px;
+      overflow: hidden;
+      margin-top: 16px;
+    ">
+      <div id="loading-progress" style="
+        width: 0%;
+        height: 100%;
+        background: linear-gradient(90deg, #22c55e, #3b82f6);
+        transition: width 0.3s ease;
+      "></div>
+    </div>
+    <style>
+      @keyframes spin {
+        to { transform: rotate(360deg); }
+      }
+    </style>
+  `;
+
+  overlay.appendChild(container);
+  document.body.appendChild(overlay);
+
+  return overlay;
+}
+
+function showLoadingScreen() {
+  const screen = createLoadingScreen();
+  screen.style.display = 'flex';
+  updateLoadingProgress('Preparando gráficas...', 10);
+}
+
+function hideLoadingScreen() {
+  const screen = document.getElementById('pdf-loading-screen');
+  if (screen) {
+    screen.style.display = 'none';
+  }
+}
+
+function updateLoadingProgress(message, percentage) {
+  const messageEl = document.getElementById('loading-message');
+  const progressEl = document.getElementById('loading-progress');
+
+  if (messageEl) messageEl.textContent = message;
+  if (progressEl) progressEl.style.width = percentage + '%';
+}
+
 async function downloadReportPdf(reportType) {
   if (reportDownloadInProgress) {
     return;
@@ -943,19 +1075,29 @@ async function downloadReportPdf(reportType) {
 
   reportDownloadInProgress = true;
   setReportButtonsState(true);
+  showLoadingScreen();
 
   let iframe = null;
 
   try {
+    updateLoadingProgress('Validando datos...', 15);
     const ready = await ensureReportDataReady(reportType);
     if (!ready) {
       return;
     }
 
+    updateLoadingProgress('Cargando librería PDF...', 25);
     const html2pdf = await ensureHtml2PdfLoaded();
+
+    updateLoadingProgress('Preparando gráficas...', 35);
+    await waitForStableCharts({ forceScroll: true });
     const reportModel = buildReportModel(reportType);
     const reportHtml = buildReportDocumentHtml(reportModel);
+    
+    // Esperar a que el navegador procese el HTML
+    await new Promise(resolve => setTimeout(resolve, 500));
 
+    updateLoadingProgress('Configurando documento...', 45);
     iframe = document.createElement('iframe');
     iframe.setAttribute('aria-hidden', 'true');
     iframe.style.position = 'fixed';
@@ -985,9 +1127,10 @@ async function downloadReportPdf(reportType) {
       };
 
       iframe.onload = finish;
-      setTimeout(finish, 350);
+      setTimeout(finish, 800);
     });
 
+    updateLoadingProgress('Renderizando contenido...', 55);
     const imageNodes = Array.from(iframeDocument.querySelectorAll('img'));
     await Promise.all(
       imageNodes.map((img) => {
@@ -998,33 +1141,44 @@ async function downloadReportPdf(reportType) {
         return new Promise((resolve) => {
           img.onload = () => resolve();
           img.onerror = () => resolve();
-          setTimeout(resolve, 500);
+          setTimeout(resolve, 1000);
         });
       })
     );
-  // Espera adicional para que las imágenes se estabilicen
-  await new Promise(resolve => setTimeout(resolve, 300));
+    
+    updateLoadingProgress('Estabilizando gráficas...', 65);
+    // Esperas aumentadas para mejor renderizado
+    await new Promise(resolve => setTimeout(resolve, 800));
 
-  if (iframeDocument.fonts?.ready) {
+    if (iframeDocument.fonts?.ready) {
       await iframeDocument.fonts.ready.catch(() => undefined);
     }
 
+    updateLoadingProgress('Finalizando documento...', 75);
     const reportNode = iframeDocument.documentElement;
 
     await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+    
+    // Espera adicional en punto crítico
+    await new Promise(resolve => setTimeout(resolve, 600));
 
-await html2pdf()
-  .set({
-    margin: 8,
-    filename: buildReportPdfFileName(reportType),
-    image: { type: 'jpeg', quality: 0.98 },
-    html2canvas: { scale: 2, useCORS: true },
-    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
-    pagebreak: { mode: ['css', 'legacy'] }  // ← Agrega esto para permitir múltiples páginas
-  })
-  .from(reportNode)
-  .save();
+    updateLoadingProgress('Generando PDF...', 85);
+    
+    await html2pdf()
+      .set({
+        margin: 8,
+        filename: buildReportPdfFileName(reportType),
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+        pagebreak: { mode: ['css', 'legacy'] }
+      })
+      .from(reportNode)
+      .save();
 
+    updateLoadingProgress('Completado', 100);
+    await new Promise(resolve => setTimeout(resolve, 500));
+    
     hideStatsError();
   } catch (error) {
     showStatsError(`No fue posible generar el PDF: ${String(error?.message || error)}`);
@@ -1033,6 +1187,7 @@ await html2pdf()
       iframe.parentNode.removeChild(iframe);
     }
 
+    hideLoadingScreen();
     reportDownloadInProgress = false;
     setReportButtonsState(false);
   }
@@ -1063,8 +1218,8 @@ document.addEventListener('DOMContentLoaded', function() {
   const barReportBtn = document.getElementById('barReportBtn');
   const pieReportBtn = document.getElementById('pieReportBtn');
 
-  const applyBarFilter = async function() {
-    await cargarBarChartDesdeBackend();
+  const applyBarFilter = async function(animate = true) {
+    await cargarBarChartDesdeBackend(animate);
   };
 
   syncMonthFilterState(monthFilter, yearFilter);
@@ -1097,14 +1252,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
   cargarEstadisticasDesdeBackend()
     .then(() => {
-      updateCharts(getCurrentPeriodData());
-      applyBarFilter();
+      updateCharts(getCurrentPeriodData(), false);
+      applyBarFilter(false);
     })
     .catch((error) => {
       statsBootstrapped = false;
       console.error('Error cargando estadísticas:', error);
       showStatsError(`No fue posible cargar estadísticas desde backend: ${String(error?.message || error)}`);
-      updateCharts(getEmptyPeriodData());
+      updateCharts(getEmptyPeriodData(), false);
     });
 
   if (typeof lucide !== 'undefined') {
