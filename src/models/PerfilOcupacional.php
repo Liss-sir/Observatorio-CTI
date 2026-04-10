@@ -545,9 +545,21 @@ class PerfilOcupacionalModel {
         }
     }
 
-    // List all current trends (alias of emerging technologies)
+    // List all current trends: active trends that are linked to active technological lines
     public function listarTendenciasActuales() {
-        return $this->listarTecnologiasEmergentes();
+        try {
+            $sql = "SELECT DISTINCT t.id_tendencia, t.id_area, t.nombre, t.estado
+                    FROM tendencias_emergentes t
+                    INNER JOIN lineas_tecnologicas l ON t.id_tendencia = l.id_tendencia
+                    WHERE t.estado = 1 AND l.estado = 1
+                    ORDER BY t.nombre ASC";
+
+            $stmt = $this->conn->prepare($sql);
+            $stmt->execute();
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (Exception $e) {
+            return [];
+        }
     }
 
     // List all future projections
