@@ -334,7 +334,7 @@ class PerfilOcupacionalController {
         ]);
     }
 
-    // Search profiles for term
+    // Search profiles for term (simple)
     public function buscar() {
         $termino = $_GET['q'] ?? '';
         
@@ -354,11 +354,21 @@ class PerfilOcupacionalController {
         ]);
     }
 
-    // Advanced search with filters
+    /**
+     * Búsqueda avanzada combinando filtros (incluyendo arrays para selección múltiple)
+     * y término de búsqueda textual.
+     * 
+     * Espera un JSON en el cuerpo con los filtros (ej: {"id_linea": [1,2], "id_tendencia": 3, ...})
+     * Opcionalmente puede recibir ?q=termino en la URL.
+     */
     public function buscarAvanzado() {
-        $filtros = json_decode(file_get_contents("php://input"), true);
+        $input = json_decode(file_get_contents("php://input"), true);
+        $filtros = $input ?? [];
         
-        $resultados = $this->model->buscarAvanzado($filtros ?? []);
+        // Término de búsqueda desde query string
+        $termino = $_GET['q'] ?? null;
+        
+        $resultados = $this->model->buscarAvanzado($filtros, $termino);
         
         echo json_encode([
             'success' => true,
@@ -605,17 +615,142 @@ class PerfilOcupacionalController {
         }
     }
 
+    // List all emerging technologies
+    public function listarTecnologiasEmergentes() {
+        $tecnologias = $this->model->listarTecnologiasEmergentes();
+        
+        echo json_encode([
+            'success' => true,
+            'data' => $tecnologias
+        ]);
+    }
+
+    // List all current trends
+    public function listarTendenciasActuales() {
+        $tendencias = $this->model->listarTendenciasActuales();
+        
+        echo json_encode([
+            'success' => true,
+            'data' => $tendencias
+        ]);
+    }
+
+    // List all future projections
+    public function listarProyeccionesFuturo() {
+        $proyecciones = $this->model->listarProyeccionesFuturo();
+        
+        echo json_encode([
+            'success' => true,
+            'data' => $proyecciones
+        ]);
+    }
+
+    // Get a specific emerging technology by ID
+    public function obtenerTecnologiaEmergente($id_tendencia) {
+        if (!$id_tendencia) {
+            echo json_encode([
+                'success' => false,
+                'error' => 'ID de tecnología emergente requerido'
+            ]);
+            return;
+        }
+        
+        $tecnologia = $this->model->obtenerTecnologiaEmergente($id_tendencia);
+        
+        if ($tecnologia) {
+            echo json_encode([
+                'success' => true,
+                'data' => $tecnologia
+            ]);
+        } else {
+            echo json_encode([
+                'success' => false,
+                'error' => 'Tecnología emergente no encontrada'
+            ]);
+        }
+    }
+
+    // Get a specific future projection by ID
+    public function obtenerProyeccionFuturo($id_proyeccion) {
+        if (!$id_proyeccion) {
+            echo json_encode([
+                'success' => false,
+                'error' => 'ID de proyección requerido'
+            ]);
+            return;
+        }
+        
+        $proyeccion = $this->model->obtenerProyeccionFuturo($id_proyeccion);
+        
+        if ($proyeccion) {
+            echo json_encode([
+                'success' => true,
+                'data' => $proyeccion
+            ]);
+        } else {
+            echo json_encode([
+                'success' => false,
+                'error' => 'Proyección a futuro no encontrada'
+            ]);
+        }
+    }
+
+    // Disable profiles that exceed 12 months of validity
+    public function deshabilitarPerfilesVencidos() {
+        $cantidad = $this->model->deshabilitarPerfilesVencidos();
+        
+        echo json_encode([
+            'success' => true,
+            'cantidad_deshabilitados' => $cantidad,
+            'message' => "Se deshabilitaron $cantidad perfiles que superaron los 12 meses de vigencia"
+        ]);
+    }
+
+    // Get profiles that are about to expire
+    public function obtenerPerfilesProximosVencer() {
+        $meses = $_GET['meses'] ?? 1;
+        
+        $perfiles = $this->model->obtenerPerfilesProximosVencer($meses);
+        
+        echo json_encode([
+            'success' => true,
+            'data' => $perfiles,
+            'total' => count($perfiles)
+        ]);
+    }
+
+    // Get statistics of validity of profiles
+    public function obtenerEstadisticasVigencia() {
+        $estadisticas = $this->model->obtenerEstadisticasVigencia();
+        
+        echo json_encode([
+            'success' => true,
+            'data' => $estadisticas
+        ]);
+    }
+
+    // Get statistics for profiles (general)
+    public function obtenerEstadisticas() {
+        $estadisticas = $this->model->obtenerEstadisticas();
+        
+        echo json_encode([
+            'success' => true,
+            'data' => $estadisticas
+        ]);
+    }
+
 }
 
-
+// ==================== ROUTER ====================
 $accion = $_GET['accion'] ?? null;
 $id = $_GET['id_perfil'] ?? null;
 $id_usuario = $_GET['id_usuario'] ?? null;
 $id_linea = $_GET['id_linea'] ?? null;
 $id_programa = $_GET['id_programa'] ?? null;
 $id_nivel = $_GET['id_nivel'] ?? null;
+$id_tendencia = $_GET['id_tendencia'] ?? null;
+$id_proyeccion = $_GET['id_proyeccion'] ?? null;
 
-// Verify the conexion exist
 if (!isset($conn)) {
     echo json_encode(["error" => "Error de conexión a la base de datos"]);
     exit;
@@ -737,8 +872,39 @@ switch ($accion) {
     case "obtenerNivelFormacion":
         $controller->obtenerNivelFormacion($id_nivel);
         break;
+    
+    case "listarTecnologiasEmergentes":
+        $controller->listarTecnologiasEmergentes();
+        break;
         
-
+    case "listarTendenciasActuales":
+        $controller->listarTendenciasActuales();
+        break;
+        
+    case "listarProyeccionesFuturo":
+        $controller->listarProyeccionesFuturo();
+        break;
+        
+    case "obtenerTecnologiaEmergente":
+        $controller->obtenerTecnologiaEmergente($id_tendencia);
+        break;
+        
+    case "obtenerProyeccionFuturo":
+        $controller->obtenerProyeccionFuturo($id_proyeccion);
+        break;
+        
+    case "deshabilitarPerfilesVencidos":
+        $controller->deshabilitarPerfilesVencidos();
+        break;
+        
+    case "obtenerPerfilesProximosVencer":
+        $controller->obtenerPerfilesProximosVencer();
+        break;
+        
+    case "obtenerEstadisticasVigencia":
+        $controller->obtenerEstadisticasVigencia();
+        break;
+        
 
     default:
         echo json_encode([

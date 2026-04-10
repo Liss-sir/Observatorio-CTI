@@ -55,9 +55,6 @@ const Auth = {
             'desactivar_perfil',
             'ver_sugerencias',
             'crear_sugerencia',
-            'ver_tendencias',
-            'ver_tecnologias_emergentes',
-            'ver_proyeccion_futuro',
             'ver_lineas_tecnologicas',
             'ver_programas',
             'ver_estadisticas'

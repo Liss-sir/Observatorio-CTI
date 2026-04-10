@@ -1,4 +1,4 @@
-<!-- modal_deshabilitar_perfiles.php -->
+<!-- modal_deshabilitar_perfil.php -->
 <div id="modal-deshabilitar-perfil" class="hidden fixed inset-0 z-50 overflow-y-auto" aria-hidden="true">
   <!-- Overlay -->
   <div class="fixed inset-0 bg-black bg-opacity-80 transition-opacity"></div>
@@ -23,7 +23,7 @@
         <!-- Content -->
         <div class="px-6 py-4">
           <p class="text-sm text-sena-text-soft leading-relaxed">
-            ¿Estás seguro de deshabilitar <span class="font-medium text-sena-text-main">"Desarrollador Full Stack Senior"</span>? 
+            ¿Estás seguro de deshabilitar <span class="text-[#e65100]">"Desarrollador Full Stack Senior"</span>? 
             El registro no se eliminará, solo se marcará como inactivo.
           </p>
         </div>

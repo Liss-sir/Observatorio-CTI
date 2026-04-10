@@ -8,6 +8,8 @@ include __DIR__ . '/modal_habilitado_confirmacion.php';
 include __DIR__ . '/modal_confirmacion_deshabilitar_pefiles.php';
 include __DIR__ . '/modal_editar_confirmacion.php';
 include __DIR__ . '/modal_creado_confirmacion.php';
+include __DIR__ . '/modal_ninguno_cumple.php';
+
 
 // Obtener el ID del usuario de la sesión - PRUEBA CON DIFERENTES NOMBRES
 $id_usuario = $_SESSION['usuario_id'] ?? 
@@ -18,7 +20,7 @@ $id_usuario = $_SESSION['usuario_id'] ??
               null;
 
 $nombre_usuario = $_SESSION['nombre'] ?? $_SESSION['nombre_usuario'] ?? $_SESSION['username'] ?? '';
-$rol_usuario = $_SESSION['rol'] ?? $_SESSION['id_rol'] ?? $_SESSION['rol_usuario'] ?? '';
+$rol_usuario = $_SESSION['rol_nombre'] ?? $_SESSION['rol'] ?? $_SESSION['id_rol'] ?? $_SESSION['rol_usuario'] ?? '';
 
 // Si aún es null, intenta obtenerlo de otra manera (ej: desde una cookie o función de autenticación)
 if (!$id_usuario) {
@@ -44,7 +46,6 @@ echo " -->";
   <link rel="stylesheet" href="../../../assets/css/output.css">
   <link rel="stylesheet" href="../../assets/css/style_toast_alert.css">
   <link rel="stylesheet" href="../../assets/css/perfilesOcupacionales/perfiles.css">
-  <!-- <link rel="stylesheet" href="../../assets/css/globals.css"> -->
 </head>
 
 <body class="font-['Inter'] text-sena-text-main antialiased min-h-screen flex flex-col">
@@ -93,7 +94,7 @@ echo " -->";
             <!-- Linea Tecnologica - Se cargará dinámicamente -->
             <div class="mb-6">
               <span class="block mb-3 text-[0.6875rem] font-semibold uppercase tracking-wider text-sena-text-soft">Linea Tecnologica</span>
-              <div id="filtros-lineas" class="flex flex-col gap-2.5">
+              <div id="filtros-lineas" class="flex flex-col gap-2.5 max-h-48 overflow-y-auto pr-2">
                 <!-- Las líneas tecnológicas se cargarán aquí dinámicamente -->
                 <div class="text-sm text-sena-text-soft">Cargando líneas...</div>
               </div>
@@ -102,7 +103,7 @@ echo " -->";
             <!-- Tecnologia Emergente - Se cargará dinámicamente -->
             <div class="mb-6">
               <span class="block mb-3 text-[0.6875rem] font-semibold uppercase tracking-wider text-sena-text-soft">Tecnologia Emergente</span>
-              <div id="filtros-tecnologias" class="flex flex-col gap-2.5">
+              <div id="filtros-tecnologias" class="flex flex-col gap-2.5 max-h-48 overflow-y-auto pr-2">
                 <!-- Las tecnologías emergentes se cargarán aquí dinámicamente -->
                 <div class="text-sm text-sena-text-soft">Cargando tecnologías...</div>
               </div>
@@ -111,7 +112,7 @@ echo " -->";
             <!-- Tendencia Actual - Se cargará dinámicamente -->
             <div class="mb-6">
               <span class="block mb-3 text-[0.6875rem] font-semibold uppercase tracking-wider text-sena-text-soft">Tendencia Actual</span>
-              <div id="filtros-tendencias" class="flex flex-col gap-2.5">
+              <div id="filtros-tendencias" class="flex flex-col gap-2.5 max-h-48 overflow-y-auto pr-2">
                 <div class="text-sm text-sena-text-soft">Cargando tendencias...</div>
               </div>
             </div>
@@ -119,18 +120,10 @@ echo " -->";
             <!-- Proyección a Futuro - Se cargará dinámicamente -->
             <div class="mb-6">
               <span class="block mb-3 text-[0.6875rem] font-semibold uppercase tracking-wider text-sena-text-soft">Proyección a Futuro</span>
-              <div id="filtros-proyecciones" class="flex flex-col gap-2.5">
+              <div id="filtros-proyecciones" class="flex flex-col gap-2.5 max-h-48 overflow-y-auto pr-2">
                 <div class="text-sm text-sena-text-soft">Cargando proyecciones...</div>
               </div>
             </div>
-
-            <!-- Botón aplicar filtros -->
-            <button id="btn-aplicar-filtros" class="w-full mt-4 px-4 py-2 text-sm font-medium text-white bg-sena rounded-lg hover:opacity-90 transition-opacity">
-              Aplicar filtros
-            </button>
-            <button id="btn-limpiar-filtros" class="w-full mt-2 px-4 py-2 text-sm font-medium text-sena-text-main border border-sena-border rounded-lg hover:bg-sena-soft transition-colors">
-              Limpiar filtros
-            </button>
           </div>
         </aside>
 

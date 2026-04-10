@@ -28,47 +28,53 @@
           
           <!-- Nombre del perfil ocupacional -->
           <div class="mb-4">
-            <label class="mb-1 block text-sm font-medium text-sena-text-main">Nombre del perfil ocupacional </label>
+            <label class="mb-1 block text-sm font-medium text-sena-text-main">Nombre del perfil ocupacional</label>
             <input type="text" name="nombre" id="nombre_perfil" placeholder="Ej: Desarrollador Full Stack Senior"
-                   class="w-full rounded-lg border border-sena-border px-3 py-2 text-sm text-sena-text-main placeholder-sena-text-soft focus:border-sena focus:ring-2 focus:ring-sena/20 focus:outline-none" >
+                   class="w-full rounded-lg border border-sena-border px-3 py-2 text-sm text-sena-text-main placeholder-sena-text-soft focus:border-sena focus:ring-2 focus:ring-sena focus:ring-opacity-20 focus:outline-none" >
           </div>
 
           <!-- Descripción -->
           <div class="mb-4">
-            <label class="mb-1 block text-sm font-medium text-sena-text-main">Descripción </label>
+            <label class="mb-1 block text-sm font-medium text-sena-text-main">Descripción</label>
             <textarea name="descripcion" id="descripcion_perfil" rows="3" placeholder="Describe las responsabilidades, requisitos y habilidades necesarias para este perfil..."
-                      class="w-full rounded-lg border border-sena-border px-3 py-2 text-sm text-sena-text-main placeholder-sena-text-soft focus:border-sena focus:ring-2 focus:ring-sena/20 focus:outline-none" ></textarea>
+                      class="w-full rounded-lg border border-sena-border px-3 py-2 text-sm text-sena-text-main placeholder-sena-text-soft focus:border-sena focus:ring-2 focus:ring-sena focus:ring-opacity-20 focus:outline-none resize-none"></textarea>
           </div>
 
           <!-- Línea Tecnológica -->
           <div class="mb-4">
-            <label class="mb-1 block text-sm font-medium text-sena-text-main">Línea Tecnológica </label>
-            <select name="id_linea" id="linea_tecnologica" class="w-full rounded-lg border border-sena-border px-3 py-2 text-sm text-sena-text-main focus:border-sena focus:ring-2 focus:ring-sena/20 focus:outline-none" >
-              <option value="" disabled selected>Cargando líneas tecnológicas...</option>
-            </select>
+            <label class="mb-1 block text-sm font-medium text-sena-text-main">Línea Tecnológica</label>
+            <div class="select-container">
+              <select name="id_linea" id="linea_tecnologica" class="custom-select w-full rounded-lg border border-sena-border px-3 py-2 text-sm text-sena-text-main focus:border-sena focus:ring-2 focus:ring-sena focus:ring-opacity-20 focus:outline-none">
+                <option value="" disabled selected>Cargando líneas tecnológicas...</option>
+              </select>
+            </div>
           </div>
 
           <!-- Programa de Formación -->
           <div class="mb-4">
-            <label class="mb-1 block text-sm font-medium text-sena-text-main">Programa de Formación </label>
-            <select name="id_programa" id="programa_formacion" class="w-full rounded-lg border border-sena-border px-3 py-2 text-sm text-sena-text-main focus:border-sena focus:ring-2 focus:ring-sena/20 focus:outline-none"  disabled>
-              <option value="" disabled selected>Primero selecciona una línea tecnológica</option>
-            </select>
+            <label class="mb-1 block text-sm font-medium text-sena-text-main">Programa de Formación</label>
+            <div class="select-container">
+              <select name="id_programa" id="programa_formacion" class="custom-select w-full rounded-lg border border-sena-border px-3 py-2 text-sm text-sena-text-main focus:border-sena focus:ring-2 focus:ring-sena focus:ring-opacity-20 focus:outline-none" disabled>
+                <option value="" disabled selected>Primero selecciona una línea tecnológica</option>
+              </select>
+            </div>
           </div>
 
           <!-- Nivel de Formación -->
           <div class="mb-4">
-            <label class="mb-1 block text-sm font-medium text-sena-text-main">Nivel de Formación </label>
-            <select name="id_nivel" id="nivel_formacion" class="w-full rounded-lg border border-sena-border px-3 py-2 text-sm text-sena-text-main focus:border-sena focus:ring-2 focus:ring-sena/20 focus:outline-none" >
-              <option value="" disabled selected>Cargando niveles de formación...</option>
-            </select>
+            <label class="mb-1 block text-sm font-medium text-sena-text-main">Nivel de Formación</label>
+            <div class="select-container">
+              <select name="id_nivel" id="nivel_formacion" class="custom-select w-full rounded-lg border border-sena-border px-3 py-2 text-sm text-sena-text-main focus:border-sena focus:ring-2 focus:ring-sena focus:ring-opacity-20 focus:outline-none">
+                <option value="" disabled selected>Cargando niveles de formación...</option>
+              </select>
+            </div>
           </div>
 
           <!-- Cupos -->
           <div class="mb-4">
-            <label class="mb-1 block text-sm font-medium text-sena-text-main">Cupos disponibles </label>
+            <label class="mb-1 block text-sm font-medium text-sena-text-main">Cupos disponibles</label>
             <input type="number" name="cupos" id="cupos_perfil" placeholder="Número de personas necesarias" min="1" value="1"
-                   class="w-full rounded-lg border border-sena-border px-3 py-2 text-sm text-sena-text-main placeholder-sena-text-soft focus:border-sena focus:ring-2 focus:ring-sena/20 focus:outline-none" >
+                   class="w-full rounded-lg border border-sena-border px-3 py-2 text-sm text-sena-text-main placeholder-sena-text-soft focus:border-sena focus:ring-2 focus:ring-sena focus:ring-opacity-20 focus:outline-none">
           </div>
 
           <!-- Estado (por defecto activo) -->

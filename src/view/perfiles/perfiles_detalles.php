@@ -13,7 +13,7 @@ $id_perfil = $_GET['id'] ?? null;
 // Obtener el ID del usuario de la sesión
 $id_usuario = $_SESSION['usuario_id'] ?? $_SESSION['id_usuario'] ?? $_SESSION['user_id'] ?? $_SESSION['id'] ?? null;
 $nombre_usuario = $_SESSION['nombre'] ?? $_SESSION['nombre_usuario'] ?? '';
-$rol_usuario = $_SESSION['rol'] ?? $_SESSION['id_rol'] ?? '';
+$rol_usuario = $_SESSION['rol_nombre'] ?? $_SESSION['rol'] ?? $_SESSION['id_rol'] ?? '';
 ?>
 
 <!DOCTYPE html>
@@ -27,6 +27,8 @@ $rol_usuario = $_SESSION['rol'] ?? $_SESSION['id_rol'] ?? '';
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="../../../assets/css/output.css">
   <link rel="stylesheet" href="../../assets/css/globals.css">
+  <link rel="stylesheet" href="../../assets/css/perfilesOcupacionales/perfiles.css">
+  <link rel="stylesheet" href="../../assets/css/style_toast_alert.css">
   <style>
     .hidden {
       display: none !important;

@@ -33,3 +33,284 @@
   transform: translateX(12px);
 }
 
+
+/* Animación para el modal de confirmación */
+@keyframes modalFadeIn {
+  from {
+opacity: 0;
+transform: scale(0.95);
+  }
+  to {
+opacity: 1;
+transform: scale(1);
+  }
+}
+.animate-modalFadeIn {
+  animation: modalFadeIn 0.45s cubic-bezier(0.4, 0.0, 0.2, 1);
+}
+
+/* Animación de deslizamiento desde arriba para crear/editar */
+@keyframes slideDownModal {
+  from {
+    opacity: 0;
+    transform: scale(0.92) translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+.animate-slideDownModal {
+  animation: slideDownModal 0.5s cubic-bezier(0.4, 0.0, 0.2, 1);
+}
+
+/* ===== ANIMACIONES DE ENTRADA PARA TARJETAS DE PERFILES ===== */
+
+/* Animación fluida de deslizamiento desde abajo */
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Animación de escala suave */
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.92);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Animación de rotación suave */
+@keyframes rotateIn {
+  from {
+    opacity: 0;
+    transform: rotate(-2deg) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: rotate(0) scale(1);
+  }
+}
+
+/* Animación de brillo/shimmer */
+@keyframes shimmer {
+  0% {
+    left: -100%;
+  }
+  100% {
+    left: 100%;
+  }
+}
+
+/* Aplicar animación a las tarjetas de perfil - MÁS FLUIDA */
+.tarjeta-perfil {
+  animation: slideInUp 0.6s ease-out backwards;
+  position: relative;
+  overflow: hidden;
+}
+
+.tarjeta-perfil:nth-child(1) { animation-delay: 0.1s; }
+.tarjeta-perfil:nth-child(2) { animation-delay: 0.2s; }
+.tarjeta-perfil:nth-child(3) { animation-delay: 0.3s; }
+.tarjeta-perfil:nth-child(4) { animation-delay: 0.4s; }
+.tarjeta-perfil:nth-child(5) { animation-delay: 0.5s; }
+.tarjeta-perfil:nth-child(6) { animation-delay: 0.6s; }
+.tarjeta-perfil:nth-child(7) { animation-delay: 0.7s; }
+.tarjeta-perfil:nth-child(8) { animation-delay: 0.8s; }
+.tarjeta-perfil:nth-child(9) { animation-delay: 0.9s; }
+.tarjeta-perfil:nth-child(10) { animation-delay: 1s; }
+
+/* Efecto hover en tarjetas */
+.tarjeta-perfil {
+  transition: all 0.3s ease-out;
+}
+
+.tarjeta-perfil:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 24px rgba(57, 169, 0, 0.15);
+}
+
+.tarjeta-perfil:active {
+  transform: translateY(-2px);
+}
+
+/* Efecto de brillo suave en tarjetas (shimmer) */
+.tarjeta-perfil::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  bottom: 0;
+  width: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.1),
+    transparent
+  );
+  animation: shimmer 4s ease-in-out infinite;
+  pointer-events: none;
+}
+
+/* Versión con escala */
+.tarjeta-perfil.scale-in {
+  animation: scaleIn 0.6s ease-out backwards;
+}
+
+/* Versión con rotación sutil */
+.tarjeta-perfil.rotate-in {
+  animation: rotateIn 0.6s ease-out backwards;
+}
+
+/* ===== ANIMACIONES PARA PÁGINA DE DETALLES ===== */
+
+/* Animación para el contenido principal de detalles */
+#profile-content {
+  animation: fadeInDetail 0.6s ease-out;
+}
+
+@keyframes fadeInDetail {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Animación para el header del perfil */
+.mb-8 {
+  animation: slideInDown 0.6s ease-out;
+}
+
+@keyframes slideInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Animación para tarjetas de contenido en detalles */
+.border.border-sena-border.rounded-xl {
+  animation: slideInUp 0.6s ease-out forwards;
+  opacity: 0;
+}
+
+.flex.flex-col.gap-6 > .border:nth-child(1) { animation-delay: 0.2s; }
+.flex.flex-col.gap-6 > .border:nth-child(2) { animation-delay: 0.3s; }
+.flex.flex-col.gap-6 > .border:nth-child(3) { animation-delay: 0.4s; }
+.flex.flex-col.gap-6 > .border:nth-child(4) { animation-delay: 0.5s; }
+
+/* Animación para el sidebar de detalles */
+aside.sticky {
+  animation: slideInFromRight 0.6s ease-out;
+}
+
+@keyframes slideInFromRight {
+  from {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Animación para tarjetas dentro del grid de detalles */
+#profile-content .lg\:grid-cols-\[2fr_1fr\] > div > .border {
+  animation: slideInUp 0.5s ease-out forwards;
+  opacity: 0;
+}
+
+#profile-content .lg\:grid-cols-\[2fr_1fr\] > div > .border:nth-of-type(1) { animation-delay: 0.15s; }
+#profile-content .lg\:grid-cols-\[2fr_1fr\] > div > .border:nth-of-type(2) { animation-delay: 0.25s; }
+#profile-content .lg\:grid-cols-\[2fr_1fr\] > div > .border:nth-of-type(3) { animation-delay: 0.35s; }
+#profile-content .lg\:grid-cols-\[2fr_1fr\] > div > .border:nth-of-type(4) { animation-delay: 0.45s; }
+
+/* Animación suave para badges y textos en detalles */
+#profile-content h1,
+#profile-content h2,
+#profile-content .inline-flex {
+  animation: slideInUp 0.5s ease-out forwards;
+  opacity: 0;
+}
+
+#profile-content h1 { animation-delay: 0.1s; }
+#profile-content h2 { animation-delay: 0.2s; }
+
+/* Animación para botones en detalles */
+#profile-content button,
+#profile-content a {
+  animation: fadeIn 0.5s ease-out forwards;
+  opacity: 0;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+#profile-content #btn-editar-perfil { animation-delay: 0.25s; }
+#profile-content #btn-cambiar-estado { animation-delay: 0.3s; }
+
+/* Efecto hover suave en todos los elementos de detalles */
+#profile-content button,
+#profile-content a {
+  transition: all 0.3s ease-out;
+}
+
+#profile-content button:hover,
+#profile-content a:hover {
+  transform: translateY(-2px);
+}
+
+/* Animación para el loader skeleton */
+#skeleton-loader {
+  animation: fadeOut 0.3s ease-out forwards;
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+/* Animación para el back link */
+main > div > a:first-child {
+  animation: slideInLeft 0.5s ease-out;
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+

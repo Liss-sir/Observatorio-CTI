@@ -80,19 +80,20 @@ class PerfilOcupacionalModel {
     public function obtenerPorUsuario($id_usuario) {
         try {
             $sql = "SELECT p.*, 
-                           l.nombre_linea,
-                           pr.nombre_programa, pr.codigo_programa,
-                           n.nombre_nivel
+                        l.nombre_linea,
+                        pr.nombre_programa, pr.codigo_programa,
+                        n.nombre_nivel
                     FROM perfiles_ocupacionales p
                     INNER JOIN lineas_tecnologicas l ON p.id_linea = l.id_linea
                     INNER JOIN programas_formacion pr ON p.id_programa = pr.id_programa
                     INNER JOIN niveles_formacion n ON p.id_nivel = n.id_nivel
-                    WHERE p.id_usuario = ? AND p.estado = 1
+                    WHERE p.id_usuario = ?
                     ORDER BY p.fecha_creacion DESC";
             $stmt = $this->conn->prepare($sql);
             $stmt->execute([$id_usuario]);
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
         } catch (Exception $e) {
+            error_log('Error en obtenerPorUsuario: ' . $e->getMessage());
             return [];
         }
     }
@@ -249,33 +250,56 @@ class PerfilOcupacionalModel {
         }
     }
 
-    // Search profiles for term
+    // Search profiles for term (simple, redirige a buscarAvanzado)
     public function buscar($termino) {
+        return $this->buscarAvanzado([], $termino);
+    }
+
+    // ===== NUEVO MÉTODO: Obtener líneas tecnológicas por IDs de tecnologías emergentes =====
+    public function obtenerLineasPorTecnologiasEmergentes($ids_tecnologias) {
         try {
-            $sql = "SELECT p.*, 
-                           u.nombre_empresa, u.representante_legal,
-                           l.nombre_linea,
-                           pr.nombre_programa,
-                           n.nombre_nivel
-                    FROM perfiles_ocupacionales p
-                    INNER JOIN usuarios u ON p.id_usuario = u.id_usuario
-                    INNER JOIN lineas_tecnologicas l ON p.id_linea = l.id_linea
-                    INNER JOIN programas_formacion pr ON p.id_programa = pr.id_programa
-                    INNER JOIN niveles_formacion n ON p.id_nivel = n.id_nivel
-                    WHERE (p.nombre LIKE ? OR p.descripcion LIKE ? OR u.nombre_empresa LIKE ?)
-                    AND p.estado = 1
-                    ORDER BY p.fecha_creacion DESC";
+            if (empty($ids_tecnologias)) {
+                return [];
+            }
+            
+            if (!is_array($ids_tecnologias)) {
+                $ids_tecnologias = [$ids_tecnologias];
+            }
+            
+            $placeholders = implode(',', array_fill(0, count($ids_tecnologias), '?'));
+            $sql = "SELECT DISTINCT l.id_linea 
+                    FROM lineas_tecnologicas l
+                    WHERE l.id_tendencia IN ($placeholders) AND l.estado = 1";
+            
             $stmt = $this->conn->prepare($sql);
-            $termino_busqueda = "%$termino%";
-            $stmt->execute([$termino_busqueda, $termino_busqueda, $termino_busqueda]);
-            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $stmt->execute($ids_tecnologias);
+            return $stmt->fetchAll(PDO::FETCH_COLUMN);
         } catch (Exception $e) {
+            error_log('Error en obtenerLineasPorTecnologiasEmergentes: ' . $e->getMessage());
             return [];
         }
     }
 
-    // Advanced search with filters
-    public function buscarAvanzado($filtros) {
+    /**
+     * Búsqueda avanzada con filtros múltiples y término opcional.
+     * 
+     * @param array $filtros Filtros aplicados (pueden contener arrays para selección múltiple).
+     *                        Campos soportados:
+     *                        - id_usuario (int)
+     *                        - id_linea (int|array)        -> Una o varias líneas tecnológicas.
+     *                        - id_tecnologia (int|array)   -> Tecnologías emergentes.
+     *                        - id_tendencia (int|array)
+     *                        - id_proyeccion (int|array)
+     *                        - id_programa (int)
+     *                        - id_nivel (int)
+     *                        - estado (int)
+     *                        - cupos_min (int)
+     *                        - fecha_desde (string Y-m-d)
+     *                        - fecha_hasta (string Y-m-d)
+     * @param string|null $termino Término de búsqueda textual (busca en nombre, descripción y empresa).
+     * @return array
+     */
+    public function buscarAvanzado($filtros = [], $termino = null) {
         try {
             $sql = "SELECT p.*, 
                            u.nombre_empresa, u.representante_legal,
@@ -290,44 +314,108 @@ class PerfilOcupacionalModel {
                     WHERE 1=1";
             $params = [];
 
+            // --- Filtro por usuario ---
             if (!empty($filtros['id_usuario'])) {
                 $sql .= " AND p.id_usuario = ?";
                 $params[] = $filtros['id_usuario'];
             }
 
+            // --- Filtro por línea tecnológica (múltiple) ---
             if (!empty($filtros['id_linea'])) {
-                $sql .= " AND p.id_linea = ?";
-                $params[] = $filtros['id_linea'];
+                if (is_array($filtros['id_linea'])) {
+                    $placeholders = implode(',', array_fill(0, count($filtros['id_linea']), '?'));
+                    $sql .= " AND p.id_linea IN ($placeholders)";
+                    $params = array_merge($params, $filtros['id_linea']);
+                } else {
+                    $sql .= " AND p.id_linea = ?";
+                    $params[] = $filtros['id_linea'];
+                }
             }
 
+            // --- NUEVO: Filtro por tecnologías emergentes ---
+            if (!empty($filtros['id_tecnologia'])) {
+                $ids_tecnologia = is_array($filtros['id_tecnologia']) ? $filtros['id_tecnologia'] : [$filtros['id_tecnologia']];
+                $lineasPorTecnologia = $this->obtenerLineasPorTecnologiasEmergentes($ids_tecnologia);
+                
+                if (!empty($lineasPorTecnologia)) {
+                    $placeholders = implode(',', array_fill(0, count($lineasPorTecnologia), '?'));
+                    $sql .= " AND p.id_linea IN ($placeholders)";
+                    $params = array_merge($params, $lineasPorTecnologia);
+                } else {
+                    // No hay líneas con esas tecnologías, retornar vacío
+                    return [];
+                }
+            }
+
+            // --- Filtro por tendencia (pertenece a línea tecnológica) ---
+            if (!empty($filtros['id_tendencia'])) {
+                if (is_array($filtros['id_tendencia'])) {
+                    $placeholders = implode(',', array_fill(0, count($filtros['id_tendencia']), '?'));
+                    $sql .= " AND l.id_tendencia IN ($placeholders)";
+                    $params = array_merge($params, $filtros['id_tendencia']);
+                } else {
+                    $sql .= " AND l.id_tendencia = ?";
+                    $params[] = $filtros['id_tendencia'];
+                }
+            }
+
+            // --- Filtro por proyección (pertenece a línea tecnológica) ---
+            if (!empty($filtros['id_proyeccion'])) {
+                if (is_array($filtros['id_proyeccion'])) {
+                    $placeholders = implode(',', array_fill(0, count($filtros['id_proyeccion']), '?'));
+                    $sql .= " AND l.id_proyeccion IN ($placeholders)";
+                    $params = array_merge($params, $filtros['id_proyeccion']);
+                } else {
+                    $sql .= " AND l.id_proyeccion = ?";
+                    $params[] = $filtros['id_proyeccion'];
+                }
+            }
+
+            // --- Filtro por programa de formación ---
             if (!empty($filtros['id_programa'])) {
                 $sql .= " AND p.id_programa = ?";
                 $params[] = $filtros['id_programa'];
             }
 
+            // --- Filtro por nivel de formación ---
             if (!empty($filtros['id_nivel'])) {
                 $sql .= " AND p.id_nivel = ?";
                 $params[] = $filtros['id_nivel'];
             }
 
-            if (!empty($filtros['estado'])) {
+            // --- Filtro por estado ---
+            if (isset($filtros['estado']) && $filtros['estado'] !== '') {
                 $sql .= " AND p.estado = ?";
                 $params[] = $filtros['estado'];
             }
 
+            // --- Filtro por cupos mínimos ---
             if (!empty($filtros['cupos_min'])) {
                 $sql .= " AND p.cupos >= ?";
                 $params[] = $filtros['cupos_min'];
             }
 
+            // --- Filtro por fecha desde ---
             if (!empty($filtros['fecha_desde'])) {
                 $sql .= " AND DATE(p.fecha_creacion) >= ?";
                 $params[] = $filtros['fecha_desde'];
             }
 
+            // --- Filtro por fecha hasta ---
             if (!empty($filtros['fecha_hasta'])) {
                 $sql .= " AND DATE(p.fecha_creacion) <= ?";
                 $params[] = $filtros['fecha_hasta'];
+            }
+
+            // --- Búsqueda textual (nombre, descripción, empresa) ---
+            // Se puede recibir como $termino o dentro de $filtros['termino']
+            $terminoBusqueda = $termino ?? ($filtros['termino'] ?? null);
+            if (!empty($terminoBusqueda)) {
+                $sql .= " AND (p.nombre LIKE ? OR p.descripcion LIKE ? OR u.nombre_empresa LIKE ?)";
+                $like = "%$terminoBusqueda%";
+                $params[] = $like;
+                $params[] = $like;
+                $params[] = $like;
             }
 
             $sql .= " ORDER BY p.fecha_creacion DESC";
@@ -336,6 +424,8 @@ class PerfilOcupacionalModel {
             $stmt->execute($params);
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
         } catch (Exception $e) {
+            // En desarrollo puedes loguear $e->getMessage() para depurar
+            error_log('Error en buscarAvanzado: ' . $e->getMessage());
             return [];
         }
     }
@@ -482,6 +572,154 @@ class PerfilOcupacionalModel {
         }
     }
 
+    // List all active emerging technologies
+    public function listarTecnologiasEmergentes() {
+        try {
+            $sql = "SELECT id_tendencia, id_area, nombre, estado
+                    FROM tendencias_emergentes
+                    WHERE estado = 1
+                    ORDER BY nombre ASC";
+            
+            $stmt = $this->conn->prepare($sql);
+            $stmt->execute();
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (Exception $e) {
+            return [];
+        }
+    }
+
+    // List all current trends - Ahora consulta la tabla etapa_desarrollo
+    public function listarTendenciasActuales() {
+        try {
+            $sql = "SELECT id_etapa as id_tendencia, nombre, estado
+                    FROM etapa_desarrollo
+                    WHERE estado = 1
+                    ORDER BY nombre ASC";
+            
+            $stmt = $this->conn->prepare($sql);
+            $stmt->execute();
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (Exception $e) {
+            error_log('Error en listarTendenciasActuales: ' . $e->getMessage());
+            return [];
+        }
+    }
+
+    // List all future projections
+    public function listarProyeccionesFuturo() {
+        try {
+            $sql = "SELECT p.id_proyeccion, p.id_area, p.nombre, p.anio, p.estado,
+                           a.nombre_area
+                    FROM proyeccion_futuro p
+                    INNER JOIN areas a ON p.id_area = a.id_area
+                    WHERE p.estado = 1
+                    ORDER BY CAST(p.anio AS UNSIGNED) ASC, p.nombre ASC";
+            
+            $stmt = $this->conn->prepare($sql);
+            $stmt->execute();
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (Exception $e) {
+            return [];
+        }
+    }
+
+    // Get a specific emerging technology by ID
+    public function obtenerTecnologiaEmergente($id_tendencia) {
+        try {
+            $sql = "SELECT id_tendencia, id_area, nombre, estado
+                    FROM tendencias_emergentes
+                    WHERE id_tendencia = ? AND estado = 1";
+            
+            $stmt = $this->conn->prepare($sql);
+            $stmt->execute([$id_tendencia]);
+            return $stmt->fetch(PDO::FETCH_ASSOC);
+        } catch (Exception $e) {
+            return null;
+        }
+    }
+
+    // Get a specific future projection by ID
+    public function obtenerProyeccionFuturo($id_proyeccion) {
+        try {
+            $sql = "SELECT p.id_proyeccion, p.id_area, p.nombre, p.anio, p.estado,
+                           a.nombre_area
+                    FROM proyeccion_futuro p
+                    INNER JOIN areas a ON p.id_area = a.id_area
+                    WHERE p.id_proyeccion = ? AND p.estado = 1";
+            
+            $stmt = $this->conn->prepare($sql);
+            $stmt->execute([$id_proyeccion]);
+            return $stmt->fetch(PDO::FETCH_ASSOC);
+        } catch (Exception $e) {
+            return null;
+        }
+    }
+
+    // Disable profiles that exceed 12 months of validity
+    public function deshabilitarPerfilesVencidos() {
+        try {
+            $sql = "UPDATE perfiles_ocupacionales 
+                    SET estado = 0 
+                    WHERE estado = 1 
+                    AND fecha_creacion <= DATE_SUB(NOW(), INTERVAL 12 MONTH)";
+            
+            $stmt = $this->conn->prepare($sql);
+            $stmt->execute();
+            $cantidad = $stmt->rowCount();
+            
+            return $cantidad;
+        } catch (Exception $e) {
+            return 0;
+        }
+    }
+
+    // Get profiles that are about to expire
+    public function obtenerPerfilesProximosVencer($meses = 1) {
+        try {
+            $sql = "SELECT p.*, 
+                           u.nombre_empresa, u.representante_legal, u.correo,
+                           l.nombre_linea,
+                           pr.nombre_programa, pr.codigo_programa,
+                           n.nombre_nivel,
+                           DATEDIFF(DATE_ADD(p.fecha_creacion, INTERVAL 12 MONTH), NOW()) as dias_restantes
+                    FROM perfiles_ocupacionales p
+                    INNER JOIN usuarios u ON p.id_usuario = u.id_usuario
+                    INNER JOIN lineas_tecnologicas l ON p.id_linea = l.id_linea
+                    INNER JOIN programas_formacion pr ON p.id_programa = pr.id_programa
+                    INNER JOIN niveles_formacion n ON p.id_nivel = n.id_nivel
+                    WHERE p.estado = 1 
+                    AND fecha_creacion <= DATE_SUB(DATE_ADD(NOW(), INTERVAL ? MONTH), INTERVAL 12 MONTH)
+                    AND fecha_creacion > DATE_SUB(NOW(), INTERVAL 12 MONTH)
+                    ORDER BY fecha_creacion ASC";
+            
+            $stmt = $this->conn->prepare($sql);
+            $stmt->execute([$meses]);
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (Exception $e) {
+            return [];
+        }
+    }
+
+    // Get statistics of validity of profiles
+    public function obtenerEstadisticasVigencia() {
+        try {
+            $sql = "SELECT 
+                        COUNT(*) as total_perfiles_activos,
+                        SUM(CASE WHEN fecha_creacion <= DATE_SUB(NOW(), INTERVAL 11 MONTH) THEN 1 ELSE 0 END) as perfiles_por_vencer,
+                        SUM(CASE WHEN fecha_creacion <= DATE_SUB(NOW(), INTERVAL 12 MONTH) THEN 1 ELSE 0 END) as perfiles_vencidos,
+                        SUM(CASE WHEN fecha_creacion > DATE_SUB(NOW(), INTERVAL 6 MONTH) THEN 1 ELSE 0 END) as perfiles_recientes,
+                        MIN(DATE_ADD(fecha_creacion, INTERVAL 12 MONTH)) as fecha_vencimiento_mas_cercana
+                    FROM perfiles_ocupacionales
+                    WHERE estado = 1";
+            
+            $stmt = $this->conn->prepare($sql);
+            $stmt->execute();
+            return $stmt->fetch(PDO::FETCH_ASSOC);
+        } catch (Exception $e) {
+            return [];
+        }
+    }
+
     // Get statistics for profiles
     public function obtenerEstadisticas() {
         try {
@@ -549,7 +787,7 @@ class PerfilOcupacionalModel {
             $stmt->execute();
             $estadisticas['perfiles_recientes'] = $stmt->fetchAll(PDO::FETCH_ASSOC);
             
-            // Profiles expiring soon (by event)
+            // Profiles expiring soon
             $sql_proximos_deshabilitar = "SELECT COUNT(*) as total
                                          FROM perfiles_ocupacionales
                                          WHERE estado = 1

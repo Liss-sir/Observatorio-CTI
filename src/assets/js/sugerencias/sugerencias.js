@@ -2,6 +2,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Variables globales
     const API_URL = '../../controllers/SugerenciasController.php';
     const idUsuarioActual = window.idUsuarioActual || null;
+    const esAdmin = window.esAdmin || false;
     
     let todasLasTarjetas = []; // Almacenar todas las sugerencias
     let valoresOriginalesEditar = { tipo: '', titulo: '', descripcion: '' }; // Guardar valores originales
@@ -609,6 +610,9 @@ document.addEventListener('DOMContentLoaded', function() {
         const tituloEscapado = (s.titulo || '').replace(/"/g, '&quot;');
         const contenidoEscapado = (s.contenido || '').replace(/"/g, '&quot;');
 
+        // Verificar si el usuario actual es el creador de la sugerencia o es admin
+        const puedeEditar = esAdmin || (s.id_usuario == idUsuarioActual);
+
         return `
             <div class="tarjeta-tecnologia border border-sena-border rounded-lg bg-white p-4 hover:border-sena/30 hover:shadow-sm transition-all cursor-pointer flex flex-col h-full" 
                  data-id="${s.id_sugerencia}" 
@@ -626,7 +630,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         </svg>
                     </div>
                     <div class="flex items-center gap-1">
-                        <button class="btn-editar-proyeccion p-1.5 rounded-lg text-sena-text-soft hover:bg-sena-soft hover:text-sena transition-colors" 
+                        ${puedeEditar ? `<button class="btn-editar-proyeccion p-1.5 rounded-lg text-sena-text-soft hover:bg-sena-soft hover:text-sena transition-colors" 
                                 title="Editar sugerencia" 
                                 data-id="${s.id_sugerencia}" 
                                 data-nombre="${tituloEscapado}" 
@@ -635,8 +639,8 @@ document.addEventListener('DOMContentLoaded', function() {
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4">
                                 <path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/>
                             </svg>
-                        </button>
-                        <div class="switch-sena ${estadoClass}" title="${estadoTitle}" data-id="${s.id_sugerencia}" data-nombre="${tituloEscapado}"></div>
+                        </button>` : ''}
+                        ${puedeEditar ? `<div class="switch-sena ${estadoClass}" title="${estadoTitle}" data-id="${s.id_sugerencia}" data-nombre="${tituloEscapado}"></div>` : ''}
                     </div>
                 </div>
                 <div class="flex-1">
