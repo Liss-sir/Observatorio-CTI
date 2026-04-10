@@ -44,7 +44,8 @@ const Auth = {
             'crear_sugerencia',
             'editar_sugerencia',
             'desactivar_sugerencia',
-            'ver_estadisticas'
+            'ver_estadisticas',
+            "crear_admin"
         ],
         EMPRESA: [
             'ver_inicio',

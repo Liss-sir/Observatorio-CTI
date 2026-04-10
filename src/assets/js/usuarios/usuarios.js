@@ -562,87 +562,89 @@ document.addEventListener("DOMContentLoaded", () => {
     // =========================
     // CARGAR DETALLE USUARIO
     // =========================
-    function cargarDetalleUsuario(usuario){
+    function cargarDetalleUsuario(usuario) {
+        if (!usuario) {
+            console.error("No se recibieron datos del usuario");
+            return;
+        }
+
+        console.log("📦 Datos recibidos del backend:", usuario); // 🔍 CLAVE PARA DEBUG
+
+        // Campos básicos
         document.getElementById("detalle-nombre").textContent = usuario.representante_legal ?? "Sin nombre";
         document.getElementById("detalle-representante").textContent = usuario.representante_legal ?? "Sin nombre";
         document.getElementById("detalle-correo").textContent = usuario.correo ?? "Sin correo";
-        document.getElementById("detalle-cargo").textContent = (usuario.rol_nombre ?? "") + " · " + (usuario.nombre_empresa ?? "");
+        document.getElementById("detalle-cargo").textContent = `${usuario.rol_nombre ?? "Sin rol"} · ${usuario.nombre_empresa ?? "Sin empresa"}`;
         document.getElementById("detalle-razon-social").textContent = usuario.razon_social ?? "No especificada";
         document.getElementById("detalle-documento").textContent = usuario.tipo_documento ?? "Sin tipo";
         document.getElementById("detalle-numero-documento").textContent = usuario.numero_documento ?? "Sin número";
         document.getElementById("detalle-fecha-registro").textContent = usuario.fecha_registro ? formatearFecha(usuario.fecha_registro) : "Sin fecha";
         
         const iniciales = (usuario.nombre_empresa ?? "US").split(" ").map(n => n[0]).join("").substring(0, 2).toUpperCase();
-        document.getElementById("detalle-avatar").textContent = iniciales;
-        
+        document.getElementById("detalle-avatar").textContent = iniciales || "US";
+
+        // =========================
         // TECNOLOGÍAS
-        const contenedorTecnologias = document.getElementById("detalle-tecnologias");
-        contenedorTecnologias.innerHTML = "";
+        // =========================
+        const contTecnologias = document.getElementById("detalle-tecnologias");
+        contTecnologias.innerHTML = "";
         
-        if (usuario.tecnologias && usuario.tecnologias.length > 0) {
-            usuario.tecnologias.forEach(tec => {
+        const tecs = Array.isArray(usuario.tecnologias) ? usuario.tecnologias : [];
+        console.log("🔍 Tecnologías recibidas:", tecs);
+
+        if (tecs.length > 0) {
+            tecs.forEach(tec => {
                 const span = document.createElement("span");
                 span.className = "px-2.5 py-1 rounded-full bg-sena-soft text-sena text-xs font-medium";
                 span.textContent = tec.nombre ?? tec.linea_tecnologica ?? "Tecnología";
-                contenedorTecnologias.appendChild(span);
+                contTecnologias.appendChild(span);
             });
         } else {
-            contenedorTecnologias.innerHTML = `
-                <span class="px-2.5 py-1 rounded-full bg-gray-200 text-gray-500 text-xs">
-                    Sin líneas tecnológicas
-                </span>
-            `;
+            contTecnologias.innerHTML = `<span class="px-2.5 py-1 rounded-full bg-gray-200 text-gray-500 text-xs">Sin líneas tecnológicas</span>`;
         }
-        
+
+        // =========================
         // PERFILES
-        const contenedorPerfiles = document.getElementById("detalle-perfiles");
-        const totalPerfilesSpan = document.getElementById("detalle-total-perfiles");
-        contenedorPerfiles.innerHTML = "";
+        // =========================
+        const contPerfiles = document.getElementById("detalle-perfiles");
+        const totalSpan = document.getElementById("detalle-total-perfiles");
+        const btnVerMas = document.getElementById("btn-ver-mas-perfiles");
         
-        if (usuario.perfiles && usuario.perfiles.length > 0) {
-            totalPerfilesSpan.textContent = usuario.perfiles.length;
-            
-            const perfilesAMostrar = usuario.perfiles.slice(0, 3);
-            
-            perfilesAMostrar.forEach((perfil, index) => {
-                const perfilDiv = document.createElement("div");
-                perfilDiv.className = "bg-gray-50 rounded p-2 flex justify-between items-center";
+        contPerfiles.innerHTML = "";
+        const perfs = Array.isArray(usuario.perfiles) ? usuario.perfiles : [];
+        console.log("🔍 Perfiles recibidos:", perfs);
+
+        totalSpan.textContent = perfs.length;
+
+        if (perfs.length > 0) {
+            perfs.slice(0, 3).forEach(perfil => {
+                const div = document.createElement("div");
+                div.className = "bg-gray-50 rounded p-2 flex justify-between items-center";
                 
                 const estadoClass = perfil.estado == 1 ? "bg-sena-soft text-sena" : "bg-red-100 text-red-700";
                 const estadoTexto = perfil.estado == 1 ? "Vigente" : "Inactivo";
-                
-                perfilDiv.innerHTML = `
+
+                div.innerHTML = `
                     <div class="min-w-0 flex-1">
-                        <p class="text-xs font-bold text-sena-text-main truncate">
-                            ${perfil.nombre ?? "Sin nombre"}
-                        </p>
-                        <p class="text-xs text-sena-text-soft truncate">
-                            ${perfil.linea_nombre ?? "Sin línea"}
-                        </p>
+                        <p class="text-xs font-bold text-sena-text-main truncate">${perfil.nombre ?? "Sin nombre"}</p>
+                        <p class="text-xs text-sena-text-soft truncate">${perfil.linea_nombre ?? "Sin línea"}</p>
                     </div>
-                    <span class="text-xs px-2 py-0.5 rounded-full font-semibold ${estadoClass} flex-shrink-0 ml-2">
-                        ${estadoTexto}
-                    </span>
+                    <span class="text-xs px-2 py-0.5 rounded-full font-semibold ${estadoClass} flex-shrink-0 ml-2">${estadoTexto}</span>
                 `;
-                
-                contenedorPerfiles.appendChild(perfilDiv);
+                contPerfiles.appendChild(div);
             });
-            
-            const btnVerMas = document.getElementById("btn-ver-mas-perfiles");
-            if (usuario.perfiles.length > 3) {
-                btnVerMas.classList.remove("hidden");
-                btnVerMas.textContent = `Ver ${usuario.perfiles.length - 3} más`;
-            } else {
-                btnVerMas.classList.add("hidden");
+
+            if (btnVerMas) {
+                if (perfs.length > 3) {
+                    btnVerMas.classList.remove("hidden");
+                    btnVerMas.textContent = `Ver ${perfs.length - 3} más`;
+                } else {
+                    btnVerMas.classList.add("hidden");
+                }
             }
         } else {
-            totalPerfilesSpan.textContent = "0";
-            contenedorPerfiles.innerHTML = `
-                <div class="text-center py-2 text-gray-500 text-xs bg-gray-50 rounded">
-                    Sin perfiles creados
-                </div>
-            `;
-            document.getElementById("btn-ver-mas-perfiles").classList.add("hidden");
+            contPerfiles.innerHTML = `<div class="text-center py-2 text-gray-500 text-xs bg-gray-50 rounded">Sin perfiles creados</div>`;
+            if (btnVerMas) btnVerMas.classList.add("hidden");
         }
     }
     

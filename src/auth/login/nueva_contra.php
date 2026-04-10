@@ -9,6 +9,7 @@ $token = $_GET['token'] ?? '';
 <head>
 <meta charset="UTF-8">
 <title>Cambiar contraseña</title>
+  <link rel="stylesheet" href="../../assets/css/style_toast_alert.css">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
@@ -40,7 +41,11 @@ input {
     border:1px solid #ddd;
 }
 
-.btn {
+input:focus {
+    border-color: #39A900;
+}
+
+#btnCambiarPassword {
     width:70%;
     padding:12px;
     background:#39A900;
@@ -56,21 +61,22 @@ input {
     font-size:13px;
 }
 </style>
+
 </head>
-<body>
+    <body>
 
-<div class="card">
+        <div class="card">
 
-<h2>Nueva contraseña</h2>
+        <h2>Nueva contraseña</h2>
 
-<input type="password" id="password" placeholder="Nueva contraseña">
-<input type="password" id="confirmar" placeholder="Confirmar contraseña">
+            <input type="password" id="password" placeholder="Nueva contraseña">
+            <input type="password" id="confirmar" placeholder="Confirmar contraseña">
 
-<button id="btnCambiarPassword">Cambiar contraseña</button>
+        <button id="btnCambiarPassword">Cambiar contraseña</button>
 
-<div class="msg" id="msg"></div>
+        <div class="msg" id="msg"></div>
 
 </div>
 
-</body>
+    </body>
 </html>

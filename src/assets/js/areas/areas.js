@@ -41,31 +41,56 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // ===== FUNCIÓN PARA MOSTRAR ALERTAS BONITAS (TOASTS) =====
     function mostrarToastValidacion(mensaje, tipo = 'warning') {
-        // Si no existe el contenedor, lo crea
-        let toastContainer = document.getElementById('toast-container');
+        const toastContainer = document.getElementById('toast-container');
+        
         if (!toastContainer) {
-            toastContainer = document.createElement('div');
-            toastContainer.id = 'toast-container';
-            toastContainer.className = 'fixed top-4 right-4 z-[99999] flex flex-col gap-3 pointer-events-none';
-            document.body.appendChild(toastContainer);
+            const container = document.createElement('div');
+            container.id = 'toast-container';
+            container.className = 'fixed top-4 right-4 z-[99999] flex flex-col gap-3 pointer-events-none';
+            document.body.appendChild(container);
         }
-
-        const toastId = 'toast-' + Date.now();
+        
+        const container = document.getElementById('toast-container');
+        
+        const titulo = tipo === 'warning' ? 'Campo requerido' : 
+                       tipo === 'error' ? 'Error' : 
+                       tipo === 'info' ? 'Información' : 'Éxito';
+        
+        const toastId = 'toast-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
         const toast = document.createElement('div');
-        
-        // Colores según el tipo (warning, error, success)
-        let bgClass = tipo === 'error' ? 'bg-red-50 border-red-200 text-red-800' : 
-                    tipo === 'success' ? 'bg-green-50 border-green-200 text-green-800' : 'bg-yellow-50 border-yellow-200 text-yellow-800';
-        
         toast.id = toastId;
-        toast.className = `pointer-events-auto flex items-start gap-3 p-4 rounded-lg border shadow-lg ${bgClass} animate-fade-in-down`;
+        toast.className = `toast-validation ${tipo}`;
+        
+        const iconos = {
+            info: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>`,
+            warning: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4"/><path d="M12 17h.01"/><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2z"/></svg>`,
+            error: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`,
+            success: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`
+        };
+        
         toast.innerHTML = `
-            <div class="flex-shrink-0 font-bold">${tipo === 'error' ? '✕' : tipo === 'success' ? '✓' : '⚠'}</div>
-            <div class="text-sm">${mensaje}</div>
+            <div class="toast-contenido">
+                <div class="toast-icono-wrapper">
+                    <div class="toast-icono">${iconos[tipo] || iconos.warning}</div>
+                </div>
+                <div class="toast-mensaje-wrapper">
+                    <div class="toast-titulo">${titulo}</div>
+                    <div class="toast-mensaje">${mensaje}</div>
+                </div>
+            </div>
         `;
         
-        toastContainer.appendChild(toast);
-        setTimeout(() => { toast.remove(); }, 3000);
+        container.appendChild(toast);
+        
+        setTimeout(() => {
+            const toastElement = document.getElementById(toastId);
+            if (toastElement) {
+                toastElement.classList.add('exit');
+                setTimeout(() => {
+                    if (toastElement.parentNode) toastElement.remove();
+                }, 200);
+            }
+        }, 3000);
     }
 
     // ===== VALIDACIÓN DE DESCRIPCIÓN =====
@@ -148,7 +173,31 @@ document.addEventListener('DOMContentLoaded', function() {
         areasFiltradas = areas;
 
         if (areas.length === 0) {
-            gridAreas.innerHTML = '<div class="col-span-full text-center text-gray-500">No hay áreas registradas.</div>';
+            gridAreas.innerHTML = `
+                <div class="col-span-full flex flex-col items-center justify-center py-10 px-4 bg-white border border-gray-200 rounded-xl">
+                    <div class="w-20 h-20 mb-5 bg-sena-soft rounded-full flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-10 h-10 text-sena">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12.75V12A2.25 2.25 0 014.5 9.75h15A2.25 2.25 0 0121.75 12v.75m-8.69-6.44l-2.12-2.12a1.5 1.5 0 00-1.061-.44H4.5A2.25 2.25 0 002.25 6v12a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9a2.25 2.25 0 00-2.25-2.25h-5.379a1.5 1.5 0 01-1.06-.44z" />
+                        </svg>
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-800 mb-2">No hay áreas registradas</h3>
+                    <p class="text-sm text-gray-500 text-center max-w-sm mb-6">Comienza creando tu primera área.</p>
+                    <button id="btn-crear-desde-empty" class="flex items-center gap-2 px-5 py-2.5 text-sm font-medium text-white bg-sena rounded-lg hover:opacity-90 transition-opacity shadow-sm">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                            <path d="M12 4v16m8-8H4"></path>
+                        </svg>
+                        Crear primera área
+                    </button>
+                </div>
+            `;
+
+            const btnEmpty = document.getElementById('btn-crear-desde-empty');
+            if (btnEmpty) {
+                btnEmpty.addEventListener('click', () => {
+                    modalCrear.classList.remove('hidden');
+                });
+            }
+
             return;
         }
 
@@ -315,99 +364,64 @@ document.addEventListener('DOMContentLoaded', function() {
         buscador.addEventListener("keyup", function () {
             clearTimeout(timeoutBusqueda);
             const texto = this.value.trim();
-            
-            console.log('Texto ingresado:', texto);
-            
-            // Si está vacío, cargar todas
+
+            // Si está vacío → recargar todo
             if (texto.length === 0) {
                 paginaActual = 1;
                 cargarAreas();
                 return;
             }
-            
-            // Esperar al menos 2 caracteres
-            if (texto.length < 2) {
-                return;
-            }
-            
+
+            // Esperar mínimo 2 caracteres
+            if (texto.length < 2) return;
+
             timeoutBusqueda = setTimeout(async () => {
                 try {
-                    const url = `${API_URL}?accion=buscar&q=${encodeURIComponent(texto)}`;
-                    console.log('URL de búsqueda:', url);
-                    
-                    const response = await fetch(url);
-                    
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! status: ${response.status}`);
-                    }
-                    
-                    const result = await response.json();
-                    console.log('Respuesta del servidor:', result);
-                    
-                    // Verificar la estructura de la respuesta
-                    if (result.success === true && Array.isArray(result.data)) {
-                        if (result.data.length === 0) {
-                            // No hay resultados
-                            if (gridAreas) {
-                                const buscador = document.getElementById("buscador-areas");
-                                const hayBusqueda = buscador && buscador.value.trim().length > 0;
-                                const textoBusqueda = document.getElementById('buscador-areas')?.value?.toLowerCase()?.trim() || '';
+                    const response = await fetch(`${API_URL}?accion=buscar&q=${encodeURIComponent(texto)}`);
+                    if (!response.ok) throw new Error('Error de red');
 
-                                if (hayBusqueda) {
-                                    // ✅ Mensaje: No se encontraron resultados
-                                    gridAreas.innerHTML = `
-                                        <div class="col-span-full flex flex-col items-center justify-center py-10 px-4 bg-white border border-gray-200 rounded-xl">
-                                            <div class="w-20 h-20 mb-5 bg-sena-soft rounded-full flex items-center justify-center">
-                                                <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10 text-sena" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                                                    <circle cx="11" cy="11" r="8"></circle>
-                                                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                                                </svg>
-                                            </div>
-                                            <h3 class="text-lg font-semibold text-gray-800 mb-2">No se encontraron resultados</h3>
-                                            <p class="text-sm text-gray-500 text-center max-w-sm">No hay áreas que coincidan con "${textoBusqueda}".</p>
-                                        </div>
-                                    `;
-                                }else {
-                                // ✅ Mensaje: No hay registros
-                                gridAreas.innerHTML = `
-                                    <div class="col-span-full flex flex-col items-center justify-center py-10 px-4 bg-white border border-gray-200 rounded-xl">
-                                        <div class="w-20 h-20 mb-5 bg-sena-soft rounded-full flex items-center justify-center">
-                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-10 h-10 text-sena">
-                                                <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12.75V12A2.25 2.25 0 014.5 9.75h15A2.25 2.25 0 0121.75 12v.75m-8.69-6.44l-2.12-2.12a1.5 1.5 0 00-1.061-.44H4.5A2.25 2.25 0 002.25 6v12a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9a2.25 2.25 0 00-2.25-2.25h-5.379a1.5 1.5 0 01-1.06-.44z" />
-                                            </svg>
-                                        </div>
-                                        <h3 class="text-lg font-semibold text-gray-800 mb-2">No hay áreas registradas</h3>
-                                        <p class="text-sm text-gray-500 text-center max-w-sm mb-6">Comienza creando tu primera área.</p>
-                                        <button id="btn-crear-desde-empty" class="flex items-center gap-2 px-5 py-2.5 text-sm font-medium text-white bg-sena rounded-lg hover:opacity-90 transition-opacity shadow-sm">
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                                                <path d="M12 4v16m8-8H4"></path>
-                                            </svg>
-                                            Crear primera área
-                                        </button>
+                    const result = await response.json();
+
+                    if (result.success === true && Array.isArray(result.data)) {
+
+                        // 🔴 CASO: SIN RESULTADOS
+                        if (result.data.length === 0) {
+                            gridAreas.innerHTML = `
+                                <div class="col-span-full flex flex-col items-center justify-center py-10 px-4 bg-white border border-gray-200 rounded-xl">
+                                    <div class="w-20 h-20 mb-5 bg-sena-soft rounded-full flex items-center justify-center">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10 text-sena" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                            <circle cx="11" cy="11" r="8"></circle>
+                                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                                        </svg>
                                     </div>
-                                `;
-                                }
-                                const btnEmpty = document.getElementById('btn-crear-desde-empty');
-                                if (btnEmpty) btnEmpty.addEventListener('click', () => {
-                                    modalCrear.classList.remove('hidden');
-                                });
-                            }
-                        } else {
-                            // Renderizar resultados
-                            paginaActual = 1;
-                            renderizarAreas(result.data);
-                        } 
-                    } else {
-                        console.error('Estructura de respuesta inesperada:', result);
-                        if (gridAreas) {
-                            gridAreas.innerHTML = '<div class="col-span-full text-center py-10 text-red-500">Error en la respuesta del servidor.</div>';
+                                    <h3 class="text-lg font-semibold text-gray-800 mb-2">No se encontraron resultados</h3>
+                                    <p class="text-sm text-gray-500 text-center max-w-sm">
+                                        No hay áreas que coincidan con "${texto}".
+                                    </p>
+                                </div>
+                            `;
+                            return;
                         }
+
+                        // ✅ CASO: CON RESULTADOS
+                        paginaActual = 1;
+                        renderizarAreas(result.data);
+
+                    } else {
+                        gridAreas.innerHTML = `
+                            <div class="col-span-full text-center py-10 text-red-500">
+                                Error en la respuesta del servidor.
+                            </div>
+                        `;
                     }
+
                 } catch (error) {
-                    console.error('Error en búsqueda:', error);
-                    if (gridAreas) {
-                        gridAreas.innerHTML = '<div class="col-span-full text-center py-10 text-red-500">Error de conexión.</div>';
-                    }
+                    console.error(error);
+                    gridAreas.innerHTML = `
+                        <div class="col-span-full text-center py-10 text-red-500">
+                            Error de conexión.
+                        </div>
+                    `;
                 }
             }, 300);
         });

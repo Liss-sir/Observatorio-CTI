@@ -20,7 +20,7 @@
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Área</label>
                         <select id="areaPrograma" name="id_area" required
-                            class="w-full px-3 py-2 border border-sena-border rounded-lg bg-gray-50 focus:ring-2 focus:ring-sena/20 focus:border-sena outline-none transition">
+                            class="w-full px-3 py-2 border border-sena-border rounded-lg focus:ring-2 focus:ring-sena/20 focus:border-sena outline-none transition">
                             <option value="">Cargando áreas...</option>
                         </select>
                     </div>
@@ -30,12 +30,12 @@
                         <div>
                             <label class="text-sm font-medium text-gray-700">Código del Programa</label>
                             <input type="text" id="codigoNuevoPrograma" placeholder="Ej: 2928793"
-                                class="w-full mt-1 px-3 py-2 border border-sena-border rounded-lg bg-gray-50 focus:ring-2 focus:ring-sena/20 focus:border-sena outline-none transition">
+                                class="w-full mt-1 px-3 py-2 border border-sena-border rounded-lg focus:ring-2 focus:ring-sena/20 focus:border-sena outline-none transition">
                         </div>
                         <div>
                             <label class="text-sm font-medium text-gray-700">Cupos</label>
                             <input type="number" id="cuposNuevoPrograma" placeholder="Ej: 30"
-                                class="w-full mt-1 px-3 py-2 border border-sena-border rounded-lg bg-gray-50 focus:ring-2 focus:ring-sena/20 focus:border-sena outline-none transition">
+                                class="w-full mt-1 px-3 py-2 border border-sena-border rounded-lg focus:ring-2 focus:ring-sena/20 focus:border-sena outline-none transition">
                         </div>
                     </div>
 
@@ -43,14 +43,14 @@
                     <div>
                         <label class="text-sm font-medium text-gray-700">Nombre del Programa</label>
                         <input type="text" id="nombreNuevoPrograma" placeholder="Ej: Desarrollo de Software"
-                            class="w-full mt-1 px-3 py-2 border border-sena-border rounded-lg bg-gray-50 focus:ring-2 focus:ring-sena/20 focus:border-sena outline-none transition">
+                            class="w-full mt-1 px-3 py-2 border border-sena-border rounded-lg focus:ring-2 focus:ring-sena/20 focus:border-sena outline-none transition">
                     </div>
 
                     <!-- DESCRIPCIÓN -->
                     <div>
                         <label class="text-sm font-medium text-gray-700">Descripción</label>
                         <textarea id="descripcionNuevoPrograma" rows="3" placeholder="Breve descripción del programa"
-                            class="w-full mt-1 px-3 py-2 border border-sena-border rounded-lg bg-gray-50 focus:ring-2 focus:ring-sena/20 focus:border-sena outline-none transition resize-none"></textarea>
+                            class="w-full mt-1 px-3 py-2 border border-sena-border rounded-lg focus:ring-2 focus:ring-sena/20 focus:border-sena outline-none transition resize-none"></textarea>
                         <div class="flex justify-end items-center gap-2 mb-4 mt-1">
                             <span id="contador-caracteres-crear" class="text-xs text-sena-text-soft ml-auto">0 / 30 caracteres</span>
                             <span id="alerta-minimo-crear" class="text-xs text-red-500 hidden">Mínimo 30 caracteres requerido</span>
@@ -62,7 +62,7 @@
                         <div>
                             <label class="text-sm font-medium text-gray-700">Nivel de Formación</label>
                             <select id="nivelNuevoPrograma"
-                                class="w-full mt-1 px-3 py-2 border border-sena-border rounded-lg bg-gray-50 focus:ring-2 focus:ring-sena/20 focus:border-sena outline-none transition">
+                                class="w-full mt-1 px-3 py-2 border border-sena-border rounded-lg focus:ring-2 focus:ring-sena/20 focus:border-sena outline-none transition">
                                 <option value="">Seleccione nivel</option>
                                 <option value="1">Técnico</option>
                                 <option value="2">Tecnólogo</option>
@@ -73,7 +73,7 @@
                         <div>
                             <label class="text-sm font-medium text-gray-700">Modalidad</label>
                             <select id="modalidadNuevoPrograma"
-                                class="w-full mt-1 px-3 py-2 border border-sena-border rounded-lg bg-gray-50 focus:ring-2 focus:ring-sena/20 focus:border-sena outline-none transition">
+                                class="w-full mt-1 px-3 py-2 border border-sena-border rounded-lg focus:ring-2 focus:ring-sena/20 focus:border-sena outline-none transition">
                                 <option value="">Seleccione modalidad</option>
                                 <option value="Presencial">Presencial</option>
                                 <option value="Virtual">Virtual</option>
@@ -86,12 +86,12 @@
                         <div>
                             <label class="text-sm font-medium text-gray-700">Fecha de Inicio</label>
                             <input type="date" id="fechaInicioNuevoPrograma"
-                                class="w-full mt-1 px-3 py-2 border border-sena-border rounded-lg bg-gray-50 focus:ring-2 focus:ring-sena/20 focus:border-sena outline-none transition">
+                                class="w-full mt-1 px-3 py-2 border border-sena-border rounded-lg focus:ring-2 focus:ring-sena/20 focus:border-sena outline-none transition">
                         </div>
                         <div>
                             <label class="text-sm font-medium text-gray-700">Fecha de Fin</label>
                             <input type="date" id="fechaFinNuevoPrograma"
-                                class="w-full mt-1 px-3 py-2 border border-sena-border rounded-lg bg-gray-50 focus:ring-2 focus:ring-sena/20 focus:border-sena outline-none transition">
+                                class="w-full mt-1 px-3 py-2 border border-sena-border rounded-lg focus:ring-2 focus:ring-sena/20 focus:border-sena outline-none transition">
                         </div>
                     </div>
                 </form>

@@ -31,11 +31,60 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // ========== LOGIN FORM ==========
-    if (!loginForm) {
-        console.error("❌ No se encontró el formulario de login");
+    function mostrarToastValidacion(mensaje, tipo = 'warning') {
+        const toastContainer = document.getElementById('toast-container');
+        
+        if (!toastContainer) {
+            const container = document.createElement('div');
+            container.id = 'toast-container';
+            container.className = 'fixed top-4 right-4 z-[99999] flex flex-col gap-3 pointer-events-none';
+            document.body.appendChild(container);
+        }
+        
+        const container = document.getElementById('toast-container');
+        
+        const titulo = tipo === 'warning' ? 'Campo requerido' : 
+                       tipo === 'error' ? 'Error' : 
+                       tipo === 'info' ? 'Información' : 'Éxito';
+        
+        const toastId = 'toast-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+        const toast = document.createElement('div');
+        toast.id = toastId;
+        toast.className = `toast-validation ${tipo}`;
+        
+        const iconos = {
+            info: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>`,
+            warning: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4"/><path d="M12 17h.01"/><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2z"/></svg>`,
+            error: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`,
+            success: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`
+        };
+        
+        toast.innerHTML = `
+            <div class="toast-contenido">
+                <div class="toast-icono-wrapper">
+                    <div class="toast-icono">${iconos[tipo] || iconos.warning}</div>
+                </div>
+                <div class="toast-mensaje-wrapper">
+                    <div class="toast-titulo">${titulo}</div>
+                    <div class="toast-mensaje">${mensaje}</div>
+                </div>
+            </div>
+        `;
+        
+        container.appendChild(toast);
+        
+        setTimeout(() => {
+            const toastElement = document.getElementById(toastId);
+            if (toastElement) {
+                toastElement.classList.add('exit');
+                setTimeout(() => {
+                    if (toastElement.parentNode) toastElement.remove();
+                }, 200);
+            }
+        }, 3000);
     }
 
+    // ========== LOGIN FORM ==========
     if (loginForm) {
         loginForm.addEventListener("submit", async (e) => {
             e.preventDefault();
@@ -154,7 +203,12 @@ document.addEventListener("DOMContentLoaded", () => {
         formRecuperar.addEventListener("submit", function(e) {
             e.preventDefault();
 
-            const correo = document.getElementById("correo").value;
+            const correo = document.getElementById("correo").value.trim();
+
+            if (!correo) {
+                mostrarToastValidacion("El correo es obligatorio", "warning");
+                return;
+            }
 
             fetch("../../controllers/LogController.php?accion=recuperar", {
                 method: "POST",
@@ -164,7 +218,25 @@ document.addEventListener("DOMContentLoaded", () => {
                 body: JSON.stringify({ correo })
             })
             .then(res => res.json())
-            .then(data => console.log(data));
+            .then(data => {
+                if (data.success) {
+                    mostrarToastValidacion(
+                        "Si el correo está registrado, recibirás un enlace ",
+                        "success"
+                    );
+                } else {
+                    mostrarToastValidacion(
+                        data.error || "Error al enviar el correo",
+                        "error"
+                    );
+                }
+            })
+            .catch(() => {
+                mostrarToastValidacion(
+                    "Error de conexión con el servidor",
+                    "error"
+                );
+            });
         });
     }
 
@@ -177,7 +249,23 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function cambiarPassword() {
         const password = document.getElementById("password").value;
+        const confirmar = document.getElementById("confirmar_password").value;
         const token = new URLSearchParams(window.location.search).get("token");
+
+        if (!password || !confirmar) {
+            mostrarToastValidacion("Todos los campos son obligatorios", "warning");
+            return;
+        }
+
+        if (password.length < 6) {
+            mostrarToastValidacion("Mínimo 6 caracteres", "warning");
+            return;
+        }
+
+        if (password !== confirmar) {
+            mostrarToastValidacion("Las contraseñas no coinciden", "error");
+            return;
+        }
 
         fetch("../../controllers/LogController.php?accion=restablecer", {
             method: "POST",
@@ -191,7 +279,29 @@ document.addEventListener("DOMContentLoaded", () => {
         })
         .then(res => res.json())
         .then(data => {
-            console.log(data);
+            if (data.success) {
+                mostrarToastValidacion(
+                    "Contraseña actualizada correctamente ",
+                    "success"
+                );
+
+                // 🔥 Redirección después de 2 segundos
+                setTimeout(() => {
+                    window.location.href = "../login/login.php";
+                }, 2000);
+
+            } else {
+                mostrarToastValidacion(
+                    data.message || "Error al actualizar la contraseña",
+                    "error"
+                );
+            }
+        })
+        .catch(() => {
+            mostrarToastValidacion(
+                "Error de conexión con el servidor",
+                "error"
+            );
         });
     }
 
