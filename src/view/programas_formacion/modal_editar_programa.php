@@ -92,7 +92,7 @@
                   class="w-full mt-1 px-3 py-2 rounded-lg text-sm border border-sena-border focus:ring-2 focus:ring-sena/20 focus:border-sena outline-none transition"
                   required
                 >
-                  <option value="1">Técnico</option>
+                  <option value="1">Tecnico</option>
                   <option value="2">Tecnólogo</option>
                   <option value="3">Operario</option>
                   <option value="4">Auxiliar</option>
