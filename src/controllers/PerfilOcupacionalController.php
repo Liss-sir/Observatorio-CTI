@@ -334,7 +334,7 @@ class PerfilOcupacionalController {
         ]);
     }
 
-    // Search profiles for term
+    // Search profiles for term (simple)
     public function buscar() {
         $termino = $_GET['q'] ?? '';
         
@@ -354,11 +354,16 @@ class PerfilOcupacionalController {
         ]);
     }
 
-    // Advanced search with filters
+    // Acepta parámetro 'q' en la URL para combinar búsqueda textual con filtros JSON
     public function buscarAvanzado() {
-        $filtros = json_decode(file_get_contents("php://input"), true);
+        // Leer filtros del cuerpo JSON
+        $input = json_decode(file_get_contents("php://input"), true);
+        $filtros = $input ?? [];
         
-        $resultados = $this->model->buscarAvanzado($filtros ?? []);
+        // Leer término de búsqueda de la query string (si existe)
+        $termino = $_GET['q'] ?? null;
+        
+        $resultados = $this->model->buscarAvanzado($filtros, $termino);
         
         echo json_encode([
             'success' => true,
@@ -719,9 +724,19 @@ class PerfilOcupacionalController {
         ]);
     }
 
+    // Get statistics for profiles (general)
+    public function obtenerEstadisticas() {
+        $estadisticas = $this->model->obtenerEstadisticas();
+        
+        echo json_encode([
+            'success' => true,
+            'data' => $estadisticas
+        ]);
+    }
+
 }
 
-
+// ==================== ROUTER ====================
 $accion = $_GET['accion'] ?? null;
 $id = $_GET['id_perfil'] ?? null;
 $id_usuario = $_GET['id_usuario'] ?? null;
