@@ -8,7 +8,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const modalHabilitadoConfirmacion = document.getElementById('modal-habilitado-confirmacion');
     const modalCreadoConfirmacion = document.getElementById('modal-creado-confirmacion');
     const modalEditadoConfirmacion = document.getElementById('modal-editado-confirmacion');
-
+    const form = document.getElementById("formPrograma");   
     
     const nombreProgramaDeshabilitar = document.getElementById('nombre-programa-deshabilitar');
     const nombreProgramaHabilitar = document.getElementById('nombre-programa-habilitar');
@@ -62,6 +62,18 @@ document.addEventListener("DOMContentLoaded", function () {
                 if (alerta) alerta.classList.remove('hidden');
             }
         }
+    }
+
+    function limpiarFormularioPrograma() {
+        document.getElementById("areaPrograma").value = "";
+        document.getElementById("codigoNuevoPrograma").value = "";
+        document.getElementById("nombreNuevoPrograma").value = "";
+        document.getElementById("nivelNuevoPrograma").value = "";
+        document.getElementById("modalidadNuevoPrograma").value = "";
+        document.getElementById("fechaInicioNuevoPrograma").value = "";
+        document.getElementById("fechaFinNuevoPrograma").value = "";
+        document.getElementById("cuposNuevoPrograma").value = "";
+        document.getElementById("descripcionNuevoPrograma").value = "";
     }
 
     function actualizarContadorCrear() {
@@ -839,7 +851,8 @@ document.addEventListener("DOMContentLoaded", function () {
                 const resultado = await response.json();
                 if (resultado.success) {
                     if (modalCrear) modalCrear.classList.add("hidden");
-                    mostrarModalCreado(datos.nombre_programa); // ✅ ABRE MODAL DE ÉXITO
+                    limpiarFormularioPrograma(); 
+                    mostrarModalCreado(datos.nombre_programa); 
                     cargarProgramas();
                 } else {
                     alert(resultado.error);
@@ -925,7 +938,24 @@ document.addEventListener("DOMContentLoaded", function () {
         btnCrearPrograma.addEventListener('click', (e) => {
             e.preventDefault();
             e.stopPropagation();
+
             if (modalCrear) modalCrear.classList.remove('hidden');
+
+            // 🔥 LIMPIAR FORMULARIO AL ABRIR
+            const form = document.getElementById("formPrograma");
+
+            if (form) {
+                form.reset();
+
+                // limpieza forzada (por si hay valores persistentes)
+                form.querySelectorAll("input, textarea, select").forEach(el => {
+                    if (el.type === "checkbox" || el.type === "radio") {
+                        el.checked = false;
+                    } else {
+                        el.value = "";
+                    }
+                });
+            }
         });
     }
 

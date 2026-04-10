@@ -320,7 +320,7 @@ class LoginModel {
             return false;
         }
 
-        $enlace = "http://localhost/observatorio/Observatorio-CTI/src/controllers/LogController.php?accion=recuperar&token=" . urlencode($token);
+        $enlace = "http://localhost/observatorio/Observatorio-CTI/src/auth/login/nueva_contra.php?&token=" . urlencode($token);
         $asunto = "Recuperación de contraseña - Observatorio CTI";
         $cuerpo = "
             <div style='margin:0; padding:0; background:#f4f6f9; font-family:Arial, sans-serif;'>
@@ -437,7 +437,7 @@ class LoginModel {
             // Verificar si el correo ya existe
             $existe = $this->obtenerUsuarioPorCorreo($data['correo']);
             if ($existe) {
-                return ['success' => false, 'error' => 'El correo ya est· registrado'];
+                return ['success' => false, 'error' => 'El correo ya esta registrado'];
             }
 
             // Hash de la contraseÒa

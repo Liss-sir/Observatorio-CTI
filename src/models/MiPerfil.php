@@ -43,7 +43,7 @@ class MiPerfil {
      */
     public function getStats() {
         // 1. Perfiles registrados (activos)
-        $perfiles = $this->countRows("perfiles_ocupacionales", "estado = 1");
+        $perfiles = $this->countRows("perfiles_ocupacionales");
 
         // 2. Administradores activos (id_rol=1, estado=1)
         $administradores = $this->countRows("usuarios", "id_rol = 1");
@@ -93,11 +93,10 @@ class MiPerfil {
     /**
      * Obtiene los últimos perfiles ocupacionales creados (activos)
      */
-    public function getLatestProfiles($limit = 2) {
+    public function getLatestProfiles($limit = 5) {
         $stmt = $this->db->prepare("
             SELECT nombre, estado
             FROM perfiles_ocupacionales
-            WHERE estado = 1
             ORDER BY fecha_creacion DESC
             LIMIT :limit
         ");

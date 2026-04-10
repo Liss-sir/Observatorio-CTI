@@ -34,7 +34,7 @@ const Componentes = {
                      <span>${p.nombre}</span>
                  </div>
                  <span class="px-3 py-1 text-xs rounded-full border border-sena bg-sena-soft text-green-700">
-                    ${p.estado === '1' ? 'Activo' : 'Inactivo'}
+                    ${Number(p.estado) === 1 ? 'Activo' : 'Inactivo'}
                  </span>
              </div>
         `;

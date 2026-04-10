@@ -202,7 +202,10 @@ $razonesSociales = [
                         <option value="">Seleccione</option>
                         <option value="CC">Cédula</option>
                         <option value="NIT">NIT</option>
-                        <option value="CE">RUT</option>
+                        <option value="RUT">RUT</option>
+                        <option value="CE">CE</option>
+                        <option value="TI">TI</option>
+                        <option value="PASAPORTE">Pasaporte</option>
                     </select>
                 </div>
 

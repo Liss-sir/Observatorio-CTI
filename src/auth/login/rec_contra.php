@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Recuperar contraseña</title>
+      <link rel="stylesheet" href="../../assets/css/style_toast_alert.css">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <style>
@@ -58,7 +59,8 @@
             border-color: #39A900;
         }
 
-        #email {
+        /* En lugar de #submit, usa: */
+        .card button[type="submit"] {
             width: 40%;
             padding: 12px;
             margin-top: 10px;
@@ -71,7 +73,7 @@
             transition: 0.3s;
         }
 
-        #email:hover {
+        .card button[type="submit"]:hover {
             background: #2e8700;
         }
 
