@@ -48,7 +48,8 @@ function obtenerPermisosPorRol() {
             'editar_sugerencia',
             'desactivar_sugerencia',
             //estadisticas
-            'ver_estadisticas'
+            'ver_estadisticas',
+            'crear_admin'
         ],
         'EMPRESA' => [
             // Solo puede ver y gestionar perfiles

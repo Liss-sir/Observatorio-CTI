@@ -85,10 +85,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // ========== LOGIN FORM ==========
-    if (!loginForm) {
-        console.error("❌ No se encontró el formulario de login");
-    }
-
     if (loginForm) {
         loginForm.addEventListener("submit", async (e) => {
             e.preventDefault();

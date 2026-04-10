@@ -1,4 +1,9 @@
 <?php
+session_start();
+
+$esAdmin = isset($_SESSION['rol']) && $_SESSION['rol'] === 'ADMINISTRADOR';
+?>
+<?php
 // Al inicio del archivo, definir las razones sociales
 $razonesSociales = [
     ['value' => 'SOCIEDAD POR ACCIONES SIMPLIFICADA', 'label' => 'Sociedad por Acciones Simplificada (SAS)'],
@@ -138,6 +143,18 @@ $razonesSociales = [
 
             <!-- Formulario -->
             <form id="registerForm" class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <?php if ($esAdmin): ?>
+                <div class="md:col-span-2">
+                    <label class="block text-xs font-medium mb-1">
+                        Rol <span class="text-red-500">*</span>
+                    </label>
+                    <select name="rol"
+                        class="w-full px-3 py-2 rounded-md border border-gray-300 text-sm">
+                        <option value="usuario">Usuario</option>
+                        <option value="admin">Administrador</option>
+                    </select>
+                </div>
+                <?php endif; ?>
                 <!-- Representante -->
                 <div>
                     <label class="block text-xs font-medium mb-1">

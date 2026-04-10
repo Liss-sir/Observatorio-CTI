@@ -84,6 +84,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 password: form.password.value,
                 razon_social: form.razon_social.value.trim() || null
             };
+            if (form.rol) {
+                data.rol = form.rol.value;
+            }
 
             // ===== VALIDACIONES =====
             
