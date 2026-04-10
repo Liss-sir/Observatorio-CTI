@@ -376,7 +376,7 @@ $rolActual = obtenerRolActual();
                 </button>
 
               <?php if (tienePermiso('crear_admin')): ?>
-                  <a href="../../auth/login/register.php?admin"
+                  <a href="../../auth/login/register.php?admin=1"
                     class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-sena-soft hover:text-green-700">
                     
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

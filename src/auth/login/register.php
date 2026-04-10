@@ -1,10 +1,11 @@
 <?php
 session_start();
 
-$esAdmin = isset($_SESSION['rol']) && $_SESSION['rol'] === 'ADMINISTRADOR';
+$esAdmin = isset($_SESSION['rol_nombre']) && strtolower($_SESSION['rol_nombre']) === 'administrador';
+$modoAdmin = $esAdmin && ($_GET['admin'] ?? null) == '1';
 ?>
+
 <?php
-// Al inicio del archivo, definir las razones sociales
 $razonesSociales = [
     ['value' => 'SOCIEDAD POR ACCIONES SIMPLIFICADA', 'label' => 'Sociedad por Acciones Simplificada (SAS)'],
     ['value' => 'SOCIEDAD ANONIMA', 'label' => 'Sociedad Anónima (SA)'],
@@ -142,15 +143,17 @@ $razonesSociales = [
             </div>
 
             <!-- Formulario -->
+             <!-- Representante -->
             <form id="registerForm" class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                <?php if ($esAdmin): ?>
+                <?php if ($modoAdmin): ?>
                 <div class="md:col-span-2">
                     <label class="block text-xs font-medium mb-1">
-                        Rol <span class="text-red-500">*</span>
+                        Rol
                     </label>
-                    <select name="rol"
-                        class="w-full px-3 py-2 rounded-md border border-gray-300 text-sm">
-                        <option value="usuario">Usuario</option>
+                    <select name="rol" class="w-full px-3 py-2 rounded-md border border-gray-300 text-sm
+                                focus:border-sena focus:ring-1 focus:ring-sena/30
+                                focus:outline-none transition bg-white">>
+                        <option value="usuario">Empresa</option>
                         <option value="admin">Administrador</option>
                     </select>
                 </div>
@@ -161,7 +164,7 @@ $razonesSociales = [
                         Nombre del representante legal <span class="text-red-500">*</span>
                     </label>
                     <input type="text" name="representante" placeholder="Carlos Ocampo"
-                           class="w-full px-3 py-2 rounded-md border border-gray-300 text-sm
+                           class="w-full px-3 py-2 rounded-md border bg-white border-gray-300 text-sm
                                   focus:border-sena focus:ring-1 focus:ring-sena/30
                                   focus:outline-none transition" />
                 </div>

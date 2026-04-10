@@ -219,7 +219,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const desc = (area.descripcion_area && area.descripcion_area.trim() !== '') ? area.descripcion_area : 'Sin descripción';
 
             const cardHTML = `
-                <div class="border rounded-xl p-5 bg-white shadow-sm cursor-pointer hover:shadow-md transition-shadow" data-id="${area.id_area}">
+                <div class="tarjeta-tecnologia border rounded-xl p-5 bg-white shadow-sm cursor-pointer hover:shadow-md transition-shadow" data-id="${area.id_area}">
                     <div class="flex justify-between items-start mb-3">
                         <div class="bg-sena-soft p-2 rounded-lg">
                             <i data-lucide="bar-chart-3" class="w-5 h-5 ${colorIcono}"></i>

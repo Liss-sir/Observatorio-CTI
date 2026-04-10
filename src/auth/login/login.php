@@ -237,6 +237,8 @@
 </div>
 
 <script src="../../assets/js/login.js"></script>
-
+ <script>
+    lucide.createIcons();
+</script>
 </body>
 </html>

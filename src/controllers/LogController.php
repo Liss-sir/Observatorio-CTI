@@ -253,6 +253,29 @@ class LogController {
     public function register() {
         $input = json_decode(file_get_contents("php://input"), true);
 
+        // 🔐 SESIÓN
+        session_start();
+
+        // 🧠 MAPA DE ROLES (ajústalo si cambia en tu BD)
+        $mapaRoles = [
+            'admin' => 1,
+            'usuario' => 2,
+            'empresa' => 2
+        ];
+
+        // 🎯 POR DEFECTO
+        $idRol = 2;
+
+        // ✅ SI ES ADMIN, PUEDE CAMBIAR EL ROL
+        if (isset($_SESSION['rol_nombre']) && strtolower($_SESSION['rol_nombre']) === 'administrador') {
+            if (isset($input['rol']) && isset($mapaRoles[$input['rol']])) {
+                $idRol = $mapaRoles[$input['rol']];
+            }
+        }
+
+        // 🚀 ESTA ES LA LÍNEA CLAVE
+        $input['id_rol'] = $idRol;
+
         // Validar campos requeridos
         $required = ['representante_legal', 'tipo_documento', 'numero_documento', 'correo', 'password'];
         foreach ($required as $field) {

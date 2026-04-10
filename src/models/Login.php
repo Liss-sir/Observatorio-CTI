@@ -3,6 +3,8 @@ require __DIR__ . '/../../vendor/autoload.php';
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
+
+
 class LoginModel {
 
     private $conn;
@@ -40,7 +42,7 @@ class LoginModel {
 
             // Verificar correo verificado
             if ($usuario['correo_verificado'] != 1) {
-                return ['success' => false, 'error' => 'Correo electrÛnico no verificado'];
+                return ['success' => false, 'error' => 'Correo electronico no verificado'];
             }
 
             // --- VerificaciÛn de contraseÒa (hash + texto plano legacy) ---
@@ -179,7 +181,7 @@ class LoginModel {
     }
 
     /**
-     * Enviar correo electrÛnico (simulado)
+     * Enviar correo electronico
      * @param string $destinatario
      * @param string $asunto
      * @param string $cuerpo
@@ -421,9 +423,9 @@ class LoginModel {
 
         if ($this->cambiarPassword($data['id_usuario'], $nueva_password)) {
             $this->marcarTokenUsado($data['id_token']);
-            return ['success' => true, 'message' => 'ContraseÒa actualizada correctamente'];
+            return ['success' => true, 'message' => 'Contraseña actualizada correctamente'];
         } else {
-            return ['success' => false, 'message' => 'Error al actualizar la contraseÒa'];
+            return ['success' => false, 'message' => 'Error al actualizar la contraseña'];
         }
     }
 
@@ -449,7 +451,7 @@ class LoginModel {
                     VALUES (?, ?, ?, ?, ?, ?, ?, ?, 0, 1, 0, NOW())";
             $stmt = $this->conn->prepare($sql);
             $params = [
-                2, // id_rol empresa
+                $data['id_rol'] ?? 2,
                 $data['nombre_empresa'] ?? null,
                 $data['razon_social'] ?? null,
                 $data['representante_legal'],

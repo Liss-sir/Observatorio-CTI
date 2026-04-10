@@ -363,7 +363,7 @@ document.addEventListener("DOMContentLoaded", function () {
         
         programasPagina.forEach(programa => {
             const card = document.createElement('div');
-            card.className = 'bg-white border border-gray-200 p-5 rounded-xl shadow-sm hover:shadow-md transition-shadow programa-card cursor-pointer';
+            card.className = 'tarjeta-tecnologia bg-white border border-gray-200 p-5 rounded-xl shadow-sm hover:shadow-md transition-shadow programa-card cursor-pointer';
             card.setAttribute('data-id', programa.id_programa);
 
             // ✅ Guardamos TODA la info en data-* para el modal de detalle
@@ -855,7 +855,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     mostrarModalCreado(datos.nombre_programa); 
                     cargarProgramas();
                 } else {
-                    alert(resultado.error);
+                    mostrarToastValidacion(result.error || result.message, 'error');
                 }
             } catch (error) {
                 console.error(error);
