@@ -251,12 +251,27 @@ class PerfilOcupacionalModel {
 
     // Search profiles for term (simple, redirige a buscarAvanzado)
     public function buscar($termino) {
-        // Se utiliza buscarAvanzado con filtros vacíos y el término de búsqueda
         return $this->buscarAvanzado([], $termino);
     }
 
-    // Advanced search with filters and optional search term
-    // MODIFICACIÓN: ahora acepta un parámetro $termino para combinar filtros y búsqueda textual
+    /**
+     * Búsqueda avanzada con filtros múltiples y término opcional.
+     * 
+     * @param array $filtros Filtros aplicados (pueden contener arrays para selección múltiple).
+     *                        Campos soportados:
+     *                        - id_usuario (int)
+     *                        - id_linea (int|array)        -> Una o varias líneas tecnológicas.
+     *                        - id_tendencia (int|array)
+     *                        - id_proyeccion (int|array)
+     *                        - id_programa (int)
+     *                        - id_nivel (int)
+     *                        - estado (int)
+     *                        - cupos_min (int)
+     *                        - fecha_desde (string Y-m-d)
+     *                        - fecha_hasta (string Y-m-d)
+     * @param string|null $termino Término de búsqueda textual (busca en nombre, descripción y empresa).
+     * @return array
+     */
     public function buscarAvanzado($filtros = [], $termino = null) {
         try {
             $sql = "SELECT p.*, 
@@ -272,55 +287,93 @@ class PerfilOcupacionalModel {
                     WHERE 1=1";
             $params = [];
 
-            // Filtros estándar
+            // --- Filtro por usuario ---
             if (!empty($filtros['id_usuario'])) {
                 $sql .= " AND p.id_usuario = ?";
                 $params[] = $filtros['id_usuario'];
             }
 
+            // --- Filtro por línea tecnológica (múltiple) ---
             if (!empty($filtros['id_linea'])) {
-                $sql .= " AND p.id_linea = ?";
-                $params[] = $filtros['id_linea'];
+                if (is_array($filtros['id_linea'])) {
+                    $placeholders = implode(',', array_fill(0, count($filtros['id_linea']), '?'));
+                    $sql .= " AND p.id_linea IN ($placeholders)";
+                    $params = array_merge($params, $filtros['id_linea']);
+                } else {
+                    $sql .= " AND p.id_linea = ?";
+                    $params[] = $filtros['id_linea'];
+                }
             }
 
+            // --- Filtro por tendencia (pertenece a línea tecnológica) ---
+            if (!empty($filtros['id_tendencia'])) {
+                if (is_array($filtros['id_tendencia'])) {
+                    $placeholders = implode(',', array_fill(0, count($filtros['id_tendencia']), '?'));
+                    $sql .= " AND l.id_tendencia IN ($placeholders)";
+                    $params = array_merge($params, $filtros['id_tendencia']);
+                } else {
+                    $sql .= " AND l.id_tendencia = ?";
+                    $params[] = $filtros['id_tendencia'];
+                }
+            }
+
+            // --- Filtro por proyección (pertenece a línea tecnológica) ---
+            if (!empty($filtros['id_proyeccion'])) {
+                if (is_array($filtros['id_proyeccion'])) {
+                    $placeholders = implode(',', array_fill(0, count($filtros['id_proyeccion']), '?'));
+                    $sql .= " AND l.id_proyeccion IN ($placeholders)";
+                    $params = array_merge($params, $filtros['id_proyeccion']);
+                } else {
+                    $sql .= " AND l.id_proyeccion = ?";
+                    $params[] = $filtros['id_proyeccion'];
+                }
+            }
+
+            // --- Filtro por programa de formación ---
             if (!empty($filtros['id_programa'])) {
                 $sql .= " AND p.id_programa = ?";
                 $params[] = $filtros['id_programa'];
             }
 
+            // --- Filtro por nivel de formación ---
             if (!empty($filtros['id_nivel'])) {
                 $sql .= " AND p.id_nivel = ?";
                 $params[] = $filtros['id_nivel'];
             }
 
-            // Permitir filtrar por estado específico (si se envía, incluso vacío se omite)
+            // --- Filtro por estado ---
             if (isset($filtros['estado']) && $filtros['estado'] !== '') {
                 $sql .= " AND p.estado = ?";
                 $params[] = $filtros['estado'];
             }
 
+            // --- Filtro por cupos mínimos ---
             if (!empty($filtros['cupos_min'])) {
                 $sql .= " AND p.cupos >= ?";
                 $params[] = $filtros['cupos_min'];
             }
 
+            // --- Filtro por fecha desde ---
             if (!empty($filtros['fecha_desde'])) {
                 $sql .= " AND DATE(p.fecha_creacion) >= ?";
                 $params[] = $filtros['fecha_desde'];
             }
 
+            // --- Filtro por fecha hasta ---
             if (!empty($filtros['fecha_hasta'])) {
                 $sql .= " AND DATE(p.fecha_creacion) <= ?";
                 $params[] = $filtros['fecha_hasta'];
             }
 
-            // *** NUEVO: Aplicar búsqueda por texto si se proporciona ***
-            if (!empty($termino)) {
+            // --- Búsqueda textual (nombre, descripción, empresa) ---
+            // Se puede recibir como $termino o dentro de $filtros['termino']
+            $terminoBusqueda = $termino ?? ($filtros['termino'] ?? null);
+            if (!empty($terminoBusqueda)) {
                 $sql .= " AND (p.nombre LIKE ? OR p.descripcion LIKE ? OR u.nombre_empresa LIKE ?)";
-                $termino_busqueda = "%$termino%";
-                $params[] = $termino_busqueda;
-                $params[] = $termino_busqueda;
-                $params[] = $termino_busqueda;
+                $like = "%$terminoBusqueda%";
+                $params[] = $like;
+                $params[] = $like;
+                $params[] = $like;
             }
 
             $sql .= " ORDER BY p.fecha_creacion DESC";
@@ -329,6 +382,7 @@ class PerfilOcupacionalModel {
             $stmt->execute($params);
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
         } catch (Exception $e) {
+            // En desarrollo puedes loguear $e->getMessage() para depurar
             return [];
         }
     }
