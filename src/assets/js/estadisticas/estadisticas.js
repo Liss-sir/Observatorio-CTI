@@ -18,6 +18,8 @@ const API_URL = new URL('../../controllers/EstadisticaController.php', window.lo
 
 let barChart;
 let pieChart;
+let statsBootstrapped = false;
+let reportDownloadInProgress = false;
 const statsState = {
   summary: {
     total_perfiles_activos: 0,
@@ -58,6 +60,49 @@ function getCurrentPeriodData() {
   };
 }
 
+function getSelectedBarFilters() {
+  const month = document.getElementById('monthFilter')?.value || 'all';
+  const year = document.getElementById('yearFilter')?.value || 'all';
+
+  return { month, year };
+}
+
+function hasValidBarFilters(filters) {
+  return !(filters.month !== 'all' && filters.year === 'all');
+}
+
+function buildComparativaUrl(filters = getSelectedBarFilters()) {
+  const url = new URL(API_URL);
+  url.searchParams.set('accion', 'comparativa');
+
+  if (filters.year !== 'all') {
+    url.searchParams.set('anio', filters.year);
+  }
+
+  if (filters.month !== 'all') {
+    url.searchParams.set('mes', filters.month);
+  }
+
+  return url.toString();
+}
+
+function syncMonthFilterState(monthFilter, yearFilter) {
+  if (!monthFilter || !yearFilter) {
+    return;
+  }
+
+  const yearSelected = yearFilter.value !== 'all';
+  monthFilter.disabled = !yearSelected;
+
+  if (!yearSelected) {
+    monthFilter.value = 'all';
+  }
+
+  monthFilter.classList.toggle('opacity-60', !yearSelected);
+  monthFilter.classList.toggle('cursor-not-allowed', !yearSelected);
+  monthFilter.classList.toggle('bg-slate-100', !yearSelected);
+}
+
 function showStatsError(message) {
   const existing = document.getElementById('stats-error-banner');
   if (existing) {
@@ -89,7 +134,50 @@ function hideStatsError() {
   }
 }
 
+function setReportButtonsState(isLoading) {
+  const buttonIds = ['globalReportBtn', 'barReportBtn', 'pieReportBtn'];
+
+  buttonIds.forEach((id) => {
+    const button = document.getElementById(id);
+    if (!button) return;
+
+    button.disabled = isLoading;
+    button.classList.toggle('opacity-60', isLoading);
+    button.classList.toggle('cursor-not-allowed', isLoading);
+  });
+}
+
 function buildBarData(periodData) {
+  function buildBarData(periodData) {
+  // Convierte todos los valores a números
+  const demand = (periodData.bar.demand || []).map(v => Number(v) || 0);
+  const offer = (periodData.bar.offer || []).map(v => Number(v) || 0);
+  
+  const hasPositiveValues = [...demand, ...offer].some(v => v > 0);
+  
+  // ... resto del código, pero usando demand y offer en lugar de periodData.bar.demand/offer
+  if (!hasPositiveValues) {
+    return {
+      labels: [],
+      datasets: [
+        {
+          label: 'Perfiles Solicitados',
+          data: [],
+          backgroundColor: '#22c55e',
+          borderRadius: 4,
+          barThickness: 20
+        },
+        {
+          label: 'Programas de Formación (Oferta)',
+          data: [],
+          backgroundColor: '#3b82f6',
+          borderRadius: 4,
+          barThickness: 20
+        }
+      ]
+    };
+  }
+}
   return {
     labels: periodData.bar.labels,
     datasets: [
@@ -125,14 +213,66 @@ function buildPieData(periodData) {
   };
 }
 
+function hasChartData(chart) {
+  const labels = Array.isArray(chart?.data?.labels) ? chart.data.labels : [];
+  const datasets = Array.isArray(chart?.data?.datasets) ? chart.data.datasets : [];
+
+  if (labels.length === 0) {
+    return false;
+  }
+
+  return datasets.some((dataset) => {
+    const values = Array.isArray(dataset?.data) ? dataset.data : [];
+    return values.some((value) => Number(value) > 0);
+  });
+}
+
+const noDataPlugin = {
+  id: 'noDataPlugin',
+  beforeDraw(chart) {
+    if (hasChartData(chart)) {
+      return;
+    }
+
+    const { ctx, chartArea } = chart;
+    if (!chartArea) {
+      return;
+    }
+
+    const text = chart?.options?.plugins?.noDataPlugin?.text || 'No hay datos para mostrar';
+    const subtext = chart?.options?.plugins?.noDataPlugin?.subtext || 'Ajusta el filtro o selecciona otro período';
+    const centerX = (chartArea.left + chartArea.right) / 2;
+    const centerY = (chartArea.top + chartArea.bottom) / 2;
+
+    ctx.save();
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+
+    ctx.fillStyle = '#94a3b8';
+    ctx.font = '600 15px Inter, sans-serif';
+    ctx.fillText(text, centerX, centerY - 8);
+
+    ctx.fillStyle = '#cbd5e1';
+    ctx.font = '400 12px Inter, sans-serif';
+    ctx.fillText(subtext, centerX, centerY + 14);
+
+    ctx.restore();
+  }
+};
+
     // Configuración de la gráfica de barras
 const barConfig = {
       type: 'bar',
   data: buildBarData(getEmptyPeriodData()),
+      plugins: [noDataPlugin],
       options: {
         responsive: true,
         maintainAspectRatio: false,
         plugins: {
+          noDataPlugin: {
+            text: 'No hay datos para esta gráfica',
+            subtext: 'Prueba con otro filtro de año o mes'
+          },
           legend: {
             position: 'bottom',
             labels: {
@@ -190,10 +330,14 @@ const barConfig = {
                 family: 'Inter'
               },
               color: '#94a3b8',
-              stepSize: 2
+              callback: function(value) {
+                // Formatea números grandes
+                if (value >= 1000) return (value / 1000) + 'k';
+                return value;
+              }
             },
             beginAtZero: true,
-            max: 10
+            // No fijes max aquí, se calculará dinámicamente
           }
         }
       }
@@ -203,10 +347,15 @@ const barConfig = {
 const pieConfig = {
       type: 'doughnut',
   data: buildPieData(getEmptyPeriodData()),
+      plugins: [noDataPlugin],
       options: {
         responsive: true,
         maintainAspectRatio: true,
         plugins: {
+          noDataPlugin: {
+            text: 'No hay solicitudes registradas',
+            subtext: 'No existen líneas activas para mostrar'
+          },
           legend: {
             display: false
           },
@@ -294,9 +443,10 @@ async function fetchJson(url) {
 }
 
 async function cargarEstadisticasDesdeBackend() {
+  const barFilters = getSelectedBarFilters();
   const resultados = await Promise.allSettled([
     fetchJson(`${API_URL}?accion=completas`),
-    fetchJson(`${API_URL}?accion=comparativa`),
+    fetchJson(buildComparativaUrl(barFilters)),
     fetchJson(`${API_URL}?accion=distribucion`),
   ]);
 
@@ -346,7 +496,53 @@ async function cargarEstadisticasDesdeBackend() {
     throw new Error(errores[0] || 'El backend no devolvió datos para estadísticas.');
   }
 
+  statsBootstrapped = true;
   hideStatsError();
+}
+
+async function cargarBarChartDesdeBackend() {
+  const filters = getSelectedBarFilters();
+
+  if (!hasValidBarFilters(filters)) {
+    showStatsError('Para filtrar por mes debes seleccionar también un año.');
+    return false;
+  }
+
+  try {
+    const response = await fetchJson(buildComparativaUrl(filters));
+    const comparativa = response?.data || {};
+
+    if (!comparativa.error) {
+      statsState.bar = adaptComparativaToBarData(comparativa);
+      updateBarChart(getCurrentPeriodData());
+    }
+
+    hideStatsError();
+    return true;
+  } catch (error) {
+    showStatsError(`No fue posible actualizar la gráfica de barras: ${String(error?.message || error)}`);
+    return false;
+  }
+}
+
+async function ensureReportDataReady(reportType) {
+  if (!statsBootstrapped) {
+    await cargarEstadisticasDesdeBackend();
+    updateCharts(getCurrentPeriodData());
+  }
+
+  if (reportType === 'global' || reportType === 'bar') {
+    const barOk = await cargarBarChartDesdeBackend();
+    if (!barOk) {
+      return false;
+    }
+  }
+
+  // Renderiza sin animación para capturar imágenes estables en el PDF.
+  barChart?.update('none');
+  pieChart?.update('none');
+
+  return true;
 }
 
 function getAppliedFiltersText() {
@@ -440,27 +636,87 @@ function updateCharts(periodData) {
 function updateBarChart(periodData) {
   barChart.data = buildBarData(periodData);
   const maxSerie = Math.max(...periodData.bar.demand, ...periodData.bar.offer, 0);
-  barChart.options.scales.y.max = Math.max(10, Math.ceil(maxSerie * 1.2));
+  // Aumenta el margen superior para que las barras no se corten
+  barChart.options.scales.y.max = Math.max(10, Math.ceil(maxSerie * 1.15));
   barChart.update();
 }
 
 function reportStyles() {
   return `
     <style>
-      body { font-family: Arial, sans-serif; margin: 24px; color: #1f2937; }
-      h1, h2 { margin: 0 0 10px; }
-      .meta { margin-bottom: 18px; font-size: 14px; }
-      .section { margin-top: 22px; }
-      .chart { margin-top: 10px; border: 1px solid #d1d5db; border-radius: 8px; padding: 12px; }
-      img { max-width: 100%; height: auto; }
-      table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13px; }
-      th, td { border: 1px solid #d1d5db; padding: 8px; text-align: left; }
-      th { background: #f3f4f6; }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body { 
+        font-family: Inter, Arial, sans-serif; 
+        font-size: 11px; 
+        padding: 20px;
+      }
+      .report-header { 
+        border-bottom: 2px solid #22c55e; 
+        padding-bottom: 10px; 
+        margin-bottom: 20px; 
+      }
+      .report-title { 
+        font-size: 18px; 
+        font-weight: 700; 
+        margin-bottom: 10px;
+      }
+      .meta-grid { 
+        display: grid; 
+        grid-template-columns: 1fr 1fr; 
+        gap: 5px; 
+      }
+      .meta { 
+        font-size: 10px; 
+        color: #334155; 
+      }
+      .section { 
+        margin-top: 12px; 
+        margin-bottom: 16px; 
+        border: 1px solid #e2e8f0; 
+        border-radius: 10px; 
+        padding: 12px; 
+        page-break-inside: avoid; 
+        break-inside: avoid;
+        page-break-after: avoid;
+      }
+      .section h2 { 
+        font-size: 14px; 
+        margin-bottom: 15px; 
+      }
+      .chart { 
+        text-align: center; 
+        margin: 15px 0;
+      }
+      .chart img { 
+        max-width: 100%; 
+        height: auto !important;
+        display: inline-block;
+      }
+      table { 
+        width: 100%; 
+        border-collapse: collapse; 
+        margin-top: 15px;
+      }
+      th, td { 
+        border: 1px solid #ddd; 
+        padding: 8px; 
+        text-align: left; 
+      }
+      th { 
+        background: #f0fdf4; 
+      }
     </style>
   `;
 }
-
 function buildBarTableHtml(periodData) {
+  if (!Array.isArray(periodData.bar.labels) || periodData.bar.labels.length === 0) {
+    return '<div class="empty-state">Sin datos para la gráfica de barras con los filtros seleccionados.</div>';
+  }
+
   const rows = periodData.bar.labels
     .map((label, idx) => {
       const demand = periodData.bar.demand[idx] || 0;
@@ -470,20 +726,26 @@ function buildBarTableHtml(periodData) {
     .join('');
 
   return `
-    <table>
-      <thead>
-        <tr>
-          <th>Línea tecnológica</th>
-          <th>Perfiles solicitados</th>
-          <th>Oferta SENA (programas)</th>
-        </tr>
-      </thead>
-      <tbody>${rows}</tbody>
-    </table>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Línea tecnológica</th>
+            <th>Perfiles solicitados</th>
+            <th>Oferta SENA (programas)</th>
+          </tr>
+        </thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </div>
   `;
 }
 
 function buildPieTableHtml(periodData) {
+  if (!Array.isArray(periodData.pie.labels) || periodData.pie.labels.length === 0) {
+    return '<div class="empty-state">Sin datos para la gráfica circular.</div>';
+  }
+
   const total = periodData.pie.values.reduce((acc, value) => acc + value, 0);
   const rows = periodData.pie.labels
     .map((label, idx) => {
@@ -494,20 +756,45 @@ function buildPieTableHtml(periodData) {
     .join('');
 
   return `
-    <table>
-      <thead>
-        <tr>
-          <th>Línea tecnológica</th>
-          <th>Solicitudes</th>
-          <th>Proporción</th>
-        </tr>
-      </thead>
-      <tbody>${rows}</tbody>
-    </table>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Línea tecnológica</th>
+            <th>Solicitudes</th>
+            <th>Proporción</th>
+          </tr>
+        </thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </div>
   `;
 }
 
-function openReportWindow(reportType) {
+let html2pdfLoaderPromise = null;
+
+function ensureHtml2PdfLoaded() {
+  if (typeof window.html2pdf === 'function') {
+    return Promise.resolve(window.html2pdf);
+  }
+
+  if (html2pdfLoaderPromise) {
+    return html2pdfLoaderPromise;
+  }
+
+  html2pdfLoaderPromise = new Promise((resolve, reject) => {
+    const script = document.createElement('script');
+    script.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js';
+    script.async = true;
+    script.onload = () => resolve(window.html2pdf);
+    script.onerror = () => reject(new Error('No se pudo cargar la librería de PDF.'));
+    document.head.appendChild(script);
+  });
+
+  return html2pdfLoaderPromise;
+}
+
+function buildReportModel(reportType) {
   const now = new Date();
   const date = now.toLocaleDateString('es-CO');
   const time = now.toLocaleTimeString('es-CO');
@@ -515,12 +802,12 @@ function openReportWindow(reportType) {
 
   const barPeriodData = getCurrentPeriodData();
   const piePeriodData = getCurrentPeriodData();
-
-  const reportWindow = window.open('', '_blank');
-  if (!reportWindow) return;
-
-  const barImage = barChart.toBase64Image();
-  const pieImage = pieChart.toBase64Image();
+  // Forzar renderizado completo antes de capturar
+  barChart.update('none');
+  pieChart.update('none');
+  const barImage = barChart.toBase64Image('image/png', 2);
+  const pieImage = pieChart.toBase64Image('image/png', 2);  const hasBarRows = Array.isArray(barPeriodData.bar.labels) && barPeriodData.bar.labels.length > 0;
+  const hasPieRows = Array.isArray(piePeriodData.pie.labels) && piePeriodData.pie.labels.length > 0;
 
   let title = 'Reporte Estadístico Global';
   let content = '';
@@ -529,12 +816,16 @@ function openReportWindow(reportType) {
     content = `
       <div class="section">
         <h2>Gráfica: Necesidades Empresariales vs Oferta SENA</h2>
-        <div class="chart"><img src="${barImage}" alt="Gráfica de barras"></div>
+        ${hasBarRows
+          ? `<div class="chart chart--bar"><img src="${barImage}" alt="Gráfica de barras"></div>`
+          : '<div class="empty-state">Sin datos de barras para los filtros seleccionados.</div>'}
         ${buildBarTableHtml(barPeriodData)}
       </div>
       <div class="section">
         <h2>Gráfica: Distribución de Solicitudes por Línea Tecnológica</h2>
-        <div class="chart"><img src="${pieImage}" alt="Gráfica de pastel"></div>
+        ${hasPieRows
+          ? `<div class="chart chart--pie"><img src="${pieImage}" alt="Gráfica de pastel"></div>`
+          : '<div class="empty-state">Sin datos para la distribución circular.</div>'}
         ${buildPieTableHtml(piePeriodData)}
       </div>
     `;
@@ -543,7 +834,9 @@ function openReportWindow(reportType) {
     content = `
       <div class="section">
         <h2>Gráfica: Necesidades Empresariales vs Oferta SENA</h2>
-        <div class="chart"><img src="${barImage}" alt="Gráfica de barras"></div>
+        ${hasBarRows
+          ? `<div class="chart chart--bar"><img src="${barImage}" alt="Gráfica de barras"></div>`
+          : '<div class="empty-state">Sin datos de barras para los filtros seleccionados.</div>'}
         ${buildBarTableHtml(barPeriodData)}
       </div>
     `;
@@ -552,29 +845,206 @@ function openReportWindow(reportType) {
     content = `
       <div class="section">
         <h2>Gráfica: Distribución de Solicitudes por Línea Tecnológica</h2>
-        <div class="chart"><img src="${pieImage}" alt="Gráfica de pastel"></div>
+        ${hasPieRows
+          ? `<div class="chart chart--pie"><img src="${pieImage}" alt="Gráfica de pastel"></div>`
+          : '<div class="empty-state">Sin datos para la distribución circular.</div>'}
         ${buildPieTableHtml(piePeriodData)}
       </div>
     `;
   }
 
-  reportWindow.document.write(`
+  return {
+    title,
+    date,
+    time,
+    filtersText,
+    content,
+  };
+}
+
+function buildReportDocumentHtml(reportModel) {
+  return `
     <!DOCTYPE html>
     <html lang="es">
       <head>
         <meta charset="UTF-8">
-        <title>${title}</title>
+        <title>${reportModel.title}</title>
         ${reportStyles()}
+        <style>
+          /* Estilos adicionales para evitar corte en tablas largas */
+          .table-wrap {
+            page-break-inside: avoid;
+            break-inside: avoid;
+          }
+          table {
+            page-break-inside: auto;
+          }
+          tr {
+            page-break-inside: avoid;
+            break-inside: avoid;
+          }
+        </style>
       </head>
       <body>
-        <h1>${title}</h1>
-        <div class="meta"><strong>Fecha de descarga:</strong> ${date}</div>
-        <div class="meta"><strong>Hora de descarga:</strong> ${time}</div>
-        <div class="meta"><strong>Filtros aplicados:</strong> ${filtersText}</div>
-        ${content}
+        <div class="report-root">
+          <div class="report-header">
+            <h1 class="report-title">${reportModel.title}</h1>
+            <div class="meta-grid">
+              <p class="meta"><strong>Fecha de descarga:</strong> ${reportModel.date}</p>
+              <p class="meta"><strong>Hora de descarga:</strong> ${reportModel.time}</p>
+              <p class="meta" style="grid-column: 1 / -1;"><strong>Filtros aplicados:</strong> ${reportModel.filtersText}</p>
+            </div>
+          </div>
+          ${reportModel.content}
+        </div>
       </body>
     </html>
-  `);
+  `;
+}
+
+function sanitizeFileNamePart(value) {
+  return String(value || '')
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-zA-Z0-9]+/g, '_')
+    .replace(/^_+|_+$/g, '');
+}
+
+function buildReportPdfFileName(reportType) {
+  const filters = getSelectedBarFilters();
+
+  const base = reportType === 'global'
+    ? 'estadisticas_observatorio_CTI-reporte_global'
+    : reportType === 'bar'
+      ? 'estadisticas_observatorio_CTI-reporte_barras'
+      : 'estadisticas_observatorio_CTI-reporte_circular';
+
+  const safeBase = sanitizeFileNamePart(base);
+
+  if (reportType !== 'bar') {
+    return `${safeBase}.pdf`;
+  }
+
+  if (filters.year === 'all') {
+    return `${safeBase}.pdf`;
+  }
+
+  if (filters.month === 'all') {
+    return `${safeBase}-${filters.year}.pdf`;
+  }
+
+  return `${safeBase}-${filters.year}-${filters.month}.pdf`;
+}
+
+async function downloadReportPdf(reportType) {
+  if (reportDownloadInProgress) {
+    return;
+  }
+
+  reportDownloadInProgress = true;
+  setReportButtonsState(true);
+
+  let iframe = null;
+
+  try {
+    const ready = await ensureReportDataReady(reportType);
+    if (!ready) {
+      return;
+    }
+
+    const html2pdf = await ensureHtml2PdfLoaded();
+    const reportModel = buildReportModel(reportType);
+    const reportHtml = buildReportDocumentHtml(reportModel);
+
+    iframe = document.createElement('iframe');
+    iframe.setAttribute('aria-hidden', 'true');
+    iframe.style.position = 'fixed';
+    iframe.style.right = '0';
+    iframe.style.bottom = '0';
+    iframe.style.width = '800px';
+    iframe.style.height = '1200px';
+    iframe.style.opacity = '0';
+    iframe.style.pointerEvents = 'none';
+    iframe.style.border = '0';
+    iframe.style.zIndex = '-1';
+
+    document.body.appendChild(iframe);
+
+    const iframeDocument = iframe.contentDocument || iframe.contentWindow?.document;
+    iframeDocument.open();
+    iframeDocument.write(reportHtml);
+    iframeDocument.close();
+    iframeDocument.body.style.overflow = 'visible';
+
+    await new Promise((resolve) => {
+      let resolved = false;
+      const finish = () => {
+        if (resolved) return;
+        resolved = true;
+        resolve();
+      };
+
+      iframe.onload = finish;
+      setTimeout(finish, 350);
+    });
+
+    const imageNodes = Array.from(iframeDocument.querySelectorAll('img'));
+    await Promise.all(
+      imageNodes.map((img) => {
+        if (img.complete && img.naturalWidth > 0) {
+          return Promise.resolve();
+        }
+
+        return new Promise((resolve) => {
+          img.onload = () => resolve();
+          img.onerror = () => resolve();
+          setTimeout(resolve, 500);
+        });
+      })
+    );
+  // Espera adicional para que las imágenes se estabilicen
+  await new Promise(resolve => setTimeout(resolve, 300));
+
+  if (iframeDocument.fonts?.ready) {
+      await iframeDocument.fonts.ready.catch(() => undefined);
+    }
+
+    const reportNode = iframeDocument.documentElement;
+
+    await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+
+await html2pdf()
+  .set({
+    margin: 8,
+    filename: buildReportPdfFileName(reportType),
+    image: { type: 'jpeg', quality: 0.98 },
+    html2canvas: { scale: 2, useCORS: true },
+    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+    pagebreak: { mode: ['css', 'legacy'] }  // ← Agrega esto para permitir múltiples páginas
+  })
+  .from(reportNode)
+  .save();
+
+    hideStatsError();
+  } catch (error) {
+    showStatsError(`No fue posible generar el PDF: ${String(error?.message || error)}`);
+  } finally {
+    if (iframe && iframe.parentNode) {
+      iframe.parentNode.removeChild(iframe);
+    }
+
+    reportDownloadInProgress = false;
+    setReportButtonsState(false);
+  }
+}
+
+function openReportWindow(reportType) {
+  const reportModel = buildReportModel(reportType);
+
+  const reportWindow = window.open('', '_blank');
+  if (!reportWindow) return;
+
+  reportWindow.document.write(buildReportDocumentHtml(reportModel));
 
   reportWindow.document.close();
 }
@@ -593,25 +1063,36 @@ document.addEventListener('DOMContentLoaded', function() {
   const barReportBtn = document.getElementById('barReportBtn');
   const pieReportBtn = document.getElementById('pieReportBtn');
 
-  const applyBarFilter = function() {
-    // El backend actual expone estadísticas consolidadas, por lo que el filtro
-    // de mes/año se conserva visualmente y reutiliza el dataset vigente.
-    updateBarChart(getCurrentPeriodData());
+  const applyBarFilter = async function() {
+    await cargarBarChartDesdeBackend();
   };
 
+  syncMonthFilterState(monthFilter, yearFilter);
+
   monthFilter?.addEventListener('change', applyBarFilter);
-  yearFilter?.addEventListener('change', applyBarFilter);
-
-  globalReportBtn?.addEventListener('click', function() {
-    openReportWindow('global');
+  yearFilter?.addEventListener('change', async function() {
+    syncMonthFilterState(monthFilter, yearFilter);
+    await applyBarFilter();
   });
 
-  barReportBtn?.addEventListener('click', function() {
-    openReportWindow('bar');
+  globalReportBtn?.addEventListener('click', async function() {
+    if (!hasValidBarFilters(getSelectedBarFilters())) {
+      showStatsError('Para generar el reporte de barras debes seleccionar también un año.');
+      return;
+    }
+    await downloadReportPdf('global');
   });
 
-  pieReportBtn?.addEventListener('click', function() {
-    openReportWindow('pie');
+  barReportBtn?.addEventListener('click', async function() {
+    if (!hasValidBarFilters(getSelectedBarFilters())) {
+      showStatsError('Para generar el reporte de barras debes seleccionar también un año.');
+      return;
+    }
+    await downloadReportPdf('bar');
+  });
+
+  pieReportBtn?.addEventListener('click', async function() {
+    await downloadReportPdf('pie');
   });
 
   cargarEstadisticasDesdeBackend()
@@ -620,6 +1101,7 @@ document.addEventListener('DOMContentLoaded', function() {
       applyBarFilter();
     })
     .catch((error) => {
+      statsBootstrapped = false;
       console.error('Error cargando estadísticas:', error);
       showStatsError(`No fue posible cargar estadísticas desde backend: ${String(error?.message || error)}`);
       updateCharts(getEmptyPeriodData());
