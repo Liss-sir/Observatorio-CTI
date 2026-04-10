@@ -354,13 +354,18 @@ class PerfilOcupacionalController {
         ]);
     }
 
-    // Acepta parámetro 'q' en la URL para combinar búsqueda textual con filtros JSON
+    /**
+     * Búsqueda avanzada combinando filtros (incluyendo arrays para selección múltiple)
+     * y término de búsqueda textual.
+     * 
+     * Espera un JSON en el cuerpo con los filtros (ej: {"id_linea": [1,2], "id_tendencia": 3, ...})
+     * Opcionalmente puede recibir ?q=termino en la URL.
+     */
     public function buscarAvanzado() {
-        // Leer filtros del cuerpo JSON
         $input = json_decode(file_get_contents("php://input"), true);
         $filtros = $input ?? [];
         
-        // Leer término de búsqueda de la query string (si existe)
+        // Término de búsqueda desde query string
         $termino = $_GET['q'] ?? null;
         
         $resultados = $this->model->buscarAvanzado($filtros, $termino);
@@ -746,7 +751,6 @@ $id_nivel = $_GET['id_nivel'] ?? null;
 $id_tendencia = $_GET['id_tendencia'] ?? null;
 $id_proyeccion = $_GET['id_proyeccion'] ?? null;
 
-// Verify the conexion exist
 if (!isset($conn)) {
     echo json_encode(["error" => "Error de conexión a la base de datos"]);
     exit;
