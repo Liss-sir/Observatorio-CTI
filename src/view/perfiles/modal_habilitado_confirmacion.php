@@ -1,5 +1,5 @@
 <!-- modal_habilitado_confirmacion.php -->
-<!-- Modal de éxito - Perfil habilitado correctamente (desaparece en 6 segundos) -->
+<!-- Modal de éxito - Perfil habilitado correctamente (desaparece en 3 segundos) -->
 <div id="modal-habilitado-confirmacion" class="hidden fixed inset-0 z-50 overflow-y-auto" aria-hidden="true">
   <!-- Overlay -->
   <div class="fixed inset-0 bg-black bg-opacity-80 transition-opacity"></div>
@@ -25,14 +25,14 @@
         <!-- Content -->
         <div class="px-6 py-5">
           <p class="text-sm text-sena-text-soft leading-relaxed">
-            El perfil <span class="font-semibold text-[#39A900]" id="nombre-perfil-habilitado-exito">"Desarrollador Full Stack Senior"</span> ha sido habilitado correctamente.
+            El perfil <span class="text-sena" id="nombre-perfil-habilitado-exito">"Desarrollador Full Stack Senior"</span> ha sido habilitado correctamente.
           </p>
           <div class="mt-4 flex items-center gap-2 text-xs text-sena-text-soft">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <circle cx="12" cy="12" r="10"/>
               <polyline points="12 6 12 12 16 14"/>
             </svg>
-            <span>Esta ventana se cerrará automáticamente en <span id="contador-segundos">6</span> segundos</span>
+            <span>Esta ventana se cerrará automáticamente en <span id="contador-segundos-habilitado">3</span> segundos</span>
           </div>
         </div>
 

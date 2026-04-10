@@ -80,19 +80,20 @@ class PerfilOcupacionalModel {
     public function obtenerPorUsuario($id_usuario) {
         try {
             $sql = "SELECT p.*, 
-                           l.nombre_linea,
-                           pr.nombre_programa, pr.codigo_programa,
-                           n.nombre_nivel
+                        l.nombre_linea,
+                        pr.nombre_programa, pr.codigo_programa,
+                        n.nombre_nivel
                     FROM perfiles_ocupacionales p
                     INNER JOIN lineas_tecnologicas l ON p.id_linea = l.id_linea
                     INNER JOIN programas_formacion pr ON p.id_programa = pr.id_programa
                     INNER JOIN niveles_formacion n ON p.id_nivel = n.id_nivel
-                    WHERE p.id_usuario = ? AND p.estado = 1
+                    WHERE p.id_usuario = ?
                     ORDER BY p.fecha_creacion DESC";
             $stmt = $this->conn->prepare($sql);
             $stmt->execute([$id_usuario]);
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
         } catch (Exception $e) {
+            error_log('Error en obtenerPorUsuario: ' . $e->getMessage());
             return [];
         }
     }
@@ -254,6 +255,31 @@ class PerfilOcupacionalModel {
         return $this->buscarAvanzado([], $termino);
     }
 
+    // ===== NUEVO MÉTODO: Obtener líneas tecnológicas por IDs de tecnologías emergentes =====
+    public function obtenerLineasPorTecnologiasEmergentes($ids_tecnologias) {
+        try {
+            if (empty($ids_tecnologias)) {
+                return [];
+            }
+            
+            if (!is_array($ids_tecnologias)) {
+                $ids_tecnologias = [$ids_tecnologias];
+            }
+            
+            $placeholders = implode(',', array_fill(0, count($ids_tecnologias), '?'));
+            $sql = "SELECT DISTINCT l.id_linea 
+                    FROM lineas_tecnologicas l
+                    WHERE l.id_tendencia IN ($placeholders) AND l.estado = 1";
+            
+            $stmt = $this->conn->prepare($sql);
+            $stmt->execute($ids_tecnologias);
+            return $stmt->fetchAll(PDO::FETCH_COLUMN);
+        } catch (Exception $e) {
+            error_log('Error en obtenerLineasPorTecnologiasEmergentes: ' . $e->getMessage());
+            return [];
+        }
+    }
+
     /**
      * Búsqueda avanzada con filtros múltiples y término opcional.
      * 
@@ -261,6 +287,7 @@ class PerfilOcupacionalModel {
      *                        Campos soportados:
      *                        - id_usuario (int)
      *                        - id_linea (int|array)        -> Una o varias líneas tecnológicas.
+     *                        - id_tecnologia (int|array)   -> Tecnologías emergentes.
      *                        - id_tendencia (int|array)
      *                        - id_proyeccion (int|array)
      *                        - id_programa (int)
@@ -302,6 +329,21 @@ class PerfilOcupacionalModel {
                 } else {
                     $sql .= " AND p.id_linea = ?";
                     $params[] = $filtros['id_linea'];
+                }
+            }
+
+            // --- NUEVO: Filtro por tecnologías emergentes ---
+            if (!empty($filtros['id_tecnologia'])) {
+                $ids_tecnologia = is_array($filtros['id_tecnologia']) ? $filtros['id_tecnologia'] : [$filtros['id_tecnologia']];
+                $lineasPorTecnologia = $this->obtenerLineasPorTecnologiasEmergentes($ids_tecnologia);
+                
+                if (!empty($lineasPorTecnologia)) {
+                    $placeholders = implode(',', array_fill(0, count($lineasPorTecnologia), '?'));
+                    $sql .= " AND p.id_linea IN ($placeholders)";
+                    $params = array_merge($params, $lineasPorTecnologia);
+                } else {
+                    // No hay líneas con esas tecnologías, retornar vacío
+                    return [];
                 }
             }
 
@@ -383,6 +425,7 @@ class PerfilOcupacionalModel {
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
         } catch (Exception $e) {
             // En desarrollo puedes loguear $e->getMessage() para depurar
+            error_log('Error en buscarAvanzado: ' . $e->getMessage());
             return [];
         }
     }
@@ -545,19 +588,19 @@ class PerfilOcupacionalModel {
         }
     }
 
-    // List all current trends: active trends that are linked to active technological lines
+    // List all current trends - Ahora consulta la tabla etapa_desarrollo
     public function listarTendenciasActuales() {
         try {
-            $sql = "SELECT DISTINCT t.id_tendencia, t.id_area, t.nombre, t.estado
-                    FROM tendencias_emergentes t
-                    INNER JOIN lineas_tecnologicas l ON t.id_tendencia = l.id_tendencia
-                    WHERE t.estado = 1 AND l.estado = 1
-                    ORDER BY t.nombre ASC";
-
+            $sql = "SELECT id_etapa as id_tendencia, nombre, estado
+                    FROM etapa_desarrollo
+                    WHERE estado = 1
+                    ORDER BY nombre ASC";
+            
             $stmt = $this->conn->prepare($sql);
             $stmt->execute();
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
         } catch (Exception $e) {
+            error_log('Error en listarTendenciasActuales: ' . $e->getMessage());
             return [];
         }
     }

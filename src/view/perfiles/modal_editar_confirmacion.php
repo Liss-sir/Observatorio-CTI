@@ -39,8 +39,8 @@
         </div>
 
         <!-- Barra de progreso animada con azul institucional -->
-        <div class="h-2 bg-gray-100 w-full rounded-b-xl overflow-hidden">
-          <div id="progress-bar-editado" class="h-1 transition-all duration-[3000ms] ease-linear" style="width: 0%; background-color: #00304D;"></div>
+        <div class="h-1.5 bg-gray-100 w-full rounded-b-xl overflow-hidden">
+          <div id="progress-bar-editado" class="h-1.5 transition-all duration-[3000ms] ease-linear" style="width: 0%; background-color: #00304D;"></div>
         </div>
 
         <!-- Botón para cerrar manualmente -->

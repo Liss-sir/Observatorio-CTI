@@ -22,8 +22,12 @@ echo
 </head>
 <body class="font-['Inter'] text-sena-text-main antialiased">
 
+
   <!-- Hero -->
   <header class="bg-gradient-to-b from-sena-soft to-white text-center px-6 py-20 md:py-24">
+    <div class="flex justify-center">
+      <img src="../../assets/img/logo-tecnnova.png" alt="logo tecnnova" class="max-w-[200px] h-auto animate delay-3">
+    </div>
     <div class="inline-flex items-center border border-sena-border bg-sena-soft rounded-full px-5 py-2 text-sm font-medium text-sena animate">
       Plataforma Institucional SENA
     </div>
@@ -114,8 +118,8 @@ echo
           Colaboradores
         </div>
         <h2 class="font-['Plus_Jakarta_Sans'] text-3xl font-bold">Equipo de Trabajo</h2>
-        <!-- Grid con ancho máximo de 650px para 3 columnas -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 max-w-[650px] mx-auto mt-8">
+        <!-- Grid con ancho máximo de 900px para 3 columnas -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 max-w-[900px] mx-auto mt-8">
           <div class="bg-white border border-gray-200 rounded-2xl shadow-sm hover:shadow-lg transition-all duration-300 hover:-translate-y-1 p-8 text-center animate delay-1">
             <img class="w-20 h-20 rounded-full object-cover border-2 border-gray-200 mx-auto mb-4 hover:border-sena-strong transition-all duration-300 hover:scale-105" src="../../assets/img/creadores_img/juanes_creador.jpeg" alt="Foto de Camila Rodríguez" />
             <div class="font-['Plus_Jakarta_Sans'] font-bold text-base">Juan Esteban Soto Cardona</div>

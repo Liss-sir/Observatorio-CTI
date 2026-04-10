@@ -13,6 +13,7 @@ if (!isset($_SESSION['id_usuario'])) {
 
 // Obtener el ID del usuario autenticado desde la sesión
 $id_usuario_actual = $_SESSION['id_usuario'];
+$id_rol_actual = $_SESSION['usuario']['id_rol'] ?? null;
 
 include __DIR__ . '../../../includes/header.php';
 include __DIR__ . '/modal_crear_sugerencia.php';
@@ -137,7 +138,10 @@ include __DIR__ . '/modal_ver_detalles_sugerencia.php';
   <script>
     // Pasar el ID del usuario autenticado desde la sesión PHP a JavaScript
     window.idUsuarioActual = <?php echo json_encode($id_usuario_actual); ?>;
+    window.idRolActual = <?php echo json_encode($id_rol_actual); ?>;
+    window.esAdmin = window.idRolActual === 1;
     console.log('Usuario autenticado ID:', window.idUsuarioActual);
+    console.log('Es admin:', window.esAdmin);
   </script>
   
   <!-- Script principal -->

@@ -185,9 +185,9 @@ $rolActual = obtenerRolActual();
         <!-- PROTEGIDO: Menú Programas Formación -->
           <div class="relative group menu-container <?= (in_array($current, ['programas.php','areas.php'])) ? 'bg-sena-soft text-sena-strong rounded-md' : '' ?>" id="menu-programas" data-permiso="ver_programas">
               <div class="flex items-center rounded-md hover:bg-sena-soft hover:text-sena transition">
-                  <a href="../../view/programas_formacion/programas.php" class="px-3 py-2 rounded-l-md text-sm font-medium text-gray-600 hover:text-sena">
+                  <button id="btn-menu-programas-text" type="button" class="px-3 py-2 rounded-l-md text-sm font-medium text-gray-600 hover:text-sena">
                       Programas Formación
-                  </a>
+                  </button>
                   <button id="btn-menu-programas" type="button" class="btn-toggle px-2 py-2 rounded-r-md text-gray-400 hover:text-green-700" data-permiso="ver_menu_programas_admin">
                       <svg class="w-3 h-3 chevron transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
@@ -196,7 +196,19 @@ $rolActual = obtenerRolActual();
               </div>
               <div class="zona-seguridad hidden group-hover:block"></div>
               <div id="submenu-programas" class="submenu hidden absolute left-0 mt-2 w-60 bg-white rounded-lg shadow-xl border border-gray-100 z-50 animate-fadeIn">
+                  <a href="../../view/programas_formacion/programas.php" class="flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-sena-soft hover:text-sena">
+                      <span class="w-8 h-8 bg-sena-soft rounded-lg flex items-center justify-center text-green-600">
+                          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+                          </svg>
+                      </span>
+                      <div>
+                          <p class="font-medium">Programas Formación</p>
+                          <p class="text-xs text-gray-500">Explorar programas</p>
+                      </div>
+                  </a>
                   <?php if (tienePermiso('ver_areas')): ?>
+                  <div class="border-t border-gray-100 mx-3"></div>
                   <a href="../../view/areas/areas.php" data-permiso="ver_areas" class="flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-sena-soft hover:text-sena">
                       <span class="w-8 h-8 bg-sena-soft rounded-lg flex items-center justify-center text-green-600">
                           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -217,9 +229,9 @@ $rolActual = obtenerRolActual();
         <!-- PROTEGIDO: Menú Tendencias Actuales -->
         <div class="relative group menu-container <?= (in_array($current, ['tendencias_actuales.php','tecnologias_emergentes.php','proyeccion_futuro.php'])) ? 'bg-sena-soft text-sena rounded-md' : '' ?>" id="menu-tendencias">
           <div class="flex items-center rounded-md hover:bg-sena-soft transition">
-            <a href="../../view/tendencias_actuales/tendencias_actuales.php" class="px-3 py-2 rounded-l-md text-sm font-medium text-gray-600 hover:text-sena">
+            <button id="btn-menu-tendencias-text" type="button" class="px-3 py-2 rounded-l-md text-sm font-medium text-gray-600 hover:text-sena">
               Tendencias Actuales
-            </a>
+            </button>
             <button  id="btn-menu-tendencias" type="button" class="btn-toggle px-2 py-2 rounded-r-md text-gray-400 hover:text-green-700">
               <svg class="w-3 h-3 chevron transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
@@ -228,7 +240,19 @@ $rolActual = obtenerRolActual();
           </div>
           <div class="zona-seguridad hidden group-hover:block"></div>
           <div id="submenu-tendencias" class="submenu hidden absolute left-0 mt-2 w-60 bg-white rounded-lg shadow-xl border border-gray-100 z-50 animate-fadeIn">
+            <a href="../../view/tendencias_actuales/tendencias_actuales.php" class="flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-sena-soft hover:text-sena">
+              <span class="w-8 h-8 bg-sena-soft rounded-lg flex items-center justify-center text-green-600 flex-shrink-0">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                </svg>
+              </span>
+              <div>
+                <p class="font-medium">Tendencias Actuales</p>
+                <p class="text-xs text-gray-500">Explorar tendencias</p>
+              </div>
+            </a>
             <?php if (tienePermiso('ver_tecnologias_emergentes')): ?>
+            <div class="border-t border-gray-100 mx-3"></div>
             <a href="../../view/tecnologias_emergentes/tecnologias_emergentes.php" class="flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-sena-soft hover:text-sena ">
               <span class="w-8 h-8 bg-sena-soft rounded-lg flex items-center justify-center text-green-600 flex-shrink-0">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -380,6 +404,7 @@ document.addEventListener('DOMContentLoaded', function () {
     if (!menu) return;
 
     const btn = menu.querySelector('.btn-toggle');
+    const btnText = menu.querySelector('[id$="-text"]');
     const submenu = menu.querySelector('.submenu');
     const zona = menu.querySelector('.zona-seguridad');
 
@@ -413,7 +438,7 @@ document.addEventListener('DOMContentLoaded', function () {
       }, 100);
     }
 
-    // CLICK
+    // CLICK - en el botón de la flecha
     btn.addEventListener('click', function (e) {
       e.preventDefault();
       e.stopPropagation();
@@ -426,6 +451,22 @@ document.addEventListener('DOMContentLoaded', function () {
 
       actualizar();
     });
+
+    // CLICK - en el texto del botón (abre el menú sin navegar)
+    if (btnText) {
+      btnText.addEventListener('click', function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        activoPorClick = !activoPorClick;
+
+        if (activoPorClick) {
+          activoPorHover = false;
+        }
+
+        actualizar();
+      });
+    }
 
     // HOVER
     [menu, submenu, zona].forEach(el => {
