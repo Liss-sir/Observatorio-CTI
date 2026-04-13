@@ -103,8 +103,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const payload = await response.json();
 
     if (!esRespuestaExitosa(payload)) {
-      const mensaje = String(payload?.error || payload?.message || "Error en respuesta del backend").trim();
-      throw new Error(mensaje || "Error en respuesta del backend");
+      const mensaje = String(payload?.error || payload?.message || "Error en el servidor").trim();
+      throw new Error(mensaje || "Error en el servidor");
     }
 
     return payload;
@@ -144,6 +144,26 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     return "";
+  }
+
+  function getAreaLabelById(idArea) {
+    return getOptionLabelByValue(areasDisponibles, idArea) || String(idArea || "").trim();
+  }
+
+  function agregarPrefijoAreaAOptions(options, idArea) {
+    const areaLabel = getAreaLabelById(idArea);
+    return (Array.isArray(options) ? options : []).map((option) => {
+      const baseLabel = String(option?.label || "").trim();
+      if (!areaLabel || !baseLabel) {
+        return { ...option, baseLabel };
+      }
+
+      return {
+        ...option,
+        baseLabel,
+        label: `${areaLabel} - ${baseLabel}`,
+      };
+    });
   }
 
   // Normaliza catálogos heterogéneos a un formato único: [{ value, label }].
@@ -310,7 +330,11 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     const normalizado = normalizarTexto(objetivo);
-    const byLabel = options.find((item) => normalizarTexto(String(item?.label || "")) === normalizado);
+    const byLabel = options.find((item) => {
+      const label = String(item?.label || "");
+      const baseLabel = String(item?.baseLabel || item?.originalLabel || "");
+      return normalizarTexto(label) === normalizado || normalizarTexto(baseLabel) === normalizado;
+    });
     if (byLabel) {
       return String(byLabel.value || byLabel.id || "").trim();
     }
@@ -493,6 +517,97 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
+  function resetSelectDependiente(select, placeholder) {
+    if (!select) {
+      return;
+    }
+
+    fillSelect(select, [], placeholder);
+    setSelectEnabled(select, false);
+  }
+
+  function resetCatalogosDependientes() {
+    resetSelectDependiente(modals.createPrograma, "Seleccionar programa de formacion...");
+    resetSelectDependiente(modals.createEtapa, "Seleccionar etapa...");
+    resetSelectDependiente(modals.createTendencia, "Seleccionar tendencia tecnologica emergente...");
+    resetSelectDependiente(modals.createProyeccion, "Seleccionar proyeccion...");
+
+    resetSelectDependiente(modals.editPrograma, "Seleccionar programa de formacion...");
+    resetSelectDependiente(modals.editEtapa, "Seleccionar etapa...");
+    resetSelectDependiente(modals.editTendencia, "Seleccionar tendencia tecnologica emergente...");
+    resetSelectDependiente(modals.editProyeccion, "Seleccionar proyeccion...");
+  }
+
+  async function cargarCatalogosPorArea(idArea, selects = {}, selectedValues = {}) {
+    const areaId = String(idArea || "").trim();
+    const { programa, etapa, tendencia, proyeccion } = selects;
+
+    if (!areaId) {
+      resetSelectDependiente(programa, "Seleccionar programa de formacion...");
+      resetSelectDependiente(etapa, "Seleccionar etapa...");
+      resetSelectDependiente(tendencia, "Seleccionar tendencia tecnologica emergente...");
+      resetSelectDependiente(proyeccion, "Seleccionar proyeccion...");
+      return;
+    }
+
+    [programa, etapa, tendencia, proyeccion].forEach((select) => {
+      if (select) {
+        setSelectEnabled(select, true);
+      }
+    });
+
+    try {
+      const [programasPayload, etapasPayload, tendenciasPayload, proyeccionesPayload] = await Promise.all([
+        fetchJson(API_ROUTES.programas, { accion: "paraSelectPorArea", id_area: areaId }),
+        fetchJson(API_ROUTES.etapas, { accion: "paraSelectPorArea", id_area: areaId }),
+        fetchJson(API_ROUTES.tendencias, { accion: "paraSelectPorArea", id_area: areaId }),
+        fetchJson(API_ROUTES.proyecciones, { accion: "paraSelectPorArea", id_area: areaId }),
+      ]);
+
+      const programas = agregarPrefijoAreaAOptions(
+        toOptionList(programasPayload, ["id_programa", "idPrograma"], ["nombre_programa", "nombrePrograma", "text"]),
+        areaId
+      );
+      const etapas = agregarPrefijoAreaAOptions(
+        toOptionList(etapasPayload, ["id_etapa", "idEtapa"], ["nombre_etapa", "nombreEtapa", "nombre", "text"]),
+        areaId
+      );
+      const tendencias = agregarPrefijoAreaAOptions(
+        toOptionList(tendenciasPayload, ["id_tendencia", "idTendencia"], ["nombre_tendencia", "nombreTendencia", "nombre", "text"]),
+        areaId
+      );
+      const proyecciones = agregarPrefijoAreaAOptions(
+        toOptionList(proyeccionesPayload, ["id_proyeccion", "idProyeccion"], ["nombre_proyeccion", "nombreProyeccion", "nombre", "anio", "text"]),
+        areaId
+      );
+
+      if (programa) {
+        fillSelect(programa, programas, "Seleccionar programa de formacion...");
+        programa.value = resolveOptionValue(programas, selectedValues.programa || "") || "";
+      }
+
+      if (etapa) {
+        fillSelect(etapa, etapas, "Seleccionar etapa...");
+        etapa.value = resolveOptionValue(etapas, selectedValues.etapa || "") || "";
+      }
+
+      if (tendencia) {
+        fillSelect(tendencia, tendencias, "Seleccionar tendencia tecnologica emergente...");
+        tendencia.value = resolveOptionValue(tendencias, selectedValues.tendencia || "") || "";
+      }
+
+      if (proyeccion) {
+        fillSelect(proyeccion, proyecciones, "Seleccionar proyeccion...");
+        proyeccion.value = resolveOptionValue(proyecciones, selectedValues.proyeccion || "") || "";
+      }
+    } catch (error) {
+      resetSelectDependiente(programa, "Seleccionar programa de formacion...");
+      resetSelectDependiente(etapa, "Seleccionar etapa...");
+      resetSelectDependiente(tendencia, "Seleccionar tendencia tecnologica emergente...");
+      resetSelectDependiente(proyeccion, "Seleccionar proyeccion...");
+    }
+  }
+
   async function cargarCatalogosDesdeBackend() {
     try {
       const [areasPayload, etapasPayload, tendenciasPayload, proyeccionesPayload] = await Promise.all([
@@ -520,19 +635,8 @@ document.addEventListener("DOMContentLoaded", () => {
       );
 
       fillSelect(modals.createArea, areasDisponibles, "Seleccionar area...");
-      fillSelect(modals.createTendencia, tendenciasEmergentesDisponibles, "Seleccionar tendencia tecnologica emergente...");
-      fillSelect(modals.createEtapa, etapasDisponibles, "Seleccionar etapa...");
-      fillSelect(modals.createProyeccion, proyeccionesDisponibles, "Seleccionar proyeccion...");
-
       fillSelect(modals.editArea, areasDisponibles, "Seleccionar area...");
-      fillSelect(modals.editTendencia, tendenciasEmergentesDisponibles, "Seleccionar tendencia tecnologica emergente...");
-      fillSelect(modals.editEtapa, etapasDisponibles, "Seleccionar etapa...");
-      fillSelect(modals.editProyeccion, proyeccionesDisponibles, "Seleccionar proyeccion...");
-
-      setSelectEnabled(modals.createPrograma, false);
-      setSelectEnabled(modals.editPrograma, false);
-      fillSelect(modals.createPrograma, [], "Seleccionar programa de formacion...");
-      fillSelect(modals.editPrograma, [], "Seleccionar programa de formacion...");
+      resetCatalogosDependientes();
     } catch (error) {
       // Keep local fallback catalogs when API is unavailable.
     }
@@ -753,16 +857,10 @@ document.addEventListener("DOMContentLoaded", () => {
   hidratarCatalogosIniciales();
 
   fillSelect(modals.createArea, areasDisponibles, "Seleccionar area...");
-  fillSelect(modals.createPrograma, programasFormacionDisponibles, "Seleccionar programa de formacion...");
-  fillSelect(modals.createTendencia, tendenciasEmergentesDisponibles, "Seleccionar tendencia tecnologica emergente...");
-  fillSelect(modals.createEtapa, etapasDisponibles, "Seleccionar etapa...");
-  fillSelect(modals.createProyeccion, proyeccionesDisponibles, "Seleccionar proyeccion...");
+  resetCatalogosDependientes();
 
   fillSelect(modals.editArea, areasDisponibles, "Seleccionar area...");
-  fillSelect(modals.editPrograma, programasFormacionDisponibles, "Seleccionar programa de formacion...");
-  fillSelect(modals.editTendencia, tendenciasEmergentesDisponibles, "Seleccionar tendencia tecnologica emergente...");
-  fillSelect(modals.editEtapa, etapasDisponibles, "Seleccionar etapa...");
-  fillSelect(modals.editProyeccion, proyeccionesDisponibles, "Seleccionar proyeccion...");
+  resetCatalogosDependientes();
 
   function abrirModal(modal) {
     modal.classList.remove("hidden");
@@ -1492,6 +1590,12 @@ document.addEventListener("DOMContentLoaded", () => {
       tendencia: tendenciaFinal,
       etapa: baseState.etapa || "",
       proyeccion: baseState.proyeccion || "",
+      idLinea: String(baseState.idLinea || "").trim(),
+      idArea: String(baseState.idArea || "").trim(),
+      idPrograma: String(baseState.idPrograma || "").trim(),
+      idEtapa: String(baseState.idEtapa || "").trim(),
+      idTendencia: String(baseState.idTendencia || "").trim(),
+      idProyeccion: String(baseState.idProyeccion || "").trim(),
     };
 
     if (nombreFinal !== nombreBase && estadoLineas[nombreBase]) {
@@ -1662,7 +1766,7 @@ document.addEventListener("DOMContentLoaded", () => {
       </div>
       <div class="linea-tec-programa-wrap">
         <p class="linea-tec-programa text-sm text-sena-text-soft truncate" title="">
-          <span class="font-bold text-sena-text-main">Programa de formacion:</span>
+          <span class="font-medium text-sena-text-main">Programa de formacion:</span>
           <span class="linea-tec-programa-value font-medium text-sena-text-soft"></span>
         </p>
       </div>
@@ -1807,19 +1911,23 @@ document.addEventListener("DOMContentLoaded", () => {
     modals.editInput.value = nombreActual;
 
     const areaValue = resolveOptionValue(areasDisponibles, estadoActual.idArea || estadoActual.area);
-    const tendenciaValue = resolveOptionValue(tendenciasEmergentesDisponibles, estadoActual.idTendencia || estadoActual.tendencia);
-    const etapaValue = resolveOptionValue(etapasDisponibles, estadoActual.idEtapa || estadoActual.etapa);
-    const proyeccionValue = resolveOptionValue(proyeccionesDisponibles, estadoActual.idProyeccion || estadoActual.proyeccion);
 
     modals.editArea.value = areaValue;
-    modals.editTendencia.value = tendenciaValue;
-    modals.editEtapa.value = etapaValue;
-    modals.editProyeccion.value = proyeccionValue;
 
-    await cargarProgramasPorArea(
+    await cargarCatalogosPorArea(
       areaValue,
-      modals.editPrograma,
-      estadoActual.idPrograma || estadoActual.programaFormacion || ""
+      {
+        programa: modals.editPrograma,
+        etapa: modals.editEtapa,
+        tendencia: modals.editTendencia,
+        proyeccion: modals.editProyeccion,
+      },
+      {
+        programa: estadoActual.idPrograma || estadoActual.programaFormacion || "",
+        etapa: estadoActual.idEtapa || estadoActual.etapa || "",
+        tendencia: estadoActual.idTendencia || estadoActual.tendencia || "",
+        proyeccion: estadoActual.idProyeccion || estadoActual.proyeccion || "",
+      }
     );
 
     abrirModal(modals.editModal);
@@ -1846,17 +1954,36 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function manejarToggleLinea(switchBtn, titleEl) {
+    const setMensajeDeshabilitar = (nombreLinea) => {
+      const safe = String(nombreLinea || "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+
+      modals.disableText.innerHTML = `Estas seguro de deshabilitar <span class="text-[#e65100]">&quot;${safe}&quot;</span>? El registro no se eliminara, solo se marcara como inactivo.`;
+    };
+
     const isActive = switchBtn.dataset.active === "true";
 
     if (isActive) {
       lineaPendienteDeshabilitar = { switchBtn, nombre: titleEl.textContent.trim() };
-      modals.disableText.textContent = `Estas seguro de deshabilitar "${lineaPendienteDeshabilitar.nombre}"? El registro no se eliminara, solo se marcara como inactivo.`;
+      setMensajeDeshabilitar(lineaPendienteDeshabilitar.nombre);
       abrirModal(modals.disableModal);
       return;
     }
 
     lineaPendienteHabilitar = { switchBtn, nombre: titleEl.textContent.trim() };
-    modals.enableText.textContent = `Estas seguro de que deseas habilitar la linea "${lineaPendienteHabilitar.nombre}"?`;
+    {
+      const safe = String(lineaPendienteHabilitar.nombre || "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+      modals.enableText.innerHTML = `Estas seguro de que deseas habilitar la linea <span class="text-sena-text-main">&quot;${safe}&quot;</span>?`;
+    }
     abrirModal(modals.enableModal);
   }
 
@@ -1915,7 +2042,14 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function mostrarAlertaFinal(config) {
-    const { title, message, subtitle = "", color = "#39A900", seconds = 3 } = config;
+    const {
+      title,
+      message,
+      subtitle = "",
+      color = "#39A900",
+      seconds = 3,
+      highlightQuoted = false,
+    } = config;
 
     const subtitleResolved = subtitle || (String(title).toLowerCase() === "error"
       ? "La operacion no se completo"
@@ -1925,8 +2059,24 @@ document.addEventListener("DOMContentLoaded", () => {
     if (modals.successSubtitle) {
       modals.successSubtitle.textContent = subtitleResolved;
     }
-    modals.successText.textContent = message;
-    modals.successText.style.color = color;
+
+    if (highlightQuoted) {
+      const messageText = String(message || "");
+      const escapeHtml = (value) => String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/\"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+
+      const html = escapeHtml(messageText).replace(/&quot;([^&]*)&quot;/g, `<span style="color: ${color};">&quot;$1&quot;</span>`);
+      modals.successText.innerHTML = html;
+    } else {
+      modals.successText.textContent = message;
+    }
+
+    modals.successText.style.color = "";
+
     modals.successIconWrap.style.backgroundColor = `${color}1A`;
     modals.successIcon.style.color = color;
     modals.successProgress.style.backgroundColor = color;
@@ -2083,13 +2233,27 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (detalleActivo) {
           lineaPendienteDeshabilitar = { switchBtn: null, nombre: nombreActual, isDetalle: true };
-          modals.disableText.textContent = `Estas seguro de deshabilitar "${nombreActual}"? El registro no se eliminara, solo se marcara como inactivo.`;
+          const safe = String(nombreActual || "")
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#39;");
+          modals.disableText.innerHTML = `Estas seguro de deshabilitar <span class="text-[#e65100]">&quot;${safe}&quot;</span>? El registro no se eliminara, solo se marcara como inactivo.`;
           abrirModal(modals.disableModal);
           return;
         }
 
         lineaPendienteHabilitar = { switchBtn: null, nombre: nombreActual, isDetalle: true };
-        modals.enableText.textContent = `Estas seguro de que deseas habilitar la linea "${nombreActual}"?`;
+        {
+          const safe = String(nombreActual || "")
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#39;");
+          modals.enableText.innerHTML = `Estas seguro de que deseas habilitar la linea <span class="text-sena-text-main">&quot;${safe}&quot;</span>?`;
+        }
         abrirModal(modals.enableModal);
       });
     }
@@ -2201,13 +2365,23 @@ document.addEventListener("DOMContentLoaded", () => {
 
   if (modals.createArea) {
     modals.createArea.addEventListener("change", () => {
-      cargarProgramasPorArea(modals.createArea.value, modals.createPrograma);
+      cargarCatalogosPorArea(modals.createArea.value, {
+        programa: modals.createPrograma,
+        etapa: modals.createEtapa,
+        tendencia: modals.createTendencia,
+        proyeccion: modals.createProyeccion,
+      });
     });
   }
 
   if (modals.editArea) {
     modals.editArea.addEventListener("change", () => {
-      cargarProgramasPorArea(modals.editArea.value, modals.editPrograma);
+      cargarCatalogosPorArea(modals.editArea.value, {
+        programa: modals.editPrograma,
+        etapa: modals.editEtapa,
+        tendencia: modals.editTendencia,
+        proyeccion: modals.editProyeccion,
+      });
     });
   }
 
@@ -2220,11 +2394,7 @@ document.addEventListener("DOMContentLoaded", () => {
     btnNuevaLinea.addEventListener("click", () => {
       modals.createForm.reset();
       modals.createArea.value = "";
-      modals.createPrograma.value = "";
-      modals.createTendencia.value = "";
-      modals.createEtapa.value = "";
-      modals.createProyeccion.value = "";
-      setSelectEnabled(modals.createPrograma, false);
+      resetCatalogosDependientes();
       abrirModal(modals.createModal);
     });
   }
@@ -2233,11 +2403,7 @@ document.addEventListener("DOMContentLoaded", () => {
     btnCrearDesdeEmpty.addEventListener("click", () => {
       modals.createForm.reset();
       modals.createArea.value = "";
-      modals.createPrograma.value = "";
-      modals.createTendencia.value = "";
-      modals.createEtapa.value = "";
-      modals.createProyeccion.value = "";
-      setSelectEnabled(modals.createPrograma, false);
+      resetCatalogosDependientes();
       abrirModal(modals.createModal);
     });
   }
@@ -2300,6 +2466,7 @@ document.addEventListener("DOMContentLoaded", () => {
         title: "Linea Creada",
         message: `La linea \"${nombreCreado}\" fue creada correctamente.`,
         color: "#39A900",
+        highlightQuoted: true,
         seconds: 3,
       });
       return;
@@ -2307,7 +2474,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const backendMsg = String(error?.message || "").trim();
       mostrarAlertaFinal({
         title: "Error",
-        message: backendMsg || "No fue posible crear la linea en el backend.",
+        message: backendMsg || "Error en el servidor",
         color: "#e65100",
         seconds: 3,
       });
@@ -2342,7 +2509,7 @@ document.addEventListener("DOMContentLoaded", () => {
       } catch (error) {
         mostrarAlertaFinal({
           title: "Error",
-          message: "No fue posible deshabilitar la linea en el backend.",
+          message: "Error en el servidor",
           color: "#e65100",
           seconds: 3,
         });
@@ -2404,7 +2571,7 @@ document.addEventListener("DOMContentLoaded", () => {
       } catch (error) {
         mostrarAlertaFinal({
           title: "Error",
-          message: "No fue posible habilitar la linea en el backend.",
+          message: "Error en el servidor",
           color: "#e65100",
           seconds: 3,
         });
@@ -2477,6 +2644,34 @@ document.addEventListener("DOMContentLoaded", () => {
         color: "#e65100",
         seconds: 3,
       });
+      return;
+    }
+
+    const areaOriginalId = String(
+      oldState.idArea || resolveOptionValue(areasDisponibles, oldState.area) || lineaEnEdicion?.card?.dataset?.idArea || ""
+    ).trim();
+    const programaOriginalId = String(
+      oldState.idPrograma || resolveOptionValue(programasFormacionDisponibles, oldState.programaFormacion) || lineaEnEdicion?.card?.dataset?.idPrograma || ""
+    ).trim();
+    const etapaOriginalId = String(
+      oldState.idEtapa || resolveOptionValue(etapasDisponibles, oldState.etapa) || lineaEnEdicion?.card?.dataset?.idEtapa || ""
+    ).trim();
+    const tendenciaOriginalId = String(
+      oldState.idTendencia || resolveOptionValue(tendenciasEmergentesDisponibles, oldState.tendencia) || lineaEnEdicion?.card?.dataset?.idTendencia || ""
+    ).trim();
+    const proyeccionOriginalId = String(
+      oldState.idProyeccion || resolveOptionValue(proyeccionesDisponibles, oldState.proyeccion) || lineaEnEdicion?.card?.dataset?.idProyeccion || ""
+    ).trim();
+
+    const nombreCambio = nuevoNombre !== String(lineaEnEdicion.oldName || "").trim();
+    const areaCambio = areaId !== areaOriginalId;
+    const programaCambio = programaId !== programaOriginalId;
+    const etapaCambio = etapaId !== etapaOriginalId;
+    const tendenciaCambio = tendenciaId !== tendenciaOriginalId;
+    const proyeccionCambio = proyeccionId !== proyeccionOriginalId;
+
+    if (!nombreCambio && !areaCambio && !programaCambio && !etapaCambio && !tendenciaCambio && !proyeccionCambio) {
+      mostrarToastValidacion("No se ha realizado ningun cambio en la linea", "info");
       return;
     }
 
@@ -2562,7 +2757,7 @@ document.addEventListener("DOMContentLoaded", () => {
       } catch (error) {
         mostrarAlertaFinal({
           title: "Error",
-          message: "No fue posible actualizar la linea en el backend.",
+          message: "Error en el servidor",
           color: "#e65100",
           seconds: 3,
         });
@@ -2589,9 +2784,11 @@ document.addEventListener("DOMContentLoaded", () => {
     guardarRegistroLinea(nuevoNombre, lineaEnEdicion.card);
     cerrarModal(modals.editModal);
     mostrarAlertaFinal({
-      title: "Linea Editada",
+      title: "¡Linea Editada!",
       message: `La linea \"${nuevoNombre}\" fue actualizada correctamente.`,
-      color: "#00304D",
+      subtitle: "Los cambios se guardaron correctamente",
+      color: "#39A900",
+      highlightQuoted: true,
       seconds: 3,
     });
     lineaEnEdicion = null;
@@ -2650,19 +2847,23 @@ document.addEventListener("DOMContentLoaded", () => {
     const wrapper = document.createElement("div");
     wrapper.innerHTML = `
       <div id="linea-modal-deshabilitar" class="linea-tec-modal hidden fixed inset-0 z-50">
-        <div class="absolute inset-0 bg-black/80"></div>
+        <div class="fixed inset-0 bg-black bg-opacity-80 transition-opacity"></div>
         <div class="relative min-h-full flex items-center justify-center p-4">
-          <div class="w-full max-w-md rounded-xl border border-sena-border bg-white shadow-xl overflow-hidden">
-            <div class="border-b border-sena-border px-6 py-4 flex items-center justify-between">
+          <div class="relative w-full max-w-md transform overflow-hidden rounded-xl border border-sena-border bg-white shadow-xl transition-all animate-modalFadeIn">
+            <button type="button" class="linea-close-disable absolute right-4 top-4 text-sena-text-soft hover:text-sena-text-main">
+              <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+              </svg>
+            </button>
+            <div class="border-b border-sena-border px-6 py-4">
               <h3 class="text-lg font-semibold text-sena-text-main">Deshabilitar Linea Tecnologica</h3>
-              <button type="button" class="linea-close-disable text-sena-text-soft hover:text-sena-text-main">&times;</button>
             </div>
             <div class="px-6 py-4">
               <p id="linea-disable-text" class="text-sm text-sena-text-soft leading-relaxed"></p>
             </div>
-            <div class="border-t border-sena-border px-6 py-4 flex justify-end gap-3">
+            <div class="flex justify-end gap-3 border-t border-sena-border px-6 py-4">
               <button type="button" class="linea-close-disable rounded-lg border border-sena-border px-4 py-2 text-sm font-medium text-sena-text-main hover:bg-sena-soft">Cancelar</button>
-              <button type="button" id="linea-confirm-disable" class="rounded-lg bg-[#e09a3f] px-4 py-2 text-sm font-medium text-white hover:opacity-90">Desactivar</button>
+              <button type="button" id="linea-confirm-disable" class="rounded-lg bg-[#e65100] px-4 py-2 text-sm font-medium text-white hover:bg-[#e65100]/90">Desactivar</button>
             </div>
           </div>
         </div>
@@ -2671,13 +2872,18 @@ document.addEventListener("DOMContentLoaded", () => {
       <div id="linea-modal-editar" class="linea-tec-modal hidden fixed inset-0 z-50">
         <div class="absolute inset-0 bg-black/80"></div>
         <div class="relative min-h-full flex items-center justify-center p-4">
-          <div class="w-full max-w-2xl rounded-xl border border-sena-border bg-white shadow-2xl overflow-hidden">
+          <div class="w-full max-w-2xl transform rounded-xl border border-sena-border bg-white shadow-2xl overflow-hidden transition-all animate-slideDownModal">
             <div class="border-b border-sena-border px-6 py-4 flex items-center justify-between">
               <div>
                 <h3 class="text-lg font-semibold text-sena-text-main">Editar Linea Tecnologica</h3>
                 <p class="mt-1 text-sm text-sena-text-soft">Modifica el nombre de la linea tecnologica.</p>
               </div>
-              <button type="button" class="linea-close-edit text-sena-text-soft hover:text-sena-text-main">&times;</button>
+              <button type="button" class="linea-close-edit p-1 text-sena-text-soft hover:text-sena-text-main transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M18 6 6 18"/>
+                  <path d="m6 6 12 12"/>
+                </svg>
+              </button>
             </div>
             <form id="linea-edit-form" class="px-6 py-4">
               <div class="mb-4">
@@ -2730,13 +2936,18 @@ document.addEventListener("DOMContentLoaded", () => {
       <div id="linea-modal-crear" class="linea-tec-modal hidden fixed inset-0 z-50">
         <div class="absolute inset-0 bg-black/80"></div>
         <div class="relative min-h-full flex items-center justify-center p-4">
-          <div class="w-full max-w-2xl rounded-xl border border-sena-border bg-white shadow-2xl overflow-hidden">
+          <div class="w-full max-w-2xl transform rounded-xl border border-sena-border bg-white shadow-2xl overflow-hidden transition-all animate-slideDownModal">
             <div class="border-b border-sena-border px-6 py-4 flex items-center justify-between">
               <div>
                 <h3 class="text-lg font-semibold text-sena-text-main">Nueva Linea Tecnologica</h3>
                 <p class="mt-1 text-sm text-sena-text-soft">Ingresa el nombre de la nueva linea tecnologica.</p>
               </div>
-              <button type="button" class="linea-close-create text-sena-text-soft hover:text-sena-text-main">&times;</button>
+              <button type="button" class="linea-close-create p-1 text-sena-text-soft hover:text-sena-text-main transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M18 6 6 18"/>
+                  <path d="m6 6 12 12"/>
+                </svg>
+              </button>
             </div>
             <form id="linea-create-form" class="px-6 py-4">
               <div class="mb-4">
@@ -2820,22 +3031,28 @@ document.addEventListener("DOMContentLoaded", () => {
       <div id="linea-modal-success" class="linea-tec-modal hidden fixed inset-0 z-50">
         <div class="absolute inset-0 bg-black/80"></div>
         <div class="relative min-h-full flex items-center justify-center p-4">
-          <div class="w-full max-w-md rounded-xl border border-sena-border bg-white shadow-2xl overflow-hidden">
-            <div class="border-b border-sena-border px-6 py-4 flex items-center gap-3">
-              <div id="linea-success-icon-wrap" class="w-10 h-10 rounded-full flex items-center justify-center">
-                <svg id="linea-success-icon" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                  <polyline points="20 6 9 17 4 12"></polyline>
+          <div class="relative w-full max-w-md transform overflow-hidden rounded-xl border border-sena-border bg-white shadow-2xl transition-all animate-modalFadeIn">
+            <div class="border-b border-sena-border px-6 py-5 flex items-center gap-4">
+              <div id="linea-success-icon-wrap" class="w-12 h-12 rounded-full bg-[#39A900] bg-opacity-10 flex items-center justify-center flex-shrink-0">
+                <svg id="linea-success-icon" xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 text-[#39A900]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                  <polyline points="22 4 12 14.01 9 11.01"></polyline>
                 </svg>
               </div>
               <div>
                 <h3 id="linea-success-title" class="text-lg font-semibold text-sena-text-main">Accion completada</h3>
                 <p id="linea-success-subtitle" class="text-xs text-sena-text-soft">Operacion realizada correctamente</p>
               </div>
-              <button type="button" class="linea-close-success ml-auto text-sena-text-soft hover:text-sena-text-main">&times;</button>
+              <button type="button" class="linea-close-success ml-auto p-1 text-sena-text-soft hover:text-sena-text-main transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M18 6 6 18"/>
+                  <path d="m6 6 12 12"/>
+                </svg>
+              </button>
             </div>
-            <div class="px-6 py-4">
-              <p id="linea-success-text" class="text-sm text-sena-text-soft"></p>
-              <div class="mt-3 flex items-center gap-2 text-xs text-sena-text-soft">
+            <div class="px-6 py-5">
+              <p id="linea-success-text" class="text-sm text-sena-text-soft leading-relaxed break-words"></p>
+              <div class="mt-4 flex items-center gap-2 text-xs text-sena-text-soft">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <circle cx="12" cy="12" r="10"></circle>
                   <polyline points="12 6 12 12 16 14"></polyline>
@@ -2843,8 +3060,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 <span>Esta ventana se cerrara automaticamente en <span id="linea-success-counter">3</span> segundos</span>
               </div>
             </div>
-            <div class="h-1.5 bg-gray-100 w-full overflow-hidden">
-              <div id="linea-success-progress" class="h-full transition-all duration-[3000ms] ease-linear" style="width:0%"></div>
+            <div class="h-1.5 bg-gray-100 w-full rounded-b-xl overflow-hidden">
+              <div id="linea-success-progress" class="h-1 bg-[#39A900] transition-all duration-[3000ms] ease-linear" style="width:0%"></div>
             </div>
           </div>
         </div>
