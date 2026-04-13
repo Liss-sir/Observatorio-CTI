@@ -148,14 +148,10 @@ function setReportButtonsState(isLoading) {
 }
 
 function buildBarData(periodData) {
-  function buildBarData(periodData) {
-  // Convierte todos los valores a números
-  const demand = (periodData.bar.demand || []).map(v => Number(v) || 0);
-  const offer = (periodData.bar.offer || []).map(v => Number(v) || 0);
-  
-  const hasPositiveValues = [...demand, ...offer].some(v => v > 0);
-  
-  // ... resto del código, pero usando demand y offer en lugar de periodData.bar.demand/offer
+  const demand = (periodData?.bar?.demand || []).map((v) => Number(v) || 0);
+  const offer = (periodData?.bar?.offer || []).map((v) => Number(v) || 0);
+  const hasPositiveValues = [...demand, ...offer].some((v) => v > 0);
+
   if (!hasPositiveValues) {
     return {
       labels: [],
@@ -177,20 +173,20 @@ function buildBarData(periodData) {
       ]
     };
   }
-}
+
   return {
-    labels: periodData.bar.labels,
+    labels: periodData?.bar?.labels || [],
     datasets: [
       {
         label: 'Perfiles Solicitados',
-        data: periodData.bar.demand,
+        data: demand,
         backgroundColor: '#22c55e',
         borderRadius: 4,
         barThickness: 20
       },
       {
         label: 'Programas de Formación (Oferta)',
-        data: periodData.bar.offer,
+        data: offer,
         backgroundColor: '#3b82f6',
         borderRadius: 4,
         barThickness: 20
@@ -211,6 +207,43 @@ function buildPieData(periodData) {
       }
     ]
   };
+}
+
+function wrapTooltipText(text, maxLineLength = 24) {
+  const safeText = String(text || '').trim();
+  if (!safeText) return [''];
+
+  const words = safeText.split(/\s+/);
+  const lines = [];
+  let current = '';
+
+  words.forEach((word) => {
+    if (word.length > maxLineLength) {
+      if (current) {
+        lines.push(current);
+        current = '';
+      }
+
+      for (let i = 0; i < word.length; i += maxLineLength) {
+        lines.push(word.slice(i, i + maxLineLength));
+      }
+      return;
+    }
+
+    const candidate = current ? `${current} ${word}` : word;
+    if (candidate.length <= maxLineLength) {
+      current = candidate;
+    } else {
+      lines.push(current);
+      current = word;
+    }
+  });
+
+  if (current) {
+    lines.push(current);
+  }
+
+  return lines;
 }
 
 function hasChartData(chart) {
@@ -372,11 +405,15 @@ const pieConfig = {
             padding: 10,
             cornerRadius: 8,
             callbacks: {
+              title: function(items) {
+                const label = items?.[0]?.label || '';
+                return wrapTooltipText(label, 24);
+              },
               label: function(context) {
                 const values = context.dataset.data || [];
                 const total = values.reduce((acc, value) => acc + value, 0);
                 const percentage = total > 0 ? ((context.parsed / total) * 100).toFixed(1) : '0.0';
-                return context.label + ': ' + context.parsed + ' perfiles (' + percentage + '%)';
+                return context.parsed + ' perfiles (' + percentage + '%)';
               }
             }
           }
@@ -552,26 +589,23 @@ function waitMs(ms) {
 }
 
 async function waitForStableCharts({ forceScroll = false } = {}) {
-  const originalScrollTop = window.scrollY || document.documentElement.scrollTop || 0;
-  const barContainer = barChart?.canvas?.parentElement;
-
-  if (forceScroll && barContainer) {
-    barContainer.scrollIntoView({ behavior: 'auto', block: 'center' });
-    await waitMs(180);
+  // Forzar actualización de canvas
+  barChart?.update('none');
+  pieChart?.update('none');
+  
+  // Esperar múltiples frames de animación
+  await new Promise(resolve => requestAnimationFrame(resolve));
+  await new Promise(resolve => requestAnimationFrame(resolve));
+  await new Promise(resolve => setTimeout(resolve, 200));
+  
+  // Forzar reflow de los canvas
+  if (barChart?.canvas) {
+    barChart.canvas.style.transform = 'scale(1)';
+    barChart.canvas.offsetHeight; // Forzar reflow
   }
-
-  barChart?.update('none');
-  pieChart?.update('none');
-  await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
-  await waitMs(220);
-
-  barChart?.update('none');
-  pieChart?.update('none');
-  await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
-  await waitMs(220);
-
-  if (forceScroll) {
-    window.scrollTo(0, originalScrollTop);
+  if (pieChart?.canvas) {
+    pieChart.canvas.style.transform = 'scale(1)';
+    pieChart.canvas.offsetHeight;
   }
 }
 
@@ -587,13 +621,13 @@ function getAppliedFiltersText() {
 
 function getAppliedFiltersTextForReport(reportType) {
   if (reportType === 'pie') {
-    return 'No aplica. Esta gráfica no usa filtro de mes/año.';
+    return '';
   }
 
   return getAppliedFiltersText();
 }
 
-function renderPieLegend(labels, values, colors, inactiveLines = []) {
+function renderPieLegend(labels, values, colors) {
   const legend = document.getElementById('pieLegend');
   if (!legend) return;
 
@@ -618,24 +652,7 @@ function renderPieLegend(labels, values, colors, inactiveLines = []) {
     })
     .join('');
 
-  const inactiveHtml = inactiveLines.length > 0 ? `
-    <div class="mt-4 pt-3 border-t border-slate-200">
-      <p class="text-[10px] font-semibold text-slate-500 mb-2">Líneas Tecnológicas sin solicitudes registradas</p>
-      <div class="grid grid-cols-2 gap-1">
-        ${inactiveLines
-          .map((label) => `
-            <div class="flex items-center gap-1 px-2 py-0.5 bg-slate-50 rounded border border-slate-200">
-              <div class="w-1.5 h-1.5 rounded-full flex-shrink-0" style="background-color:#d1d5db"></div>
-              <span class="text-[10px] text-slate-500 truncate">${label}</span>
-              <span class="text-[9px] text-slate-400 flex-shrink-0">(0)</span>
-          </div>
-          `)
-          .join('')}
-      </div>
-    </div>
-  ` : '';
-
-  legend.innerHTML = activeHtml + inactiveHtml;
+  legend.innerHTML = activeHtml;
 }
 
 function updateCounters(periodData) {
@@ -659,7 +676,7 @@ function updateCharts(periodData, animate = true) {
   barChart.update(animate ? undefined : 'none');
   pieChart.update(animate ? undefined : 'none');
 
-  renderPieLegend(periodData.pie.labels, periodData.pie.values, pieColors, periodData.pie.inactive);
+  renderPieLegend(periodData.pie.labels, periodData.pie.values, pieColors);
   updateCounters(periodData);
 }
 
@@ -801,29 +818,6 @@ function buildPieTableHtml(periodData) {
   `;
 }
 
-let html2pdfLoaderPromise = null;
-
-function ensureHtml2PdfLoaded() {
-  if (typeof window.html2pdf === 'function') {
-    return Promise.resolve(window.html2pdf);
-  }
-
-  if (html2pdfLoaderPromise) {
-    return html2pdfLoaderPromise;
-  }
-
-  html2pdfLoaderPromise = new Promise((resolve, reject) => {
-    const script = document.createElement('script');
-    script.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js';
-    script.async = true;
-    script.onload = () => resolve(window.html2pdf);
-    script.onerror = () => reject(new Error('No se pudo cargar la librería de PDF.'));
-    document.head.appendChild(script);
-  });
-
-  return html2pdfLoaderPromise;
-}
-
 function buildReportModel(reportType) {
   const now = new Date();
   const date = now.toLocaleDateString('es-CO');
@@ -927,7 +921,7 @@ function buildReportDocumentHtml(reportModel) {
             <div class="meta-grid">
               <p class="meta"><strong>Fecha de descarga:</strong> ${reportModel.date}</p>
               <p class="meta"><strong>Hora de descarga:</strong> ${reportModel.time}</p>
-              <p class="meta" style="grid-column: 1 / -1;"><strong>Filtros aplicados:</strong> ${reportModel.filtersText}</p>
+              ${reportModel.filtersText ? `<p class="meta" style="grid-column: 1 / -1;"><strong>Filtros aplicados:</strong> ${reportModel.filtersText}</p>` : ''}
             </div>
           </div>
           ${reportModel.content}
@@ -1068,6 +1062,7 @@ function updateLoadingProgress(message, percentage) {
   if (progressEl) progressEl.style.width = percentage + '%';
 }
 
+// Reemplazar la función downloadReportPdf completa
 async function downloadReportPdf(reportType) {
   if (reportDownloadInProgress) {
     return;
@@ -1077,8 +1072,6 @@ async function downloadReportPdf(reportType) {
   setReportButtonsState(true);
   showLoadingScreen();
 
-  let iframe = null;
-
   try {
     updateLoadingProgress('Validando datos...', 15);
     const ready = await ensureReportDataReady(reportType);
@@ -1086,111 +1079,474 @@ async function downloadReportPdf(reportType) {
       return;
     }
 
-    updateLoadingProgress('Cargando librería PDF...', 25);
-    const html2pdf = await ensureHtml2PdfLoaded();
-
     updateLoadingProgress('Preparando gráficas...', 35);
+    
+    // Esperar a que los canvas estén completamente renderizados
     await waitForStableCharts({ forceScroll: true });
-    const reportModel = buildReportModel(reportType);
-    const reportHtml = buildReportDocumentHtml(reportModel);
     
-    // Esperar a que el navegador procese el HTML
-    await new Promise(resolve => setTimeout(resolve, 500));
-
-    updateLoadingProgress('Configurando documento...', 45);
-    iframe = document.createElement('iframe');
-    iframe.setAttribute('aria-hidden', 'true');
-    iframe.style.position = 'fixed';
-    iframe.style.right = '0';
-    iframe.style.bottom = '0';
-    iframe.style.width = '800px';
-    iframe.style.height = '1200px';
-    iframe.style.opacity = '0';
-    iframe.style.pointerEvents = 'none';
-    iframe.style.border = '0';
-    iframe.style.zIndex = '-1';
-
-    document.body.appendChild(iframe);
-
-    const iframeDocument = iframe.contentDocument || iframe.contentWindow?.document;
-    iframeDocument.open();
-    iframeDocument.write(reportHtml);
-    iframeDocument.close();
-    iframeDocument.body.style.overflow = 'visible';
-
-    await new Promise((resolve) => {
-      let resolved = false;
-      const finish = () => {
-        if (resolved) return;
-        resolved = true;
-        resolve();
-      };
-
-      iframe.onload = finish;
-      setTimeout(finish, 800);
-    });
-
-    updateLoadingProgress('Renderizando contenido...', 55);
-    const imageNodes = Array.from(iframeDocument.querySelectorAll('img'));
-    await Promise.all(
-      imageNodes.map((img) => {
-        if (img.complete && img.naturalWidth > 0) {
-          return Promise.resolve();
-        }
-
-        return new Promise((resolve) => {
-          img.onload = () => resolve();
-          img.onerror = () => resolve();
-          setTimeout(resolve, 1000);
-        });
-      })
-    );
+    // Pequeña espera adicional para asegurar renderizado
+    await new Promise(resolve => setTimeout(resolve, 300));
     
-    updateLoadingProgress('Estabilizando gráficas...', 65);
-    // Esperas aumentadas para mejor renderizado
-    await new Promise(resolve => setTimeout(resolve, 800));
-
-    if (iframeDocument.fonts?.ready) {
-      await iframeDocument.fonts.ready.catch(() => undefined);
+    // Forzar actualización de los canvas
+    barChart.update('none');
+    pieChart.update('none');
+    
+    await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+    
+    updateLoadingProgress('Capturando gráficas...', 50);
+    
+    // Capturar los canvas directamente como imágenes
+    const barCanvas = document.getElementById('barChart');
+    const pieCanvas = document.getElementById('pieChart');
+    
+    let barImageData = null;
+    let pieImageData = null;
+    
+    // Capturar gráfico de barras (necesario para bar y global)
+    if (reportType === 'global' || reportType === 'bar') {
+      barImageData = await captureCanvasWithRetry(barCanvas);
+      if (!barImageData) {
+        throw new Error('No se pudo capturar el gráfico de barras');
+      }
     }
-
-    updateLoadingProgress('Finalizando documento...', 75);
-    const reportNode = iframeDocument.documentElement;
-
-    await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
     
-    // Espera adicional en punto crítico
-    await new Promise(resolve => setTimeout(resolve, 600));
-
-    updateLoadingProgress('Generando PDF...', 85);
+    // Capturar gráfico de pastel (necesario para pie y global)
+    if (reportType === 'global' || reportType === 'pie') {
+      pieImageData = await captureCanvasWithRetry(pieCanvas);
+      if (!pieImageData) {
+        throw new Error('No se pudo capturar el gráfico de pastel');
+      }
+    }
     
-    await html2pdf()
-      .set({
-        margin: 8,
-        filename: buildReportPdfFileName(reportType),
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2, useCORS: true },
-        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
-        pagebreak: { mode: ['css', 'legacy'] }
-      })
-      .from(reportNode)
-      .save();
-
+    updateLoadingProgress('Cargando librerías PDF...', 65);
+    
+    // Cargar librerías necesarias
+    await loadPdfLibraries();
+    
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({
+      unit: 'mm',
+      format: 'a4',
+      orientation: 'portrait'
+    });
+    
+    updateLoadingProgress('Generando PDF...', 75);
+    
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const margin = 15;
+    const contentWidth = pageWidth - (margin * 2);
+    
+    // === FUNCIÓN PARA AGREGAR ENCABEZADO COMÚN ===
+    function addHeader(doc, title, yOffset, filtersText = getAppliedFiltersTextForReport(reportType)) {
+      doc.setFontSize(18);
+      doc.setFont('helvetica', 'bold');
+      doc.text(title, margin, yOffset);
+      yOffset += 12;
+      
+      doc.setFontSize(10);
+      doc.setFont('helvetica', 'normal');
+      const now = new Date();
+      doc.text(`Fecha: ${now.toLocaleDateString('es-CO')}`, margin, yOffset);
+      yOffset += 6;
+      doc.text(`Hora: ${now.toLocaleTimeString('es-CO')}`, margin, yOffset);
+      yOffset += 6;
+      if (filtersText) {
+        doc.text(`Filtros: ${filtersText}`, margin, yOffset);
+        yOffset += 12;
+      } else {
+        yOffset += 6;
+      }
+      
+      doc.setDrawColor(34, 197, 94);
+      doc.setLineWidth(0.5);
+      doc.line(margin, yOffset, pageWidth - margin, yOffset);
+      yOffset += 10;
+      
+      return yOffset;
+    }
+    
+    if (reportType === 'global') {
+      // === PÁGINA 1: Gráfico de Barras ===
+      let yOffset = 20;
+      yOffset = addHeader(doc, 'Reporte Estadístico Global - Observatorio CTI', yOffset);
+      
+      // Título del gráfico de barras
+      doc.setFontSize(14);
+      doc.setFont('helvetica', 'bold');
+      doc.text('1. Necesidades Empresariales vs Oferta SENA', margin, yOffset);
+      yOffset += 10;
+      
+      // Gráfico de barras (tamaño grande)
+      if (barImageData) {
+        const imgWidth = contentWidth;
+        const imgHeight = (barCanvas.height / barCanvas.width) * imgWidth;
+        
+        // Ajustar altura máxima para que quepa bien en la página
+        const maxHeight = doc.internal.pageSize.getHeight() - yOffset - 60;
+        let finalImgHeight = imgHeight;
+        if (imgHeight > maxHeight) {
+          finalImgHeight = maxHeight;
+        }
+        
+        doc.addImage(barImageData, 'PNG', margin, yOffset, imgWidth, finalImgHeight);
+        yOffset += finalImgHeight + 10;
+      }
+      
+      // Tabla del gráfico de barras
+      yOffset = addBarTableToPdf(doc, getCurrentPeriodData(), margin, yOffset, pageWidth);
+      
+      // === PÁGINA 2: Gráfico Circular ===
+      doc.addPage();
+      yOffset = 20;
+      yOffset = addHeader(doc, 'Reporte Estadístico Global - Observatorio CTI ', yOffset, '');
+      
+      // Título del gráfico circular
+      doc.setFontSize(14);
+      doc.setFont('helvetica', 'bold');
+      doc.text('2. Distribución de Solicitudes por Línea Tecnológica', margin, yOffset);
+      yOffset += 10;
+      
+      // Gráfico circular (tamaño adecuado para la página)
+      if (pieImageData) {
+        // Reducir a la mitad del tamaño previo
+        const imgWidth = Math.min(contentWidth * 0.3, 43);
+        const imgHeight = (pieCanvas.height / pieCanvas.width) * imgWidth;
+        
+        // Centrar el gráfico
+        const xOffset = margin + (contentWidth - imgWidth) / 2;
+        
+        doc.addImage(pieImageData, 'PNG', xOffset, yOffset, imgWidth, imgHeight);
+        yOffset += imgHeight + 15;
+      }
+      
+      // Tabla del gráfico circular
+      yOffset = addPieTableToPdf(doc, getCurrentPeriodData(), margin, yOffset, pageWidth);
+      
+    } else if (reportType === 'bar') {
+      // Reporte individual de barras - una página
+      let yOffset = 20;
+      yOffset = addHeader(doc, 'Reporte Individual - Necesidades vs Oferta SENA', yOffset);
+      
+      doc.setFontSize(14);
+      doc.setFont('helvetica', 'bold');
+      doc.text('Necesidades Empresariales vs Oferta SENA', margin, yOffset);
+      yOffset += 10;
+      
+      if (barImageData) {
+        const imgWidth = contentWidth;
+        const imgHeight = (barCanvas.height / barCanvas.width) * imgWidth;
+        
+        const maxHeight = doc.internal.pageSize.getHeight() - yOffset - 50;
+        let finalImgHeight = imgHeight;
+        if (imgHeight > maxHeight) {
+          finalImgHeight = maxHeight;
+        }
+        
+        doc.addImage(barImageData, 'PNG', margin, yOffset, imgWidth, finalImgHeight);
+        yOffset += finalImgHeight + 10;
+      }
+      
+      yOffset = addBarTableToPdf(doc, getCurrentPeriodData(), margin, yOffset, pageWidth);
+      
+    } else {
+      // Reporte individual de pastel - una página
+      let yOffset = 20;
+      yOffset = addHeader(doc, 'Reporte Individual - Distribución por Línea Tecnológica', yOffset);
+      
+      doc.setFontSize(14);
+      doc.setFont('helvetica', 'bold');
+      doc.text('Distribución de Solicitudes por Línea Tecnológica', margin, yOffset);
+      yOffset += 10;
+      
+      if (pieImageData) {
+        // Reducir a la mitad del tamaño previo
+        const imgWidth = Math.min(contentWidth * 0.3, 48);
+        const imgHeight = (pieCanvas.height / pieCanvas.width) * imgWidth;
+        
+        const xOffset = margin + (contentWidth - imgWidth) / 2;
+        
+        doc.addImage(pieImageData, 'PNG', xOffset, yOffset, imgWidth, imgHeight);
+        yOffset += imgHeight + 15;
+      }
+      
+      yOffset = addPieTableToPdf(doc, getCurrentPeriodData(), margin, yOffset, pageWidth);
+    }
+    
+    updateLoadingProgress('Guardando PDF...', 90);
+    
+    // Guardar el PDF
+    const fileName = buildReportPdfFileName(reportType);
+    doc.save(fileName);
+    
     updateLoadingProgress('Completado', 100);
     await new Promise(resolve => setTimeout(resolve, 500));
     
     hideStatsError();
   } catch (error) {
+    console.error('Error generando PDF:', error);
     showStatsError(`No fue posible generar el PDF: ${String(error?.message || error)}`);
   } finally {
-    if (iframe && iframe.parentNode) {
-      iframe.parentNode.removeChild(iframe);
-    }
-
     hideLoadingScreen();
     reportDownloadInProgress = false;
     setReportButtonsState(false);
   }
+}
+
+// Nueva función para capturar canvas con reintentos
+async function captureCanvasWithRetry(canvas, maxRetries = 3) {
+  for (let i = 0; i < maxRetries; i++) {
+    try {
+      // Convertir a PNG de alta calidad
+      const dataUrl = canvas.toDataURL('image/png', 1.0);
+      
+      // Verificar que la imagen no está vacía
+      if (dataUrl && dataUrl.length > 1000) {
+        return dataUrl;
+      }
+    } catch (e) {
+      console.warn(`Intento ${i + 1} falló:`, e);
+    }
+    
+    // Esperar antes de reintentar
+    await new Promise(resolve => setTimeout(resolve, 200));
+    
+    // Forzar actualización del canvas
+    canvas.style.transform = 'scale(1.001)';
+    await new Promise(resolve => requestAnimationFrame(resolve));
+    canvas.style.transform = '';
+    await new Promise(resolve => requestAnimationFrame(resolve));
+  }
+  
+  return null;
+}
+
+// Función para cargar librerías PDF
+async function loadPdfLibraries() {
+  if (typeof window.jspdf !== 'undefined' && window.jspdf.jsPDF) {
+    return;
+  }
+  
+  return new Promise((resolve, reject) => {
+    const script = document.createElement('script');
+    script.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
+    script.onload = () => {
+      // También necesitamos html2canvas para posibles capturas adicionales
+      if (typeof window.html2canvas === 'undefined') {
+        const h2cScript = document.createElement('script');
+        h2cScript.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
+        h2cScript.onload = () => resolve();
+        h2cScript.onerror = () => reject(new Error('Error cargando html2canvas'));
+        document.head.appendChild(h2cScript);
+      } else {
+        resolve();
+      }
+    };
+    script.onerror = () => reject(new Error('Error cargando jsPDF'));
+    document.head.appendChild(script);
+  });
+}
+
+// Función para agregar tabla de barras al PDF
+function addBarTableToPdf(doc, periodData, margin, startY, pageWidth) {
+  const labels = periodData.bar.labels || [];
+  const demand = periodData.bar.demand || [];
+  const offer = periodData.bar.offer || [];
+  
+  if (labels.length === 0) {
+    doc.setFontSize(10);
+    doc.setTextColor(100, 100, 100);
+    doc.text('No hay datos disponibles para mostrar en tabla', margin, startY);
+    return startY + 10;
+  }
+  
+  // Configurar tabla
+  const colWidths = [80, 40, 40];
+  const tableWidth = colWidths[0] + colWidths[1] + colWidths[2];
+  const contentWidth = pageWidth - (margin * 2);
+  const tableX = margin + ((contentWidth - tableWidth) / 2);
+  const rowHeight = 8;
+  let y = startY;
+  let sectionStartY = y;
+  
+  // Encabezados
+  doc.setFontSize(10);
+  doc.setFont('helvetica', 'bold');
+  doc.setFillColor(240, 253, 244);
+  doc.rect(tableX, y, colWidths[0], rowHeight, 'F');
+  doc.rect(tableX + colWidths[0], y, colWidths[1], rowHeight, 'F');
+  doc.rect(tableX + colWidths[0] + colWidths[1], y, colWidths[2], rowHeight, 'F');
+  doc.line(tableX + colWidths[0], y, tableX + colWidths[0], y + rowHeight);
+  doc.line(tableX + colWidths[0] + colWidths[1], y, tableX + colWidths[0] + colWidths[1], y + rowHeight);
+  doc.line(tableX, y + rowHeight, tableX + tableWidth, y + rowHeight);
+  
+  doc.text('Área', tableX + 2, y + 5);
+  doc.text('Perfiles Solicitados', tableX + colWidths[0] + 2, y + 5);
+  doc.text('Programas Ofertados', tableX + colWidths[0] + colWidths[1] + 2, y + 5);
+  y += rowHeight;
+  
+  // Filas de datos
+  doc.setFont('helvetica', 'normal');
+  for (let i = 0; i < labels.length; i++) {
+    // Verificar si necesitamos nueva página
+    if (y + rowHeight > doc.internal.pageSize.getHeight() - margin) {
+      // Cerrar contorno redondeado de la sección actual antes de cambiar de página
+      const sectionHeight = y - sectionStartY;
+      if (sectionHeight > 0) {
+        doc.roundedRect(tableX, sectionStartY, tableWidth, sectionHeight, 2, 2, 'S');
+      }
+
+      doc.addPage();
+      y = margin;
+      sectionStartY = y;
+      
+      // Re-dibujar encabezados en nueva página
+      doc.setFont('helvetica', 'bold');
+      doc.setFillColor(240, 253, 244);
+      doc.rect(tableX, y, colWidths[0], rowHeight, 'F');
+      doc.rect(tableX + colWidths[0], y, colWidths[1], rowHeight, 'F');
+      doc.rect(tableX + colWidths[0] + colWidths[1], y, colWidths[2], rowHeight, 'F');
+      doc.line(tableX + colWidths[0], y, tableX + colWidths[0], y + rowHeight);
+      doc.line(tableX + colWidths[0] + colWidths[1], y, tableX + colWidths[0] + colWidths[1], y + rowHeight);
+      doc.line(tableX, y + rowHeight, tableX + tableWidth, y + rowHeight);
+      doc.text('Área', tableX + 2, y + 5);
+      doc.text('Perfiles Solicitados', tableX + colWidths[0] + 2, y + 5);
+      doc.text('Programas Ofertados', tableX + colWidths[0] + colWidths[1] + 2, y + 5);
+      y += rowHeight;
+      doc.setFont('helvetica', 'normal');
+    }
+    
+    // Dibujar solo la grilla interna; el borde externo lo define el contorno redondeado
+    doc.line(tableX + colWidths[0], y, tableX + colWidths[0], y + rowHeight);
+    doc.line(tableX + colWidths[0] + colWidths[1], y, tableX + colWidths[0] + colWidths[1], y + rowHeight);
+    const isLastOverallRow = i === labels.length - 1;
+    const nextRowWouldBreakPage = (i < labels.length - 1)
+      && (y + (rowHeight * 2) > doc.internal.pageSize.getHeight() - margin);
+
+    if (!isLastOverallRow && !nextRowWouldBreakPage) {
+      doc.line(tableX, y + rowHeight, tableX + tableWidth, y + rowHeight);
+    }
+    
+    // Texto de celdas (truncar si es muy largo)
+    let label = labels[i];
+    if (label.length > 25) label = label.substring(0, 22) + '...';
+    
+    doc.text(label, tableX + 2, y + 5);
+    doc.text(String(demand[i] || 0), tableX + colWidths[0] + 2, y + 5);
+    doc.text(String(offer[i] || 0), tableX + colWidths[0] + colWidths[1] + 2, y + 5);
+    
+    y += rowHeight;
+  }
+
+  // Contorno redondeado para la última sección de la tabla
+  const finalSectionHeight = y - sectionStartY;
+  if (finalSectionHeight > 0) {
+    doc.roundedRect(tableX, sectionStartY, tableWidth, finalSectionHeight, 3, 3, 'S');
+  }
+  
+  return y + 5;
+}
+
+// Función para agregar tabla de pastel al PDF
+function addPieTableToPdf(doc, periodData, margin, startY, pageWidth) {
+  const labels = periodData.pie.labels || [];
+  const values = periodData.pie.values || [];
+  const total = values.reduce((a, b) => a + b, 0);
+  
+  if (labels.length === 0) {
+    doc.setFontSize(10);
+    doc.setTextColor(100, 100, 100);
+    doc.text('No hay datos disponibles para mostrar en tabla', margin, startY);
+    return startY + 10;
+  }
+  
+  // Configurar tabla
+  const colWidths = [80, 40, 40];
+  const tableWidth = colWidths[0] + colWidths[1] + colWidths[2];
+  const contentWidth = pageWidth - (margin * 2);
+  const tableX = margin + ((contentWidth - tableWidth) / 2);
+  const rowHeight = 8;
+  let y = startY;
+  let sectionStartY = y;
+  
+  // Encabezados
+  doc.setFontSize(10);
+  doc.setFont('helvetica', 'bold');
+  doc.setFillColor(240, 253, 244);
+  doc.rect(tableX, y, colWidths[0], rowHeight, 'F');
+  doc.rect(tableX + colWidths[0], y, colWidths[1], rowHeight, 'F');
+  doc.rect(tableX + colWidths[0] + colWidths[1], y, colWidths[2], rowHeight, 'F');
+  doc.line(tableX + colWidths[0], y, tableX + colWidths[0], y + rowHeight);
+  doc.line(tableX + colWidths[0] + colWidths[1], y, tableX + colWidths[0] + colWidths[1], y + rowHeight);
+  doc.line(tableX, y + rowHeight, tableX + tableWidth, y + rowHeight);
+  
+  doc.text('Línea Tecnológica', tableX + 2, y + 5);
+  doc.text('Solicitudes', tableX + colWidths[0] + 2, y + 5);
+  doc.text('Proporción', tableX + colWidths[0] + colWidths[1] + 2, y + 5);
+  y += rowHeight;
+  
+  // Filas de datos
+  doc.setFont('helvetica', 'normal');
+  for (let i = 0; i < labels.length; i++) {
+    // Verificar si necesitamos nueva página
+    if (y + rowHeight > doc.internal.pageSize.getHeight() - margin) {
+      // Cerrar contorno redondeado de la sección actual antes de cambiar de página
+      const sectionHeight = y - sectionStartY;
+      if (sectionHeight > 0) {
+        doc.roundedRect(tableX, sectionStartY, tableWidth, sectionHeight, 2, 2, 'S');
+      }
+
+      doc.addPage();
+      y = margin;
+      sectionStartY = y;
+      
+      // Re-dibujar encabezados
+      doc.setFont('helvetica', 'bold');
+      doc.setFillColor(240, 253, 244);
+      doc.rect(tableX, y, colWidths[0], rowHeight, 'F');
+      doc.rect(tableX + colWidths[0], y, colWidths[1], rowHeight, 'F');
+      doc.rect(tableX + colWidths[0] + colWidths[1], y, colWidths[2], rowHeight, 'F');
+      doc.line(tableX + colWidths[0], y, tableX + colWidths[0], y + rowHeight);
+      doc.line(tableX + colWidths[0] + colWidths[1], y, tableX + colWidths[0] + colWidths[1], y + rowHeight);
+      doc.line(tableX, y + rowHeight, tableX + tableWidth, y + rowHeight);
+      doc.text('Línea Tecnológica', tableX + 2, y + 5);
+      doc.text('Solicitudes', tableX + colWidths[0] + 2, y + 5);
+      doc.text('Proporción', tableX + colWidths[0] + colWidths[1] + 2, y + 5);
+      y += rowHeight;
+      doc.setFont('helvetica', 'normal');
+    }
+    
+    const percentage = total > 0 ? ((values[i] / total) * 100).toFixed(1) : '0.0';
+    
+    // Dibujar solo la grilla interna; el borde externo lo define el contorno redondeado
+    doc.line(tableX + colWidths[0], y, tableX + colWidths[0], y + rowHeight);
+    doc.line(tableX + colWidths[0] + colWidths[1], y, tableX + colWidths[0] + colWidths[1], y + rowHeight);
+    const isLastOverallRow = i === labels.length - 1;
+    const nextRowWouldBreakPage = (i < labels.length - 1)
+      && (y + (rowHeight * 2) > doc.internal.pageSize.getHeight() - margin);
+
+    if (!isLastOverallRow && !nextRowWouldBreakPage) {
+      doc.line(tableX, y + rowHeight, tableX + tableWidth, y + rowHeight);
+    }
+    
+    // Texto (truncar si es muy largo)
+    let label = labels[i];
+    if (label.length > 25) label = label.substring(0, 22) + '...';
+    
+    doc.text(label, tableX + 2, y + 5);
+    doc.text(String(values[i]), tableX + colWidths[0] + 2, y + 5);
+    doc.text(`${percentage}%`, tableX + colWidths[0] + colWidths[1] + 2, y + 5);
+    
+    y += rowHeight;
+  }
+
+  // Contorno redondeado para la última sección de la tabla
+  const finalSectionHeight = y - sectionStartY;
+  if (finalSectionHeight > 0) {
+    doc.roundedRect(tableX, sectionStartY, tableWidth, finalSectionHeight, 3, 3, 'S');
+  }
+  
+  doc.setTextColor(0, 0, 0);
+  return y + 5;
 }
 
 function openReportWindow(reportType) {
