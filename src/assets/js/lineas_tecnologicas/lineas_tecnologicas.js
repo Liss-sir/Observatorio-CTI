@@ -2113,7 +2113,11 @@ document.addEventListener("DOMContentLoaded", () => {
     const nombreTecnologia = titleEl.textContent.trim() || `Linea ${index + 1}`;
 
     const estadoInicial = getDefaultStateForNombre(nombreTecnologia);
-    estadoLineas[nombreTecnologia] = { ...estadoInicial };
+    // Preserve state loaded from backend/storage (especially active flag) and only fill missing fields.
+    estadoLineas[nombreTecnologia] = {
+      ...estadoInicial,
+      ...(estadoLineas[nombreTecnologia] || {}),
+    };
 
     // If actions are already rendered in HTML, don't inject a second controls block.
     if (hasInlineActions) {
@@ -2161,7 +2165,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const switchEstadoBtn = document.createElement("div");
     switchEstadoBtn.className = "switch-sena";
     switchEstadoBtn.setAttribute("data-nombre", nombreTecnologia);
-    setSwitchState(switchEstadoBtn, true);
+    setSwitchState(switchEstadoBtn, estadoLineas[nombreTecnologia]?.active !== false);
 
     editarBtn.addEventListener("click", () => abrirModalEdicionLinea(card, titleEl));
     switchEstadoBtn.addEventListener("click", () => manejarToggleLinea(switchEstadoBtn, titleEl));
