@@ -108,11 +108,7 @@ class LineaTecnologicaController {
 
     // Change state (activate/deactivate)
     public function cambiarEstado($id, $accion) {
-        if ($accion === 'desactivar') {
-            verificarPermiso('desactivar_linea');
-        } else {
-            verificarPermiso('editar_linea');
-        }
+        verificarPermiso('desactivar_linea');
 
         if (!$id) {
             echo json_encode([

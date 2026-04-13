@@ -1529,12 +1529,36 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function crearCardLinea(nombre, state) {
+    const puedeEditar = typeof Auth !== 'undefined' && Auth.tienePermiso('editar_linea');
+    const puedeDesactivar = typeof Auth !== 'undefined' && Auth.tienePermiso('desactivar_linea');
+
     if (!cardsGrid) {
       return null;
     }
 
     const card = document.createElement("div");
     const chips = [state.programaFormacion, state.tendencia].filter(Boolean).slice(0, 2);
+    
+    const estadoActivo = state.active;
+
+    let switchHTML = '';
+    let editButtonHTML = '';
+
+    if (puedeDesactivar) {
+      switchHTML = `
+        <div class="switch-sena ${estadoActivo ? 'active' : ''}" data-id="${state.idLinea}"></div>
+      `;
+    }
+
+    if (puedeEditar) {
+      editButtonHTML = `
+        <button data-permiso="editar_linea" class="btn-editar-linea p-2 hover:bg-sena-soft hover:text-sena rounded-lg transition-colors"
+          data-id="${state.idLinea}"
+          data-nombre="${nombre}">
+          <i data-lucide="pencil" class="w-4 h-4 text-gray-500 hover:text-sena"></i>
+        </button>
+      `;
+    }
 
     card.className = "tarjeta-tecnologia bg-white border border-sena-border rounded-xl p-6 flex flex-col gap-3";
     card.dataset.idLinea = String(state.idLinea || "");
@@ -1553,7 +1577,10 @@ document.addEventListener("DOMContentLoaded", () => {
           </div>
           <h3 class="min-w-0 flex-1 font-['Montserrat'] text-base font-semibold text-sena-text-main leading-snug truncate"></h3>
         </div>
-        <span class="text-sm text-sena-text-soft">0 perfiles</span>
+        <div class="flex items-center gap-2">
+          ${editButtonHTML}
+          ${switchHTML}
+        </div>
       </div>
       <p class="linea-tec-programa text-sm font-medium text-sena-text-soft leading-snug break-words [overflow-wrap:anywhere]"></p>
       <div class="flex flex-wrap gap-2"></div>
@@ -1584,8 +1611,12 @@ document.addEventListener("DOMContentLoaded", () => {
     actualizarLinkDetalle(card, nombre);
     guardarRegistroLinea(nombre, card);
     actualizarEmptyState();
+
     return card;
   }
+  if (typeof lucide !== 'undefined') {
+      lucide.createIcons();
+   }
 
   function actualizarCardDesdeState(card, nombre, state) {
     if (!card) {

@@ -1,5 +1,9 @@
 ﻿<?php
 // filepath: c:\wamp64\www\Observatorio-CTI\src\view\tendencias\tecnologias_emergentes.php
+session_start();
+
+$usuario = $_SESSION['usuario'] ?? null;
+
 include __DIR__ . '../../../includes/header.php';
 ?>
 <!DOCTYPE html>
