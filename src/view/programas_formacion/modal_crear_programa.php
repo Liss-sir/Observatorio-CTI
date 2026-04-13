@@ -3,7 +3,7 @@
     <div class="fixed inset-0 bg-black bg-opacity-80"></div>
     <div class="fixed inset-0 flex items-center justify-center p-4">
         <!-- Ancho responsive: móvil → lg → portátil → xl → escritorio -->
-        <div class="bg-white w-full max-w-xl sm:max-w-2xl lg:max-w-4xl xl:max-w-5xl rounded-xl shadow-2xl transform transition-all animate-modalFadeIn">
+        <div class="bg-white w-full max-w-2xl rounded-xl shadow-2xl transform transition-all animate-modalFadeIn">
             <!-- HEADER -->
             <div class="border-b px-6 py-5 flex justify-between items-center">
                 <div>
@@ -102,7 +102,7 @@
                 <button class="cerrar-modal-crear px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-100 text-sm font-medium transition-colors">
                     Cancelar
                 </button>
-                <button id="btn-guardar-nuevo-programa" class="px-4 py-2 bg-[#39A900] text-white rounded-lg hover:bg-green-700 transition text-sm font-medium">
+                <button id="btn-guardar-nuevo-programa" class="px-4 py-2 bg-sena text-white rounded-lg hover:opacity-90 transition text-sm font-medium">
                     Crear Programa
                 </button>
             </div>

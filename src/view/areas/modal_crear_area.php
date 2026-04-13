@@ -42,7 +42,7 @@
           <!-- FOOTER -->
           <div class="border-t px-6 py-4 flex justify-end gap-3">
             <button type="button" class="cerrar-modal-crear border px-4 py-2 rounded-lg">Cancelar</button>
-            <button type="submit" class="bg-sena text-white px-4 py-2 rounded-lg">Crear Área</button>
+            <button type="submit" class="bg-sena hover:opacity-90 text-white px-4 py-2 rounded-lg">Crear Área</button>
           </div>
         </form>
       </div>

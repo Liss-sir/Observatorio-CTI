@@ -321,8 +321,8 @@ document.addEventListener("DOMContentLoaded", function () {
                             </svg>
                         </div>
                         <h3 class="text-lg font-semibold text-sena-text-main mb-2">No hay programas de formación</h3>
-                        <p class="text-sm text-sena-text-soft text-center max-w-sm mb-6">Comienza creando tu primer programa de formación.</p>
-                        <button id="btn-crear-desde-empty" class="flex items-center gap-2 px-5 py-2.5 text-sm font-medium text-white bg-sena rounded-lg hover:opacity-90 transition-opacity shadow-sm">
+                        <p data-permiso="crear_programa" class="text-sm text-sena-text-soft text-center max-w-sm mb-6">Comienza creando tu primer programa de formación.</p>
+                        <button data-permiso="crear_programa" id="btn-crear-desde-empty" class="flex items-center gap-2 px-5 py-2.5 text-sm font-medium text-white bg-sena rounded-lg hover:opacity-90 transition-opacity shadow-sm">
                             <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
                                 <path d="M5 12h14"></path>
                                 <path d="M12 5v14"></path>
@@ -343,6 +343,10 @@ document.addEventListener("DOMContentLoaded", function () {
             // Ocultar paginación cuando no hay resultados
             const paginacionContainer = document.getElementById('paginacion-container');
             if (paginacionContainer) paginacionContainer.classList.add('hidden');
+
+            if (typeof Auth !== 'undefined' && Auth.aplicarPermisosPorAccion) {
+                Auth.aplicarPermisosPorAccion();
+            }
             return;
         }
         
