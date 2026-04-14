@@ -1739,9 +1739,6 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function crearCardLinea(nombre, state) {
-    const puedeEditar = typeof Auth !== 'undefined' && Auth.tienePermiso('editar_linea');
-    const puedeDesactivar = typeof Auth !== 'undefined' && Auth.tienePermiso('desactivar_linea');
-
     if (!cardsGrid) {
       return null;
     }
@@ -2338,6 +2335,19 @@ document.addEventListener("DOMContentLoaded", () => {
     switchEstadoBtn.setAttribute("data-nombre", nombreTecnologia);
     setSwitchState(switchEstadoBtn, estadoLineas[nombreTecnologia]?.active !== false);
 
+     //PERMISOS
+    const puedeEditar = typeof Auth !== 'undefined' && Auth.tienePermiso('editar_linea');
+    const puedeDesactivar = typeof Auth !== 'undefined' && Auth.tienePermiso('desactivar_linea');
+
+    if (!puedeEditar) {
+      editarBtn.style.display = "none";
+    }
+                                            
+    if (!puedeDesactivar) {
+      switchEstadoBtn.style.display = "none";
+    }
+
+
     editarBtn.addEventListener("click", () => abrirModalEdicionLinea(card, titleEl));
     switchEstadoBtn.addEventListener("click", () => manejarToggleLinea(switchEstadoBtn, titleEl));
 
@@ -2358,11 +2368,20 @@ document.addEventListener("DOMContentLoaded", () => {
   inicializarDetalleDesdeStorage();
   inicializarAccionesDetalle();
 
+  function iniciarAplicacion() {
+  console.log('✅ Auth listo, inicializando líneas tecnológicas...');
+
+  // Carga de catálogos y líneas
   cargarCatalogosDesdeBackend();
   if (isListadoView) {
     cargarLineasDesdeBackend();
   }
 
+  // Inicializar detalle y acciones de detalle (si estamos en página de detalle)
+  inicializarDetalleDesdeStorage();
+  inicializarAccionesDetalle();
+
+  // Eventos del buscador (solo en listado)
   if (isListadoView && inputBuscarLinea) {
     inputBuscarLinea.addEventListener("input", () => {
       paginaActual = 1;
@@ -2370,6 +2389,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  // Eventos de cambio de área en modales
   if (modals.createArea) {
     modals.createArea.addEventListener("change", () => {
       cargarCatalogosPorArea(modals.createArea.value, {
@@ -2392,11 +2412,13 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  // Aplicar filtros y actualizar estado vacío (solo en listado)
   if (isListadoView) {
     aplicarFiltroBusqueda();
     actualizarEmptyState();
   }
 
+  // Botón "Nueva línea"
   if (btnNuevaLinea) {
     btnNuevaLinea.addEventListener("click", () => {
       modals.createForm.reset();
@@ -2406,6 +2428,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  // Botón "Crear desde empty state"
   if (btnCrearDesdeEmpty) {
     btnCrearDesdeEmpty.addEventListener("click", () => {
       modals.createForm.reset();
@@ -2849,6 +2872,7 @@ document.addEventListener("DOMContentLoaded", () => {
       cerrarModal(modals.disableModal);
     }
   });
+}
 
   function crearModales() {
     const wrapper = document.createElement("div");
@@ -3118,5 +3142,16 @@ document.addEventListener("DOMContentLoaded", () => {
       successText: document.getElementById("linea-success-text"),
       successClose: document.querySelectorAll(".linea-close-success"),
     };
+  }
+  // ============================================================
+  // ESPERAR A QUE AUTH ESTÉ LISTO ANTES DE INICIALIZAR
+  // ============================================================
+  if (typeof Auth !== 'undefined' && typeof Auth.whenReady === 'function') {
+    console.log('⏳ Esperando a que Auth esté listo...');
+    Auth.whenReady(iniciarAplicacion);
+  } else {
+    // Fallback: si Auth no existe (por ejemplo, página sin login), iniciar directamente
+    console.warn('⚠️ Auth no disponible, iniciando sin permisos...');
+    iniciarAplicacion();
   }
 });

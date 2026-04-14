@@ -24,6 +24,8 @@ $razonesSociales = [
     <meta charset="UTF-8">
     <title>Registro | Observatorio CTI</title>
 
+    
+
     <!-- Tailwind -->
     <script src="https://cdn.tailwindcss.com"></script>
 
@@ -150,7 +152,7 @@ $razonesSociales = [
                     <label class="block text-xs font-medium mb-1">
                         Rol
                     </label>
-                    <select name="rol" class="w-full px-3 py-2 rounded-md border border-gray-300 text-sm
+                    <select name="rol" class="custom-select w-full px-3 py-2 rounded-md border border-gray-300 text-sm
                                 focus:border-sena focus:ring-1 focus:ring-sena/30
                                 focus:outline-none transition bg-white">>
                         <option value="usuario">Empresa</option>
@@ -223,7 +225,7 @@ $razonesSociales = [
                         Tipo de documento <span class="text-red-500">*</span>
                     </label>
                     <select name="tipo_documento"
-                            class="w-full px-3 py-2 rounded-md border border-gray-300 text-sm
+                            class="custom-select w-full px-3 py-2 rounded-md border border-gray-300 text-sm
                                    focus:border-sena focus:ring-1 focus:ring-sena/30
                                    focus:outline-none transition">
                         <option value="">Seleccione</option>

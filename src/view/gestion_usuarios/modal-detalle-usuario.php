@@ -10,7 +10,7 @@
                     <h3 class="text-base font-bold text-sena-text-main">
                         Detalle del Usuario
                     </h3>
-                    <button class="cerrar-modal-detalle-usuario text-sena-text-soft hover:text-sena transition-colors">
+                    <button class="cerrar-modal-detalle-usuario text-gray-500 hover:text-gray-700 transition-colors">
                         <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M6 18L18 6M6 6l12 12"/>
@@ -129,7 +129,7 @@
                     
                     <!-- BOTÓN CERRAR -->
                     <button
-                        class="cerrar-modal-detalle-usuario w-full bg-sena hover:bg-sena-strong text-white font-semibold rounded py-2 text-xs transition-colors">
+                        class="cerrar-modal-detalle-usuario w-full bg-sena hover:opacity-90 text-white font-semibold rounded py-2 text-xs transition-colors">
                         Cerrar
                     </button>
                 </div>                 

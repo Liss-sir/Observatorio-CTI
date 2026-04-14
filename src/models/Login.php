@@ -60,7 +60,7 @@ class LoginModel {
             }
 
             if (!$passwordValid) {
-                return ['success' => false, 'error' => 'ContraseÒa incorrecta'];
+                return ['success' => false, 'error' => 'Contraseña incorrecta'];
             }
 
             // ContraseÒa v·lida: devolver datos sin el hash

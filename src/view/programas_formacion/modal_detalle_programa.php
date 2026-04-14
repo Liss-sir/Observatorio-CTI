@@ -26,7 +26,7 @@
                   </p>
               </div>
 
-              <button class="cerrar-modal-detalle-programa absolute right-4 top-4 text-sena-text-soft hover:text-red-500 transition">
+              <button class="cerrar-modal-detalle-programa absolute right-4 top-4 text-gray-500 hover:text-gray-700 transition">
                    <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                     </svg>

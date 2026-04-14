@@ -64,6 +64,14 @@ document.addEventListener("DOMContentLoaded", () => {
     // =========================
     function renderUsuarios(lista){
         const tabla = document.getElementById("tabla-usuarios");
+        // 👇 NUEVO: Asegurar que el contenedor padre permita scroll horizontal
+        const padre = tabla.parentElement;
+        if (padre && !padre.classList.contains('overflow-x-auto')) {
+            padre.classList.add('overflow-x-auto', 'w-full');
+        }
+        // 👇 Forzar un ancho mínimo a la tabla para que el scroll aparezca en móviles
+        tabla.style.minWidth = '600px';
+        tabla.style.width = '100%';
         const mensajeSinResultados = document.getElementById("mensaje-sin-resultados");
         const textoSinResultados = document.getElementById("texto-sin-resultados");
         const paginacionContainer = document.getElementById("paginacion-container");
@@ -97,6 +105,7 @@ document.addEventListener("DOMContentLoaded", () => {
             if (textoSinResultados) {
                 textoSinResultados.textContent = mensaje;
             }
+            if (padre) padre.classList.add('overflow-x-auto'); 
             return;
         }
         

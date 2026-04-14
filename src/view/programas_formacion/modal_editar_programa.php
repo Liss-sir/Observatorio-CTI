@@ -40,7 +40,7 @@
               <label class="text-sm text-sena-text-main">Área</label>
               <select
                 id="areaProgramaEditar"
-                class="w-full mt-1 px-3 py-2 rounded-lg text-sm border border-sena-border focus:ring-2 focus:ring-sena/20 focus:border-sena outline-none transition"
+                class="custom-select w-full mt-1 px-3 py-2 rounded-lg text-sm border border-sena-border focus:ring-2 focus:ring-sena/20 focus:border-sena outline-none transition"
               >
                 <option value="">Seleccione un área</option>
               </select>
@@ -89,7 +89,7 @@
                 <label class="text-sm text-sena-text-main">Nivel de Formación</label>
                 <select
                   id="nivelFormacionEditar"
-                  class="w-full mt-1 px-3 py-2 rounded-lg text-sm border border-sena-border focus:ring-2 focus:ring-sena/20 focus:border-sena outline-none transition"
+                  class="custom-select w-full mt-1 px-3 py-2 rounded-lg text-sm border border-sena-border focus:ring-2 focus:ring-sena/20 focus:border-sena outline-none transition"
                   required
                 >
                   <option value="1">Tecnico</option>
@@ -103,7 +103,7 @@
                 <label class="text-sm text-sena-text-main">Modalidad</label>
                 <select
                   id="modalidadProgramaEditar"
-                  class="w-full mt-1 px-3 py-2 rounded-lg text-sm border border-sena-border focus:ring-2 focus:ring-sena/20 focus:border-sena outline-none transition"
+                  class="custom-select w-full mt-1 px-3 py-2 rounded-lg text-sm border border-sena-border focus:ring-2 focus:ring-sena/20 focus:border-sena outline-none transition"
                   required
                 >
                   <option value="PRESENCIAL">Presencial</option>

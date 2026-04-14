@@ -62,7 +62,7 @@ include __DIR__ . '../../../includes/header.php';
             <select
                 id="filtro-rol"
                 onchange="filtrarPorRol(this.value)"
-                class="rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm focus:border-sena focus:outline-none hover:border-sena"
+                class="custom-select rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm focus:border-sena focus:outline-none hover:border-sena"
             >
                 <option value="todos">Todos los roles</option>
                 <option value="1">Administrador</option>
@@ -71,8 +71,8 @@ include __DIR__ . '../../../includes/header.php';
         </div>
         
         <!-- TABLA -->
-        <div class="rounded-lg border border-gray-200 bg-white overflow-hidden">
-            <table class="w-full text-sm">
+        <div class="rounded-lg border border-gray-200 bg-white overflow-x-auto">
+            <table class="w-full text-sm min-w-[600px]">
                 <thead class="border-b border-gray-200 bg-gray-50">
                     <tr>
                         <th class="px-4 py-3 text-left font-medium text-gray-500">Usuario</th>

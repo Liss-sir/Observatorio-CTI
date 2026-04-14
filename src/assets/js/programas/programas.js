@@ -418,18 +418,15 @@ document.addEventListener("DOMContentLoaded", function () {
             
            card.innerHTML = `
             <div class="flex items-start justify-between mb-3">
-                <!-- ICONO + NOMBRE -->
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 bg-sena-soft rounded-lg flex items-center justify-center">
+                <div class="flex items-center gap-3 flex-1 min-w-0">
+                    <div class="w-10 h-10 bg-sena-soft rounded-lg flex items-center justify-center flex-shrink-0">
                         <i data-lucide="graduation-cap" class="w-5 h-5 text-green-600"></i>
                     </div>
-                    <h3 class="font-semibold text-gray-800 text-base leading-tight">
+                    <h3 class="font-semibold text-gray-800 text-base leading-tight truncate">
                         ${programa.nombre_programa || 'Sin nombre'}
                     </h3>
                 </div>
-
-                <!-- BOTONES - CAMBIA items-start por items-center -->
-                <div class="flex items-center gap-2">
+                <div class="flex items-center gap-2 flex-shrink-0">
                     ${editButtonHTML}
                     ${switchHTML}
                 </div>
@@ -446,7 +443,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 </span>
                 <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-sena-soft text-green-700">
                     <i data-lucide="monitor" class="w-3 h-3"></i>
-                    ${programa.modalidad || 'N/A'}
+                    ${capitalizarPrimeraLetra(programa.modalidad)}
                 </span>
             </div>
             
@@ -500,6 +497,11 @@ document.addEventListener("DOMContentLoaded", function () {
         const mes = meses[date.getMonth()];
         const anio = date.getFullYear();
         return `${dia} de ${mes} de ${anio}`;
+    }
+
+    function capitalizarPrimeraLetra(texto) {
+        if (!texto) return 'N/A';
+        return texto.charAt(0).toUpperCase() + texto.slice(1).toLowerCase();
     }
 
     // ===== INICIALIZAR SWITCHES =====
@@ -640,7 +642,7 @@ document.addEventListener("DOMContentLoaded", function () {
         document.getElementById('detalle-codigo').textContent = card.dataset.codigo || 'N/A';
         document.getElementById('detalle-nombre').textContent = card.dataset.nombre || 'Sin nombre';
         document.getElementById('detalle-nivel').textContent = getNombreNivel(card.dataset.nivel);
-        document.getElementById('detalle-modalidad').textContent = card.dataset.modalidad || 'N/A';
+        document.getElementById('detalle-modalidad').textContent = capitalizarPrimeraLetra(card.dataset.modalidad);
         document.getElementById('detalle-cupos').textContent = card.dataset.cupos || 'N/A';
         document.getElementById('detalle-area').textContent = card.dataset.area || 'N/A';
         
