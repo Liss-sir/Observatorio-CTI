@@ -36,6 +36,9 @@ $rolActual = obtenerRolActual();
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Observatorio CTI - SENA</title>
 
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="../../assets/img/logo-sena-verde-complementario-png-2022.png">
+
   <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
 
@@ -152,6 +155,89 @@ $rolActual = obtenerRolActual();
     #menu-programas:hover .zona-seguridad {
       display: block;
     }
+
+    /* ===== ESTILOS RESPONSIVE - SOLO PARA MÓVIL ===== */
+    .hamburger-btn {
+      display: none;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      padding: 0;
+    }
+
+    .hamburger-btn svg {
+      width: 28px;
+      height: 28px;
+      stroke: #374151;
+      stroke-width: 1.5;
+    }
+
+    .mobile-overlay {
+      display: none;
+    }
+
+    @media (max-width: 768px) {
+      .hamburger-btn {
+        display: block;
+        margin-left: auto;
+        margin-right: 1rem;
+      }
+
+      #main-nav {
+        position: fixed;
+        top: 64px;
+        left: -280px;
+        width: 280px;
+        height: calc(100vh - 64px);
+        background: white;
+        flex-direction: column;
+        align-items: stretch;
+        padding: 1rem;
+        transition: left 0.3s ease;
+        box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+        z-index: 1000;
+        overflow-y: auto;
+        gap: 0.5rem !important;
+        justify-self: start !important;
+      }
+
+      #main-nav.mobile-open {
+        left: 0;
+      }
+
+      #main-nav > a,
+      #main-nav .menu-container {
+        width: 100%;
+      }
+
+      .mobile-overlay {
+        display: none;
+        position: fixed;
+        top: 64px;
+        left: 0;
+        width: 100%;
+        height: calc(100vh - 64px);
+        background: rgba(0,0,0,0.5);
+        z-index: 999;
+      }
+
+      .mobile-overlay.active {
+        display: block;
+      }
+
+      /* Los submenús en móvil se muestran en bloque */
+      .submenu {
+        position: static !important;
+        width: 100% !important;
+        margin-top: 0.5rem !important;
+        box-shadow: none !important;
+        border: 1px solid #e5e7eb !important;
+      }
+
+      .zona-seguridad {
+        display: none !important;
+      }
+    }
   </style>
 </head>
 
@@ -167,6 +253,16 @@ $rolActual = obtenerRolActual();
         <span class="w-px h-6 bg-gray-300"></span>
         <img src="../../assets/img/logo-sena-verde-complementario-png-2022.png" alt="SENA" class="h-6 w-auto">
       </a>
+
+      <!-- Botón Hamburguesa (solo visible en móvil) -->
+      <button class="hamburger-btn" id="hamburgerBtn">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+      </button>
+
+      <!-- Overlay para cerrar menú -->
+      <div class="mobile-overlay" id="mobileOverlay"></div>
 
       <!-- NAVEGACIÓN -->
       <nav class="flex items-center gap-1 justify-self-center whitespace-nowrap" id="main-nav">
@@ -412,6 +508,47 @@ $rolActual = obtenerRolActual();
   <script>
 document.addEventListener('DOMContentLoaded', function () {
 
+  // ===== MENÚ HAMBURGUESA =====
+  const hamburgerBtn = document.getElementById('hamburgerBtn');
+  const mobileMenu = document.getElementById('main-nav');
+  const mobileOverlay = document.getElementById('mobileOverlay');
+
+  function toggleMobileMenu() {
+    mobileMenu.classList.toggle('mobile-open');
+    mobileOverlay.classList.toggle('active');
+    document.body.style.overflow = mobileMenu.classList.contains('mobile-open') ? 'hidden' : '';
+  }
+
+  function closeMobileMenu() {
+    mobileMenu.classList.remove('mobile-open');
+    mobileOverlay.classList.remove('active');
+    document.body.style.overflow = '';
+  }
+
+  if (hamburgerBtn) {
+    hamburgerBtn.addEventListener('click', toggleMobileMenu);
+  }
+
+  if (mobileOverlay) {
+    mobileOverlay.addEventListener('click', closeMobileMenu);
+  }
+
+  // Cerrar menú al hacer click en un enlace (solo en móvil)
+  document.querySelectorAll('#main-nav a').forEach(link => {
+    link.addEventListener('click', () => {
+      if (window.innerWidth <= 768) {
+        closeMobileMenu();
+      }
+    });
+  });
+
+  // Cerrar menú al redimensionar a desktop
+  window.addEventListener('resize', function() {
+    if (window.innerWidth > 768) {
+      closeMobileMenu();
+    }
+  });
+
   function inicializarMenu(menuId) {
     const menu = document.getElementById(menuId);
     if (!menu) return;
@@ -456,6 +593,16 @@ document.addEventListener('DOMContentLoaded', function () {
       e.preventDefault();
       e.stopPropagation();
 
+      // En móvil, simplemente mostrar/ocultar el submenú
+      if (window.innerWidth <= 768) {
+        submenu.classList.toggle('hidden');
+        const chevron = btn.querySelector('.chevron');
+        if (chevron) {
+          chevron.style.transform = submenu.classList.contains('hidden') ? 'rotate(0deg)' : 'rotate(180deg)';
+        }
+        return;
+      }
+
       activoPorClick = !activoPorClick;
 
       if (activoPorClick) {
@@ -471,6 +618,16 @@ document.addEventListener('DOMContentLoaded', function () {
         e.preventDefault();
         e.stopPropagation();
 
+        // En móvil, mostrar/ocultar submenú
+        if (window.innerWidth <= 768) {
+          submenu.classList.toggle('hidden');
+          const chevron = btn.querySelector('.chevron');
+          if (chevron) {
+            chevron.style.transform = submenu.classList.contains('hidden') ? 'rotate(0deg)' : 'rotate(180deg)';
+          }
+          return;
+        }
+
         activoPorClick = !activoPorClick;
 
         if (activoPorClick) {
@@ -481,13 +638,15 @@ document.addEventListener('DOMContentLoaded', function () {
       });
     }
 
-    // HOVER
-    [menu, submenu, zona].forEach(el => {
-      if (!el) return;
+    // HOVER (solo para desktop)
+    if (window.innerWidth > 768) {
+      [menu, submenu, zona].forEach(el => {
+        if (!el) return;
 
-      el.addEventListener('mouseenter', activarHover);
-      el.addEventListener('mouseleave', desactivarHover);
-    });
+        el.addEventListener('mouseenter', activarHover);
+        el.addEventListener('mouseleave', desactivarHover);
+      });
+    }
 
     // CLICK EN OPCIÓN → cerrar
     submenu.querySelectorAll('a').forEach(link => {
@@ -495,19 +654,29 @@ document.addEventListener('DOMContentLoaded', function () {
         activoPorClick = false;
         activoPorHover = false;
         actualizar();
+        if (window.innerWidth <= 768) {
+          submenu.classList.add('hidden');
+          const chevron = btn.querySelector('.chevron');
+          if (chevron) {
+            chevron.style.transform = 'rotate(0deg)';
+          }
+          closeMobileMenu();
+        }
       });
     });
 
     // CLICK FUERA 
     document.addEventListener('click', function (e) {
-      if (
-        menu &&
-        submenu &&
-        !menu.contains(e.target) &&
-        !submenu.contains(e.target)
-      ) {
-        activoPorClick = false;
-        actualizar();
+      if (window.innerWidth > 768) {
+        if (
+          menu &&
+          submenu &&
+          !menu.contains(e.target) &&
+          !submenu.contains(e.target)
+        ) {
+          activoPorClick = false;
+          actualizar();
+        }
       }
     });
   }
