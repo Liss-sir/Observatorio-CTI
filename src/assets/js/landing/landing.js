@@ -21,9 +21,14 @@ function escapeHtml(text) {
     .replace(/'/g, '&#039;');
 }
 
-function truncateText(text, maxLength = 90) {
-  if (!text) return 'Sin descripción disponible.';
-  return text.length > maxLength ? text.substring(0, maxLength) + '…' : text;
+function truncateText(text, maxLength = 90, fallback = 'Sin información disponible.') {
+  if (!text) return fallback;
+
+  const cleanText = String(text).trim();
+
+  return cleanText.length > maxLength
+    ? cleanText.substring(0, maxLength).trim() + '...'
+    : cleanText;
 }
 
 function getInitials(text = '') {
@@ -111,11 +116,11 @@ function renderPerfiles(perfiles) {
 
   container.innerHTML = perfiles.map(perfil => `
     <a href="${escapeHtml(routes.perfiles)}" class="block">
-      <article class="tarjeta-tecnologia group cursor-pointer rounded-xl border border-sena-border bg-white p-4 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-sena-strong hover:shadow-lg">
+      <article class="tarjeta-tecnologia group flex h-full min-h-[200px] flex-col cursor-pointer rounded-xl border border-sena-border bg-white p-4 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-sena-strong hover:shadow-lg">
         
         <div class="flex items-center justify-between gap-2">
           <span class="rounded-full bg-sena-soft px-2.5 py-0.5 text-[10px] font-bold text-sena-strong">
-            ${escapeHtml(perfil.nombre_linea || 'Sin línea')}
+            ${escapeHtml(truncateText(perfil.nombre_linea, 26, 'Sin línea'))}
           </span>
 
           <span class="rounded-full bg-sena-soft px-2 py-0.5 text-[10px] font-bold text-sena-strong">
@@ -124,7 +129,7 @@ function renderPerfiles(perfiles) {
         </div>
 
         <h3 class="font-[Montserrat] mt-3 text-sm font-bold text-sena-text-main">
-          ${escapeHtml(perfil.nombre || 'Sin nombre')}
+          ${escapeHtml(truncateText(perfil.nombre, 42, 'Sin nombre'))}
         </h3>
 
         <p class="mt-1 text-xs font-semibold text-sena-text-muted">
@@ -142,12 +147,12 @@ function renderPerfiles(perfiles) {
 
           ${perfil.nombre_programa ? `
             <span class="rounded-md bg-sena-soft px-2 py-1 text-[10px] font-bold text-sena-strong">
-              ${escapeHtml(perfil.nombre_programa)}
+              ${escapeHtml(truncateText(perfil.nombre_programa, 18, 'Sin programa'))}
             </span>
           ` : ''}
         </div>
 
-        <div class="mt-4 flex items-center justify-between border-t border-sena-border pt-3">
+        <div class="mt-auto flex items-center justify-between border-t border-sena-border pt-3">
           <div class="text-xs font-bold text-sena-text-muted">
             Cupos: ${escapeHtml(perfil.cupos ?? 0)}
           </div>
@@ -173,16 +178,16 @@ function renderLineas(lineas) {
 
   container.innerHTML = lineas.map(linea => `
     <a href="${escapeHtml(routes.lineas)}" class="block">
-      <article class="tarjeta-tecnologia group cursor-pointer rounded-xl border border-sena-border bg-white p-5 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-sena-strong hover:shadow-md">
+      <article class="tarjeta-tecnologia group flex h-full min-h-[118px] cursor-pointer items-center rounded-xl border border-sena-border bg-white p-5 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-sena-strong hover:shadow-md">
         
         <div class="flex items-center gap-4">
-          <div class="flex h-11 w-11 items-center justify-center rounded-lg bg-sena-soft text-sm font-bold text-sena-strong">
+          <div class="flex h-12 w-12 min-h-[48px] min-w-[48px] items-center justify-center rounded-lg bg-sena-soft text-sm font-bold text-sena-strong">
             ${escapeHtml(getInitials(linea.nombre_linea))}
           </div>
 
           <div>
-            <div class="font-[Montserrat] text-sm font-bold text-sena-text-main">
-              ${escapeHtml(linea.nombre_linea || 'Sin nombre')}
+            <div class="font-[Montserrat] text-[13px] font-bold leading-[1.25] text-sena-text-main">
+              ${escapeHtml(truncateText(linea.nombre_linea, 26, 'Sin nombre'))}
             </div>
 
             <div class="text-xs font-bold text-sena-text-muted">
@@ -190,7 +195,7 @@ function renderLineas(lineas) {
             </div>
 
             <div class="text-[11px] font-semibold text-sena-text-muted mt-1">
-              Área: ${escapeHtml(linea.nombre_area || 'Sin área')}
+              Área: ${escapeHtml(truncateText(linea.nombre_area, 28, 'Sin área'))}
             </div>
           </div>
         </div>
@@ -215,7 +220,7 @@ function renderProgramas(programas) {
 
   container.innerHTML = programas.map(programa => `
     <a href="${escapeHtml(routes.programas)}" class="block">
-      <article class="tarjeta-tecnologia group cursor-pointer rounded-xl border border-sena-border bg-white p-5 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-sena-strong hover:shadow-md">
+      <article class="tarjeta-tecnologia group flex h-full min-h-[118px] cursor-pointer items-center rounded-xl border border-sena-border bg-white p-5 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-sena-strong hover:shadow-md">
         
         <div class="flex items-center gap-4">
           <div class="flex h-14 w-14 min-h-[56px] min-w-[56px] items-center justify-center rounded-xl bg-sena-soft text-sm font-bold text-sena-strong">
@@ -224,7 +229,7 @@ function renderProgramas(programas) {
 
           <div>
             <div class="font-[Montserrat] text-sm font-bold text-sena-text-main">
-              ${escapeHtml(programa.nombre_programa || 'Sin nombre')}
+              ${escapeHtml(truncateText(programa.nombre_programa, 20, 'Sin nombre'))}
             </div>
 
             <div class="text-xs font-bold text-sena-text-muted">
@@ -232,7 +237,7 @@ function renderProgramas(programas) {
             </div>
 
             <div class="text-[11px] font-semibold text-sena-text-muted mt-1">
-              ${escapeHtml(programa.nombre_nivel || 'Sin nivel')} · ${escapeHtml(programa.modalidad || 'Sin modalidad')}
+              ${escapeHtml(truncateText(programa.nombre_nivel, 18, 'Sin nivel'))} · ${escapeHtml(truncateText(programa.modalidad, 18, 'Sin modalidad'))}
             </div>
           </div>
         </div>
