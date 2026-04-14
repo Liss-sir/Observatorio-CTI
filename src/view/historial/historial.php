@@ -132,6 +132,8 @@ include __DIR__ . '../../../includes/header.php';
         <p class="text-sm text-sena-text-soft">No hay acciones registradas por el momento.</p>
       </div>
 
+      <div id="historial-paginacion-container" class="hidden"></div>
+
     </div>
   </main>
 

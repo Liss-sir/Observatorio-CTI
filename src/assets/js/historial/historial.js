@@ -6,6 +6,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const resultsLabel = document.getElementById("historial-results");
   const listContainer = document.getElementById("historial-list");
   const emptyState = document.getElementById("historial-empty-state");
+  const paginationContainer = document.getElementById("historial-paginacion-container");
 
   const statCreaciones = document.getElementById("historial-stat-creaciones");
   const statEdiciones = document.getElementById("historial-stat-ediciones");
@@ -39,7 +40,11 @@ document.addEventListener("DOMContentLoaded", () => {
     },
   };
 
+  const ITEMS_PER_PAGE = 50;
+
   let allItems = [];
+  let filteredItems = [];
+  let currentPage = 1;
 
   function normalize(value) {
     return (value || "")
@@ -216,6 +221,158 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  function renderPagination(totalItems) {
+    if (!paginationContainer) return;
+
+    const totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE);
+
+    if (totalPages <= 1) {
+      paginationContainer.classList.add("hidden");
+      paginationContainer.innerHTML = "";
+      return;
+    }
+
+    paginationContainer.classList.remove("hidden");
+
+    let pagesHtml = "";
+    let start = Math.max(1, currentPage - 2);
+    let end = Math.min(totalPages, currentPage + 2);
+
+    if (currentPage <= 3) {
+      end = Math.min(5, totalPages);
+    }
+
+    if (currentPage >= totalPages - 2) {
+      start = Math.max(totalPages - 4, 1);
+    }
+
+    if (start > 1) {
+      pagesHtml += `
+        <button class="btn-pagina px-3 py-2 rounded-lg transition-all duration-200 border border-sena-border text-sena-text-main hover:bg-sena-soft hover:border-sena/30" data-page="1">1</button>
+      `;
+      if (start > 2) {
+        pagesHtml += `<span class="px-2 text-sena-text-soft">...</span>`;
+      }
+    }
+
+    for (let i = start; i <= end; i += 1) {
+      const isActive = currentPage === i;
+      pagesHtml += `
+        <button class="btn-pagina px-3 py-2 rounded-lg transition-all duration-200 ${
+          isActive
+            ? "bg-sena text-white shadow-md scale-100"
+            : "border border-sena-border text-sena-text-main hover:bg-sena-soft hover:border-sena/30"
+        }" data-page="${i}">${i}</button>
+      `;
+    }
+
+    if (end < totalPages) {
+      if (end < totalPages - 1) {
+        pagesHtml += `<span class="px-2 text-sena-text-soft">...</span>`;
+      }
+      pagesHtml += `
+        <button class="btn-pagina px-3 py-2 rounded-lg transition-all duration-200 border border-sena-border text-sena-text-main hover:bg-sena-soft hover:border-sena/30" data-page="${totalPages}">${totalPages}</button>
+      `;
+    }
+
+    paginationContainer.innerHTML = `
+      <div class="flex flex-col items-center gap-3 mb-6 mt-6">
+        <div class="text-sm text-sena-text-soft">
+          Mostrando <span class="font-medium text-sena">${((currentPage - 1) * ITEMS_PER_PAGE) + 1}</span> -
+          <span class="font-medium text-sena">${Math.min(currentPage * ITEMS_PER_PAGE, totalItems)}</span> de
+          <span class="font-medium text-sena">${totalItems}</span> registros
+        </div>
+
+        <div class="flex items-center gap-2 flex-wrap justify-center">
+          <button class="btn-first-page px-3 py-2 rounded-lg transition-all duration-200 ${
+            currentPage === 1
+              ? "bg-gray-100 text-sena-text-soft cursor-not-allowed opacity-50"
+              : "border border-sena-border text-sena-text-main hover:bg-sena-soft hover:border-sena/30"
+          }" ${currentPage === 1 ? "disabled" : ""}>
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path d="M11 19l-7-7 7-7M18 19l-7-7 7-7" />
+            </svg>
+          </button>
+          <button class="btn-prev-page px-3 py-2 rounded-lg transition-all duration-200 ${
+            currentPage === 1
+              ? "bg-gray-100 text-sena-text-soft cursor-not-allowed opacity-50"
+              : "border border-sena-border text-sena-text-main hover:bg-sena-soft hover:border-sena/30"
+          }" ${currentPage === 1 ? "disabled" : ""}>
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path d="M15 19l-7-7 7-7" />
+            </svg>
+          </button>
+          ${pagesHtml}
+          <button class="btn-next-page px-3 py-2 rounded-lg transition-all duration-200 ${
+            currentPage === totalPages
+              ? "bg-gray-100 text-sena-text-soft cursor-not-allowed opacity-50"
+              : "border border-sena-border text-sena-text-main hover:bg-sena-soft hover:border-sena/30"
+          }" ${currentPage === totalPages ? "disabled" : ""}>
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
+          <button class="btn-last-page px-3 py-2 rounded-lg transition-all duration-200 ${
+            currentPage === totalPages
+              ? "bg-gray-100 text-sena-text-soft cursor-not-allowed opacity-50"
+              : "border border-sena-border text-sena-text-main hover:bg-sena-soft hover:border-sena/30"
+          }" ${currentPage === totalPages ? "disabled" : ""}>
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path d="M13 5l7 7-7 7M6 5l7 7-7 7" />
+            </svg>
+          </button>
+        </div>
+      </div>
+    `;
+
+    paginationContainer.querySelectorAll(".btn-pagina").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        currentPage = Number.parseInt(btn.dataset.page || "1", 10);
+        applyFilters({ resetPage: false });
+      });
+    });
+
+    const prevBtn = paginationContainer.querySelector(".btn-prev-page");
+    if (prevBtn) {
+      prevBtn.addEventListener("click", () => {
+        if (currentPage > 1) {
+          currentPage -= 1;
+          applyFilters({ resetPage: false });
+        }
+      });
+    }
+
+    const nextBtn = paginationContainer.querySelector(".btn-next-page");
+    if (nextBtn) {
+      nextBtn.addEventListener("click", () => {
+        if (currentPage < totalPages) {
+          currentPage += 1;
+          applyFilters({ resetPage: false });
+        }
+      });
+    }
+
+    const firstBtn = paginationContainer.querySelector(".btn-first-page");
+    if (firstBtn) {
+      firstBtn.addEventListener("click", () => {
+        if (currentPage !== 1) {
+          currentPage = 1;
+          applyFilters({ resetPage: false });
+        }
+      });
+    }
+
+    const lastBtn = paginationContainer.querySelector(".btn-last-page");
+    if (lastBtn) {
+      lastBtn.addEventListener("click", () => {
+        if (currentPage !== totalPages) {
+          currentPage = totalPages;
+          applyFilters({ resetPage: false });
+        }
+      });
+    }
+  }
+
   function setSelectOptions(select, options, placeholder) {
     const current = select.value;
 
@@ -288,13 +445,17 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  function applyFilters() {
+  function applyFilters({ resetPage = true } = {}) {
+    if (resetPage) {
+      currentPage = 1;
+    }
+
     const searchTerm = normalize(searchInput.value);
     const selectedAction = actionSelect.value;
     const selectedModule = moduleSelect.value;
     const selectedRole = roleSelect.value;
 
-    const filteredRows = allItems.filter((row) => {
+    filteredItems = allItems.filter((row) => {
       const matchesSearch = !searchTerm || row.searchText.includes(searchTerm);
       const matchesAction = !selectedAction || row.actionCode === selectedAction;
       const matchesModule = !selectedModule || row.filterModule === selectedModule;
@@ -302,20 +463,31 @@ document.addEventListener("DOMContentLoaded", () => {
       return matchesSearch && matchesAction && matchesModule && matchesRole;
     });
 
-    renderRows(filteredRows);
-    updateStats(filteredRows);
+    const totalPages = Math.max(1, Math.ceil(filteredItems.length / ITEMS_PER_PAGE));
+    if (currentPage > totalPages) {
+      currentPage = totalPages;
+    }
 
-    resultsLabel.textContent = `Mostrando ${filteredRows.length} de ${allItems.length} registros`;
-    emptyState.style.display = filteredRows.length ? "none" : "";
+    const start = (currentPage - 1) * ITEMS_PER_PAGE;
+    const end = start + ITEMS_PER_PAGE;
+    const currentRows = filteredItems.slice(start, end);
+
+    renderRows(currentRows);
+    updateStats(filteredItems);
+    renderPagination(filteredItems.length);
+
+    resultsLabel.textContent = `Mostrando ${filteredItems.length} de ${allItems.length} registros`;
+    emptyState.style.display = filteredItems.length ? "none" : "";
   }
 
-  async function loadHistorial() {
-    listContainer.innerHTML = "";
-    resultsLabel.textContent = "Cargando historial...";
-    emptyState.style.display = "none";
+  async function fetchAllHistorial() {
+    const pageSize = 50;
+    const collected = [];
+    let page = 1;
+    let total = null;
 
-    try {
-      const url = `${API_URL}?action=listar&page=1&limit=100`;
+    while (true) {
+      const url = `${API_URL}?action=listar&page=${page}&limit=${pageSize}`;
       const response = await fetch(url, {
         method: "GET",
         headers: { Accept: "application/json" },
@@ -327,6 +499,37 @@ document.addEventListener("DOMContentLoaded", () => {
 
       const payload = await response.json();
       const items = Array.isArray(payload.items) ? payload.items : [];
+
+      if (total === null) {
+        total = Number.parseInt(String(payload.total || 0), 10);
+      }
+
+      collected.push(...items);
+
+      if (!items.length || collected.length >= total) {
+        break;
+      }
+
+      page += 1;
+      if (page > 500) {
+        break;
+      }
+    }
+
+    return collected;
+  }
+
+  async function loadHistorial() {
+    listContainer.innerHTML = "";
+    resultsLabel.textContent = "Cargando historial...";
+    emptyState.style.display = "none";
+    if (paginationContainer) {
+      paginationContainer.classList.add("hidden");
+      paginationContainer.innerHTML = "";
+    }
+
+    try {
+      const items = await fetchAllHistorial();
 
       allItems = items
         .map(itemView)
@@ -345,6 +548,10 @@ document.addEventListener("DOMContentLoaded", () => {
       allItems = [];
       populateFilterOptions(allItems);
       updateStats([]);
+      if (paginationContainer) {
+        paginationContainer.classList.add("hidden");
+        paginationContainer.innerHTML = "";
+      }
       resultsLabel.textContent = "Mostrando 0 de 0 registros";
       emptyState.style.display = "";
       emptyState.innerHTML = '<p class="text-sm text-rose-700">No fue posible cargar el historial en este momento.</p>';
@@ -352,10 +559,10 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  searchInput.addEventListener("input", applyFilters);
-  actionSelect.addEventListener("change", applyFilters);
-  moduleSelect.addEventListener("change", applyFilters);
-  roleSelect.addEventListener("change", applyFilters);
+  searchInput.addEventListener("input", () => applyFilters({ resetPage: true }));
+  actionSelect.addEventListener("change", () => applyFilters({ resetPage: true }));
+  moduleSelect.addEventListener("change", () => applyFilters({ resetPage: true }));
+  roleSelect.addEventListener("change", () => applyFilters({ resetPage: true }));
 
   loadHistorial();
 });
