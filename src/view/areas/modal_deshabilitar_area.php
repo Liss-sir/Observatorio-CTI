@@ -9,7 +9,7 @@
         </div>
         <div class="px-6 py-4">
           <p class="text-sm">
-            ¿Estás seguro de deshabilitar el area <span class="font-bold">"Nombre del área"</span>? El registro no se eliminará, solo se marcará como inactivo.
+            ¿Estás seguro de deshabilitar el area <span class="font-bold text-[#e65100]">"Nombre del área"</span>? El registro no se eliminará, solo se marcará como inactivo.
           </p>
         </div>
         <div class="flex justify-end gap-3 border-t px-6 py-4">

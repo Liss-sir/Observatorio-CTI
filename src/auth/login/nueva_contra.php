@@ -33,7 +33,7 @@ body {
     box-shadow:0 10px 30px rgba(0,0,0,0.1);
 }
 
-input {
+.card input[type="password"]{
     width:90%;
     padding:12px;
     margin-bottom:15px;
@@ -41,7 +41,7 @@ input {
     border:1px solid #ddd;
 }
 
-input:focus {
+.card input[type="password"]:focus {
     border-color: #39A900;
 }
 
@@ -70,7 +70,7 @@ input:focus {
         <h2>Nueva contraseña</h2>
 
             <input type="password" id="password" placeholder="Nueva contraseña">
-            <input type="password" id="confirmar" placeholder="Confirmar contraseña">
+            <input type="password" id="confirmar_password" placeholder="Confirmar contraseña">
 
         <button id="btnCambiarPassword">Cambiar contraseña</button>
 

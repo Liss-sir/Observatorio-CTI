@@ -99,7 +99,7 @@
 
             <!-- FOOTER -->
             <div class="border-t px-6 py-4 flex justify-end gap-3">
-                <button class="cerrar-modal-crear px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-100 text-sm font-medium transition-colors">
+                <button class="cerrar-modal-crear px-4 py-2 border border-gray-300 rounded-lg hover:bg-sena-soft text-sm font-medium transition-colors">
                     Cancelar
                 </button>
                 <button id="btn-guardar-nuevo-programa" class="px-4 py-2 bg-sena text-white rounded-lg hover:opacity-90 transition text-sm font-medium">

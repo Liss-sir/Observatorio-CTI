@@ -28,7 +28,7 @@ const Componentes = {
 
     perfilItem(p) {
         return `
-             <div class="flex justify-between items-center rounded-full py-3 px-3 bg-gray-100">
+             <div class="flex justify-between items-center rounded-xl py-3 px-3 bg-gray-100">
                  <div class="flex items-center gap-3">
                      <i data-lucide="briefcase" class="w-4 h-4 text-gray-400"></i>
                      <span>${p.nombre}</span>

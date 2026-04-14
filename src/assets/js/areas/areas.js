@@ -33,6 +33,7 @@ document.addEventListener('DOMContentLoaded', function() {
     let areasData = [];
     let paginaActual = 1;
     const elementosPorPagina = 9; // puedes ajustar
+    let areaSeleccionada = null;
     let areasFiltradas = [];
     let timeoutEditado = null, intervalContadorEditado = null;
     let timeoutDeshabilitado = null, intervalContadorDeshabilitado = null;
@@ -430,6 +431,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // ===== 3. ASIGNAR EVENTOS =====
     function asignarEventosDinamicos() {
         // Botón Editar
+        // Botón Editar
         document.querySelectorAll('.btn-editar-area').forEach(btn => {
             btn.addEventListener('click', function(e) {
                 e.preventDefault();
@@ -442,6 +444,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 const switchEl = card.querySelector('.switch-sena');
                 const estadoArea = switchEl.classList.contains('active') ? 'activo' : 'inactivo';
                 
+                // 🔥 GUARDAR DATOS ORIGINALES 🔥
+                areaSeleccionada = {
+                    id_area: parseInt(idArea),
+                    nombre_area: nombreArea,
+                    descripcion_area: descripcionArea,
+                    estado: estadoArea === 'activo' ? 1 : 0
+                };
+                
                 const nombreInput = document.getElementById('nombre-area');
                 const descInput = document.getElementById('descripcion-area');
                 const estadoSelect = document.getElementById('estado-area');
@@ -449,6 +459,24 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (nombreInput) nombreInput.value = nombreArea;
                 if (descInput) descInput.value = descripcionArea;
                 if (estadoSelect) estadoSelect.value = estadoArea;
+                
+                // Inicializar contador de caracteres
+                if (descInput) {
+                    const contadorEditar = document.getElementById('contador-caracteres-editar');
+                    const alertaEditar = document.getElementById('alerta-minimo-editar');
+                    if (contadorEditar) {
+                        const longitud = descInput.value.length;
+                        contadorEditar.textContent = `${longitud} / ${MIN_DESCRIPCION_LENGTH} caracteres`;
+                        
+                        if (longitud >= MIN_DESCRIPCION_LENGTH) {
+                            contadorEditar.className = 'text-xs text-sena';
+                            if (alertaEditar) alertaEditar.classList.add('hidden');
+                        } else {
+                            contadorEditar.className = 'text-xs text-red-500';
+                            if (alertaEditar) alertaEditar.classList.remove('hidden');
+                        }
+                    }
+                }
                 
                 if (modalEditar) modalEditar.setAttribute('data-card-id', idArea);
                 abrirModal(modalEditar);
@@ -626,6 +654,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const nombreVal = document.getElementById('nombre-area').value.trim();
             const descVal = document.getElementById('descripcion-area').value.trim();
 
+            // Validaciones básicas
             if (!nombreVal) {
                 mostrarToastValidacion('El nombre del área es obligatorio', 'warning');
                 return;
@@ -635,26 +664,57 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
 
+            // 🔥 VALIDACIÓN DE CAMBIOS 🔥
+            // Verificar que existan datos originales
+            if (!areaSeleccionada) {
+                console.error('No hay datos originales del área');
+                mostrarToastValidacion('Error al cargar los datos originales', 'error');
+                btn.disabled = false;
+                btn.textContent = oldText;
+                return;
+            }
+
+            // Comparar cada campo con los valores originales
+            const nombreCambio = nombreVal !== areaSeleccionada.nombre_area;
+            const descripcionCambio = descVal !== areaSeleccionada.descripcion_area;
+
+            // Si no hay ningún cambio, mostrar mensaje y salir
+            if (!nombreCambio && !descripcionCambio) {
+                mostrarToastValidacion('No se ha realizado ningún cambio en el área', 'info');
+                return;
+            }
+
             const data = {
                 id_area: idArea,
                 nombre_area: nombreVal,
                 descripcion_area: descVal,
             };
 
+            btn.disabled = true;
+            btn.textContent = 'Guardando...';
+
             try {
-                const res = await fetch(`${API_URL}?accion=actualizar`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(data) });
+                const res = await fetch(`${API_URL}?accion=actualizar`, { 
+                    method: 'POST', 
+                    headers: {'Content-Type': 'application/json'}, 
+                    body: JSON.stringify(data) 
+                });
                 const result = await res.json();
                 
                 if(result.success) {
                     cerrarModal(modalEditar);
+                    areaSeleccionada = null;
                     mostrarModalEditado(data.nombre_area);
                     cargarAreas();
                 } else {
-                   mostrarToastValidacion(result.message || result.error);
+                    mostrarToastValidacion(result.message || result.error || 'Error al actualizar', 'error');
                 }
             } catch(err) { 
                 console.error(err); 
-                mostrarToastValidacion('Error al conectar con el servidor'); 
+                mostrarToastValidacion('Error al conectar con el servidor', 'error'); 
+            } finally {
+                btn.disabled = false;
+                btn.textContent = oldText;
             }
         });
 

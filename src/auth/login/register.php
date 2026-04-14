@@ -159,15 +159,19 @@ $razonesSociales = [
                 </div>
                 <?php endif; ?>
                 <!-- Representante -->
+               <?php if (!$modoAdmin): ?>
                 <div>
                     <label class="block text-xs font-medium mb-1">
                         Nombre del representante legal <span class="text-red-500">*</span>
                     </label>
                     <input type="text" name="representante" placeholder="Carlos Ocampo"
-                           class="w-full px-3 py-2 rounded-md border bg-white border-gray-300 text-sm
-                                  focus:border-sena focus:ring-1 focus:ring-sena/30
-                                  focus:outline-none transition" />
+                        class="w-full px-3 py-2 rounded-md border bg-white border-gray-300 text-sm
+                                focus:border-sena focus:ring-1 focus:ring-sena/30
+                                focus:outline-none transition" />
                 </div>
+                <?php else: ?>
+                <input type="hidden" name="representante" value="Administrador">
+                <?php endif; ?>
 
                 <!-- Empresa -->
                 <div>
@@ -192,6 +196,7 @@ $razonesSociales = [
                 </div>
 
                 <!-- Razón social (Full width) -->
+                <?php if (!$modoAdmin): ?>
                 <div class="md:col-span-2">
                     <label class="block text-xs font-medium mb-1">
                         Razón social
@@ -207,8 +212,10 @@ $razonesSociales = [
                             </option>
                         <?php endforeach; ?>
                     </select>
-                    <p class="text-xs text-gray-400 mt-1">Campo opcional</p>
                 </div>
+                <?php else: ?>
+                <input type="hidden" name="razon_social" value="ADMINISTRADOR">
+                <?php endif; ?>
 
                 <!-- Tipo documento -->
                 <div>

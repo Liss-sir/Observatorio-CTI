@@ -143,7 +143,7 @@ document.addEventListener("DOMContentLoaded", () => {
                             <button 
                                 class="btn-ver-usuario text-green-500 hover:text-green-700"
                                 data-id="${usuario.id_usuario}">
-                                👁
+                                <i data-lucide="eye" class="w-4 h-4"></i>
                             </button>
                             <div
                                 onclick="cambiarEstadoUsuario(${usuario.id_usuario}, '${usuario.representante_legal}', ${usuario.estado})"
@@ -160,6 +160,7 @@ document.addEventListener("DOMContentLoaded", () => {
         // ✅ ACTUALIZAR PAGINACIÓN
         // =========================
         actualizarPaginacion(lista.length);
+        lucide.createIcons();
     }
     
     // =========================
@@ -558,6 +559,14 @@ document.addEventListener("DOMContentLoaded", () => {
             });
         }
     });
+
+    function recortarTexto(texto, max = 25) {
+        if (!texto) return '';
+        if (texto.length <= max) return texto;
+
+        const sub = texto.substring(0, max);
+        return sub.substring(0, sub.lastIndexOf(' ')) + '...';
+    }
     
     // =========================
     // CARGAR DETALLE USUARIO
@@ -596,7 +605,8 @@ document.addEventListener("DOMContentLoaded", () => {
             tecs.forEach(tec => {
                 const span = document.createElement("span");
                 span.className = "px-2.5 py-1 rounded-full bg-sena-soft text-sena text-xs font-medium";
-                span.textContent = tec.nombre ?? tec.linea_tecnologica ?? "Tecnología";
+                const texto = tec.nombre ?? tec.linea_tecnologica ?? "Tecnología";
+                span.textContent = recortarTexto(texto, 25);
                 contTecnologias.appendChild(span);
             });
         } else {
@@ -638,6 +648,12 @@ document.addEventListener("DOMContentLoaded", () => {
                 if (perfs.length > 3) {
                     btnVerMas.classList.remove("hidden");
                     btnVerMas.textContent = `Ver ${perfs.length - 3} más`;
+
+                    // 🔥 AQUÍ FALTA ESTO
+                    btnVerMas.onclick = () => {
+                        window.location.href = "../perfiles/perfiles.php";
+                    };
+
                 } else {
                     btnVerMas.classList.add("hidden");
                 }

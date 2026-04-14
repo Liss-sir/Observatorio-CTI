@@ -32,6 +32,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // ===== NUEVO: VARIABLES PARA PAGINACIÓN =====
     let paginaActual = 1;
     const elementosPorPagina = 9;
+    let programaSeleccionado = null;
     let programasFiltrados = [];
     let ultimoTerminoBusqueda = '';
 
@@ -415,55 +416,62 @@ document.addEventListener("DOMContentLoaded", function () {
                 `;
             }
             
-            card.innerHTML = `
-                <div class="flex justify-between items-start mb-4">
+           card.innerHTML = `
+            <div class="flex items-start justify-between mb-3">
+                <!-- ICONO + NOMBRE -->
+                <div class="flex items-center gap-3">
                     <div class="w-10 h-10 bg-sena-soft rounded-lg flex items-center justify-center">
                         <i data-lucide="graduation-cap" class="w-5 h-5 text-green-600"></i>
                     </div>
-                    <div class="flex items-center gap-2">
-                        ${editButtonHTML}
-                        ${switchHTML}
-                    </div>
+                    <h3 class="font-semibold text-gray-800 text-base leading-tight">
+                        ${programa.nombre_programa || 'Sin nombre'}
+                    </h3>
                 </div>
-                
-                <div class="flex flex-wrap gap-2 mb-3">
-                    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-700">
-                        #${programa.codigo_programa || 'N/A'}
+
+                <!-- BOTONES - CAMBIA items-start por items-center -->
+                <div class="flex items-center gap-2">
+                    ${editButtonHTML}
+                    ${switchHTML}
+                </div>
+            </div>
+            
+            <!-- Resto del código igual... -->
+            <div class="flex flex-wrap gap-2 mb-3">
+                <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-700">
+                    #${programa.codigo_programa || 'N/A'}
+                </span>
+                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium ${colorNivel}">
+                    <i data-lucide="layers" class="w-3 h-3"></i>
+                    ${nombreNivel}
+                </span>
+                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-sena-soft text-green-700">
+                    <i data-lucide="monitor" class="w-3 h-3"></i>
+                    ${programa.modalidad || 'N/A'}
+                </span>
+            </div>
+            
+            <div class="space-y-2 text-sm text-gray-500">
+                <div class="flex items-center gap-4">
+                    <span class="inline-flex items-center gap-1.5">
+                        <i data-lucide="users" class="w-4 h-4"></i>
+                        ${programa.cupos_formacion || 'N/A'} cupos
                     </span>
-                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium ${colorNivel}">
-                        <i data-lucide="layers" class="w-3 h-3"></i>
-                        ${nombreNivel}
+                    <span class="text-gray-300">|</span>
+                    <span>Área: ${nombreArea}</span>
+                </div>
+                <div class="flex items-center gap-2 text-xs">
+                    <span class="inline-flex items-center gap-1">
+                        <i data-lucide="calendar" class="w-3.5 h-3.5"></i>
+                        ${formatearFecha(programa.fecha_creacion)}
                     </span>
-                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-sena-soft text-green-700">
-                        <i data-lucide="monitor" class="w-3 h-3"></i>
-                        ${programa.modalidad || 'N/A'}
+                    <i data-lucide="arrow-right" class="w-3.5 h-3.5 text-gray-400"></i>
+                    <span class="inline-flex items-center gap-1">
+                        <i data-lucide="calendar" class="w-3.5 h-3.5"></i>
+                        ${formatearFecha(programa.fecha_fin)}
                     </span>
                 </div>
-                
-                <h3 class="font-semibold text-gray-800 text-base mb-4 leading-tight">${programa.nombre_programa || 'Sin nombre'}</h3>
-                
-                <div class="space-y-2 text-sm text-gray-500">
-                    <div class="flex items-center gap-4">
-                        <span class="inline-flex items-center gap-1.5">
-                            <i data-lucide="users" class="w-4 h-4"></i>
-                            ${programa.cupos_formacion || 'N/A'} cupos
-                        </span>
-                        <span class="text-gray-300">|</span>
-                        <span>Área: ${nombreArea}</span>
-                    </div>
-                    <div class="flex items-center gap-2 text-xs">
-                        <span class="inline-flex items-center gap-1">
-                            <i data-lucide="calendar" class="w-3.5 h-3.5"></i>
-                            ${formatearFecha(programa.fecha_creacion)}
-                        </span>
-                        <i data-lucide="arrow-right" class="w-3.5 h-3.5 text-gray-400"></i>
-                        <span class="inline-flex items-center gap-1">
-                            <i data-lucide="calendar" class="w-3.5 h-3.5"></i>
-                            ${formatearFecha(programa.fecha_fin)}
-                        </span>
-                    </div>
-                </div>
-            `;
+            </div>
+        `;
             
             contenedor.appendChild(card);
         });
@@ -542,8 +550,20 @@ document.addEventListener("DOMContentLoaded", function () {
                 e.stopPropagation();
                 
                 const boton = e.currentTarget;
+
+                programaSeleccionado = {
+                    id_programa: parseInt(boton.dataset.id),
+                    codigo_programa: boton.dataset.codigo || '',
+                    nombre_programa: boton.dataset.nombre || '',
+                    id_area: parseInt(boton.dataset.area) || '',
+                    id_nivel: boton.dataset.nivel || '',
+                    modalidad: boton.dataset.modalidad || '',
+                    fecha_creacion: boton.dataset.fechainicio || '',
+                    fecha_fin: boton.dataset.fechafin || '',
+                    cupos_formacion: boton.dataset.cupos || '',
+                    descripcion: boton.dataset.descripcion || ''
+                };
                 
-                console.log('🔍 Datos del botón:', boton.dataset);
                 
                 // ✅ CORREGIDO: IDs que COINCIDEN con tu modal HTML
                 const idInput = document.getElementById("idProgramaEditar");
@@ -722,6 +742,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     document.querySelectorAll(".cerrar-modal-editar").forEach(btn => {
         btn.addEventListener("click", () => { if (modalEditar) modalEditar.classList.add("hidden"); });
+        programaSeleccionado = null;
     });
 
     document.querySelectorAll(".cerrar-modal-crear").forEach(btn => {
@@ -868,17 +889,16 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-
     // ===== GUARDAR EDITADA =====
     const btnGuardarEditar = document.getElementById('btn-guardar-programa-editado');
     if (btnGuardarEditar) {
         btnGuardarEditar.addEventListener('click', async () => {
             const nombreInput = document.getElementById("nombreProgramaEditar");
-            const descInput = document.getElementById("descripcionProgramaEditar"); 
+            const descInput = document.getElementById("descripcionProgramaEditar");
             
-            const datos = {
+            const datosActuales = {
                 id_programa: document.getElementById("idProgramaEditar")?.value,
-                id_area: document.getElementById("areaProgramaEditar")?.value, 
+                id_area: document.getElementById("areaProgramaEditar")?.value,
                 codigo_programa: document.getElementById("codigoProgramaEditar")?.value,
                 nombre_programa: nombreInput?.value,
                 id_nivel: document.getElementById("nivelFormacionEditar")?.value,
@@ -886,30 +906,57 @@ document.addEventListener("DOMContentLoaded", function () {
                 fecha_creacion: document.getElementById("fechaInicioEditar")?.value,
                 fecha_fin: document.getElementById("fechaFinEditar")?.value,
                 cupos_formacion: document.getElementById("cuposProgramaEditar")?.value,
-                descripcion: descInput?.value 
+                descripcion: descInput?.value
             };
 
             // =========================
             // 1. VALIDACIÓN DE ID Y ÁREA
             // =========================
-            if (!datos.id_programa) { 
-                // 🚨 ANTES: alert('ID no encontrado');
-                mostrarToastValidacion('Error interno: ID del programa no encontrado', 'error'); 
-                return; 
+            if (!datosActuales.id_programa) {
+                mostrarToastValidacion('Error interno: ID del programa no encontrado', 'error');
+                return;
             }
 
-            if (!datos.id_area) { 
-                // 🚨 ANTES: alert('El área es requerida');
-                mostrarToastValidacion('El area es requerida', 'warning'); 
-                return; 
+            if (!datosActuales.id_area) {
+                mostrarToastValidacion('El área es requerida', 'warning');
+                return;
             }
 
             // =========================
             // 2. VALIDACIÓN DE DESCRIPCIÓN
             // =========================
-            if (!validarDescripcion(datos.descripcion)) {
-                // 🚨 ANTES: alert('La descripción debe tener...', 'warning');
+            if (!validarDescripcion(datosActuales.descripcion)) {
                 mostrarToastValidacion('La descripción debe tener al menos 30 caracteres', 'warning');
+                return;
+            }
+
+            // =========================
+            // 3. 🔥 VALIDACIÓN DE CAMBIOS 🔥
+            // =========================
+            if (!programaSeleccionado) {
+                console.error('No hay datos originales del programa');
+                mostrarToastValidacion('Error al cargar los datos originales', 'error');
+                return;
+            }
+
+            // Comparar cada campo relevante
+            const codigoCambio = datosActuales.codigo_programa !== programaSeleccionado.codigo_programa;
+            const nombreCambio = datosActuales.nombre_programa !== programaSeleccionado.nombre_programa;
+            const areaCambio = parseInt(datosActuales.id_area) !== programaSeleccionado.id_area;
+            const nivelCambio = datosActuales.id_nivel !== programaSeleccionado.id_nivel;
+            const modalidadCambio = datosActuales.modalidad !== programaSeleccionado.modalidad;
+            const fechaInicioCambio = datosActuales.fecha_creacion !== programaSeleccionado.fecha_creacion;
+            const fechaFinCambio = datosActuales.fecha_fin !== programaSeleccionado.fecha_fin;
+            const cuposCambio = datosActuales.cupos_formacion !== programaSeleccionado.cupos_formacion;
+            const descripcionCambio = datosActuales.descripcion !== programaSeleccionado.descripcion;
+
+            // Verificar si hay algún cambio
+            const hayCambios = codigoCambio || nombreCambio || areaCambio || nivelCambio || 
+                            modalidadCambio || fechaInicioCambio || fechaFinCambio || 
+                            cuposCambio || descripcionCambio;
+
+            if (!hayCambios) {
+                mostrarToastValidacion('No se ha realizado ningún cambio en el programa', 'info');
                 return;
             }
 
@@ -917,25 +964,28 @@ document.addEventListener("DOMContentLoaded", function () {
                 const response = await fetch(`${PRO_URL}?accion=actualizar`, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(datos)
+                    body: JSON.stringify(datosActuales)
                 });
                 const resultado = await response.json();
                 
                 if (resultado.success) {
                     if (modalEditar) modalEditar.classList.add("hidden");
-                    mostrarModalEditado(datos.nombre_programa);
+                    mostrarModalEditado(datosActuales.nombre_programa);
                     cargarProgramas();
+                    // Limpiar variable después de guardar
+                    programaSeleccionado = null;
                 } else {
-                    alert(resultado.error || 'Error al actualizar');
+                    mostrarToastValidacion(resultado.error || 'Error al actualizar', 'error');
                 }
             } catch (error) {
                 console.error(error);
-                alert("Error al actualizar");
+                mostrarToastValidacion('Error al conectar con el servidor', 'error');
             }
         });
+        
         const descEditar = document.getElementById('descripcionProgramaEditar');
         if (descEditar) descEditar.addEventListener('input', actualizarContadorEditar);
-    }
+}
 
     // ===== ABRIR MODAL CREAR =====
     if (btnCrearPrograma) {

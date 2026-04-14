@@ -38,7 +38,7 @@
           <button type="button" class="cerrar-modal-habilitar px-4 py-2 text-sm font-medium text-sena-text-main border border-sena-border rounded-lg hover:bg-sena-soft transition-colors">
             Cancelar
           </button>
-          <button type="button" id="btn-confirmar-habilitar" class="px-4 py-2 text-sm font-medium text-white bg-[#39A900] rounded-lg hover:bg-green-700 transition-colors">
+          <button type="button" id="btn-confirmar-habilitar" class="px-4 py-2 text-sm font-medium text-white bg-[#39A900] rounded-lg hover:opacity-90 transition-colors">
             <span class="flex items-center gap-2">
               <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <polyline points="20 6 9 17 4 12"></polyline>

@@ -181,6 +181,25 @@ class LoginModel {
     }
 
     /**
+     * Obtiene un usuario por su ID para verificar sesión
+     * @param int $id
+     * @return array|null
+     */
+    public function obtenerPorId($id) {
+        try {
+            $sql = "SELECT u.id_usuario, u.correo, u.nombre_empresa, u.estado, r.nombre as rol_nombre
+                    FROM usuarios u
+                    INNER JOIN roles r ON u.id_rol = r.id_rol
+                    WHERE u.id_usuario = ?";
+            $stmt = $this->conn->prepare($sql);
+            $stmt->execute([$id]);
+            return $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
+        } catch (Exception $e) {
+            return null;
+        }
+    }
+
+    /**
      * Enviar correo electronico
      * @param string $destinatario
      * @param string $asunto
@@ -237,7 +256,8 @@ class LoginModel {
             return false;
         }
 
-        $enlace = "http://localhost/observatorio/Observatorio-CTI/src/controllers/LogController.php?accion=verificar-cuenta&token=" . urlencode($token);
+        $base_url = "http://" . ($_SERVER['HTTP_HOST'] ?? 'localhost') . "/observatorio/Observatorio-CTI/src";
+        $enlace = $base_url . "/controllers/LogController.php?accion=verificar-cuenta&token=" . urlencode($token);
 
         $asunto = "Verifica tu cuenta en Observatorio CTI";
 
@@ -322,7 +342,9 @@ class LoginModel {
             return false;
         }
 
-        $enlace = "http://localhost/observatorio/Observatorio-CTI/src/auth/login/nueva_contra.php?&token=" . urlencode($token);
+        //enlace para ruta relativa 
+        $base_url = "http://" . ($_SERVER['HTTP_HOST'] ?? 'localhost') . "/observatorio/Observatorio-CTI/src";
+        $enlace = $base_url . "/auth/login/nueva_contra.php?token=" . urlencode($token);
         $asunto = "Recuperación de contraseña - Observatorio CTI";
         $cuerpo = "
             <div style='margin:0; padding:0; background:#f4f6f9; font-family:Arial, sans-serif;'>

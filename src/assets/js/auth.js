@@ -70,6 +70,14 @@ const Auth = {
             });
             const data = await response.json();
             console.log("Respuesta:", data);
+
+            if (data.logout) {
+                console.warn("🚫 Usuario deshabilitado");
+
+                sessionStorage.clear();
+                window.location.href = "../../auth/login/login.php";
+                return false;
+            }
             
             if (data.success && data.autenticado) {
                 this.autenticado = true;

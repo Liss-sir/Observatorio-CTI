@@ -137,26 +137,51 @@ class LogController {
      * Procesa la verificación mediante la session
      */
     public function verificarSesion() {
-        // Iniciar sesión si no está iniciada
-        if (session_status() === PHP_SESSION_NONE) {
-            session_start();
-        }
+        try {
+            if (session_status() === PHP_SESSION_NONE) {
+                session_start();
+            }
 
-        if (isset($_SESSION['autenticado']) && $_SESSION['autenticado'] === true) {
+            if (!isset($_SESSION['autenticado']) || $_SESSION['autenticado'] !== true) {
+                echo json_encode(['success' => false, 'autenticado' => false]);
+                return;
+            }
+
+            $id = $_SESSION['id_usuario'];
+            
+            // ✅ CORRECCIÓN CRÍTICA: usar $this->model
+            $usuario = $this->model->obtenerPorId($id);
+
+            if (!$usuario || $usuario['estado'] != 1) {
+                session_unset();
+                session_destroy();
+                echo json_encode([
+                    'success' => false,
+                    'autenticado' => false,
+                    'logout' => true,
+                    'message' => 'Usuario deshabilitado'
+                ]);
+                return;
+            }
+
             echo json_encode([
                 'success' => true,
                 'autenticado' => true,
                 'usuario' => [
-                    'id_usuario' => $_SESSION['id_usuario'],
-                    'correo' => $_SESSION['correo'],
-                    'rol_nombre' => $_SESSION['rol_nombre'],
-                    'nombre_empresa' => $_SESSION['usuario']['nombre_empresa'] ?? 'Usuario'
+                    'id_usuario' => $usuario['id_usuario'],
+                    'correo' => $usuario['correo'],
+                    'rol_nombre' => $usuario['rol_nombre'],
+                    'nombre_empresa' => $usuario['nombre_empresa'] ?? 'Usuario'
                 ]
             ]);
-        } else {
+        } catch (\Throwable $e) {
+            // 🔥 Evita que PHP imprima HTML de error y rompa el JSON del fetch
+            http_response_code(500);
             echo json_encode([
-                'success' => true,
-                'autenticado' => false
+                'success' => false,
+                'autenticado' => false,
+                'error' => 'Error interno en verificación',
+                'debug' => $e->getMessage() // ⚠️ Eliminar en producción
             ]);
         }
     }
