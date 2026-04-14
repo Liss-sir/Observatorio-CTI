@@ -65,6 +65,10 @@
                       rows="4" 
                       placeholder="Describe la sugerencia..."
                       class="w-full rounded-lg border border-gray-200 px-4 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:border-sena focus:ring-1 focus:ring-sena/20 transition-all outline-none resize-none"></textarea>
+            <div class="mt-2 flex justify-between items-center">
+              <span id="alerta-minimo-crear" class="hidden text-xs text-red-500">Mínimo 30 caracteres requeridos</span>
+              <span id="contador-caracteres-crear" class="text-xs text-sena-text-soft">0 / 30 caracteres</span>
+            </div>
           </div>
 
           <!-- Footer buttons -->

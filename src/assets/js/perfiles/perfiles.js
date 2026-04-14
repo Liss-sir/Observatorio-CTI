@@ -320,6 +320,65 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 3000);
     }
 
+    // ===== CONSTANTES =====
+    const MIN_DESCRIPCION_LENGTH = 30;
+
+    // ===== FUNCIÓN PARA ACTUALIZAR CONTADOR DE CARACTERES EN MODAL CREAR =====
+    function actualizarContadorCrearPerfil() {
+        const textarea = document.querySelector('#modal-crear-perfil textarea[name="descripcion"]');
+        const contadorSpan = document.getElementById('contador-caracteres-crear-perfil');
+        const alertaSpan = document.getElementById('alerta-minimo-crear-perfil');
+        
+        if (textarea && contadorSpan) {
+            const longitud = textarea.value.length;
+            contadorSpan.textContent = `${longitud} / ${MIN_DESCRIPCION_LENGTH} caracteres`;
+            
+            if (longitud >= MIN_DESCRIPCION_LENGTH) {
+                contadorSpan.classList.remove('text-sena-text-soft', 'text-red-500');
+                contadorSpan.classList.add('text-sena');
+                if (alertaSpan) alertaSpan.classList.add('hidden');
+            } else {
+                contadorSpan.classList.remove('text-sena', 'text-red-500');
+                contadorSpan.classList.add('text-sena-text-soft');
+                if (alertaSpan) {
+                    if (longitud > 0) {
+                        alertaSpan.classList.remove('hidden');
+                    } else {
+                        alertaSpan.classList.add('hidden');
+                    }
+                }
+            }
+        }
+    }
+
+    // ===== FUNCIÓN PARA ACTUALIZAR CONTADOR DE CARACTERES EN MODAL EDITAR =====
+    function actualizarContadorEditarPerfil() {
+        const textarea = document.querySelector('#modal-editar-perfil textarea[name="descripcion"]');
+        const contadorSpan = document.getElementById('contador-caracteres-editar-perfil');
+        const alertaSpan = document.getElementById('alerta-minimo-editar-perfil');
+        
+        if (textarea && contadorSpan) {
+            const longitud = textarea.value.length;
+            contadorSpan.textContent = `${longitud} / ${MIN_DESCRIPCION_LENGTH} caracteres`;
+            
+            if (longitud >= MIN_DESCRIPCION_LENGTH) {
+                contadorSpan.classList.remove('text-sena-text-soft', 'text-red-500');
+                contadorSpan.classList.add('text-sena');
+                if (alertaSpan) alertaSpan.classList.add('hidden');
+            } else {
+                contadorSpan.classList.remove('text-sena', 'text-red-500');
+                contadorSpan.classList.add('text-sena-text-soft');
+                if (alertaSpan) {
+                    if (longitud > 0) {
+                        alertaSpan.classList.remove('hidden');
+                    } else {
+                        alertaSpan.classList.add('hidden');
+                    }
+                }
+            }
+        }
+    }
+
     // ===== FUNCIONES DE VALIDACIÓN =====
     function validarNombre(nombre) {
         if (!nombre || nombre.trim() === '') {
@@ -342,8 +401,8 @@ document.addEventListener('DOMContentLoaded', function() {
             mostrarToastValidacion('La descripción del perfil es requerida', 'warning');
             return false;
         }
-        if (descripcion.length < 10) {
-            mostrarToastValidacion('La descripción debe tener al menos 10 caracteres', 'warning');
+        if (descripcion.length < 30) {
+            mostrarToastValidacion('La descripción debe tener al menos 30 caracteres. Actualmente tiene ' + descripcion.length + ' caracteres.', 'warning');
             return false;
         }
         if (descripcion.length > 1000) {
@@ -1117,7 +1176,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     `;
                 } else {
                     mensajeVacio = `
-                        <div class="text-center py-12 border border-sena-border rounded-xl bg-gradient-to-br from-blue-50 to-white">
+                        <div class="text-center py-12 border border-sena-border rounded-xl">
                             <div class="mx-auto w-16 h-16 rounded-full bg-sena/10 flex items-center justify-center mb-4">
                                 <svg class="w-8 h-8 text-sena" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
@@ -1706,6 +1765,9 @@ document.addEventListener('DOMContentLoaded', function() {
             id_nivel: perfil.id_nivel || '',
             cupos: perfil.cupos || 1
         };
+        
+        // Actualizar contador de caracteres
+        actualizarContadorEditarPerfil();
     }
     
     function hayCambiosEnEditar() {
@@ -2265,6 +2327,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (idUsuarioInput) idUsuarioInput.value = window.SENA_CONFIG.USUARIO_ID;
             }
             
+            // Inicializar contador de caracteres
+            actualizarContadorCrearPerfil();
+            
             abrirModal(modalCrear);
         });
     }
@@ -2550,5 +2615,16 @@ document.addEventListener('DOMContentLoaded', function() {
         cargarFiltrosTendencias();
         cargarFiltrosProyecciones();
         cargarPerfiles();
+    }
+    
+    // ===== AGREGAR EVENT LISTENERS PARA CONTADORES DE CARACTERES =====
+    const textareaCrearPerfil = document.querySelector('#modal-crear-perfil textarea[name="descripcion"]');
+    if (textareaCrearPerfil) {
+        textareaCrearPerfil.addEventListener('input', actualizarContadorCrearPerfil);
+    }
+    
+    const textareaEditarPerfil = document.querySelector('#modal-editar-perfil textarea[name="descripcion"]');
+    if (textareaEditarPerfil) {
+        textareaEditarPerfil.addEventListener('input', actualizarContadorEditarPerfil);
     }
 });

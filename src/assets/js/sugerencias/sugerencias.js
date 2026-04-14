@@ -12,6 +12,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const elementosPorPagina = 9;
     let sugerenciasFiltradas = [];
     let mostrarSoloMisCreaciones = false; // Variable para controlar el filtro de "Mis creaciones"
+    let filtroEstadoActual = 'todos'; // Guardar el filtro actual ('todos', 'activos', 'inactivos')
     
     // Elementos del DOM
     const tarjetasContainer = document.getElementById('tarjetas-container');
@@ -98,6 +99,74 @@ document.addEventListener('DOMContentLoaded', function() {
     let intervaloContadorDeshabilitado;
     let timeoutExitoHabilitado;
     let intervaloContadorHabilitado;
+
+    // ===== CONSTANTES =====
+    const MIN_DESCRIPCION_LENGTH = 30;
+
+    // ===== FUNCIÓN PARA VALIDAR DESCRIPCIÓN =====
+    function validarDescripcion(descripcion) {
+        if (!descripcion || descripcion.length < MIN_DESCRIPCION_LENGTH) {
+            return false;
+        }
+        return true;
+    }
+
+    // ===== FUNCIÓN PARA ACTUALIZAR CONTADOR DE CARACTERES EN MODAL CREAR =====
+    function actualizarContadorCrear() {
+        const textarea = inputContenido;
+        const contadorSpan = document.getElementById('contador-caracteres-crear');
+        const alertaSpan = document.getElementById('alerta-minimo-crear');
+        const btnSubmit = document.querySelector('#form-nueva-proyeccion-futuro button[type="submit"]');
+        
+        if (textarea && contadorSpan) {
+            const longitud = textarea.value.length;
+            contadorSpan.textContent = `${longitud} / ${MIN_DESCRIPCION_LENGTH} caracteres`;
+            
+            if (longitud >= MIN_DESCRIPCION_LENGTH) {
+                contadorSpan.classList.remove('text-sena-text-soft', 'text-red-500');
+                contadorSpan.classList.add('text-sena');
+                if (alertaSpan) alertaSpan.classList.add('hidden');
+            } else {
+                contadorSpan.classList.remove('text-sena', 'text-red-500');
+                contadorSpan.classList.add('text-sena-text-soft');
+                if (alertaSpan) {
+                    if (longitud > 0) {
+                        alertaSpan.classList.remove('hidden');
+                    } else {
+                        alertaSpan.classList.add('hidden');
+                    }
+                }
+            }
+        }
+    }
+
+    // ===== FUNCIÓN PARA ACTUALIZAR CONTADOR DE CARACTERES EN MODAL EDITAR =====
+    function actualizarContadorEditar() {
+        const textarea = textareaDescripcionEditar;
+        const contadorSpan = document.getElementById('contador-caracteres-editar');
+        const alertaSpan = document.getElementById('alerta-minimo-editar');
+        
+        if (textarea && contadorSpan) {
+            const longitud = textarea.value.length;
+            contadorSpan.textContent = `${longitud} / ${MIN_DESCRIPCION_LENGTH} caracteres`;
+            
+            if (longitud >= MIN_DESCRIPCION_LENGTH) {
+                contadorSpan.classList.remove('text-sena-text-soft', 'text-red-500');
+                contadorSpan.classList.add('text-sena');
+                if (alertaSpan) alertaSpan.classList.add('hidden');
+            } else {
+                contadorSpan.classList.remove('text-sena', 'text-red-500');
+                contadorSpan.classList.add('text-sena-text-soft');
+                if (alertaSpan) {
+                    if (longitud > 0) {
+                        alertaSpan.classList.remove('hidden');
+                    } else {
+                        alertaSpan.classList.add('hidden');
+                    }
+                }
+            }
+        }
+    }
 
     // ==================== FUNCIÓN PARA MOSTRAR TOAST DE VALIDACIÓN ====================
     function mostrarToastValidacion(mensaje, tipo = 'warning') {
@@ -200,12 +269,37 @@ document.addEventListener('DOMContentLoaded', function() {
         return sugerencias.filter(s => s.id_usuario == idUsuarioActual);
     }
 
-    // ==================== FUNCIÓN PARA OBTENER SUGERENCIAS FILTRADAS Y ORDENADAS ====================
-    function obtenerSugerenciasFiltradas() {
+    // ==================== FUNCIÓN PARA OBTENER LAS SUGERENCIAS VISIBLES PARA EL USUARIO ====================
+    function obtenerSugerenciasVisibles() {
         let sugerencias = [...todasLasTarjetas];
         
         // Filtrar por "Mis creaciones"
         sugerencias = filtrarPorMisCreaciones(sugerencias);
+        
+        // Filtrar inactivos: solo mostrar inactivos del usuario actual o todos si es admin
+        if (!esAdmin) {
+            sugerencias = sugerencias.filter(s => {
+                // Si es activo, lo muestra
+                if (s.estado == 1) return true;
+                // Si es inactivo, solo lo muestra si es del usuario actual
+                return s.id_usuario == idUsuarioActual;
+            });
+        }
+        
+        return sugerencias;
+    }
+
+    // ==================== FUNCIÓN PARA OBTENER SUGERENCIAS FILTRADAS POR ESTADO ====================
+    function obtenerSugerenciasPorEstado(sugerencias, estado) {
+        if (estado === 'todos') return sugerencias;
+        if (estado === 'activos') return sugerencias.filter(s => s.estado == 1);
+        if (estado === 'inactivos') return sugerencias.filter(s => s.estado == 0);
+        return sugerencias;
+    }
+
+    // ==================== FUNCIÓN PARA OBTENER SUGERENCIAS FILTRADAS Y ORDENADAS ====================
+    function obtenerSugerenciasFiltradas() {
+        let sugerencias = obtenerSugerenciasVisibles();
         
         // Ordenar: activas primero, luego inactivas, ambas por fecha descendente
         sugerencias = ordenarSugerencias(sugerencias);
@@ -422,10 +516,16 @@ document.addEventListener('DOMContentLoaded', function() {
         
         paginacionContainer.innerHTML = paginacionHTML;
         
+        // Event listeners para paginación - usar los datos actuales
+        const sugerenciasActuales = obtenerSugerenciasFiltradas();
+        const sugerenciasFiltradasPorEstado = obtenerSugerenciasPorEstado(sugerenciasActuales, filtroEstadoActual);
+        
         document.querySelectorAll('.btn-pagina').forEach(btn => {
             btn.addEventListener('click', () => {
                 paginaActual = parseInt(btn.dataset.pagina);
-                renderizarTarjetas(obtenerSugerenciasFiltradas());
+                const nuevasSugerencias = obtenerSugerenciasFiltradas();
+                const nuevasSugerenciasFiltradas = obtenerSugerenciasPorEstado(nuevasSugerencias, filtroEstadoActual);
+                renderizarTarjetas(nuevasSugerenciasFiltradas);
             });
         });
         
@@ -433,7 +533,9 @@ document.addEventListener('DOMContentLoaded', function() {
             btn.addEventListener('click', () => {
                 if (paginaActual > 1) {
                     paginaActual--;
-                    renderizarTarjetas(obtenerSugerenciasFiltradas());
+                    const nuevasSugerencias = obtenerSugerenciasFiltradas();
+                    const nuevasSugerenciasFiltradas = obtenerSugerenciasPorEstado(nuevasSugerencias, filtroEstadoActual);
+                    renderizarTarjetas(nuevasSugerenciasFiltradas);
                 }
             });
         });
@@ -442,7 +544,9 @@ document.addEventListener('DOMContentLoaded', function() {
             btn.addEventListener('click', () => {
                 if (paginaActual < totalPaginas) {
                     paginaActual++;
-                    renderizarTarjetas(obtenerSugerenciasFiltradas());
+                    const nuevasSugerencias = obtenerSugerenciasFiltradas();
+                    const nuevasSugerenciasFiltradas = obtenerSugerenciasPorEstado(nuevasSugerencias, filtroEstadoActual);
+                    renderizarTarjetas(nuevasSugerenciasFiltradas);
                 }
             });
         });
@@ -451,7 +555,9 @@ document.addEventListener('DOMContentLoaded', function() {
             btn.addEventListener('click', () => {
                 if (paginaActual !== 1) {
                     paginaActual = 1;
-                    renderizarTarjetas(obtenerSugerenciasFiltradas());
+                    const nuevasSugerencias = obtenerSugerenciasFiltradas();
+                    const nuevasSugerenciasFiltradas = obtenerSugerenciasPorEstado(nuevasSugerencias, filtroEstadoActual);
+                    renderizarTarjetas(nuevasSugerenciasFiltradas);
                 }
             });
         });
@@ -460,7 +566,9 @@ document.addEventListener('DOMContentLoaded', function() {
             btn.addEventListener('click', () => {
                 if (paginaActual !== totalPaginas) {
                     paginaActual = totalPaginas;
-                    renderizarTarjetas(obtenerSugerenciasFiltradas());
+                    const nuevasSugerencias = obtenerSugerenciasFiltradas();
+                    const nuevasSugerenciasFiltradas = obtenerSugerenciasPorEstado(nuevasSugerencias, filtroEstadoActual);
+                    renderizarTarjetas(nuevasSugerenciasFiltradas);
                 }
             });
         });
@@ -485,10 +593,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Resetear página al cargar nuevas sugerencias
                 paginaActual = 1;
                 
-                // Obtener sugerencias filtradas y ordenadas
-                const sugerenciasFiltradas = obtenerSugerenciasFiltradas();
-                renderizarTarjetas(sugerenciasFiltradas);
-                actualizarContadores(todasLasTarjetas);
+                // Actualizar contadores y renderizar
+                actualizarTodo();
             } else {
                 console.error('Error en la respuesta:', data);
                 throw new Error('Error al cargar las sugerencias');
@@ -503,47 +609,122 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Renderizar tarjetas en el DOM
-    function renderizarTarjetas(sugerencias) {
-        if (!sugerencias || sugerencias.length === 0) {
-            let mensaje = 'No hay sugerencias';
+    // Actualizar todo (contadores y renderizado)
+    function actualizarTodo() {
+        const sugerenciasVisibles = obtenerSugerenciasVisibles();
+        const sugerenciasFiltradasPorEstado = obtenerSugerenciasPorEstado(sugerenciasVisibles, filtroEstadoActual);
+        
+        // Actualizar contadores
+        const total = sugerenciasVisibles.length;
+        const activos = sugerenciasVisibles.filter(s => s.estado == 1).length;
+        const inactivos = sugerenciasVisibles.filter(s => s.estado == 0).length;
+        
+        contadorTodos.textContent = total;
+        contadorActivos.textContent = activos;
+        contadorInactivos.textContent = inactivos;
+        
+        // Renderizar tarjetas
+        renderizarTarjetas(sugerenciasFiltradasPorEstado);
+    }
+
+    // Mostrar mensaje de vacío según el filtro
+    function mostrarMensajeVacio() {
+        let mensaje = '';
+        let mensajeDetalle = '';
+        let iconoPersonalizado = '';
+        
+        // Cambiar la clase del contenedor para que ocupe todo el ancho
+        tarjetasContainer.className = 'w-full';
+        
+        // Mensajes personalizados según el filtro activo
+        if (filtroEstadoActual === 'inactivos') {
+            if (esAdmin) {
+                mensaje = 'No hay sugerencias inactivas';
+                mensajeDetalle = 'Todas las sugerencias están actualmente activas. Las sugerencias que se deshabiliten aparecerán aquí.';
+            } else {
+                mensaje = 'No tienes sugerencias deshabilitadas';
+                mensajeDetalle = 'Cuando deshabilites una sugerencia, aparecerá en esta sección. Las sugerencias de otros usuarios no se muestran aquí.';
+            }
+            iconoPersonalizado = `
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10 text-sena" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"/>
+                    <line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/>
+                </svg>
+            `;
+        } else if (filtroEstadoActual === 'activos') {
+            if (mostrarSoloMisCreaciones) {
+                mensaje = 'No tienes sugerencias activas';
+                mensajeDetalle = 'Comienza creando tu primera sugerencia para que aparezca aquí.';
+            } else {
+                mensaje = 'No hay sugerencias activas';
+                mensajeDetalle = 'Todas las sugerencias están actualmente deshabilitadas.';
+            }
+            iconoPersonalizado = `
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10 text-sena" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"/>
+                    <polyline points="12 6 12 12 16 14"/>
+                </svg>
+            `;
+        } else {
+            // filtro 'todos'
             if (mostrarSoloMisCreaciones) {
                 mensaje = 'No has creado ninguna sugerencia aún';
+                mensajeDetalle = 'Comienza creando tu primera sugerencia innovadora para fortalecer el desarrollo tecnológico de Risaralda.';
+            } else {
+                mensaje = 'No hay sugerencias disponibles';
+                mensajeDetalle = 'Comienza creando tu primera sugerencia innovadora para fortalecer el desarrollo tecnológico de Risaralda.';
             }
-            
-            tarjetasContainer.innerHTML = `
-                <div class="w-full flex flex-col items-center justify-center py-20 px-4 bg-white border border-gray-200 rounded-xl">
-                    <div class="w-20 h-20 mb-5 bg-sena-soft rounded-2xl flex items-center justify-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10 text-sena" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/>
-                            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
-                            <line x1="12" x2="12.01" y1="17" y2="17"/>
-                        </svg>
-                    </div>
-                    <h3 class="text-lg font-semibold text-sena-text-main mb-2">${mensaje}</h3>
-                    <p class="text-sm text-sena-text-soft text-center max-w-sm mb-6">
-                        ${mostrarSoloMisCreaciones ? 'Comienza creando tu primera sugerencia innovadora.' : 'Comienza creando tu primera sugerencia innovadora para fortalecer el desarrollo tecnológico de Risaralda.'}
-                    </p>
+            iconoPersonalizado = `
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10 text-sena" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/>
+                    <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
+                    <line x1="12" x2="12.01" y1="17" y2="17"/>
+                </svg>
+            `;
+        }
+        
+        tarjetasContainer.innerHTML = `
+            <div class="w-full flex flex-col items-center justify-center py-20 px-4 bg-white border border-gray-200 rounded-xl">
+                <div class="w-20 h-20 mb-5 bg-sena-soft rounded-2xl flex items-center justify-center">
+                    ${iconoPersonalizado}
+                </div>
+                <h3 class="text-lg font-semibold text-sena-text-main mb-2">${mensaje}</h3>
+                <p class="text-sm text-sena-text-soft text-center max-w-sm mb-6">${mensajeDetalle}</p>
+                ${filtroEstadoActual !== 'inactivos' ? `
                     <button id="btn-crear-desde-empty" class="flex items-center gap-2 px-5 py-2.5 text-sm font-medium text-white bg-sena rounded-lg hover:opacity-90 transition-opacity shadow-sm">
                         <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M5 12h14"/>
                             <path d="M12 5v14"/>
                         </svg>
-                        Crear primera sugerencia
+                        Crear sugerencia
                     </button>
-                </div>
-            `;
+                ` : ''}
+            </div>
+        `;
 
-            const btnCrearEmpty = document.getElementById('btn-crear-desde-empty');
-            if (btnCrearEmpty && modalCrear) {
-                btnCrearEmpty.addEventListener('click', function() {
-                    modalCrear.classList.remove('hidden');
-                    document.body.style.overflow = 'hidden';
-                });
-            }
-            
-            const paginacionContainer = document.getElementById('paginacion-container');
-            if (paginacionContainer) paginacionContainer.classList.add('hidden');
+        const btnCrearEmpty = document.getElementById('btn-crear-desde-empty');
+        if (btnCrearEmpty && modalCrear) {
+            btnCrearEmpty.addEventListener('click', function() {
+                actualizarContadorCrear();
+                modalCrear.classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
+            });
+        }
+        
+        const paginacionContainer = document.getElementById('paginacion-container');
+        if (paginacionContainer) paginacionContainer.classList.add('hidden');
+        
+        // Actualizar el contador de resultados
+        resultadosCount.textContent = `0 sugerencias`;
+        const filtroTexto = filtroEstadoActual === 'todos' ? 'todos' : filtroEstadoActual === 'activos' ? 'activos' : 'inactivos';
+        filtroActivo.textContent = `Mostrando ${filtroTexto}`;
+    }
+
+    // Renderizar tarjetas en el DOM
+    function renderizarTarjetas(sugerencias) {
+        // Si no hay sugerencias para mostrar, mostrar mensaje personalizado
+        if (!sugerencias || sugerencias.length === 0) {
+            mostrarMensajeVacio();
             return;
         }
 
@@ -553,6 +734,7 @@ document.addEventListener('DOMContentLoaded', function() {
             paginaActual = totalPaginas;
         }
 
+        // Establecer la clase grid cuando hay sugerencias
         tarjetasContainer.className = 'grid grid-cols-1 md:grid-cols-3 gap-3 items-stretch';
         
         const sugerenciasPagina = obtenerSugerenciasPagina(sugerencias);
@@ -584,6 +766,12 @@ document.addEventListener('DOMContentLoaded', function() {
         });
         
         actualizarPaginacion(sugerencias.length);
+        
+        // Actualizar el contador de resultados
+        const visibleCount = sugerencias.length;
+        resultadosCount.textContent = `${visibleCount} sugerencia${visibleCount !== 1 ? 's' : ''}`;
+        const filtroTexto = filtroEstadoActual === 'todos' ? 'todos' : filtroEstadoActual === 'activos' ? 'activos' : 'inactivos';
+        filtroActivo.textContent = `Mostrando ${filtroTexto}`;
     }
 
     // Crear HTML de una tarjeta
@@ -616,6 +804,7 @@ document.addEventListener('DOMContentLoaded', function() {
         return `
             <div class="tarjeta-tecnologia border border-sena-border rounded-lg bg-white p-4 hover:border-sena/30 hover:shadow-sm transition-all cursor-pointer flex flex-col h-full" 
                  data-id="${s.id_sugerencia}" 
+                 data-id-usuario="${s.id_usuario}"
                  data-nombre="${tituloEscapado}"
                  data-descripcion="${contenidoEscapado}"
                  data-tipo="${s.tipo_sugerencia || ''}"
@@ -682,49 +871,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             });
         });
-    }
-
-    // Actualizar contadores
-    function actualizarContadores(sugerencias) {
-        const activos = sugerencias.filter(s => s.estado == 1).length;
-        const inactivos = sugerencias.filter(s => s.estado == 0).length;
-        
-        contadorTodos.textContent = sugerencias.length;
-        contadorActivos.textContent = activos;
-        contadorInactivos.textContent = inactivos;
-        
-        const filtroActual = document.querySelector('.filtro-btn.active')?.dataset.filtro || 'todos';
-        filtrarTarjetas(filtroActual);
-    }
-
-    // Filtrar tarjetas según estado (solo visual, no afecta el orden)
-    function filtrarTarjetas(filtro) {
-        const tarjetas = document.querySelectorAll('.tarjeta-tecnologia');
-        let visibleCount = 0;
-        
-        tarjetas.forEach(tarjeta => {
-            const estado = tarjeta.dataset.estado;
-            let mostrar = false;
-            
-            if (filtro === 'todos') {
-                mostrar = true;
-            } else if (filtro === 'activos' && estado === 'activo') {
-                mostrar = true;
-            } else if (filtro === 'inactivos' && estado === 'inactivo') {
-                mostrar = true;
-            }
-            
-            if (mostrar) {
-                tarjeta.style.display = 'block';
-                visibleCount++;
-            } else {
-                tarjeta.style.display = 'none';
-            }
-        });
-        
-        resultadosCount.textContent = `${visibleCount} sugerencia${visibleCount !== 1 ? 's' : ''}`;
-        const filtroTexto = filtro === 'todos' ? 'todos' : filtro === 'activos' ? 'activos' : 'inactivos';
-        filtroActivo.textContent = `Mostrando ${filtroTexto}`;
     }
 
     // ==================== FUNCIONES CRUD ====================
@@ -816,6 +962,8 @@ document.addEventListener('DOMContentLoaded', function() {
     // Abrir modal de crear
     if (btnAbrirModal && modalCrear) {
         btnAbrirModal.addEventListener('click', function() {
+            // Inicializar contador de caracteres
+            actualizarContadorCrear();
             modalCrear.classList.remove('hidden');
             document.body.style.overflow = 'hidden';
         });
@@ -829,7 +977,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // Toggle el filtro
             mostrarSoloMisCreaciones = !mostrarSoloMisCreaciones;
             
-            // Cambiar estilo visual del botón - Sin hover blanco cuando está activo
+            // Cambiar estilo visual del botón
             if (mostrarSoloMisCreaciones) {
                 btnMisCreaciones.classList.add('bg-sena', 'text-white', 'border-sena');
                 btnMisCreaciones.classList.remove('border-sena-border', 'bg-white', 'text-sena-text-main', 'hover:bg-sena-soft');
@@ -841,11 +989,8 @@ document.addEventListener('DOMContentLoaded', function() {
             // Resetear página a 1
             paginaActual = 1;
             
-            // Obtener sugerencias filtradas y ordenadas
-            const sugerenciasFiltradas = obtenerSugerenciasFiltradas();
-            renderizarTarjetas(sugerenciasFiltradas);
-            
-            // Ya no se muestran alertas al activar/desactivar el filtro
+            // Actualizar todo
+            actualizarTodo();
         });
     }
 
@@ -896,6 +1041,9 @@ document.addEventListener('DOMContentLoaded', function() {
             formEditar.dataset.editandoId = id;
         }
         
+        // Actualizar contador de caracteres al abrir el modal
+        actualizarContadorEditar();
+        
         modalEditar.classList.remove('hidden');
         document.body.style.overflow = 'hidden';
     }
@@ -933,6 +1081,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 modalCrear.classList.add('hidden');
                 const radios = document.querySelectorAll('input[name="tipo_sugerencia"]');
                 radios.forEach(radio => radio.checked = false);
+                // Reset contador
+                const contadorSpan = document.getElementById('contador-caracteres-crear');
+                if (contadorSpan) contadorSpan.textContent = '0 / 30 caracteres';
             }
             if (modalEditar && !modalEditar.classList.contains('hidden')) {
                 modalEditar.classList.add('hidden');
@@ -940,6 +1091,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 const radiosEditar = document.querySelectorAll('input[name="tipo_sugerencia_editar"]');
                 radiosEditar.forEach(radio => radio.checked = false);
                 valoresOriginalesEditar = { tipo: '', titulo: '', descripcion: '' };
+                // Reset contador
+                const contadorSpan = document.getElementById('contador-caracteres-editar');
+                if (contadorSpan) contadorSpan.textContent = '0 / 30 caracteres';
             }
             document.body.style.overflow = '';
         });
@@ -1050,6 +1204,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
             
+            if (!validarDescripcion(contenido)) {
+                mostrarToastValidacion(`La descripción de la sugerencia debe tener al menos ${MIN_DESCRIPCION_LENGTH} caracteres. Actualmente tiene ${contenido.length} caracteres.`, 'warning');
+                return;
+            }
+            
             const resultado = await crearSugerencia(tipoSugerencia, titulo, contenido);
             
             if (resultado.success) {
@@ -1091,6 +1250,11 @@ document.addEventListener('DOMContentLoaded', function() {
             
             if (!descripcion) {
                 mostrarToastValidacion('Por favor ingresa una descripción para la sugerencia', 'warning');
+                return;
+            }
+            
+            if (!validarDescripcion(descripcion)) {
+                mostrarToastValidacion(`La descripción de la sugerencia debe tener al menos ${MIN_DESCRIPCION_LENGTH} caracteres. Actualmente tiene ${descripcion.length} caracteres.`, 'warning');
                 return;
             }
             
@@ -1346,6 +1510,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 modalCrear.classList.add('hidden');
                 const radios = document.querySelectorAll('input[name="tipo_sugerencia"]');
                 radios.forEach(radio => radio.checked = false);
+                // Reset contador
+                const contadorSpan = document.getElementById('contador-caracteres-crear');
+                if (contadorSpan) contadorSpan.textContent = '0 / 30 caracteres';
                 document.body.style.overflow = '';
             }
             if (modalDetalles && !modalDetalles.classList.contains('hidden')) {
@@ -1357,6 +1524,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 const radiosEditar = document.querySelectorAll('input[name="tipo_sugerencia_editar"]');
                 radiosEditar.forEach(radio => radio.checked = false);
                 valoresOriginalesEditar = { tipo: '', titulo: '', descripcion: '' };
+                // Reset contador
+                const contadorSpan = document.getElementById('contador-caracteres-editar');
+                if (contadorSpan) contadorSpan.textContent = '0 / 30 caracteres';
                 document.body.style.overflow = '';
             }
             if (modalDeshabilitar && !modalDeshabilitar.classList.contains('hidden')) {
@@ -1403,11 +1573,17 @@ document.addEventListener('DOMContentLoaded', function() {
                         if (modal === modalCrear) {
                             const radios = document.querySelectorAll('input[name="tipo_sugerencia"]');
                             radios.forEach(radio => radio.checked = false);
+                            // Reset contador
+                            const contadorSpan = document.getElementById('contador-caracteres-crear');
+                            if (contadorSpan) contadorSpan.textContent = '0 / 30 caracteres';
                         }
                         if (modal === modalEditar) {
                             const radiosEditar = document.querySelectorAll('input[name="tipo_sugerencia_editar"]');
                             radiosEditar.forEach(radio => radio.checked = false);
                             valoresOriginalesEditar = { tipo: '', titulo: '', descripcion: '' };
+                            // Reset contador
+                            const contadorSpan = document.getElementById('contador-caracteres-editar');
+                            if (contadorSpan) contadorSpan.textContent = '0 / 30 caracteres';
                         }
                     }
                 }
@@ -1421,10 +1597,24 @@ document.addEventListener('DOMContentLoaded', function() {
         btn.addEventListener('click', function() {
             filtroBtns.forEach(b => b.classList.remove('active'));
             this.classList.add('active');
-            const filtro = this.dataset.filtro;
-            filtrarTarjetas(filtro);
+            filtroEstadoActual = this.dataset.filtro;
+            
+            // Resetear página a 1 al cambiar de filtro
+            paginaActual = 1;
+            
+            // Actualizar todo
+            actualizarTodo();
         });
     });
+
+    // Agregar event listeners para contadores de caracteres
+    if (inputContenido) {
+        inputContenido.addEventListener('input', actualizarContadorCrear);
+    }
+    
+    if (textareaDescripcionEditar) {
+        textareaDescripcionEditar.addEventListener('input', actualizarContadorEditar);
+    }
 
     // Cargar sugerencias al iniciar
     cargarSugerencias();
