@@ -25,8 +25,16 @@ document.addEventListener("DOMContentLoaded", () => {
       label: "Edición",
       badgeClass: "bg-amber-100 text-amber-700",
     },
+    HABILITAR: {
+      label: "Habilitación",
+      badgeClass: "bg-emerald-100 text-emerald-700",
+    },
+    DESHABILITAR: {
+      label: "Deshabilitación",
+      badgeClass: "bg-orange-100 text-orange-700",
+    },
     DELETE: {
-      label: "Desactivación/Eliminación",
+      label: "Eliminación",
       badgeClass: "bg-rose-100 text-rose-700",
     },
   };
@@ -110,7 +118,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function itemView(item) {
-    const actionCode = String(item.accion || "").toUpperCase();
+    const actionCode = String(item.accion_ui || item.accion || "").toUpperCase();
     const actionMeta = getActionMeta(actionCode);
 
     const userName = (item.usuario_nombre || "Sistema").trim() || "Sistema";
@@ -269,12 +277,15 @@ document.addEventListener("DOMContentLoaded", () => {
         acc[row.actionCode] = (acc[row.actionCode] || 0) + 1;
         return acc;
       },
-      { INSERT: 0, UPDATE: 0, DELETE: 0 }
+      { INSERT: 0, UPDATE: 0, DESHABILITAR: 0, DELETE: 0 }
     );
 
     if (statCreaciones) statCreaciones.textContent = String(countByAction.INSERT || 0);
     if (statEdiciones) statEdiciones.textContent = String(countByAction.UPDATE || 0);
-    if (statDesactivaciones) statDesactivaciones.textContent = String(countByAction.DELETE || 0);
+    if (statDesactivaciones) {
+      const totalDesactivaciones = (countByAction.DESHABILITAR || 0) + (countByAction.DELETE || 0);
+      statDesactivaciones.textContent = String(totalDesactivaciones);
+    }
   }
 
   function applyFilters() {
@@ -317,7 +328,16 @@ document.addEventListener("DOMContentLoaded", () => {
       const payload = await response.json();
       const items = Array.isArray(payload.items) ? payload.items : [];
 
-      allItems = items.map(itemView).filter((row) => row.actionCode === "INSERT" || row.actionCode === "UPDATE" || row.actionCode === "DELETE");
+      allItems = items
+        .map(itemView)
+        .filter(
+          (row) =>
+            row.actionCode === "INSERT" ||
+            row.actionCode === "UPDATE" ||
+            row.actionCode === "HABILITAR" ||
+            row.actionCode === "DESHABILITAR" ||
+            row.actionCode === "DELETE"
+        );
 
       populateFilterOptions(allItems);
       applyFilters();

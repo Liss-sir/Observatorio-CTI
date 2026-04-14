@@ -7,21 +7,14 @@ class Historial {
         $this->conn = $db;
     }
 
-    /**
-     * Obtiene los registros de auditoría con paginación y filtros.
-     *
-     * @param string $search Término de búsqueda (tabla_nombre, pk_valor, nombre de usuario)
-     * @param string $modulo Nombre exacto de la tabla (opcional)
-     * @param string $accionCrud INSERT/UPDATE/DELETE (opcional)
-     * @param int $limit
-     * @param int $offset
-     * @return array
-     */
+    // Get the audit records with pagination and filters.
     public function listar($search = "", $modulo = "", $accionCrud = "", $limit = 50, $offset = 0) {
         $params = [];
 
-        // Expresión para el nombre del usuario según los campos reales de la tabla usuarios
+        // Expression for the user name according to the real fields of the users table
         $userNameExpr = $this->getUserNameExpr();
+        $effectiveUserIdExpr = $this->getEffectiveUserIdExpr();
+        $userRoleExpr = $this->getUserRoleExpr($effectiveUserIdExpr);
 
         $sql = "
             SELECT
@@ -29,22 +22,23 @@ class Historial {
                 a.tabla_nombre,
                 a.accion,
                 a.pk_valor,
-                a.usuario_id,
+                {$effectiveUserIdExpr} AS usuario_id,
                 a.old_values,
                 a.new_values,
                 a.fecha,
                 CASE
-                    WHEN a.usuario_id IS NULL THEN 'Sistema'
+                    WHEN {$effectiveUserIdExpr} IS NULL THEN 'Sistema'
                     WHEN {$userNameExpr} IS NOT NULL AND {$userNameExpr} != '' THEN {$userNameExpr}
-                    ELSE CONCAT('Usuario #', a.usuario_id)
+                    ELSE CONCAT('Usuario #', {$effectiveUserIdExpr})
                 END AS usuario_nombre,
-                '' AS usuario_cargo   -- No hay campo cargo en la tabla usuarios, se deja vacío
+                {$userRoleExpr} AS usuario_cargo
             FROM {$this->table} a
-            LEFT JOIN usuarios u ON u.id_usuario = a.usuario_id
+            LEFT JOIN usuarios u ON u.id_usuario = {$effectiveUserIdExpr}
+            LEFT JOIN roles r ON r.id_rol = u.id_rol
             WHERE 1=1
         ";
 
-        // Búsqueda general
+        // General search
         if (!empty($search)) {
             $sql .= " AND (
                 a.tabla_nombre LIKE :search
@@ -54,13 +48,13 @@ class Historial {
             $params[':search'] = "%$search%";
         }
 
-        // Filtro por módulo (tabla)
+        // Filter by module (table)
         if (!empty($modulo)) {
             $sql .= " AND a.tabla_nombre = :modulo";
             $params[':modulo'] = $modulo;
         }
 
-        // Filtro por acción CRUD
+        // Filter by action CRUD
         if (!empty($accionCrud)) {
             $sql .= " AND a.accion = :accion";
             $params[':accion'] = strtoupper($accionCrud);
@@ -79,17 +73,16 @@ class Historial {
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    /**
-     * Cuenta el total de registros con los filtros aplicados.
-     */
+    // Count the total number of records with the applied filters
     public function contar($search = "", $modulo = "", $accionCrud = "") {
         $params = [];
         $userNameExpr = $this->getUserNameExpr();
+        $effectiveUserIdExpr = $this->getEffectiveUserIdExpr();
 
         $sql = "
             SELECT COUNT(*) AS total
             FROM {$this->table} a
-            LEFT JOIN usuarios u ON u.id_usuario = a.usuario_id
+            LEFT JOIN usuarios u ON u.id_usuario = {$effectiveUserIdExpr}
             WHERE 1=1
         ";
 
@@ -121,10 +114,7 @@ class Historial {
         return (int)($row['total'] ?? 0);
     }
 
-    /**
-     * Construye una expresión SQL segura para obtener el nombre del usuario
-     * según los campos disponibles en la tabla 'usuarios'.
-     */
+    // Get the user name expression
     private function getUserNameExpr() {
         // Verificar qué columnas existen en 'usuarios'
         $stmt = $this->conn->prepare("SHOW COLUMNS FROM usuarios");
@@ -133,8 +123,8 @@ class Historial {
 
         $expr = "''";
 
-        // Prioridad: representante_legal para roles que no son empresa,
-        // nombre_empresa para empresas (id_rol = 2)
+        // Priority: representative_legal for non-company roles,
+        // nombre_empresa for companies (id_rol = 2)
         if (in_array('representante_legal', $cols) && in_array('nombre_empresa', $cols) && in_array('id_rol', $cols)) {
             $expr = "CASE WHEN u.id_rol = 2 THEN u.nombre_empresa ELSE u.representante_legal END";
         } elseif (in_array('representante_legal', $cols)) {
@@ -146,5 +136,60 @@ class Historial {
         }
 
         return $expr;
+    }
+
+    // Get the effective user ID
+    private function getEffectiveUserIdExpr() {
+        return "COALESCE(
+            a.usuario_id,
+            NULLIF(CAST(JSON_UNQUOTE(JSON_EXTRACT(a.new_values, '$.id_usuario')) AS UNSIGNED), 0),
+            NULLIF(CAST(JSON_UNQUOTE(JSON_EXTRACT(a.old_values, '$.id_usuario')) AS UNSIGNED), 0)
+        )";
+    }
+
+    // Get the role of the user
+    private function getUserRoleExpr($effectiveUserIdExpr) {
+        $stmtUsers = $this->conn->prepare("SHOW COLUMNS FROM usuarios");
+        $stmtUsers->execute();
+        $userCols = array_column($stmtUsers->fetchAll(PDO::FETCH_ASSOC), 'Field');
+
+        $hasUserRoleFk = in_array('id_rol', $userCols);
+        $hasRolesTable = false;
+        $hasRoleName = false;
+
+        try {
+            $stmtRoles = $this->conn->prepare("SHOW COLUMNS FROM roles");
+            $stmtRoles->execute();
+            $roleCols = array_column($stmtRoles->fetchAll(PDO::FETCH_ASSOC), 'Field');
+            $hasRolesTable = true;
+            $hasRoleName = in_array('nombre', $roleCols);
+        } catch (Throwable $e) {
+            $hasRolesTable = false;
+            $hasRoleName = false;
+        }
+
+        if ($hasUserRoleFk && $hasRolesTable && $hasRoleName) {
+            return "COALESCE(
+                NULLIF(CONCAT(UCASE(LEFT(LOWER(r.nombre), 1)), SUBSTRING(LOWER(r.nombre), 2)), ''),
+                (
+                    SELECT CONCAT(UCASE(LEFT(LOWER(rr.nombre), 1)), SUBSTRING(LOWER(rr.nombre), 2))
+                    FROM roles rr
+                    WHERE rr.id_rol = COALESCE(
+                        NULLIF(CAST(JSON_UNQUOTE(JSON_EXTRACT(a.new_values, '$.id_rol')) AS UNSIGNED), 0),
+                        NULLIF(CAST(JSON_UNQUOTE(JSON_EXTRACT(a.old_values, '$.id_rol')) AS UNSIGNED), 0)
+                    )
+                    LIMIT 1
+                ),
+                CASE
+                    WHEN {$effectiveUserIdExpr} IS NULL THEN 'Sistema'
+                    ELSE 'No disponible'
+                END
+            )";
+        }
+
+        return "CASE
+            WHEN {$effectiveUserIdExpr} IS NULL THEN 'Sistema'
+            ELSE 'No disponible'
+        END";
     }
 }
