@@ -2,7 +2,7 @@
 $host = 'localhost';
 $dbname = 'observatorio_cti';
 $username = 'root';
-$password = '';
+$password = 'root';
 
 try {
     $conn = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8mb4", $username, $password);
