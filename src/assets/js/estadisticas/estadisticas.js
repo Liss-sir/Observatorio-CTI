@@ -13,8 +13,101 @@ const monthNames = {
   '12': 'Diciembre'
 };
 
-const pieColors = ['#22c55e', '#3b82f6', '#eab308', '#ef4444', '#8b5cf6', '#f97316'];
 const API_URL = new URL('../../controllers/EstadisticaController.php', window.location.href).toString();
+
+function readComputedClassColor(className, propertyName = 'backgroundColor') {
+  if (typeof document === 'undefined' || !document.body) {
+    return null;
+  }
+
+  const probe = document.createElement('div');
+  probe.className = className;
+  probe.style.position = 'absolute';
+  probe.style.left = '-9999px';
+  probe.style.top = '0';
+  probe.style.width = '1px';
+  probe.style.height = '1px';
+  probe.style.opacity = '0';
+  probe.style.pointerEvents = 'none';
+
+  document.body.appendChild(probe);
+  const color = getComputedStyle(probe)[propertyName] || '';
+  probe.remove();
+
+  return color || null;
+}
+
+function withAlpha(color, alpha) {
+  const safeAlpha = Math.max(0, Math.min(1, Number(alpha)));
+  const value = String(color || '').trim();
+
+  if (!value) {
+    return `rgba(57, 169, 0, ${safeAlpha})`;
+  }
+
+  const rgbMatch = value.match(/^rgba?\(([^)]+)\)$/i);
+  if (rgbMatch) {
+    const channels = rgbMatch[1].split(',').map((part) => part.trim());
+    const [red, green, blue] = channels;
+    return `rgba(${Number(red) || 0}, ${Number(green) || 0}, ${Number(blue) || 0}, ${safeAlpha})`;
+  }
+
+  const hexMatch = value.match(/^#([0-9a-f]{3,8})$/i);
+  if (hexMatch) {
+    const hex = hexMatch[1];
+    const expand = (segment) => (segment.length === 1 ? segment + segment : segment);
+    const normalized = hex.length === 3 || hex.length === 4
+      ? hex.split('').map(expand).join('')
+      : hex;
+
+    const red = parseInt(normalized.slice(0, 2), 16);
+    const green = parseInt(normalized.slice(2, 4), 16);
+    const blue = parseInt(normalized.slice(4, 6), 16);
+
+    return `rgba(${red}, ${green}, ${blue}, ${safeAlpha})`;
+  }
+
+  return value;
+}
+
+function hexToRgb(hexColor) {
+  const value = String(hexColor || '').trim();
+  const match = value.match(/^#([0-9a-f]{6})$/i);
+
+  if (!match) {
+    return [57, 169, 0];
+  }
+
+  const hex = match[1];
+  return [
+    parseInt(hex.slice(0, 2), 16),
+    parseInt(hex.slice(2, 4), 16),
+    parseInt(hex.slice(4, 6), 16),
+  ];
+}
+
+function buildPiePalette(size = 6) {
+  const palette = [
+    '#39A900',
+    '#2563EB',
+    '#7C3AED',
+    '#DC2626',
+    '#D97706',
+    '#007832'
+  ];
+
+  const colors = [];
+  for (let index = 0; index < size; index += 1) {
+    const source = palette[index % palette.length];
+    const cycle = Math.floor(index / palette.length);
+    const alpha = cycle === 0 ? 1 : Math.max(0.32, 1 - (cycle * 0.18));
+    colors.push(cycle === 0 ? source : withAlpha(source, alpha));
+  }
+
+  return colors;
+}
+
+const pieColors = buildPiePalette();
 
 let barChart;
 let pieChart;
@@ -640,10 +733,10 @@ function renderPieLegend(labels, values, colors) {
       const color = colors[index] || '#94a3b8';
 
       return `
-        <div class="flex items-center gap-3 justify-between px-4 py-2 hover:bg-slate-50 rounded-lg transition-colors border border-slate-200">
-          <div class="flex items-center gap-3 flex-1">
-            <div class="w-3 h-3 rounded-full" style="background-color:${color}"></div>
-            <span class="text-[13px] text-sena-text-main font-medium">${label}</span>
+        <div class="flex items-start gap-3 justify-between px-4 py-2 hover:bg-slate-50 rounded-lg transition-colors border border-slate-200">
+          <div class="flex items-start gap-3 flex-1 min-w-0">
+            <div class="w-3 h-3 shrink-0 rounded-full mt-1" style="background-color:${color}"></div>
+            <span class="min-w-0 break-words text-[13px] leading-snug text-sena-text-main font-medium">${label}</span>
           </div>
           <span class="text-[13px] text-sena-text-muted font-medium">${value}</span>
           <span class="text-[13px] text-sena-text-muted font-medium min-w-[60px] text-right">${percentage}%</span>
@@ -702,7 +795,7 @@ function reportStyles() {
         padding: 20px;
       }
       .report-header { 
-        border-bottom: 2px solid #22c55e; 
+        border-bottom: 2px solid #000; 
         padding-bottom: 10px; 
         margin-bottom: 20px; 
       }
@@ -723,8 +816,8 @@ function reportStyles() {
       .section { 
         margin-top: 12px; 
         margin-bottom: 16px; 
-        border: 1px solid #e2e8f0; 
-        border-radius: 10px; 
+        border: 1px solid #000; 
+        border-radius: 6px; 
         padding: 12px; 
         page-break-inside: avoid; 
         break-inside: avoid;
@@ -749,12 +842,12 @@ function reportStyles() {
         margin-top: 15px;
       }
       th, td { 
-        border: 1px solid #ddd; 
+        border: 1px solid #000; 
         padding: 8px; 
         text-align: left; 
       }
       th { 
-        background: #f0fdf4; 
+        background: #f3f4f6; 
       }
     </style>
   `;
@@ -1371,7 +1464,9 @@ function addBarTableToPdf(doc, periodData, margin, startY, pageWidth) {
   // Encabezados
   doc.setFontSize(10);
   doc.setFont('helvetica', 'bold');
-  doc.setFillColor(240, 253, 244);
+  doc.setDrawColor(0, 0, 0);
+  doc.setFillColor(243, 244, 246);
+  doc.setTextColor(0, 0, 0);
   doc.rect(tableX, y, colWidths[0], rowHeight, 'F');
   doc.rect(tableX + colWidths[0], y, colWidths[1], rowHeight, 'F');
   doc.rect(tableX + colWidths[0] + colWidths[1], y, colWidths[2], rowHeight, 'F');
@@ -1392,7 +1487,7 @@ function addBarTableToPdf(doc, periodData, margin, startY, pageWidth) {
       // Cerrar contorno redondeado de la sección actual antes de cambiar de página
       const sectionHeight = y - sectionStartY;
       if (sectionHeight > 0) {
-        doc.roundedRect(tableX, sectionStartY, tableWidth, sectionHeight, 2, 2, 'S');
+        doc.roundedRect(tableX, sectionStartY, tableWidth, sectionHeight, 1, 1, 'S');
       }
 
       doc.addPage();
@@ -1401,7 +1496,9 @@ function addBarTableToPdf(doc, periodData, margin, startY, pageWidth) {
       
       // Re-dibujar encabezados en nueva página
       doc.setFont('helvetica', 'bold');
-      doc.setFillColor(240, 253, 244);
+      doc.setDrawColor(0, 0, 0);
+      doc.setFillColor(243, 244, 246);
+      doc.setTextColor(0, 0, 0);
       doc.rect(tableX, y, colWidths[0], rowHeight, 'F');
       doc.rect(tableX + colWidths[0], y, colWidths[1], rowHeight, 'F');
       doc.rect(tableX + colWidths[0] + colWidths[1], y, colWidths[2], rowHeight, 'F');
@@ -1440,7 +1537,7 @@ function addBarTableToPdf(doc, periodData, margin, startY, pageWidth) {
   // Contorno redondeado para la última sección de la tabla
   const finalSectionHeight = y - sectionStartY;
   if (finalSectionHeight > 0) {
-    doc.roundedRect(tableX, sectionStartY, tableWidth, finalSectionHeight, 3, 3, 'S');
+    doc.roundedRect(tableX, sectionStartY, tableWidth, finalSectionHeight, 1, 1, 'S');
   }
   
   return y + 5;
@@ -1460,8 +1557,8 @@ function addPieTableToPdf(doc, periodData, margin, startY, pageWidth) {
   }
   
   // Configurar tabla
-  const colWidths = [80, 40, 40];
-  const tableWidth = colWidths[0] + colWidths[1] + colWidths[2];
+  const colWidths = [18, 74, 44, 44];
+  const tableWidth = colWidths.reduce((acc, width) => acc + width, 0);
   const contentWidth = pageWidth - (margin * 2);
   const tableX = margin + ((contentWidth - tableWidth) / 2);
   const rowHeight = 8;
@@ -1471,17 +1568,22 @@ function addPieTableToPdf(doc, periodData, margin, startY, pageWidth) {
   // Encabezados
   doc.setFontSize(10);
   doc.setFont('helvetica', 'bold');
-  doc.setFillColor(240, 253, 244);
+  doc.setDrawColor(0, 0, 0);
+  doc.setFillColor(243, 244, 246);
+  doc.setTextColor(0, 0, 0);
   doc.rect(tableX, y, colWidths[0], rowHeight, 'F');
   doc.rect(tableX + colWidths[0], y, colWidths[1], rowHeight, 'F');
   doc.rect(tableX + colWidths[0] + colWidths[1], y, colWidths[2], rowHeight, 'F');
+  doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2], y, colWidths[3], rowHeight, 'F');
   doc.line(tableX + colWidths[0], y, tableX + colWidths[0], y + rowHeight);
   doc.line(tableX + colWidths[0] + colWidths[1], y, tableX + colWidths[0] + colWidths[1], y + rowHeight);
+  doc.line(tableX + colWidths[0] + colWidths[1] + colWidths[2], y, tableX + colWidths[0] + colWidths[1] + colWidths[2], y + rowHeight);
   doc.line(tableX, y + rowHeight, tableX + tableWidth, y + rowHeight);
   
-  doc.text('Línea Tecnológica', tableX + 2, y + 5);
-  doc.text('Solicitudes', tableX + colWidths[0] + 2, y + 5);
-  doc.text('Proporción', tableX + colWidths[0] + colWidths[1] + 2, y + 5);
+  doc.text('Color', tableX + 2, y + 5);
+  doc.text('Línea Tecnológica', tableX + colWidths[0] + 2, y + 5);
+  doc.text('Solicitudes', tableX + colWidths[0] + colWidths[1] + 2, y + 5);
+  doc.text('Proporción', tableX + colWidths[0] + colWidths[1] + colWidths[2] + 2, y + 5);
   y += rowHeight;
   
   // Filas de datos
@@ -1492,7 +1594,7 @@ function addPieTableToPdf(doc, periodData, margin, startY, pageWidth) {
       // Cerrar contorno redondeado de la sección actual antes de cambiar de página
       const sectionHeight = y - sectionStartY;
       if (sectionHeight > 0) {
-        doc.roundedRect(tableX, sectionStartY, tableWidth, sectionHeight, 2, 2, 'S');
+        doc.roundedRect(tableX, sectionStartY, tableWidth, sectionHeight, 1, 1, 'S');
       }
 
       doc.addPage();
@@ -1501,25 +1603,33 @@ function addPieTableToPdf(doc, periodData, margin, startY, pageWidth) {
       
       // Re-dibujar encabezados
       doc.setFont('helvetica', 'bold');
-      doc.setFillColor(240, 253, 244);
+      doc.setDrawColor(0, 0, 0);
+      doc.setFillColor(243, 244, 246);
+      doc.setTextColor(0, 0, 0);
       doc.rect(tableX, y, colWidths[0], rowHeight, 'F');
       doc.rect(tableX + colWidths[0], y, colWidths[1], rowHeight, 'F');
       doc.rect(tableX + colWidths[0] + colWidths[1], y, colWidths[2], rowHeight, 'F');
+      doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2], y, colWidths[3], rowHeight, 'F');
       doc.line(tableX + colWidths[0], y, tableX + colWidths[0], y + rowHeight);
       doc.line(tableX + colWidths[0] + colWidths[1], y, tableX + colWidths[0] + colWidths[1], y + rowHeight);
+      doc.line(tableX + colWidths[0] + colWidths[1] + colWidths[2], y, tableX + colWidths[0] + colWidths[1] + colWidths[2], y + rowHeight);
       doc.line(tableX, y + rowHeight, tableX + tableWidth, y + rowHeight);
-      doc.text('Línea Tecnológica', tableX + 2, y + 5);
-      doc.text('Solicitudes', tableX + colWidths[0] + 2, y + 5);
-      doc.text('Proporción', tableX + colWidths[0] + colWidths[1] + 2, y + 5);
+      doc.text('Color', tableX + 2, y + 5);
+      doc.text('Línea Tecnológica', tableX + colWidths[0] + 2, y + 5);
+      doc.text('Solicitudes', tableX + colWidths[0] + colWidths[1] + 2, y + 5);
+      doc.text('Proporción', tableX + colWidths[0] + colWidths[1] + colWidths[2] + 2, y + 5);
       y += rowHeight;
       doc.setFont('helvetica', 'normal');
     }
     
     const percentage = total > 0 ? ((values[i] / total) * 100).toFixed(1) : '0.0';
+    const rowColor = pieColors[i % pieColors.length];
+    const [red, green, blue] = hexToRgb(rowColor);
     
     // Dibujar solo la grilla interna; el borde externo lo define el contorno redondeado
     doc.line(tableX + colWidths[0], y, tableX + colWidths[0], y + rowHeight);
     doc.line(tableX + colWidths[0] + colWidths[1], y, tableX + colWidths[0] + colWidths[1], y + rowHeight);
+    doc.line(tableX + colWidths[0] + colWidths[1] + colWidths[2], y, tableX + colWidths[0] + colWidths[1] + colWidths[2], y + rowHeight);
     const isLastOverallRow = i === labels.length - 1;
     const nextRowWouldBreakPage = (i < labels.length - 1)
       && (y + (rowHeight * 2) > doc.internal.pageSize.getHeight() - margin);
@@ -1528,13 +1638,16 @@ function addPieTableToPdf(doc, periodData, margin, startY, pageWidth) {
       doc.line(tableX, y + rowHeight, tableX + tableWidth, y + rowHeight);
     }
     
+    doc.setFillColor(red, green, blue);
+    doc.roundedRect(tableX + 6, y + 2.25, 6, 4.5, 0.8, 0.8, 'F');
+
     // Texto (truncar si es muy largo)
     let label = labels[i];
-    if (label.length > 25) label = label.substring(0, 22) + '...';
+    if (label.length > 22) label = label.substring(0, 19) + '...';
     
-    doc.text(label, tableX + 2, y + 5);
-    doc.text(String(values[i]), tableX + colWidths[0] + 2, y + 5);
-    doc.text(`${percentage}%`, tableX + colWidths[0] + colWidths[1] + 2, y + 5);
+    doc.text(label, tableX + colWidths[0] + 2, y + 5);
+    doc.text(String(values[i]), tableX + colWidths[0] + colWidths[1] + 2, y + 5);
+    doc.text(`${percentage}%`, tableX + colWidths[0] + colWidths[1] + colWidths[2] + 2, y + 5);
     
     y += rowHeight;
   }
@@ -1542,7 +1655,7 @@ function addPieTableToPdf(doc, periodData, margin, startY, pageWidth) {
   // Contorno redondeado para la última sección de la tabla
   const finalSectionHeight = y - sectionStartY;
   if (finalSectionHeight > 0) {
-    doc.roundedRect(tableX, sectionStartY, tableWidth, finalSectionHeight, 3, 3, 'S');
+    doc.roundedRect(tableX, sectionStartY, tableWidth, finalSectionHeight, 1, 1, 'S');
   }
   
   doc.setTextColor(0, 0, 0);
