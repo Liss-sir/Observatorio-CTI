@@ -7,7 +7,7 @@
   <div class="fixed inset-0 overflow-y-auto">
     <div class="flex min-h-full items-center justify-center p-4">
 
-      <div class="relative w-full max-w-2xl lg:max-w-4xl transform overflow-hidden rounded-xl border border-sena-border bg-white shadow-2xl transition-all animate-modalFadeIn">
+      <div class="relative w-full max-w-2xl transform overflow-hidden rounded-xl border border-sena-border bg-white shadow-2xl transition-all animate-modalFadeIn">
 
         <!-- Header -->
         <div class="border-b border-sena-border px-6 py-5 flex justify-between items-center">
@@ -172,7 +172,7 @@
           <button
             type="button"
             id="btn-guardar-programa-editado"
-            class="px-4 py-2 text-sm font-medium text-white bg-[#39A900] rounded-lg hover:bg-green-700 transition-colors"
+            class="px-4 py-2 text-sm font-medium text-white bg-sena rounded-lg hover:opacity-90 transition-colors"
           >
             Guardar Cambios
           </button>

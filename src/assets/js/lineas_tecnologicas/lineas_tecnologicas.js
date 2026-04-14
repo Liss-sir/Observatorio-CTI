@@ -15,6 +15,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const btnDetalleDeshabilitar = document.getElementById("btn-detalle-deshabilitar");
   const detalleTitulo = document.getElementById("detalle-linea-titulo");
   const detalleBadgeEstado = document.getElementById("detalle-badge-estado");
+  const detalleEstadoCard = document.getElementById("detalle-estado-card");
+  const detalleEstadoIcon = document.getElementById("detalle-estado-icon");
   const detalleEstadoTitulo = document.getElementById("detalle-estado-titulo");
   const detalleEstadoTexto = document.getElementById("detalle-estado-texto");
   const STORAGE_KEY = "observatorio_lineas_tecnologicas_v1";
@@ -331,6 +333,10 @@ document.addEventListener("DOMContentLoaded", () => {
   function normalizarProyeccionTexto(proyeccion, idProyeccion = "") {
     const desdeId = getOptionLabelByValue(proyeccionesDisponibles, idProyeccion || proyeccion);
     if (desdeId) {
+      const matchId = String(desdeId).match(/(\d+)/);
+      if (matchId) {
+        return formatAnioProyeccion(matchId[1]);
+      }
       return desdeId;
     }
 
@@ -340,6 +346,10 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     if (/^\d+$/.test(texto)) {
       return formatAnioProyeccion(texto);
+    }
+    const match = texto.match(/(\d+)/);
+    if (match) {
+      return formatAnioProyeccion(match[1]);
     }
     return texto;
   }
@@ -671,12 +681,17 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function parseCardTecnologias(card) {
-    return Array.from(card.querySelectorAll(".flex.flex-wrap.gap-2 span"))
+    return Array.from(card.querySelectorAll(".linea-tec-meta-value, .flex.flex-wrap.gap-2 span"))
       .map((chip) => chip.textContent.trim())
       .filter(Boolean);
   }
 
   function parseCardArea(card) {
+    const areaValue = card.querySelector('.linea-tec-meta-item[data-meta-kind="area"] .linea-tec-meta-value');
+    if (areaValue?.textContent?.trim()) {
+      return areaValue.textContent.trim();
+    }
+
     const chips = parseCardTecnologias(card);
     return chips.length > 0 ? chips[0] : "";
   }
@@ -1140,11 +1155,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (item && typeof item === "object") {
           const anio = formatAnioProyeccion(item.anio || item.anios || fallbackAnios || "");
           const nombre = String(item.nombre || item.titulo || "").trim();
-
-          if (nombre && anio) {
-            return `${nombre}: ${anio}`;
-          }
-          return normalizarProyeccionTexto(nombre || anio);
+          return normalizarProyeccionTexto(anio || nombre);
         }
 
         return "";
@@ -1326,11 +1337,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const normalized = Array.isArray(values) ? values.filter(Boolean) : [];
     const items = normalized.length > 0 ? normalized : [fallback];
+    const isProyeccionList = id === "detalle-proyeccion-list";
 
     listEl.innerHTML = "";
     items.forEach((text) => {
       const item = document.createElement("li");
-      item.textContent = normalizarTextoVisible(text);
+      const rawText = String(text || "").trim();
+      const formattedText = isProyeccionList
+        ? (normalizarProyeccionTexto(rawText) || rawText)
+        : rawText;
+      item.textContent = normalizarTextoVisible(formattedText);
       listEl.appendChild(item);
     });
   }
@@ -1528,6 +1544,96 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  function construirMetaInfoCard(state) {
+    return [
+      { kind: "area", label: "Area", value: String(state?.area || "").trim() },
+      { kind: "tendencia", label: "Tendencia", value: String(state?.tendencia || "").trim() },
+      { kind: "proyeccion", label: "Proyeccion", value: normalizarProyeccionTexto(state?.proyeccion || "", state?.idProyeccion || "") },
+    ].filter((item) => item.value);
+  }
+
+  function renderMetaInfoCard(metaWrap, state) {
+    if (!metaWrap) {
+      return;
+    }
+
+    const metaItems = construirMetaInfoCard(state);
+
+    if (metaItems.length === 0) {
+      metaWrap.classList.add("hidden");
+      metaWrap.innerHTML = "";
+      return;
+    }
+
+    metaWrap.classList.remove("hidden");
+    metaWrap.innerHTML = "";
+
+    const metaStylesByKind = {
+      area: {
+        wrapper: "bg-sena-soft/50 border border-sena-border",
+        label: "text-sena-strong",
+        value: "text-sena",
+      },
+      tendencia: {
+        wrapper: "bg-sena-soft/50 border border-sena-border",
+        label: "text-sena-strong",
+        value: "text-sena",
+      },
+      proyeccion: {
+        wrapper: "bg-sena-soft/50 border border-sena-border",
+        label: "text-sena-strong",
+        value: "text-sena",
+      },
+    };
+
+    metaItems.forEach((item) => {
+      const style = metaStylesByKind[item.kind] || {
+        wrapper: "bg-sena-soft/50 border border-sena-border",
+        label: "text-sena-strong",
+        value: "text-sena-strong",
+      };
+
+      const block = document.createElement("div");
+      block.className = `linea-tec-meta-item min-w-0 rounded-lg px-3 py-2 min-h-[52px] ${style.wrapper} ${item.kind === "proyeccion" ? "sm:col-span-2" : ""}`;
+      block.dataset.metaKind = item.kind;
+      block.innerHTML = `
+        <p class="linea-tec-meta-label text-xs font-bold uppercase tracking-wide ${style.label}">${item.label}</p>
+        <p class="linea-tec-meta-value mt-0.5 text-[11px] font-medium text-sena-text-main truncate" title="${item.value}">${item.value}</p>
+      `;
+      metaWrap.appendChild(block);
+    });
+  }
+
+  function formatearProgramaFormacionVisible(value) {
+    const raw = String(value || "").trim();
+    if (!raw) {
+      return "";
+    }
+
+    const letters = raw.replace(/[^A-Za-zÁÉÍÓÚÜÑáéíóúüñ]/g, "");
+    const upperLetters = letters.replace(/[^A-ZÁÉÍÓÚÜÑ]/g, "").length;
+    const isMostlyUppercase = letters.length > 0 && (upperLetters / letters.length) >= 0.7;
+
+    if (!isMostlyUppercase) {
+      return raw;
+    }
+
+    return raw
+      .toLowerCase()
+      .split(/\s+/)
+      .map((word) => {
+        if (!word) return "";
+
+        // Preserve short acronyms (e.g., QK, TIC, IA)
+        if (word.length <= 3 && /^[a-z0-9]+$/i.test(word)) {
+          return word.toUpperCase();
+        }
+
+        return word.charAt(0).toUpperCase() + word.slice(1);
+      })
+      .join(" ");
+  }
+
   function crearCardLinea(nombre, state) {
     const puedeEditar = typeof Auth !== 'undefined' && Auth.tienePermiso('editar_linea');
     const puedeDesactivar = typeof Auth !== 'undefined' && Auth.tienePermiso('desactivar_linea');
@@ -1537,30 +1643,8 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     const card = document.createElement("div");
-    const chips = [state.programaFormacion, state.tendencia].filter(Boolean).slice(0, 2);
-    
-    const estadoActivo = state.active;
 
-    let switchHTML = '';
-    let editButtonHTML = '';
-
-    if (puedeDesactivar) {
-      switchHTML = `
-        <div class="switch-sena ${estadoActivo ? 'active' : ''}" data-id="${state.idLinea}"></div>
-      `;
-    }
-
-    if (puedeEditar) {
-      editButtonHTML = `
-        <button data-permiso="editar_linea" class="btn-editar-linea p-2 hover:bg-sena-soft hover:text-sena rounded-lg transition-colors"
-          data-id="${state.idLinea}"
-          data-nombre="${nombre}">
-          <i data-lucide="pencil" class="w-4 h-4 text-gray-500 hover:text-sena"></i>
-        </button>
-      `;
-    }
-
-    card.className = "tarjeta-tecnologia bg-white border border-sena-border rounded-xl p-6 flex flex-col gap-3";
+    card.className = "tarjeta-tecnologia bg-white border border-sena-border rounded-xl p-5 lg:p-6 flex flex-col gap-4";
     card.dataset.idLinea = String(state.idLinea || "");
     card.dataset.idArea = String(state.idArea || "");
     card.dataset.idPrograma = String(state.idPrograma || "");
@@ -1570,40 +1654,38 @@ document.addEventListener("DOMContentLoaded", () => {
     card.innerHTML = `
       <div class="flex justify-between items-start gap-3">
         <div class="flex items-center gap-3 min-w-0 flex-1">
-          <div class="w-11 h-11 bg-sena-soft rounded-xl flex items-center justify-center flex-shrink-0">
+          <div class="w-11 h-11 bg-sena-soft rounded-lg flex items-center justify-center flex-shrink-0">
             <svg class="w-5 h-5 text-sena-strong" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 0 1 6 3.75h2.25A2.25 2.25 0 0 1 10.5 6v2.25a2.25 2.25 0 0 1-2.25 2.25H6a2.25 2.25 0 0 1-2.25-2.25V6ZM3.75 15.75A2.25 2.25 0 0 1 6 13.5h2.25a2.25 2.25 0 0 1 2.25 2.25V18a2.25 2.25 0 0 1-2.25 2.25H6A2.25 2.25 0 0 1 3.75 18v-2.25ZM13.5 6a2.25 2.25 0 0 1 2.25-2.25H18A2.25 2.25 0 0 1 20.25 6v2.25A2.25 2.25 0 0 1 18 10.5h-2.25a2.25 2.25 0 0 1-2.25-2.25V6ZM13.5 15.75a2.25 2.25 0 0 1 2.25-2.25H18a2.25 2.25 0 0 1 2.25 2.25V18A2.25 2.25 0 0 1 18 20.25h-2.25a2.25 2.25 0 0 1-2.25-2.25v-2.25Z" />
             </svg>
           </div>
           <h3 class="min-w-0 flex-1 font-['Montserrat'] text-base font-semibold text-sena-text-main leading-snug truncate"></h3>
         </div>
-        <div class="flex items-center gap-2">
-          ${editButtonHTML}
-          ${switchHTML}
-        </div>
+        <span class="linea-tec-perfiles-count hidden text-sm text-sena-text-soft">0 perfiles</span>
       </div>
-      <p class="linea-tec-programa text-sm font-medium text-sena-text-soft leading-snug break-words [overflow-wrap:anywhere]"></p>
-      <div class="flex flex-wrap gap-2"></div>
+      <div class="linea-tec-programa-wrap">
+        <p class="linea-tec-programa text-sm text-sena-text-soft truncate" title="">
+          <span class="font-bold text-sena-text-main">Programa de formacion:</span>
+          <span class="linea-tec-programa-value font-medium text-sena-text-soft"></span>
+        </p>
+      </div>
+      <div class="linea-tec-meta-list grid grid-cols-1 gap-2.5 sm:grid-cols-2"></div>
       <a href="#" class="text-sm text-sena-strong font-medium mt-auto inline-flex items-center gap-1 hover:underline">Ver perfiles &rarr;</a>
     `;
 
     card.querySelector("h3").textContent = nombre;
     card.querySelector("h3").title = nombre;
     const programaLabel = String(state.programaFormacion || "").trim();
+    const programaVisible = formatearProgramaFormacionVisible(programaLabel);
     const programaEl = card.querySelector(".linea-tec-programa");
+    const programaValueEl = card.querySelector(".linea-tec-programa-value");
     if (programaEl) {
-      programaEl.textContent = programaLabel || "Programa no registrado";
+      programaEl.title = programaLabel || "Programa no registrado";
     }
-    const chipsWrap = card.querySelector(".flex.flex-wrap.gap-2");
-    chipsWrap.className = "flex flex-wrap gap-2 max-w-full";
-
-    chips.forEach((chipText) => {
-      const chip = document.createElement("span");
-      chip.className = "text-xs text-sena-strong bg-sena-soft rounded-full px-2.5 py-0.5 truncate min-w-0";
-      chip.textContent = chipText;
-      chip.title = chipText;
-      chipsWrap.appendChild(chip);
-    });
+    if (programaValueEl) {
+      programaValueEl.textContent = programaVisible || "Programa no registrado";
+    }
+    renderMetaInfoCard(card.querySelector(".linea-tec-meta-list"), state);
 
     cardsGrid.appendChild(card);
     cards.push(card);
@@ -1630,10 +1712,19 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     const programaEl = card.querySelector(".linea-tec-programa");
-    if (programaEl) {
+    const programaValueEl = card.querySelector(".linea-tec-programa-value");
+    if (programaEl || programaValueEl) {
       const programaLabel = String(state.programaFormacion || "").trim();
-      programaEl.textContent = programaLabel || "Programa no registrado";
+      const programaVisible = formatearProgramaFormacionVisible(programaLabel);
+      if (programaEl) {
+        programaEl.title = programaLabel || "Programa no registrado";
+      }
+      if (programaValueEl) {
+        programaValueEl.textContent = programaVisible || "Programa no registrado";
+      }
     }
+
+    renderMetaInfoCard(card.querySelector(".linea-tec-meta-list"), state);
 
     card.dataset.idLinea = String(state.idLinea || card.dataset.idLinea || "");
     card.dataset.idArea = String(state.idArea || card.dataset.idArea || "");
@@ -1641,19 +1732,6 @@ document.addEventListener("DOMContentLoaded", () => {
     card.dataset.idEtapa = String(state.idEtapa || card.dataset.idEtapa || "");
     card.dataset.idTendencia = String(state.idTendencia || card.dataset.idTendencia || "");
     card.dataset.idProyeccion = String(state.idProyeccion || card.dataset.idProyeccion || "");
-
-    const chipsWrap = card.querySelector(".flex.flex-wrap.gap-2");
-    if (chipsWrap) {
-      chipsWrap.innerHTML = "";
-      chipsWrap.className = "flex flex-wrap gap-2 max-w-full";
-      [state.programaFormacion, state.tendencia].filter(Boolean).slice(0, 2).forEach((chipText) => {
-        const chip = document.createElement("span");
-        chip.className = "text-xs text-sena-strong bg-sena-soft rounded-full px-2.5 py-0.5 truncate min-w-0";
-        chip.textContent = chipText;
-        chip.title = chipText;
-        chipsWrap.appendChild(chip);
-      });
-    }
 
     actualizarLinkDetalle(card, nombre);
   }
@@ -1921,6 +1999,16 @@ document.addEventListener("DOMContentLoaded", () => {
       if (detalleEstadoTitulo) {
         detalleEstadoTitulo.textContent = "Linea Vigente";
         detalleEstadoTitulo.className = "text-sm font-semibold text-sena";
+        detalleEstadoTitulo.style.color = "";
+      }
+
+      if (detalleEstadoCard) {
+        detalleEstadoCard.className = "border border-sena/30 rounded-xl bg-sena/5 p-5 flex items-center gap-3";
+      }
+
+      if (detalleEstadoIcon) {
+        detalleEstadoIcon.className = "w-5 h-5 text-sena flex-shrink-0";
+        detalleEstadoIcon.style.color = "";
       }
 
       if (detalleEstadoTexto) {
@@ -1939,9 +2027,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (detalleBadgeEstado) {
       detalleBadgeEstado.className =
-        "inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium bg-[#FFF4E5] text-[#A05A00]";
+        "inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold border border-[#e65100] bg-orange-50 text-[#e65100]";
       detalleBadgeEstado.innerHTML = `
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-3 h-3">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-3.5 h-3.5">
           <path stroke-linecap="round" stroke-linejoin="round" d="m15.75 9-6 6m0-6 6 6" />
         </svg>
         Deshabilitado
@@ -1950,7 +2038,17 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (detalleEstadoTitulo) {
       detalleEstadoTitulo.textContent = "Linea Deshabilitada";
-      detalleEstadoTitulo.className = "text-sm font-semibold text-[#A05A00]";
+      detalleEstadoTitulo.className = "text-sm font-semibold text-[#e65100]";
+      detalleEstadoTitulo.style.color = "#e65100";
+    }
+
+    if (detalleEstadoCard) {
+      detalleEstadoCard.className = "border border-[#e65100] rounded-xl bg-orange-50 p-5 flex items-center gap-3";
+    }
+
+    if (detalleEstadoIcon) {
+      detalleEstadoIcon.className = "w-5 h-5 text-[#e65100] flex-shrink-0";
+      detalleEstadoIcon.style.color = "#e65100";
     }
 
     if (detalleEstadoTexto) {
