@@ -431,41 +431,41 @@ document.addEventListener("DOMContentLoaded", function () {
                     ${switchHTML}
                 </div>
             </div>
-            
-            <!-- Resto del código igual... -->
-            <div class="flex flex-wrap gap-2 mb-3">
-                <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-700">
-                    #${programa.codigo_programa || 'N/A'}
-                </span>
-                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium ${colorNivel}">
-                    <i data-lucide="layers" class="w-3 h-3"></i>
-                    ${nombreNivel}
-                </span>
-                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-sena-soft text-green-700">
-                    <i data-lucide="monitor" class="w-3 h-3"></i>
-                    ${capitalizarPrimeraLetra(programa.modalidad)}
-                </span>
-            </div>
-            
-            <div class="space-y-2 text-sm text-gray-500">
-                <div class="flex items-center gap-4">
-                    <span class="inline-flex items-center gap-1.5">
-                        <i data-lucide="users" class="w-4 h-4"></i>
-                        ${programa.cupos_formacion || 'N/A'} cupos
+            <div class="flex flex-col items-center">
+                <div class="flex flex-wrap gap-2 mb-3 justify-center">
+                    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-700">
+                        #${programa.codigo_programa || 'N/A'}
                     </span>
-                    <span class="text-gray-300">|</span>
-                    <span>Área: ${nombreArea}</span>
+                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium ${colorNivel}">
+                        <i data-lucide="layers" class="w-3 h-3"></i>
+                        ${nombreNivel}
+                    </span>
+                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-sena-soft text-green-700">
+                        <i data-lucide="monitor" class="w-3 h-3"></i>
+                        ${capitalizarPrimeraLetra(programa.modalidad)}
+                    </span>
                 </div>
-                <div class="flex items-center gap-2 text-xs">
-                    <span class="inline-flex items-center gap-1">
-                        <i data-lucide="calendar" class="w-3.5 h-3.5"></i>
-                        ${formatearFecha(programa.fecha_creacion)}
-                    </span>
-                    <i data-lucide="arrow-right" class="w-3.5 h-3.5 text-gray-400"></i>
-                    <span class="inline-flex items-center gap-1">
-                        <i data-lucide="calendar" class="w-3.5 h-3.5"></i>
-                        ${formatearFecha(programa.fecha_fin)}
-                    </span>
+                
+                <div class="space-y-2 text-sm text-gray-500 text-center">
+                    <div class="flex items-center justify-center gap-4">
+                        <span class="inline-flex items-center gap-1.5">
+                            <i data-lucide="users" class="w-4 h-4"></i>
+                            ${programa.cupos_formacion || 'N/A'} cupos
+                        </span>
+                        <span class="text-gray-300 mx-1">|</span>
+                        <span>Área: ${nombreArea}</span>
+                    </div>
+                    <div class="flex items-center justify-center gap-2 text-xs">
+                        <span class="inline-flex items-center gap-1">
+                            <i data-lucide="calendar" class="w-3.5 h-3.5"></i>
+                            ${formatearFecha(programa.fecha_creacion)}
+                        </span>
+                        <i data-lucide="arrow-right" class="w-3.5 h-3.5 text-gray-400"></i>
+                        <span class="inline-flex items-center gap-1">
+                            <i data-lucide="calendar" class="w-3.5 h-3.5"></i>
+                            ${formatearFecha(programa.fecha_fin)}
+                        </span>
+                    </div>
                 </div>
             </div>
         `;

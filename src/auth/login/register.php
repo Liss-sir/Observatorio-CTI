@@ -24,8 +24,6 @@ $razonesSociales = [
     <meta charset="UTF-8">
     <title>Registro | Observatorio CTI</title>
 
-    
-
     <!-- Tailwind -->
     <script src="https://cdn.tailwindcss.com"></script>
 
@@ -42,6 +40,28 @@ $razonesSociales = [
     </script>
 
     <style>
+        .custom-select {
+        width: 100%;
+        padding: 0.5rem 2.5rem 0.5rem 0.75rem;
+        font-size: 0.875rem;
+        color: #1e293b;
+        background-color: white;
+        border: 1px solid #e2e8f0;
+        border-radius: 0.5rem;
+        appearance: none;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        cursor: pointer;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%236B7280'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 0.75rem center;
+        background-size: 0.8rem;
+        }
+
+        .custom-select:focus {
+        outline: none;
+        border-color: #39A900;
+        }
         /* Efecto de medio círculo para la imagen - redondeado hacia la izquierda */
         .clip-half-circle {
             clip-path: ellipse(100% 100% at 100% 50%);
@@ -152,27 +172,28 @@ $razonesSociales = [
                     <label class="block text-xs font-medium mb-1">
                         Rol
                     </label>
-                    <select name="rol" class="custom-select w-full px-3 py-2 rounded-md border border-gray-300 text-sm
-                                focus:border-sena focus:ring-1 focus:ring-sena/30
-                                focus:outline-none transition bg-white">>
-                        <option value="usuario">Empresa</option>
-                        <option value="admin">Administrador</option>
-                    </select>
+                    
+                    <!-- 🔹 Texto estático con estilo de input (solo visual) -->
+                    <div class="w-full px-3 py-2 rounded-md border border-gray-300 bg-gray-50 text-sm text-gray-700 cursor-not-allowed select-none">
+                        <?= $selectedRol ?? 'Administrador' ?>
+                    </div>
+                    
+                    <!-- 🔹 Input oculto para enviar el valor al backend -->
+                    <input type="hidden" name="rol" value="<?= htmlspecialchars($selectedRol ?? 'admin') ?>">
                 </div>
-                <?php endif; ?>
+            <?php endif; ?>
                 <!-- Representante -->
                <?php if (!$modoAdmin): ?>
-                <div>
+                <div data-role="empresa" class="transition-all duration-200">
                     <label class="block text-xs font-medium mb-1">
                         Nombre del representante legal <span class="text-red-500">*</span>
                     </label>
                     <input type="text" name="representante" placeholder="Carlos Ocampo"
                         class="w-full px-3 py-2 rounded-md border bg-white border-gray-300 text-sm
-                                focus:border-sena focus:ring-1 focus:ring-sena/30
-                                focus:outline-none transition" />
+                        focus:border-sena focus:ring-1 focus:ring-sena/30 focus:outline-none transition" />
                 </div>
                 <?php else: ?>
-                <input type="hidden" name="representante" value="Administrador">
+                    <input type="hidden" name="representante" value="Administrador">
                 <?php endif; ?>
 
                 <!-- Empresa -->
@@ -199,14 +220,9 @@ $razonesSociales = [
 
                 <!-- Razón social (Full width) -->
                 <?php if (!$modoAdmin): ?>
-                <div class="md:col-span-2">
-                    <label class="block text-xs font-medium mb-1">
-                        Razón social
-                    </label>
-                    <select name="razon_social"
-                            class="w-full px-3 py-2 rounded-md border border-gray-300 text-sm
-                                focus:border-sena focus:ring-1 focus:ring-sena/30
-                                focus:outline-none transition bg-white">
+                <div data-role="empresa" class="md:col-span-2 transition-all duration-200">
+                    <label class="block text-xs font-medium mb-1">Razón social</label>
+                    <select name="razon_social" class="custom-select w-full px-3 py-2 rounded-md border border-gray-300 text-sm ...">
                         <option value="">Seleccione el tipo de empresa (opcional)</option>
                         <?php foreach ($razonesSociales as $razon): ?>
                             <option value="<?= htmlspecialchars($razon['value']) ?>">
@@ -216,7 +232,7 @@ $razonesSociales = [
                     </select>
                 </div>
                 <?php else: ?>
-                <input type="hidden" name="razon_social" value="ADMINISTRADOR">
+                    <input type="hidden" name="razon_social" value="">
                 <?php endif; ?>
 
                 <!-- Tipo documento -->
@@ -229,7 +245,7 @@ $razonesSociales = [
                                    focus:border-sena focus:ring-1 focus:ring-sena/30
                                    focus:outline-none transition">
                         <option value="">Seleccione</option>
-                        <option value="CC">Cédula</option>
+                        <option value="CC">CC</option>
                         <option value="NIT">NIT</option>
                         <option value="RUT">RUT</option>
                         <option value="CE">CE</option>

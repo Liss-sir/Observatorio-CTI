@@ -25,7 +25,7 @@
         <!-- Content -->
         <div class="px-6 py-5">
           <p class="text-sm text-sena-text-soft leading-relaxed">
-            El Usuario <span class="font-semibold text-[#39A900]" id="nombre-perfil-habilitado-exito">"Desarrollador Full Stack Senior"</span> ha sido habilitado correctamente.
+            El Usuario <span class="font-semibold text-sena" id="nombre-perfil-habilitado-exito">"Desarrollador Full Stack Senior"</span> ha sido habilitado correctamente.
           </p>
           <div class="mt-4 flex items-center gap-2 text-xs text-sena-text-soft">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">

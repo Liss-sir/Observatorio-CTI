@@ -25,7 +25,7 @@
         <!-- Content -->
         <div class="px-6 py-5">
           <p class="text-sm text-sena-text-soft leading-relaxed">
-            El usuario <span class="font-semibold text-sena-text-main" id="nombre-perfil-deshabilitado">Usuario</span> ha sido deshabilitado correctamente.
+            El usuario <span class="font-semibold text-sena" id="nombre-perfil-deshabilitado">Usuario</span> ha sido deshabilitado correctamente.
           </p>
           
           <!-- Contador de segundos (NUEVO) -->

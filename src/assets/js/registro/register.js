@@ -1,4 +1,40 @@
 document.addEventListener('DOMContentLoaded', function() {
+
+    // ===== 5. TOGGLE DE CAMPOS SEGÚN ROL =====
+    const selectRol = document.querySelector('select[name="rol"]');
+
+    function toggleCamposPorRol(rol) {
+        const esAdmin = rol === 'admin';
+        
+        // Mostrar/ocultar campos con data-role="empresa"
+        document.querySelectorAll('[data-role="empresa"]').forEach(el => {
+            el.style.display = esAdmin ? 'none' : '';
+            // Deshabilitar inputs ocultos para que no se envíen
+            const inputs = el.querySelectorAll('input, select, textarea');
+            inputs.forEach(input => input.disabled = esAdmin);
+        });
+        
+        // Actualizar hidden inputs según rol
+        const representanteHidden = document.querySelector('input[name="representante"][type="hidden"]');
+        const razonHidden = document.querySelector('input[name="razon_social"][type="hidden"]');
+        
+        if (representanteHidden) {
+            representanteHidden.value = esAdmin ? 'Administrador' : '';
+        }
+        if (razonHidden) {
+            razonHidden.value = esAdmin ? '' : '';
+        }
+    }
+
+    // Event listener para cambios en el select
+    if (selectRol) {
+        selectRol.addEventListener('change', (e) => {
+            toggleCamposPorRol(e.target.value);
+        });
+        
+        // Ejecutar al cargar por si ya hay un valor seleccionado
+        toggleCamposPorRol(selectRol.value);
+    }
     
     // ===== 1. INICIALIZAR LUCIDE ICONS =====
     if (typeof lucide !== 'undefined') {
@@ -89,17 +125,30 @@ document.addEventListener('DOMContentLoaded', function() {
             }
 
             // ===== VALIDACIONES =====
-            
-            // Campos requeridos
-            if (!data.representante_legal || !data.nombre_empresa || !data.correo || 
-                !data.tipo_documento || !data.numero_documento || !data.password) {
-                alert("Por favor completa todos los campos obligatorios");
-                submitBtn.disabled = false;
-                submitBtn.innerHTML = originalText;
-                return;
+            const esAdmin = form.rol?.value === 'admin';
+
+            // Campos requeridos dinámicos
+            const camposRequeridos = {
+                representante_legal: !esAdmin,      // Solo requerido para empresa
+                nombre_empresa: true,               // Siempre requerido
+                correo: true,                       // Siempre requerido
+                tipo_documento: !esAdmin,           // Solo requerido para empresa
+                numero_documento: !esAdmin,         // Solo requerido para empresa
+                password: true,                     // Siempre requerido
+                razon_social: false                 // Siempre opcional
+            };
+
+            // Validar solo los campos requeridos según el rol
+            for (const [campo, requerido] of Object.entries(camposRequeridos)) {
+                if (requerido && (!data[campo] || data[campo]?.trim() === '')) {
+                    alert(`El campo ${campo.replace('_', ' ')} es requerido`);
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalText;
+                    return;
+                }
             }
 
-            // Validar formato de correo
+            // Validar formato de correo (siempre)
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
             if (!emailRegex.test(data.correo)) {
                 alert("Por favor ingresa un correo electrónico válido");
@@ -108,6 +157,22 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
 
+            // Validar contraseña mínima (siempre)
+            if (data.password.length < 6) {
+                alert("La contraseña debe tener al menos 6 caracteres");
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalText;
+                return;
+            }
+
+            // Validar que las contraseñas coincidan (siempre)
+            if (data.password !== form.confirm_password?.value) {
+                alert("Las contraseñas no coinciden");
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalText;
+                return;
+            }
+       
             // Validar contraseña mínima
             if (data.password.length < 6) {
                 alert("La contraseña debe tener al menos 6 caracteres");

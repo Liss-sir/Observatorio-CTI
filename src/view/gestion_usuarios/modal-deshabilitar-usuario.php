@@ -19,7 +19,7 @@
                 <!-- Content -->
                 <div class="px-6 py-4">
                     <p class="text-sm text-sena-text-soft leading-relaxed">
-                        ¿Estás seguro de deshabilitar al usuario <span class="font-medium text-sena-text-main" id="nombre-usuario-deshabilitar">Usuario</span>?
+                        ¿Estás seguro de deshabilitar al usuario <span class="font-medium text-[#e65100]" id="nombre-usuario-deshabilitar">Usuario</span>?
                         El registro no se eliminará, solo se marcará como inactivo.
                     </p>
                 </div>

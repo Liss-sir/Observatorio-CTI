@@ -284,7 +284,6 @@ class LogController {
         // 🧠 MAPA DE ROLES (ajústalo si cambia en tu BD)
         $mapaRoles = [
             'admin' => 1,
-            'usuario' => 2,
             'empresa' => 2
         ];
 
@@ -342,7 +341,9 @@ class LogController {
         }
 
         // Validar razon_social si se envía (opcional, pero debe ser uno de los valores del enum)
-        if (isset($input['razon_social']) && !empty($input['razon_social'])) {
+        $idRol = $input['id_rol'] ?? 2;
+
+        if (isset($input['razon_social']) && !empty($input['razon_social']) && $idRol != 1) {
             $razones_permitidas = [
                 'SOCIEDAD POR ACCIONES SIMPLIFICADA',
                 'SOCIEDAD ANONIMA',
@@ -354,6 +355,7 @@ class LogController {
                 'FUNDACION',
                 'ASOCIACION'
             ];
+            
             if (!in_array($input['razon_social'], $razones_permitidas)) {
                 echo json_encode([
                     'success' => false,
