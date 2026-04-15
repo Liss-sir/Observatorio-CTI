@@ -43,6 +43,9 @@ include __DIR__ . '../../../includes/header.php';
         </button>
       </div>
 
+      <div class="flex gap-8">
+      <div class="flex-1 min-w-0">
+
       <p class="text-sm text-sena-text-soft mb-6">
         <strong id="lineas-encontradas-count" class="font-medium text-sena-text-main">0</strong>
         <span id="lineas-encontradas-label">lineas encontradas</span>
@@ -87,6 +90,9 @@ include __DIR__ . '../../../includes/header.php';
           <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
           Crear primera línea
         </button>
+      </div>
+
+      </div>
       </div>
 
       <!-- Contenedor para la paginacion -->

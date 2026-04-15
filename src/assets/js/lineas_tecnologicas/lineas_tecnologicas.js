@@ -265,7 +265,7 @@ document.addEventListener("DOMContentLoaded", () => {
         #linea-modal-editar textarea:focus {
           outline: none;
           border-color: #39A900;
-          box-shadow: 0 0 0 2px rgba(57, 169, 0, 0.2);
+          box-shadow: 0 0 0 0.125rem rgba(57, 169, 0, 0.2);
         }
       `;
       document.head.appendChild(style);
@@ -1064,7 +1064,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     paginacionContainer.innerHTML = `
       <div class="flex flex-col items-center gap-3 mb-6 mt-6">
-        <div class="text-sm text-sena-text-soft">
+        <div class="text-sm text-sena-text-soft text-center px-4">
           Mostrando <span class="font-medium text-sena">${((paginaActual - 1) * elementosPorPagina) + 1}</span> -
           <span class="font-medium text-sena">${Math.min(paginaActual * elementosPorPagina, totalElementos)}</span> de
           <span class="font-medium text-sena">${totalElementos}</span> lineas
@@ -1709,11 +1709,11 @@ document.addEventListener("DOMContentLoaded", () => {
       };
 
       const block = document.createElement("div");
-      block.className = `linea-tec-meta-item min-w-0 rounded-lg px-3 py-2 min-h-[52px] ${style.wrapper} ${item.kind === "proyeccion" ? "sm:col-span-2" : ""}`;
+      block.className = `linea-tec-meta-item min-w-0 rounded-lg px-3 py-2 min-h-[3.25rem] ${style.wrapper} ${item.kind === "proyeccion" ? "sm:col-span-2" : ""}`;
       block.dataset.metaKind = item.kind;
       block.innerHTML = `
         <p class="linea-tec-meta-label text-xs font-bold uppercase tracking-wide ${style.label}">${item.label}</p>
-        <p class="linea-tec-meta-value mt-0.5 text-[11px] font-medium text-sena-text-main truncate" title="${item.value}">${item.value}</p>
+        <p class="linea-tec-meta-value mt-0.5 text-[0.6875rem] font-medium text-sena-text-main truncate" title="${item.value}">${item.value}</p>
       `;
       metaWrap.appendChild(block);
     });
@@ -1782,7 +1782,7 @@ document.addEventListener("DOMContentLoaded", () => {
         </p>
       </div>
       <div class="linea-tec-meta-list grid grid-cols-1 gap-2.5 sm:grid-cols-2"></div>
-      <a href="#" class="text-sm text-sena-strong font-medium mt-auto inline-flex items-center gap-1 hover:underline">Ver perfiles &rarr;</a>
+      <a href="#" class="text-sm text-sena-strong font-medium mt-auto inline-flex items-center gap-1 hover:underline">Ver detalles &rarr;</a>
     `;
 
     card.querySelector("h3").textContent = nombre;
@@ -1865,8 +1865,11 @@ document.addEventListener("DOMContentLoaded", () => {
     if (thumb) {
       // Support both legacy absolute thumb and inline flex thumb switches.
       if (thumb.classList.contains("absolute")) {
-        const travel = Math.max(switchBtn.clientWidth - thumb.clientWidth - 4, 0);
-        thumb.style.transform = isActive ? `translateX(${travel}px)` : "translateX(0)";
+        const rootFontSize = parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
+        const horizontalInset = 0.25 * rootFontSize;
+        const travel = Math.max(switchBtn.clientWidth - thumb.clientWidth - horizontalInset, 0);
+        const travelRem = travel / rootFontSize;
+        thumb.style.transform = isActive ? `translateX(${travelRem}rem)` : "translateX(0)";
       } else {
         thumb.style.transform = "";
         switchBtn.classList.toggle("justify-end", isActive);
