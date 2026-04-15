@@ -1372,20 +1372,16 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     // ===== INICIALIZAR =====
-    console.log('programas.js cargado correctamente');
     llenarSelectAreas('areaPrograma');
     llenarSelectAreas('areaProgramaEditar');
 
     // ✅ ESPERAR A QUE AUTH ESTÉ LISTO - SIN FALLBACK
     if (typeof Auth !== 'undefined' && typeof Auth.whenReady === 'function') {
-        console.log('⏳ Esperando a que Auth esté listo...');
         Auth.whenReady(() => {
-            console.log('✅ Auth listo, cargando programas con permisos correctos...');
             cargarProgramas();
         });
     } else {
         // Solo fallback si Auth realmente no existe (no si está cargando)
-        console.log('⚠️ Auth no disponible, intentando en 500ms...');
         setTimeout(() => {
             if (typeof Auth !== 'undefined' && typeof Auth.whenReady === 'function') {
                 Auth.whenReady(() => cargarProgramas());

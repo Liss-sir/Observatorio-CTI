@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const selectRol = document.querySelector('select[name="rol"]');
 
     function toggleCamposPorRol(rol) {
-        const esAdmin = rol === 'admin';
+        const esAdmin = rol === 'administrador';
         
         // Mostrar/ocultar campos con data-role="empresa"
         document.querySelectorAll('[data-role="empresa"]').forEach(el => {
@@ -125,7 +125,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
 
             // ===== VALIDACIONES =====
-            const esAdmin = form.rol?.value === 'admin';
+            const esAdmin = form.rol?.value === 'administrador';
 
             // Campos requeridos dinámicos
             const camposRequeridos = {

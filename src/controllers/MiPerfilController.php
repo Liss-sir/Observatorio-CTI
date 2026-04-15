@@ -62,7 +62,27 @@ class MiPerfilController {
         }
 
         // Formatear fecha de registro (ej. "febrero 2026")
-        $registro = date('d \d\e F \d\e Y', strtotime($user['fecha_registro']));
+        $fecha = strtotime($user['fecha_registro']);
+
+        $meses = [
+            'January' => 'enero',
+            'February' => 'febrero',
+            'March' => 'marzo',
+            'April' => 'abril',
+            'May' => 'mayo',
+            'June' => 'junio',
+            'July' => 'julio',
+            'August' => 'agosto',
+            'September' => 'septiembre',
+            'October' => 'octubre',
+            'November' => 'noviembre',
+            'December' => 'diciembre'
+        ];
+
+        $mesIngles = date('F', $fecha);
+        $mesEspanol = $meses[$mesIngles];
+
+        $registro = date('d', $fecha) . ' de ' . $mesEspanol . ' de ' . date('Y', $fecha);
 
         // Determinar tipo de cuenta (según rol)
         $tipoCuenta = ($user['id_rol'] == 1) ? 'Administrador' : 'Empresa';

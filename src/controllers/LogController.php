@@ -283,7 +283,7 @@ class LogController {
 
         // 🧠 MAPA DE ROLES (ajústalo si cambia en tu BD)
         $mapaRoles = [
-            'admin' => 1,
+            'administrador' => 1,
             'empresa' => 2
         ];
 

@@ -50,7 +50,6 @@ document.addEventListener("DOMContentLoaded", () => {
         .then(res => res.json())
         .then(response => {
             usuariosGlobal = response.data || [];
-            console.log("Usuarios:", usuariosGlobal);
             actualizarTarjetas();
             aplicarFiltros();
         })
@@ -586,8 +585,6 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
         }
 
-        console.log("📦 Datos recibidos del backend:", usuario); // 🔍 CLAVE PARA DEBUG
-
         // Campos básicos
         document.getElementById("detalle-nombre").textContent = usuario.representante_legal ?? "Sin nombre";
         document.getElementById("detalle-representante").textContent = usuario.representante_legal ?? "Sin nombre";
@@ -608,7 +605,6 @@ document.addEventListener("DOMContentLoaded", () => {
         contTecnologias.innerHTML = "";
         
         const tecs = Array.isArray(usuario.tecnologias) ? usuario.tecnologias : [];
-        console.log("🔍 Tecnologías recibidas:", tecs);
 
         if (tecs.length > 0) {
             tecs.forEach(tec => {
@@ -631,7 +627,6 @@ document.addEventListener("DOMContentLoaded", () => {
         
         contPerfiles.innerHTML = "";
         const perfs = Array.isArray(usuario.perfiles) ? usuario.perfiles : [];
-        console.log("🔍 Perfiles recibidos:", perfs);
 
         totalSpan.textContent = perfs.length;
 

@@ -63,13 +63,11 @@ const Auth = {
 
     async verificarSesion() {
         try {
-            console.log("=== INICIANDO VERIFICACIÓN ===");
             const response = await fetch(`${this.API_URL}?accion=sesion`, {
                 method: "GET",
                 credentials: "same-origin"
             });
             const data = await response.json();
-            console.log("Respuesta:", data);
 
             if (data.logout) {
                 console.warn("🚫 Usuario deshabilitado");
@@ -82,11 +80,9 @@ const Auth = {
             if (data.success && data.autenticado) {
                 this.autenticado = true;
                 this.usuario = data.usuario;
-                console.log("✅ Autenticado:", this.usuario);
             } else {
                 this.autenticado = false;
                 this.usuario = null;
-                console.log("👤 Usuario no autenticado (Invitado)");
             }
             
             this.actualizarUI();
@@ -124,7 +120,6 @@ const Auth = {
     },
 
     actualizarUI() {
-        console.log("=== ACTUALIZANDO UI ===");
         const navUser = document.getElementById('nav-user');
         const navGuest = document.getElementById('nav-guest');
 
@@ -145,8 +140,6 @@ const Auth = {
     aplicarPermisosMenu() {
         const rol = this.autenticado ? (this.usuario?.rol_nombre || 'INVITADO').toUpperCase().trim() : 'INVITADO';
         const permisos = this.permisosPorRol[rol] || [];
-        console.log('🔐 Rol detectado:', rol);
-        console.log('📋 Permisos disponibles:', permisos);
         
         const menuPermisos = {
             'menu-programas': 'ver_programas',
@@ -218,6 +211,5 @@ const Auth = {
 };
 
 document.addEventListener("DOMContentLoaded", () => {
-    console.log("=== DOM CARGADO ===");
     Auth.verificarSesion();
 });
