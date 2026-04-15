@@ -256,6 +256,17 @@ document.addEventListener("DOMContentLoaded", () => {
         .linea-tec-select::-ms-expand {
           display: none;
         }
+
+        #linea-modal-crear input:focus,
+        #linea-modal-crear select:focus,
+        #linea-modal-crear textarea:focus,
+        #linea-modal-editar input:focus,
+        #linea-modal-editar select:focus,
+        #linea-modal-editar textarea:focus {
+          outline: none;
+          border-color: #39A900;
+          box-shadow: 0 0 0 2px rgba(57, 169, 0, 0.2);
+        }
       `;
       document.head.appendChild(style);
     }
