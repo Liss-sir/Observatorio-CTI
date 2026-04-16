@@ -20,24 +20,20 @@
     </script>
     
     <style>
-        /* Efecto de medio círculo para la imagen */
         .clip-half-circle {
             clip-path: ellipse(100% 100% at 0% 50%);
         }
         
-        /* Sombra personalizada para el logo */
         .logo-shadow {
             filter: drop-shadow(0 20px 25px -5px rgba(57, 169, 0, 0.25)) 
                     drop-shadow(0 8px 10px -6px rgba(57, 169, 0, 0.2));
         }
         
-        /* Sombra más intensa en hover */
         .logo-shadow:hover {
             filter: drop-shadow(0 25px 30px -8px rgba(57, 169, 0, 0.4)) 
                     drop-shadow(0 10px 15px -6px rgba(57, 169, 0, 0.3));
         }
 
-        /* Animación de entrada del formulario */
         @keyframes slideInUp {
             from {
                 opacity: 0;
@@ -49,7 +45,6 @@
             }
         }
 
-        /* Animación de salida del formulario */
         @keyframes slideOutDown {
             from {
                 opacity: 1;
@@ -69,7 +64,6 @@
             animation: slideOutDown 0.7s cubic-bezier(0.4, 0.0, 0.2, 1) forwards;
         }
 
-        /* Animación de entrada para la imagen */
         @keyframes slideInLeft {
             from {
                 opacity: 0;
@@ -128,11 +122,9 @@
     <div class="flex w-full lg:w-1/2 items-start justify-center px-8 bg-white overflow-y-auto pt-24">
         <div class="w-full max-w-sm animate-form-in" id="formContainer">
             
-            <!-- Logo con sombra pronunciada -->
             <div class="flex justify-center">
                 <div class="relative top-3">
                     
-                    <!-- Logo con sombras personalizadas -->
                     <img src="../../assets/img/logo-tecnnova.png"
                          class="h-28 w-auto object-contain relative z-10
                                 logo-shadow transition-all duration-300

@@ -1,7 +1,5 @@
-<!-- modal_editar_programa.php -->
 <div id="modal-editar-programa" class="hidden fixed inset-0 z-50 overflow-y-auto" aria-hidden="true">
 
-  <!-- Overlay -->
   <div class="fixed inset-0 bg-black bg-opacity-80 transition-opacity"></div>
 
   <div class="fixed inset-0 overflow-y-auto">
@@ -26,16 +24,14 @@
           </button>
 
         </div>
-
-        <!-- Contenido -->
+        
+        <!-- Content -->
         <div class="px-6 py-6">
 
           <form id="form-editar-programa" class="space-y-4">
             
-            <!-- Campo oculto para el ID -->
             <input type="hidden" id="idProgramaEditar" name="id_programa">
 
-            <!-- ÁREA - FALTABA ESTE CAMPO -->
             <div>
               <label class="text-sm text-sena-text-main">Área</label>
               <select
@@ -46,7 +42,6 @@
               </select>
             </div>
 
-            <!-- Código y cupos (IDs renombrados) -->
             <div class="grid grid-cols-2 gap-4">
 
               <div>
@@ -71,7 +66,6 @@
 
             </div>
 
-            <!-- Nombre (ID renombrado) -->
             <div>
               <label class="text-sm text-sena-text-main">Nombre del Programa</label>
               <input
@@ -82,7 +76,6 @@
               >
             </div>
 
-            <!-- Nivel y modalidad (IDs renombrados y values numéricos) -->
             <div class="grid grid-cols-2 gap-4">
 
               <div>
@@ -113,9 +106,6 @@
 
             </div>
             
-            
-
-            <!-- Fechas (IDs renombrados) -->
             <div class="grid grid-cols-2 gap-4">
 
               <div>
@@ -140,7 +130,7 @@
 
             </div>
 
-            <!-- Descripción (nuevo) -->
+            <!-- Description -->
             <div>
               <label class="text-sm text-sena-text-main">Descripción</label>
               <textarea

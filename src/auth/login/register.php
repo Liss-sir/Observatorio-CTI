@@ -99,7 +99,6 @@ $razonesSociales = [
                             <option value="empresa">Empresa</option>
                             <option value="administrador" <?= $modoAdmin ? 'selected' : '' ?>>Administrador</option>
                         </select>
-                        <!-- Campo oculto espejo para garantizar el envío -->
                         <input type="hidden" name="rol_hidden" id="rolHidden" value="<?= $modoAdmin ? 'administrador' : 'empresa' ?>">
                     </div>
                     <?php else: ?>
@@ -269,7 +268,6 @@ $razonesSociales = [
             }
 
             rolSelect.addEventListener('change', actualizarCampos);
-            // Ejecutar al inicio para respetar ?admin=1 o estado por defecto
             actualizarCampos();
         });
     </script>

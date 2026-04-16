@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', function() {
-// ===== COMPONENTES REUTILIZABLES =====
+// ===== REUSABLE COMPONENTS =====
 const Componentes = {
 
     tarjeta({ icono, titulo, valor, subtitulo }) {
@@ -86,7 +86,6 @@ const Perfil = {
 
         const esEmpresa = u.tipo_cuenta === 'Empresa';
          
-        // ===== HEADER =====
         const headerInicial = document.getElementById('headerInicial');
         const headerNombre = document.getElementById('headerNombre'); 
         const headerRol = document.getElementById('headerRol');
@@ -95,7 +94,6 @@ const Perfil = {
         if (headerNombre) headerNombre.textContent = u.nombre_empresa || u.nombre_completo;
         if (headerRol) headerRol.textContent = u.tipo_cuenta;
         
-        // ===== INFO =====
         const infoNombre = document.getElementById('infoNombre'); 
         const infoCorreo = document.getElementById('infoCorreo');
         const infoEmpresa = document.getElementById('infoEmpresa');
@@ -107,7 +105,6 @@ const Perfil = {
 
         if (infoNombre) infoNombre.textContent = `Representante legal: ${u.nombre_completo || 'No disponible'}`;
         if (infoCorreo) infoCorreo.textContent = `Contacto: ${u.correo || 'No disponible'}`;
-        // ===== DATOS EMPRESA / DOCUMENTO =====
         if (infoEmpresa) {
             infoEmpresa.textContent = `Nombre empresa: ${u.nombre_empresa || 'Sin empresa'}`;
         }
@@ -126,7 +123,6 @@ const Perfil = {
         if (tipoCuenta) tipoCuenta.textContent = `Cuenta ${u.tipo_cuenta}`;
         if (descripcionCuenta) descripcionCuenta.textContent = u.descripcion;
         
-        // ===== RESUMEN (CONTENEDOR FIJO) =====
         const contenedorResumen = document.getElementById('resumenContainer');
 
         if (contenedorResumen) {
@@ -185,7 +181,7 @@ const Perfil = {
             }
         }
         
-        // ===== ESTADÍSTICAS =====
+        // ===== STATISTICS =====
         const listaStats = document.getElementById('listaEstadisticas');
 
         if (listaStats && s) { 
@@ -209,7 +205,7 @@ const Perfil = {
             }
         }
         
-        // ===== PERFILES RECIENTES =====
+        // ===== RECENT PROFILES =====
         const listaPerfiles = document.getElementById('listaPerfiles');
 
         if (listaPerfiles) {
@@ -226,7 +222,7 @@ const Perfil = {
     }
 };
 
-// ===== MODAL EDITAR =====
+// ===== MODAL EDIT =====
 const modal = document.getElementById('modalEditar'); 
 const btnCancelar = document.getElementById('btnCancelar');
 const btnGuardar = document.getElementById('btnGuardar');
@@ -268,21 +264,16 @@ function mostrarModalConfirmacion(nombre) {
 
     if (!modal) return;
 
-    // Set nombre
     if (nombreSpan) nombreSpan.textContent = nombre;
 
-    // Mostrar modal
     modal.classList.remove('hidden');
 
-    // Reset barra
     progress.style.width = '0%';
 
-    // Forzar animación
     setTimeout(() => {
         progress.style.width = '100%';
     }, 50);
 
-    // Contador
     let segundos = 3;
     contador.textContent = segundos;
 

@@ -37,7 +37,7 @@ include __DIR__ . '/modal_detalle_programa.php';
         </div>
     </div>
     
-    <!-- Buscador -->
+    <!-- SEEKER -->
     <div class="flex items-center gap-3 mb-6">
         <div class="relative flex-1">
             <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-sena-text-soft pointer-events-none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
@@ -51,7 +51,7 @@ include __DIR__ . '/modal_detalle_programa.php';
         </button>
     </div>
     
-    <!-- Cards - Se carga dinámicamente desde JS -->
+    <!-- Cards -->
     <div id="contenedorProgramas" class="grid md:grid-cols-3 gap-6">
         <div class="col-span-3 text-center py-10 text-gray-500">
             <i data-lucide="loader" class="w-8 h-8 mx-auto mb-2 animate-spin"></i>

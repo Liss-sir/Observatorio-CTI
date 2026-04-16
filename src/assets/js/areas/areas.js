@@ -1,8 +1,8 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // ===== CONFIGURACIÓN =====
+    // ===== CONFIGURATION =====
     const API_URL = '../../controllers/AreaController.php';
 
-    // ===== VARIABLES DE MODALES =====
+    // ===== MODAL VARIABLES =====
     const modalEditar = document.getElementById('modal-editar-area');
     const modalEditadoConfirmacion = document.getElementById('modal-editado-area');
     const modalDeshabilitar = document.getElementById('modal-deshabilitar-area');
@@ -40,7 +40,7 @@ document.addEventListener('DOMContentLoaded', function() {
     let timeoutHabilitado = null, intervalContadorHabilitado = null;
     let timeoutCreado = null, intervalContadorCreado = null;
 
-    // ===== FUNCIÓN PARA MOSTRAR ALERTAS BONITAS (TOASTS) =====
+    // ===== FUNCTION TO DISPLAY ALERTS =====
     function mostrarToastValidacion(mensaje, tipo = 'warning') {
         const toastContainer = document.getElementById('toast-container');
         
@@ -94,14 +94,14 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 3000);
     }
 
-    // ===== VALIDACIÓN DE DESCRIPCIÓN =====
+    // ===== DESCRIPTION VALIDATION =====
     const MIN_DESCRIPCION_LENGTH = 30;
 
     function validarDescripcion(descripcion) {
         return descripcion && descripcion.length >= MIN_DESCRIPCION_LENGTH;
     }
 
-    // ===== ACTUALIZAR CONTADOR EN CREACIÓN =====
+    // ===== UPDATE COUNTER IN CREATION =====
     function actualizarContadorCrear() {
         const textarea = document.getElementById('descripcion-nueva');
         const contador = document.getElementById('contador-caracteres-crear');
@@ -121,7 +121,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // ===== ACTUALIZAR CONTADOR EN EDICIÓN =====
+    // ===== UPDATE COUNTER IN EDIT =====
     function actualizarContadorEditar() {
         const textarea = document.getElementById('descripcion-area');
         const contador = document.getElementById('contador-caracteres-editar');
@@ -141,7 +141,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // ===== 1. CARGAR DATOS =====
+    // ===== LOAD DATA =====
     async function cargarAreas() {
         if (!gridAreas) return;
         gridAreas.innerHTML = '<div class="col-span-full text-center py-10 text-gray-500">Cargando áreas...</div>';
@@ -166,7 +166,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // ===== 2. RENDERIZAR HTML =====
+    // ===== RENDER HTML =====
     function renderizarAreas(areas) {
         if (!gridAreas) return;
         gridAreas.innerHTML = '';
@@ -244,6 +244,7 @@ document.addEventListener('DOMContentLoaded', function() {
         actualizarPaginacionAreas(areas.length);
     }
 
+    //UPDATE PAGINATION
     function actualizarPaginacionAreas(totalElementos) {
         const contenedor = document.getElementById("paginacion-areas");
         if (!contenedor) return;
@@ -270,13 +271,13 @@ document.addEventListener('DOMContentLoaded', function() {
             inicio = Math.max(totalPaginas - 4, 1);
         }
 
-        // Primera página
+        // First page
         if (inicio > 1) {
             paginasHTML += `<button class="btn-pagina-area px-3 py-2 rounded-lg border">${1}</button>`;
             if (inicio > 2) paginasHTML += `<span>...</span>`;
         }
 
-        // Intermedias
+        // Intermediate
         for (let i = inicio; i <= fin; i++) {
             paginasHTML += `
                 <button class="btn-pagina-area px-3 py-2 rounded-lg ${
@@ -289,7 +290,7 @@ document.addEventListener('DOMContentLoaded', function() {
             `;
         }
 
-        // Última página
+        // Last page
         if (fin < totalPaginas) {
             if (fin < totalPaginas - 1) paginasHTML += `<span>...</span>`;
             paginasHTML += `<button class="btn-pagina-area px-3 py-2 rounded-lg border">${totalPaginas}</button>`;
@@ -325,7 +326,7 @@ document.addEventListener('DOMContentLoaded', function() {
             </div>
         `;
 
-        // EVENTOS
+        // EVENTS
         document.querySelectorAll('.btn-pagina-area').forEach(btn => {
             btn.addEventListener('click', () => {
                 paginaActual = parseInt(btn.dataset.pagina);
@@ -358,6 +359,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
+    //SEEKER
     const buscador = document.getElementById("buscador-areas");
     let timeoutBusqueda = null;
 
@@ -366,14 +368,14 @@ document.addEventListener('DOMContentLoaded', function() {
             clearTimeout(timeoutBusqueda);
             const texto = this.value.trim();
 
-            // Si está vacío → recargar todo
+            // If it's empty → reload everything
             if (texto.length === 0) {
                 paginaActual = 1;
                 cargarAreas();
                 return;
             }
 
-            // Esperar mínimo 2 caracteres
+            // Expect a minimum of 2 characters
             if (texto.length < 2) return;
 
             timeoutBusqueda = setTimeout(async () => {
@@ -385,7 +387,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
                     if (result.success === true && Array.isArray(result.data)) {
 
-                        // 🔴 CASO: SIN RESULTADOS
+                        //NO RESULTS
                         if (result.data.length === 0) {
                             gridAreas.innerHTML = `
                                 <div class="col-span-full flex flex-col items-center justify-center py-10 px-4 bg-white border border-gray-200 rounded-xl">
@@ -404,7 +406,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             return;
                         }
 
-                        // ✅ CASO: CON RESULTADOS
+                        //CASE: WITH RESULTS
                         paginaActual = 1;
                         renderizarAreas(result.data);
 
@@ -428,10 +430,9 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // ===== 3. ASIGNAR EVENTOS =====
+    // ===== ASSIGN EVENTS =====
     function asignarEventosDinamicos() {
-        // Botón Editar
-        // Botón Editar
+        // Edit button
         document.querySelectorAll('.btn-editar-area').forEach(btn => {
             btn.addEventListener('click', function(e) {
                 e.preventDefault();
@@ -444,7 +445,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 const switchEl = card.querySelector('.switch-sena');
                 const estadoArea = switchEl.classList.contains('active') ? 'activo' : 'inactivo';
                 
-                // 🔥 GUARDAR DATOS ORIGINALES 🔥
                 areaSeleccionada = {
                     id_area: parseInt(idArea),
                     nombre_area: nombreArea,
@@ -460,7 +460,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (descInput) descInput.value = descripcionArea;
                 if (estadoSelect) estadoSelect.value = estadoArea;
                 
-                // Inicializar contador de caracteres
+                // Initialize character counter
                 if (descInput) {
                     const contadorEditar = document.getElementById('contador-caracteres-editar');
                     const alertaEditar = document.getElementById('alerta-minimo-editar');
@@ -508,7 +508,7 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
 
-        // Click en Tarjeta (Detalle)
+        // Initialize character counter
         document.querySelectorAll('.border[data-id]').forEach(card => {
             card.addEventListener('click', function(e) {
                 if (e.target.closest('.btn-editar-area') || e.target.closest('.switch-sena')) return;
@@ -530,7 +530,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // ===== UTILIDADES MODALES =====
+    // ===== MODAL UTILITIES =====
     function abrirModal(modal) { if(modal){ modal.classList.remove('hidden'); document.body.classList.add('overflow-hidden'); } }
     function cerrarModal(modal) { if(modal){ modal.classList.add('hidden'); document.body.classList.remove('overflow-hidden'); } }
     
@@ -588,9 +588,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const mostrarModalHabilitado = (n) => mostrarModalConTemporizador(modalHabilitadoConfirmacion, 'nombre-area-habilitado', n, 'habilitado');
     const mostrarModalCreado = (n) => mostrarModalConTemporizador(modalCreadoConfirmacion, 'nombre-area-creado', n, 'creado');
 
-    // ===== ACCIONES CON EL SERVER (FETCH) =====
-
-    // 1. CREAR (CORREGIDO)
+    // CREATE
     const formCrear = document.getElementById('form-nueva-area');
     if (formCrear) {
         formCrear.addEventListener('submit', async function(e) {
@@ -635,12 +633,11 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
         
-        // Listeners contadores creación
         const descCrear = document.getElementById('descripcion-nueva');
         if (descCrear) descCrear.addEventListener('input', actualizarContadorCrear);
     }
 
-    // 2. EDITAR
+    // EDIT
     const formEditar = document.getElementById('form-editar-area');
     if (formEditar) {
         formEditar.addEventListener('submit', async function(e) {
@@ -654,7 +651,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const nombreVal = document.getElementById('nombre-area').value.trim();
             const descVal = document.getElementById('descripcion-area').value.trim();
 
-            // Validaciones básicas
+            // Basic validations
             if (!nombreVal) {
                 mostrarToastValidacion('El nombre del área es obligatorio', 'warning');
                 return;
@@ -664,8 +661,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
 
-            // 🔥 VALIDACIÓN DE CAMBIOS 🔥
-            // Verificar que existan datos originales
+            // Verify that original data exists
             if (!areaSeleccionada) {
                 console.error('No hay datos originales del área');
                 mostrarToastValidacion('Error al cargar los datos originales', 'error');
@@ -674,11 +670,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
 
-            // Comparar cada campo con los valores originales
+            // Compare each field with the original values
             const nombreCambio = nombreVal !== areaSeleccionada.nombre_area;
             const descripcionCambio = descVal !== areaSeleccionada.descripcion_area;
 
-            // Si no hay ningún cambio, mostrar mensaje y salir
+            // If there are no changes, display message and exit
             if (!nombreCambio && !descripcionCambio) {
                 mostrarToastValidacion('No se ha realizado ningún cambio en el área', 'info');
                 return;
@@ -722,7 +718,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (descEditar) descEditar.addEventListener('input', actualizarContadorEditar);
     }
 
-    // 3. DESHABILITAR
+    // DISABLE
     if (btnConfirmarDeshabilitar) {
         btnConfirmarDeshabilitar.addEventListener('click', async function() {
             const id = modalDeshabilitar ? modalDeshabilitar.getAttribute('data-switch-id') : null;
@@ -742,7 +738,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // 4. HABILITAR
+    // ENABLE
     if (btnConfirmarHabilitar) {
         btnConfirmarHabilitar.addEventListener('click', async function() {
             const id = modalHabilitar ? modalHabilitar.getAttribute('data-switch-id') : null;
@@ -761,7 +757,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // ===== CIERRES GENÉRICOS =====
+    // ===== GENERIC CLOSURES =====
     cerrarModalBtns.forEach(b => b.addEventListener('click', () => cerrarModal(modalEditar)));
     cerrarModalEditadoBtns.forEach(b => b.addEventListener('click', cerrarModalEditado));
     cerrarModalDeshabilitarBtns.forEach(b => b.addEventListener('click', () => cerrarModal(modalDeshabilitar)));
@@ -809,17 +805,16 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // ===== LÓGICA DEL CONTADOR DE CARACTERES =====
+    // ===== CHARACTER COUNTER LOGIC =====
     const descCrear = document.getElementById('descripcion-nueva');
-    const contadorCrear = document.getElementById('contador-caracteres-crear'); // Asegúrate que este ID exista en tu HTML
+    const contadorCrear = document.getElementById('contador-caracteres-crear');
     const descEditar = document.getElementById('descripcion-area');
-    const contadorEditar = document.getElementById('contador-caracteres-editar'); // Asegúrate que este ID exista en tu HTML
+    const contadorEditar = document.getElementById('contador-caracteres-editar');
 
     if (descCrear) {
         descCrear.addEventListener('input', function() {
             const len = this.value.length;
             if (contadorCrear) contadorCrear.textContent = `${len} / 30 caracteres`;
-            // Cambia color si es válido o inválido
             if (len >= 30) contadorCrear.classList.replace('text-red-500', 'text-green-600');
             else contadorCrear.classList.replace('text-green-600', 'text-red-500');
         });
@@ -834,6 +829,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // INICIAR
+    // START
     cargarAreas();
 });

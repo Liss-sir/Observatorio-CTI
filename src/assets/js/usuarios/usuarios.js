@@ -19,7 +19,7 @@ document.addEventListener("DOMContentLoaded", () => {
     let intervalContadorDeshabilitado = null;
     
     // =========================
-    // ✅ VARIABLES DE PAGINACIÓN
+    // PAGINATION VARIABLES
     // =========================
     let paginaActual = 1;
     const elementosPorPagina = 10;
@@ -30,7 +30,7 @@ document.addEventListener("DOMContentLoaded", () => {
         cardActiva.classList.add("bg-sena-soft");
     }
     
-    // Buscador funcional
+    // Seeker
     const buscador = document.getElementById("buscador");
     if (buscador) {
         buscador.addEventListener("input", (e) => {
@@ -43,7 +43,7 @@ document.addEventListener("DOMContentLoaded", () => {
     cargarUsuarios();
     
     // =========================
-    // CARGAR USUARIOS
+    // LOAD USERS
     // =========================
     function cargarUsuarios(){
         fetch("../../controllers/UsuarioController.php?accion=listar", { method: "GET" })
@@ -59,16 +59,14 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     
     // =========================
-    // RENDER TABLA (CON PAGINACIÓN)
+    // RENDER TABLE
     // =========================
     function renderUsuarios(lista){
         const tabla = document.getElementById("tabla-usuarios");
-        // 👇 NUEVO: Asegurar que el contenedor padre permita scroll horizontal
         const padre = tabla.parentElement;
         if (padre && !padre.classList.contains('overflow-x-auto')) {
             padre.classList.add('overflow-x-auto', 'w-full');
         }
-        // 👇 Forzar un ancho mínimo a la tabla para que el scroll aparezca en móviles
         tabla.style.minWidth = '600px';
         tabla.style.width = '100%';
         const mensajeSinResultados = document.getElementById("mensaje-sin-resultados");
@@ -114,7 +112,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
         
         // =========================
-        // ✅ PAGINACIÓN: Calcular página actual
+        // PAGINATION
         // =========================
         const totalPaginas = Math.ceil(lista.length / elementosPorPagina);
         
@@ -163,16 +161,13 @@ document.addEventListener("DOMContentLoaded", () => {
                 </tr>
             `;
         });
-        
-        // =========================
-        // ✅ ACTUALIZAR PAGINACIÓN
-        // =========================
+
         actualizarPaginacion(lista.length);
         lucide.createIcons();
     }
     
     // =========================
-    // ✅ FUNCIÓN PARA ACTUALIZAR PAGINACIÓN
+    // FUNCTION TO UPDATE PAGINATION
     // =========================
     function actualizarPaginacion(totalElementos) {
         const paginacionContainer = document.getElementById("paginacion-container");
@@ -189,21 +184,18 @@ document.addEventListener("DOMContentLoaded", () => {
         
         let paginasHTML = '';
         
-        // Determinar qué páginas mostrar
         let inicio = Math.max(1, paginaActual - 2);
         let fin = Math.min(totalPaginas, paginaActual + 2);
         
-        // Ajustar si estamos al inicio
         if (paginaActual <= 3) {
             fin = Math.min(5, totalPaginas);
         }
         
-        // Ajustar si estamos al final
         if (paginaActual >= totalPaginas - 2) {
             inicio = Math.max(totalPaginas - 4, 1);
         }
         
-        // Primera página y elipsis al inicio
+        // First page
         if (inicio > 1) {
             paginasHTML += `
                 <button class="btn-pagina px-3 py-2 rounded-lg transition-all duration-200 border border-sena-border text-sena-text-main hover:bg-sena-soft hover:border-sena/30" data-pagina="1">
@@ -215,7 +207,7 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         }
         
-        // Páginas intermedias
+        // Intermediate pages
         for (let i = inicio; i <= fin; i++) {
             const isActive = paginaActual === i;
             paginasHTML += `
@@ -229,7 +221,7 @@ document.addEventListener("DOMContentLoaded", () => {
             `;
         }
         
-        // Última página y elipsis al final
+        // Last page
         if (fin < totalPaginas) {
             if (fin < totalPaginas - 1) {
                 paginasHTML += `<span class="px-2 text-sena-text-soft">...</span>`;
@@ -301,7 +293,7 @@ document.addEventListener("DOMContentLoaded", () => {
         `;
         
         // =========================
-        // ✅ EVENT LISTENERS DE PAGINACIÓN
+        // PAGINATION EVENT LISTENERS
         // =========================
         document.querySelectorAll('.btn-pagina').forEach(btn => {
             btn.addEventListener('click', () => {
@@ -348,7 +340,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     
     // =========================
-    // APLICAR TODOS LOS FILTROS
+    // APPLY ALL FILTERS
     // =========================
     function aplicarFiltros() {
         let filtrados = usuariosGlobal;
@@ -377,7 +369,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     
     // =========================
-    // FILTRAR POR ESTADO
+    // FILTER BY STATE
     // =========================
     function filtrarUsuarios(tipo){
         filtroActual = tipo;
@@ -386,7 +378,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     
     // =========================
-    // FILTRAR POR ROL
+    // FILTER BY ROLE
     // =========================
     window.filtrarPorRol = function(rol) {
         filtroRolActual = rol;
@@ -395,7 +387,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     
     // =========================
-    // TARJETA SELECCIONADA
+    // SELECTED CARD
     // =========================
     function activarTarjeta(tipo){
         document.querySelectorAll(".card-dashboard").forEach(card => {
@@ -419,7 +411,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     
     // =========================
-    // TARJETAS
+    // CARDS
     // =========================
     function actualizarTarjetas(){
         const total = usuariosGlobal.length;
@@ -432,7 +424,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     
     // =========================
-    // CAMBIAR ESTADO
+    // CHANGE STATE
     // =========================
     window.cambiarEstadoUsuario = function(id, nombre, estado){
         usuarioSeleccionado = id;
@@ -507,7 +499,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     
     // =========================
-    // CONFIRMAR DESHABILITAR
+    // CONFIRM DISABLE
     // =========================
     if (btnConfirmarDeshabilitar) {
         btnConfirmarDeshabilitar.addEventListener("click", () => {
@@ -526,7 +518,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     
     // =========================
-    // CONFIRMAR HABILITAR
+    // CONFIRM ENABLE
     // =========================
     if (btnConfirmarHabilitar) {
         btnConfirmarHabilitar.addEventListener("click", () => {
@@ -545,7 +537,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     
     // =========================
-    // VER DETALLE USUARIO
+    // VIEW USER DETAILS
     // =========================
     document.addEventListener("click", function(e){
         if(e.target.closest(".btn-ver-usuario")){
@@ -577,7 +569,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     
     // =========================
-    // CARGAR DETALLE USUARIO
+    // LOAD USER DETAILS
     // =========================
     function cargarDetalleUsuario(usuario) {
         if (!usuario) {
@@ -585,7 +577,6 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
         }
 
-        // Campos básicos
         document.getElementById("detalle-nombre").textContent = usuario.representante_legal ?? "Sin nombre";
         document.getElementById("detalle-representante").textContent = usuario.representante_legal ?? "Sin nombre";
         document.getElementById("detalle-correo").textContent = usuario.correo ?? "Sin correo";
@@ -599,7 +590,7 @@ document.addEventListener("DOMContentLoaded", () => {
         document.getElementById("detalle-avatar").textContent = iniciales || "US";
 
         // =========================
-        // TECNOLOGÍAS
+        // TECHNOLOGIES
         // =========================
         const contTecnologias = document.getElementById("detalle-tecnologias");
         contTecnologias.innerHTML = "";
@@ -619,7 +610,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         // =========================
-        // PERFILES
+        // PROFILES
         // =========================
         const contPerfiles = document.getElementById("detalle-perfiles");
         const totalSpan = document.getElementById("detalle-total-perfiles");
@@ -653,7 +644,6 @@ document.addEventListener("DOMContentLoaded", () => {
                     btnVerMas.classList.remove("hidden");
                     btnVerMas.textContent = `Ver ${perfs.length - 3} más`;
 
-                    // 🔥 AQUÍ FALTA ESTO
                     btnVerMas.onclick = () => {
                         window.location.href = "../perfiles/perfiles.php";
                     };
@@ -677,7 +667,7 @@ document.addEventListener("DOMContentLoaded", () => {
         return `${dia}/${mes}/${anio}`;
     }
     
-    // ===== MODAL DESHABILITADO =====
+    // ===== MODE DISABLED =====
     function mostrarModalDeshabilitado(nombrePerfil) {
         if (!modalDeshabilitado) {
             console.error('Modal deshabilitado no encontrado');
@@ -728,7 +718,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }, 3000);
     }
     
-    // ===== MODAL HABILITADO =====
+    // ===== MODE ENABLED =====
     function mostrarModalHabilitado(nombrePerfil) {
         if (!modalHabilitado) {
             console.error('Modal habilitado no encontrado');

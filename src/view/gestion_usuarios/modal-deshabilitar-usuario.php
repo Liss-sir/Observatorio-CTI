@@ -1,6 +1,4 @@
-<!-- modal-deshabilitar-usuario.php -->
 <div id="modal-deshabilitar-usuario" class="hidden fixed inset-0 z-50 overflow-y-auto" aria-hidden="true">
-    <!-- Overlay -->
     <div class="fixed inset-0 bg-black bg-opacity-80 transition-opacity"></div>
     <!-- Modal panel -->
     <div class="fixed inset-0 overflow-y-auto">

@@ -88,7 +88,6 @@ const Auth = {
             this.actualizarUI();
             this.aplicarPermisosMenu();
             
-            // ✅ MARCAR COMO LISTO Y EJECUTAR CALLBACKS
             this.listo = true;
             this.callbacks.forEach(cb => { try { cb(); } catch(e) {} });
             this.callbacks = [];
@@ -100,8 +99,6 @@ const Auth = {
             this.usuario = null;
             this.actualizarUI();
             this.aplicarPermisosMenu();
-            
-            // ✅ TAMBIÉN MARCAR COMO LISTO EN ERROR
             this.listo = true;
             this.callbacks.forEach(cb => { try { cb(); } catch(e) {} });
             this.callbacks = [];
@@ -110,7 +107,6 @@ const Auth = {
         }
     },
 
-    // ✅ MÉTODO PARA ESPERAR A QUE AUTH ESTÉ LISTO
     whenReady(callback) {
         if (this.listo) {
             callback();

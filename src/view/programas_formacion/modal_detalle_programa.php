@@ -1,5 +1,3 @@
-<!-- modal_detalle_programa.php -->
-<!-- Modal para ver detalle de programa de formación -->
 <div id="modal-detalle-programa" class="hidden fixed inset-0 z-50 overflow-y-auto" aria-hidden="true">
 <link rel="stylesheet" href="../../../assets/css/output.css">
 <link rel="stylesheet" href="../../assets/css/globals.css">
@@ -36,7 +34,6 @@
           <!-- Content -->
           <div class="px-6 py-6 space-y-5">
 
-              <!-- Código + Estado -->
               <div class="grid grid-cols-2 gap-4">
                   <div class="bg-gray-50 rounded-lg p-3">
                       <span class="text-xs font-medium text-sena-text-soft uppercase">Código</span>
@@ -54,7 +51,6 @@
                   </div>
               </div>
 
-              <!-- Nombre -->
               <div class="bg-white border border-sena-border rounded-xl p-4 shadow-sm">
                   <span class="text-xs font-medium text-sena-text-soft uppercase">Nombre del Programa</span>
                   <p class="text-lg text-sena-text-main mt-1 leading-snug" id="detalle-nombre">
@@ -92,10 +88,8 @@
                   </div>
               </div>
 
-              <!-- 🔥 DESCRIPCIÓN DESTACADA -->
               <div>
                   <div class="flex items-center gap-2 mb-2">
-                      <!-- ICONO -->
                       <span class="text-sm font-bold text-sena-text-main uppercase tracking-wide">
                           Descripción del Programa
                       </span>
@@ -140,7 +134,7 @@
 }
 
 /* =========================
-   📱 LAPTOP / PANTALLAS MEDIANAS
+   LAPTOP 
    ========================= */
 @media (max-width: 1366px) {
 
@@ -178,7 +172,7 @@
 
 
 /* =========================
-   💻 PANTALLAS MÁS PEQUEÑAS
+   PANTALLAS MÁS PEQUEÑAS
    ========================= */
 @media (max-width: 1024px) {
 
@@ -218,7 +212,7 @@
 
 
 /* =========================
-   📱 MÓVIL
+   SMARTHPHONE
    ========================= */
 @media (max-width: 640px) {
 

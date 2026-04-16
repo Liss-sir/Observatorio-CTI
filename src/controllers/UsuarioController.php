@@ -1,7 +1,6 @@
 <?php
 header("Content-Type: application/json; charset=utf-8");
 
-// Ocultar errores de PHP para que no rompan el JSON
 error_reporting(0);
 ini_set('display_errors', 0);
 
@@ -16,7 +15,7 @@ class UsuarioController {
         $this->model = new UsuarioModel($conn);
     }
     
-    /* ================= USUARIOS (CRUD) ================= */
+    /* ================= USERS (CRUD) ================= */
     public function listar() {
         try {
             verificarPermiso('gestionar_usuarios');
@@ -46,7 +45,7 @@ class UsuarioController {
         }
     }
     
-    /* ================= NUEVO: OBTENER DETALLE COMPLETO ================= */
+    /* ================= GET FULL DETAILS ================= */
     public function obtenerDetalle() {
         try {
             $id = $_GET['id_usuario'] ?? null;
@@ -157,7 +156,7 @@ class UsuarioController {
         }
     }
     
-    /* ================= ROLES ================= */
+    /* =================  ================= */
     public function obtenerRoles() {
         try {
             echo json_encode($this->model->obtenerRoles());
@@ -166,7 +165,7 @@ class UsuarioController {
         }
     }
     
-    /* ================= ESTADÍSTICAS ================= */
+    /* ================= STATISTICS ================= */
     public function obtenerEstadisticas() {
         try {
             echo json_encode($this->model->obtenerEstadisticas());
@@ -175,7 +174,7 @@ class UsuarioController {
         }
     }
     
-    /* ================= VALIDACIONES ================= */
+    /* ================= VALIDATIONS ================= */
     public function verificarCorreoExistente() {
         try {
             $input = json_decode(file_get_contents("php://input"), true);
@@ -206,7 +205,6 @@ class UsuarioController {
 $accion = $_GET['accion'] ?? null;
 $id = $_GET['id_usuario'] ?? null;
 
-// Verificar que la conexión existe
 if (!isset($conn)) {
     echo json_encode(["error" => "Error de conexión a la base de datos"]);
     exit;
@@ -221,7 +219,7 @@ switch ($accion) {
     case "obtener":
         $controller->obtener($id);
         break;
-    case "obtenerDetalle":  // ← AGREGAR ESTO
+    case "obtenerDetalle": 
         $controller->obtenerDetalle();
         break;             
     case "crear":

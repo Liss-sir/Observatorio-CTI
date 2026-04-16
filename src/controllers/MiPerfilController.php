@@ -12,8 +12,7 @@ class MiPerfilController {
     }
 
     /**
-     * Verifica que el usuario esté autenticado y devuelve su ID.
-     * Si no está autenticado, envía respuesta 401 y retorna false.
+     * Verify that the user is authenticated and return their ID.
      */
     private function checkAuth() {
         if (session_status() === PHP_SESSION_NONE) {
@@ -28,13 +27,12 @@ class MiPerfilController {
     }
 
     /**
-     * Obtiene los datos del perfil del usuario autenticado junto con las estadísticas y últimos perfiles
+     * It retrieves the authenticated user's profile data along with statistics and recent profiles
      */
     public function index() {
         $userId = $this->checkAuth();
         if (!$userId) return;
 
-        // Datos del usuario (frescos desde la BD)
         $user = $this->model->getUser($userId);
         if (!$user) {
             http_response_code(404);
@@ -42,8 +40,6 @@ class MiPerfilController {
             return;
         }
 
-        // Estadísticas
-        // Determinar tipo de cuenta
         $esAdmin = ($user['id_rol'] == 1);
 
         if ($esAdmin) {
@@ -61,7 +57,6 @@ class MiPerfilController {
             }
         }
 
-        // Formatear fecha de registro (ej. "febrero 2026")
         $fecha = strtotime($user['fecha_registro']);
 
         $meses = [
@@ -84,7 +79,6 @@ class MiPerfilController {
 
         $registro = date('d', $fecha) . ' de ' . $mesEspanol . ' de ' . date('Y', $fecha);
 
-        // Determinar tipo de cuenta (según rol)
         $tipoCuenta = ($user['id_rol'] == 1) ? 'Administrador' : 'Empresa';
         $descripcionCuenta = ($user['id_rol'] == 1)
             ? 'Acceso completo a la plataforma'
@@ -110,7 +104,7 @@ class MiPerfilController {
     }
 
     /**
-     * Actualiza el nombre y correo del usuario autenticado
+     * Update the authenticated user's name and email address
      */
     public function update() {
         $userId = $this->checkAuth();
@@ -126,17 +120,14 @@ class MiPerfilController {
         $name = trim($input['nombre_completo']);
         $email = trim($input['correo']);
 
-        // Validar que el correo no esté en uso por otro usuario
         if ($this->model->emailExists($email, $userId)) {
             http_response_code(409);
             echo json_encode(['error' => 'El correo ya está registrado']);
             return;
         }
 
-        // Actualizar en la base de datos
         $updated = $this->model->updateUser($userId, $name, $email);
         if ($updated) {
-            // Actualizar los datos en la sesión para mantener coherencia
             $_SESSION['usuario']['representante_legal'] = $name;
             $_SESSION['correo'] = $email;
             $_SESSION['usuario']['correo'] = $email;
@@ -152,7 +143,6 @@ class MiPerfilController {
 
 $action = $_GET['action'] ?? 'index';
 
-// Verificar que la conexión exista
 if (!isset($conn)) {
     echo json_encode(["error" => "Error de conexión a la base de datos"]);
     exit;

@@ -1,8 +1,6 @@
-<!-- MODAL CREAR PROGRAMA -->
 <div id="modal-crear-programa" class="hidden fixed inset-0 z-50 overflow-y-auto">
     <div class="fixed inset-0 bg-black bg-opacity-80"></div>
     <div class="fixed inset-0 flex items-center justify-center p-4">
-        <!-- Ancho responsive: móvil → lg → portátil → xl → escritorio -->
         <div class="bg-white w-full max-w-2xl rounded-xl shadow-2xl transform transition-all animate-modalFadeIn">
             <!-- HEADER -->
             <div class="border-b px-6 py-5 flex justify-between items-center">
@@ -16,7 +14,6 @@
             <!-- BODY -->
             <div class="px-6 py-6">
                 <form id="form-crear-programa" class="space-y-4">
-                    <!-- AREA -->
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Área</label>
                         <select id="areaPrograma" name="id_area" required
@@ -25,7 +22,6 @@
                         </select>
                     </div>
 
-                    <!-- CODIGO Y CUPOS -->
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                             <label class="text-sm font-medium text-gray-700">Código del Programa</label>
@@ -39,14 +35,12 @@
                         </div>
                     </div>
 
-                    <!-- NOMBRE -->
                     <div>
                         <label class="text-sm font-medium text-gray-700">Nombre del Programa</label>
                         <input type="text" id="nombreNuevoPrograma" placeholder="Ej: Desarrollo de Software"
                             class="w-full mt-1 px-3 py-2 border border-sena-border rounded-lg focus:ring-2 focus:ring-sena/20 focus:border-sena outline-none transition">
                     </div>
 
-                    <!-- DESCRIPCIÓN -->
                     <div>
                         <label class="text-sm font-medium text-gray-700">Descripción</label>
                         <textarea id="descripcionNuevoPrograma" rows="3" placeholder="Breve descripción del programa"
@@ -57,7 +51,6 @@
                         </div>
                     </div>
 
-                    <!-- NIVEL Y MODALIDAD -->
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                             <label class="text-sm font-medium text-gray-700">Nivel de Formación</label>
@@ -81,7 +74,6 @@
                         </div>
                     </div>
 
-                    <!-- FECHAS -->
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                             <label class="text-sm font-medium text-gray-700">Fecha de Inicio</label>
@@ -127,7 +119,7 @@
 }
 
 
-/* 💻 PORTÁTILES */
+/* LAPTOP */
 
 #modal-crear-programa > div > div {
     max-height: 90vh;
@@ -163,7 +155,7 @@
 }
 
 
-/* 📱 TABLET */
+/* TABLET */
 @media (max-width: 1024px) {
 
     #modal-crear-programa .grid {
@@ -183,7 +175,7 @@
 }
 
 
-/* 📱 MÓVIL */
+/* SMARTHPHONE */
 @media (max-width: 640px) {
 
     #modal-crear-programa .grid {

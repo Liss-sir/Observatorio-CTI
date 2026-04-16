@@ -1,4 +1,3 @@
-<!-- modal_registro_exitoso.php -->
 <div id="modal-registro-exitoso" class="hidden fixed inset-0 z-50 overflow-y-auto" aria-hidden="true">
 
   <!-- Overlay -->
@@ -9,7 +8,6 @@
 
       <div class="relative w-full max-w-md transform overflow-hidden rounded-xl border border-[#39A900]/30 bg-white shadow-2xl transition-all modal-panel opacity-0 scale-95 duration-300">
 
-        <!-- Header con icono de éxito -->
         <div class="bg-gradient-to-r from-[#39A900]/10 to-[#39A900]/5 border-b border-[#39A900]/20 px-6 py-6 text-center">
 
           <!-- Icono circular de éxito -->
@@ -81,7 +79,6 @@
 </div>
 
 <style>
-  /* Estados del modal */
   #modal-registro-exitoso.show .modal-backdrop {
     opacity: 1;
   }
@@ -90,7 +87,6 @@
     transform: scale(1);
   }
   
-  /* Animación de entrada */
   @keyframes modalFadeIn {
     from {
       opacity: 0;
@@ -115,10 +111,9 @@
   // Función global para mostrar el modal
   window.mostrarModalRegistroExitoso = function() {
     modal.classList.remove('hidden');
-    // Forzar reflow
     void modal.offsetWidth;
     modal.classList.add('show');
-    document.body.style.overflow = 'hidden'; // Prevenir scroll
+    document.body.style.overflow = 'hidden'; 
   };
   
   // Función para ocultar el modal

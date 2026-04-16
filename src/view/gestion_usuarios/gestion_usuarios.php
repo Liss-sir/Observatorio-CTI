@@ -68,10 +68,9 @@ include __DIR__ . '../../../includes/header.php';
             </div>
         </div>
         
-        <!-- BUSCADOR Y FILTRO EN LA MISMA LÍNEA -->
+        <!-- SEEKER -->
         <div class="flex items-center gap-3 mb-6">
             
-            <!-- 🔍 Buscador (ocupa espacio disponible) -->
             <div class="relative flex-1">
                 <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-sena-text-soft pointer-events-none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <circle cx="11" cy="11" r="8"/>
@@ -85,7 +84,6 @@ include __DIR__ . '../../../includes/header.php';
                 />
             </div>
             
-            <!-- 🎛️ Select (se mantiene compacto) -->
             <select
                 id="filtro-rol"
                 onchange="filtrarPorRol(this.value)"
@@ -98,7 +96,6 @@ include __DIR__ . '../../../includes/header.php';
             
         </div>
         
-        <!-- TABLA -->
         <div class="rounded-lg border border-gray-200 bg-white overflow-x-auto">
             <table class="w-full text-sm min-w-[600px]">
                 <thead class="border-b border-gray-200 bg-gray-50">
@@ -112,7 +109,6 @@ include __DIR__ . '../../../includes/header.php';
                 </thead>
                 <tbody id="tabla-usuarios"></tbody>
             </table>
-            <!-- MENSAJE SIN RESULTADOS -->
             <div id="mensaje-sin-resultados" class="hidden">
                 <div class="w-full flex flex-col items-center justify-center py-20 px-4 bg-white border border-gray-200 rounded-xl min-h-[400px]">
                     <div class="w-20 h-20 mb-5 bg-sena-soft rounded-2xl flex items-center justify-center">
@@ -125,7 +121,6 @@ include __DIR__ . '../../../includes/header.php';
                     <p id="texto-sin-resultados" class="text-sm text-sena-text-soft text-center max-w-sm"></p>
                 </div>
             </div>
-            <!-- Contenedor de paginación -->
           <div id="paginacion-container" class="hidden mt-6"></div>
         </div>
     </div>

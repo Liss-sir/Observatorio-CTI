@@ -7,7 +7,7 @@
     <script src="https://unpkg.com/lucide@latest"></script>
 
     <div class="max-w-[80rem] mx-auto px-4 py-8 lg:px-8">
-        <!-- TITULO -->
+        <!-- title -->
         <div class="flex justify-between items-center mb-6">
             <div>
                 <h1 class="text-2xl font-bold">Áreas</h1>
@@ -17,7 +17,7 @@
             </div>
         </div>
 
-        <!-- BUSCADOR Y BOTÓN CREAR -->
+        <!-- SEARCH ENGINE AND CREATE BUTTON -->
         <div class="flex items-center gap-3 mb-6">
             <div class="relative flex-1">
                 <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-sena-text-soft pointer-events-none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -35,14 +35,11 @@
             </button>
         </div>
 
-        <!-- CONTADOR DE RESULTADOS -->
+        <!-- RESULTS COUNTER -->
         <p class="text-sm text-gray-500 mb-4" id="contador-areas">Cargando áreas...</p>
 
-        <!-- GRID AREAS (CONTENEDOR VACÍO) -->
-        <!-- Es vital que tenga estas clases exactas para que el JS lo encuentre -->
+        <!-- GRID AREAS -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="contenedor-areas-grid">
-            <!-- El contenido se generará automáticamente mediante JavaScript al cargar la página -->
-            <!-- Si hay error, el JS mostrará un mensaje aquí -->
         </div>
 
         <div id="paginacion-areas" class="flex justify-center mt-6 gap-2"></div>
@@ -67,7 +64,6 @@
     }
 </script>
 
-<!-- Incluir el script corregido (Asegúrate que la ruta sea correcta) -->
 <script src="../../assets/js/areas/areas.js"></script>
 
 <?php include __DIR__ . '../../../includes/footer.php'; ?>

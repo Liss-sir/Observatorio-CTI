@@ -1,4 +1,3 @@
-<!-- modal_confirmacion_editar_pf.php -->
 <div id="modal-editado-confirmacion" class="hidden fixed inset-0 z-[999] overflow-y-auto" aria-hidden="true">
   <div class="fixed inset-0 bg-black bg-opacity-80 transition-opacity"></div>
 

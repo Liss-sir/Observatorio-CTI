@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", function () {
-    // ===== REFERENCIAS A MODALES =====
+    // ===== REFERENCES TO MODALS =====
     const modalDeshabilitar = document.getElementById('modal-deshabilitar-perfil');
     const modalDeshabilitado = document.getElementById('modal-deshabilitado-perfil');
     const btnConfirmarDeshabilitar = document.getElementById('btn-confirmar-deshabilitar');
@@ -29,14 +29,14 @@ document.addEventListener("DOMContentLoaded", function () {
     let intervalContadorCreado = null;
     let programaPendienteNombre = null;
 
-    // ===== NUEVO: VARIABLES PARA PAGINACIÓN =====
+    // ===== VARIABLES FOR PAGINATION =====
     let paginaActual = 1;
     const elementosPorPagina = 9;
     let programaSeleccionado = null;
     let programasFiltrados = [];
     let ultimoTerminoBusqueda = '';
 
-    // ===== NUEVO: VALIDACIÓN DE DESCRIPCIÓN =====
+    // ===== VALIDACIÓN DE DESCRIPCIÓN =====
     const MIN_DESCRIPCION_LENGTH = 30;
 
     function validarDescripcion(descripcion) {
@@ -96,6 +96,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
+    //SHOW TOAST VALIDATION
     function mostrarToastValidacion(mensaje, tipo = 'warning') {
         const toastContainer = document.getElementById('toast-container');
         
@@ -149,7 +150,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }, 3000);
     }
 
-    // ===== CARGAR ÁREAS =====
+    // ===== LOAD AREAS =====
     async function cargarAreas() {
         try {
             const response = await fetch(`${AREA_URL}?accion=paraSelect`);
@@ -161,7 +162,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
-    // ===== LLENAR SELECT ÁREAS =====
+    // ===== FILL SELECT AREAS =====
     async function llenarSelectAreas(selectId) {
         const select = document.getElementById(selectId);
         if (!select) return;
@@ -189,7 +190,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
-    // ===== CARGAR PROGRAMAS =====
+    // ===== LOAD PROGRAMS =====
     async function cargarProgramas() {
         const contenedor = document.getElementById('contenedorProgramas');
         if (!contenedor) return;
@@ -201,8 +202,8 @@ document.addEventListener("DOMContentLoaded", function () {
             const result = await response.json();
             
             if (result.status === 'success' && result.data) {
-                window.todosLosProgramas = result.data; // Guardar todos los programas
-                paginaActual = 1; // Resetear a primera página
+                window.todosLosProgramas = result.data; 
+                paginaActual = 1; 
                 renderizarProgramas(result.data);
             }
         } catch (error) {
@@ -211,7 +212,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
-     // ===== APLICAR FILTROS =====
+     // ===== APPLY FILTERS =====
     function aplicarFiltros() {
         const textoBusqueda = document.getElementById('buscador')?.value?.toLowerCase()?.trim() || '';
         const nivelFiltro = filtroNivel?.value || '';
@@ -219,7 +220,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const estadoFiltro = filtroEstado?.value || '';
 
         let programasFiltrados = todosLosProgramas.filter(programa => {
-            // Filtro por texto (nombre o código)
+            // Filter by text (name or code)
             if (textoBusqueda && textoBusqueda.length >= 2) {
                 const nombre = String(programa.nombre_programa || '').toLowerCase();
                 const codigo = String(programa.codigo_programa || '').toLowerCase();
@@ -228,17 +229,17 @@ document.addEventListener("DOMContentLoaded", function () {
                 }
             }
 
-            // Filtro por nivel
+            // Filter by level
             if (nivelFiltro && String(programa.id_nivel) !== nivelFiltro) {
                 return false;
             }
 
-            // Filtro por modalidad
+            // Filter by modality
             if (modalidadFiltro && programa.modalidad !== modalidadFiltro) {
                 return false;
             }
 
-            // Filtro por estado
+            // Filter by state
             if (estadoFiltro !== '' && String(programa.estado) !== estadoFiltro) {
                 return false;
             }
@@ -249,7 +250,7 @@ document.addEventListener("DOMContentLoaded", function () {
         renderizarProgramas(programasFiltrados);
     }
 
-    // ===== OBTENER NOMBRE NIVEL =====
+    // ===== GET NAME LEVEL =====
     function getNombreNivel(idNivel) {
         const niveles = {
             '1': 'Técnico',
@@ -260,7 +261,7 @@ document.addEventListener("DOMContentLoaded", function () {
         return niveles[idNivel] || 'N/A';
     }
 
-    // ===== OBTENER COLOR NIVEL =====
+    // ===== GET COLOR LEVEL =====
     function getColorNivel(idNivel) {
         const colores = {
             '1': 'bg-green-100 text-green-800',
@@ -271,7 +272,7 @@ document.addEventListener("DOMContentLoaded", function () {
         return colores[idNivel] || 'bg-gray-100 text-gray-800';
     }
 
-    // ===== RENDERIZAR PROGRAMAS =====
+    // ===== RENDER PROGRAMS =====
     function renderizarProgramas(programas) {
         const contenedor = document.getElementById('contenedorProgramas');
         if (!contenedor) return;
@@ -280,7 +281,7 @@ document.addEventListener("DOMContentLoaded", function () {
         
         const textoBusqueda = document.getElementById('buscador')?.value?.toLowerCase()?.trim() || '';
         
-        // Filtrar programas
+        // Filter programs
         let programasFiltrados = programas;
         if (textoBusqueda && textoBusqueda.length >= 2) {
             programasFiltrados = programas.filter(programa => {
@@ -290,14 +291,13 @@ document.addEventListener("DOMContentLoaded", function () {
             });
         }
         
-        // Guardar programas filtrados para paginación
         window.programasFiltrados = programasFiltrados;
         
         if (!programasFiltrados || programasFiltrados.length === 0) {
             const hayBusquedaActiva = textoBusqueda.length >= 2;
             
             if (hayBusquedaActiva) {
-                // No hay resultados de búsqueda
+                // No search results found
                 contenedor.innerHTML = `
                     <div class="col-span-3 flex flex-col items-center justify-center py-20 px-4 bg-white border border-gray-200 rounded-xl min-h-[400px]">
                         <div class="w-20 h-20 mb-5 bg-sena-soft rounded-2xl flex items-center justify-center">
@@ -313,7 +313,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     </div>
                 `;
             } else {
-                // No hay programas registrados
+                // There are no registered programs
                 contenedor.innerHTML = `
                     <div class="col-span-3 flex flex-col items-center justify-center py-20 px-4 bg-white border border-gray-200 rounded-xl min-h-[400px]">
                         <div class="w-20 h-20 mb-5 bg-sena-soft rounded-lg flex items-center justify-center">
@@ -341,7 +341,6 @@ document.addEventListener("DOMContentLoaded", function () {
                 }
             }
             
-            // Ocultar paginación cuando no hay resultados
             const paginacionContainer = document.getElementById('paginacion-container');
             if (paginacionContainer) paginacionContainer.classList.add('hidden');
 
@@ -351,18 +350,16 @@ document.addEventListener("DOMContentLoaded", function () {
             return;
         }
         
-        // Asegurar que la página actual no exceda el total de páginas
         const totalPaginas = Math.ceil(programasFiltrados.length / elementosPorPagina);
         if (paginaActual > totalPaginas) {
             paginaActual = totalPaginas;
         }
         
-        // Paginación: obtener programas de la página actual
         const inicio = (paginaActual - 1) * elementosPorPagina;
         const fin = inicio + elementosPorPagina;
         const programasPagina = programasFiltrados.slice(inicio, fin);
         
-        // ✅ VERIFICAR PERMISOS UNA VEZ AL INICIO
+        // VERIFY PERMITS ONCE AT THE START
         const puedeEditar = typeof Auth !== 'undefined' && Auth.tienePermiso('editar_programa');
         const puedeDesactivar = typeof Auth !== 'undefined' && Auth.tienePermiso('desactivar_programa');
         
@@ -371,7 +368,6 @@ document.addEventListener("DOMContentLoaded", function () {
             card.className = 'tarjeta-tecnologia bg-white border border-gray-200 p-5 rounded-xl shadow-sm hover:shadow-md transition-shadow programa-card cursor-pointer';
             card.setAttribute('data-id', programa.id_programa);
 
-            // ✅ Guardamos TODA la info en data-* para el modal de detalle
             card.setAttribute('data-codigo', programa.codigo_programa || '');
             card.setAttribute('data-nombre', (programa.nombre_programa || '').replace(/"/g, '&quot;'));
             card.setAttribute('data-nivel', programa.id_nivel || '');
@@ -383,7 +379,6 @@ document.addEventListener("DOMContentLoaded", function () {
             card.setAttribute('data-descripcion', (programa.descripcion || '').replace(/"/g, '&quot;'));
             card.setAttribute('data-estado', programa.estado ?? 1);
 
-            // ⚠️ CRUCIAL: Estas variables deben mantenerse aquí para el switch y los badges
             const estadoActivo = programa.estado == 1;
             const nombreNivel = getNombreNivel(programa.id_nivel);
             const colorNivel = getColorNivel(programa.id_nivel);
@@ -479,16 +474,15 @@ document.addEventListener("DOMContentLoaded", function () {
         inicializarBotonesEditar();
         inicializarClicksTarjetas();
         
-        // Aplicar permisos después de renderizar
+        // Apply permissions after rendering
         if (typeof Auth !== 'undefined' && Auth.aplicarPermisosPorAccion) {
             Auth.aplicarPermisosPorAccion();
         }
         
-        // Actualizar paginación
         actualizarPaginacion(programasFiltrados.length);
     }
 
-    // ===== FORMATEAR FECHA =====
+    // ===== FORMAT DATE =====
     function formatearFecha(fecha) {
         if (!fecha) return 'N/A';
         const date = new Date(fecha);
@@ -504,7 +498,7 @@ document.addEventListener("DOMContentLoaded", function () {
         return texto.charAt(0).toUpperCase() + texto.slice(1).toLowerCase();
     }
 
-    // ===== INICIALIZAR SWITCHES =====
+    // ===== INITIALIZE SWITCHES =====
     function inicializarSwitches() {
         document.querySelectorAll('.switch-sena').forEach(switchEl => {
             if (switchEl.dataset.inicializado === 'true') return;
@@ -519,18 +513,15 @@ document.addEventListener("DOMContentLoaded", function () {
                 const nombrePrograma = card.querySelector('h3').textContent.trim();
                 const estadoActual = this.classList.contains('active');
 
-                // ✅ Guardamos el nombre en la variable compartida
                 programaPendienteNombre = nombrePrograma;
 
                 if (estadoActual) {
-                    // Modal de confirmación DESHABILITAR
                     if (modalDeshabilitar) {
                         modalDeshabilitar.setAttribute('data-switch-id', idPrograma);
                         if (nombreProgramaDeshabilitar) nombreProgramaDeshabilitar.textContent = `"${nombrePrograma}"`;
                         modalDeshabilitar.classList.remove('hidden');
                     }
                 } else {
-                    // Modal de confirmación HABILITAR
                     if (modalHabilitar) {
                         modalHabilitar.setAttribute('data-switch-id', idPrograma);
                         if (nombreProgramaHabilitar) nombreProgramaHabilitar.textContent = `"${nombrePrograma}"`;
@@ -541,7 +532,7 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    // ===== INICIALIZAR BOTONES EDITAR =====
+    // ===== INITIALIZE EDIT BUTTONS =====
     function inicializarBotonesEditar() {
         document.querySelectorAll(".btn-editar-programa").forEach(btn => {
             if (btn.dataset.inicializado === 'true') return;
@@ -567,7 +558,6 @@ document.addEventListener("DOMContentLoaded", function () {
                 };
                 
                 
-                // ✅ CORREGIDO: IDs que COINCIDEN con tu modal HTML
                 const idInput = document.getElementById("idProgramaEditar");
                 const codigoInput = document.getElementById("codigoProgramaEditar");
                 const nombreInput = document.getElementById("nombreProgramaEditar");
@@ -579,7 +569,6 @@ document.addEventListener("DOMContentLoaded", function () {
                 const fechaFinInput = document.getElementById("fechaFinEditar");
                 const areaSelect = document.getElementById("areaProgramaEditar");
                 
-                // ✅ Asignar valores
                 if (idInput) idInput.value = boton.dataset.id || '';
                 if (codigoInput) codigoInput.value = boton.dataset.codigo || '';
                 if (nombreInput) nombreInput.value = boton.dataset.nombre || '';
@@ -588,11 +577,9 @@ document.addEventListener("DOMContentLoaded", function () {
                 actualizarContadorEditar(); 
                 if (nivelSelect) nivelSelect.value = boton.dataset.nivel || '';
                 
-                // ✅ Fechas: usar dataset en minúsculas (como vienen del HTML)
                 if (fechaInicioInput) fechaInicioInput.value = boton.dataset.fechainicio || '';
                 if (fechaFinInput) fechaFinInput.value = boton.dataset.fechafin || '';
                 
-                // ✅ Modalidad: manejar caso
                 if (modalidadSelect && boton.dataset.modalidad) {
                     const modalidadValor = boton.dataset.modalidad.trim().toUpperCase();
                     modalidadSelect.value = modalidadValor;
@@ -601,7 +588,6 @@ document.addEventListener("DOMContentLoaded", function () {
                     }
                 }
                 
-                // ✅ Área: cargar opciones primero, luego seleccionar
                 if (areaSelect && boton.dataset.area) {
                     areaSelect.innerHTML = '<option value="">Cargando áreas...</option>';
                     areaSelect.disabled = true;
@@ -627,14 +613,14 @@ document.addEventListener("DOMContentLoaded", function () {
                     }
                 }
                 
-                // ✅ Abrir modal
+                // Open modal
                 const modal = document.getElementById("modal-editar-programa");
                 if (modal) modal.classList.remove("hidden");
             });
         });
     }
 
-    // ✅ Abre el modal y llena los datos desde la tarjeta
+    //OPEN DETAIL MODAL
     function abrirModalDetallePrograma(card) {
         const modalDetalle = document.getElementById('modal-detalle-programa');
         if (!modalDetalle) return;
@@ -664,21 +650,19 @@ document.addEventListener("DOMContentLoaded", function () {
         abrirModal(modalDetalle);
     }
 
-    // ✅ Asigna el clic a las tarjetas
     function inicializarClicksTarjetas() {
         document.querySelectorAll('.programa-card').forEach(card => {
             if (card.dataset.inicializadoDetalle === 'true') return;
             card.dataset.inicializadoDetalle = 'true';
             
             card.addEventListener('click', function(e) {
-                // Evita abrir el modal si se hace clic en los botones internos
                 if (e.target.closest('.btn-editar-programa') || e.target.closest('.switch-sena')) return;
                 abrirModalDetallePrograma(this);
             });
         });
     }
 
-    // ===== BUSCADOR =====
+    // ===== SEEKER =====
     const buscador = document.getElementById("buscador");
     let timeoutBusqueda = null;
 
@@ -688,14 +672,14 @@ document.addEventListener("DOMContentLoaded", function () {
             const texto = this.value.trim();
             
             if (texto.length < 2) {
-                paginaActual = 1; // Resetear paginación
+                paginaActual = 1; 
                 cargarProgramas();
                 return;
             }
             
             timeoutBusqueda = setTimeout(async () => {
                 try {
-                    paginaActual = 1; // Resetear paginación en búsqueda
+                    paginaActual = 1; 
                     const response = await fetch(`${PRO_URL}?accion=buscar&q=${encodeURIComponent(texto)}`);
                     const result = await response.json();
                     if (result.success && result.data) {
@@ -709,7 +693,7 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    // ===== ABRIR/CERRAR MODALES =====
+    // ===== OPEN/CLOSE MODALITIES =====
     function abrirModal(modal) {
         if (modal) {
             modal.classList.remove('hidden');
@@ -724,13 +708,12 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
-    // ===== CERRAR MODALES =====
+    // ===== CLOSE MODALS =====
     document.querySelectorAll('.cerrar-modal-deshabilitar, .cerrar-modal-habilitar, .cerrar-modal-deshabilitado, .cerrar-modal-habilitado-confirmacion').forEach(btn => {
         btn.addEventListener('click', function(e) {
             e.preventDefault();
             e.stopPropagation();
             
-            // ✅ Llama a la función específica según el modal para limpiar timers correctamente
             if (this.classList.contains('cerrar-modal-deshabilitado')) {
                 cerrarModalDeshabilitado();
             } else if (this.classList.contains('cerrar-modal-habilitado-confirmacion')) {
@@ -759,7 +742,7 @@ document.addEventListener("DOMContentLoaded", function () {
         btn.addEventListener("click", () => { cerrarModalEditado(); });
     });
 
-    //confirmar deshabilitar
+    //MODAL CONFIRM DISABLE
     if (btnConfirmarDeshabilitar) {
         btnConfirmarDeshabilitar.addEventListener('click', async function(e) {
             e.preventDefault();
@@ -783,8 +766,8 @@ document.addEventListener("DOMContentLoaded", function () {
                         }
                     });
                     cerrarModal(modalDeshabilitar);
-                    mostrarModalDeshabilitado(nombre); // ✅ Envía nombre al modal de éxito
-                    programaPendienteNombre = null; // ✅ Limpia la variable
+                    mostrarModalDeshabilitado(nombre);
+                    programaPendienteNombre = null; 
                 } else {
                     alert(result.error || 'Error');
                 }
@@ -796,7 +779,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
 
-    // ===== CONFIRMAR HABILITAR =====
+    // ===== MODAL CONFIRM ENABLE =====
    
     if (btnConfirmarHabilitar) {
         btnConfirmarHabilitar.addEventListener('click', async function(e) {
@@ -821,8 +804,8 @@ document.addEventListener("DOMContentLoaded", function () {
                         }
                     });
                     cerrarModal(modalHabilitar);
-                    mostrarModalHabilitado(nombre); // ✅ Envía nombre al modal de éxito
-                    programaPendienteNombre = null; // ✅ Limpia la variable
+                    mostrarModalHabilitado(nombre); 
+                    programaPendienteNombre = null; 
                 } else {  
                     alert(result.error || 'Error');
                 }
@@ -833,7 +816,7 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    // ===== GUARDAR NUEVO PROGRAMA ====
+    // ===== SAVE NEW PROGRAM ====
     const btnGuardarNuevo = document.getElementById('btn-guardar-nuevo-programa');
     if (btnGuardarNuevo) {
         btnGuardarNuevo.addEventListener('click', async () => {
@@ -851,19 +834,17 @@ document.addEventListener("DOMContentLoaded", function () {
             };
 
             // =========================
-            // 1. VALIDACIÓN DE CAMPOS REQUERIDOS
+            // VALIDATION OF REQUIRED FIELDS
             // =========================
             if (!datos.id_area || !datos.codigo_programa || !datos.nombre_programa || !datos.id_nivel) {
-                // 🚨 ANTES: alert('Complete los campos requeridos');
                 mostrarToastValidacion('Complete los campos requeridos (*)', 'error'); 
                 return;
             }
 
             // =========================
-            // 2. VALIDACIÓN DE DESCRIPCIÓN
+            // DESCRIPTION VALIDATION
             // =========================
             if (!datos.descripcion || !validarDescripcion(datos.descripcion)) {
-                // 🚨 ANTES: alert('La descripción debe tener...');
                 const longitud = datos.descripcion ? datos.descripcion.length : 0;
                 mostrarToastValidacion(`La descripción es muy corta (${longitud}/30 caracteres)`, 'warning');
                 return;
@@ -891,7 +872,7 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    // ===== GUARDAR EDITADA =====
+    // ===== SAVE EDIT =====
     const btnGuardarEditar = document.getElementById('btn-guardar-programa-editado');
     if (btnGuardarEditar) {
         btnGuardarEditar.addEventListener('click', async () => {
@@ -911,9 +892,6 @@ document.addEventListener("DOMContentLoaded", function () {
                 descripcion: descInput?.value
             };
 
-            // =========================
-            // 1. VALIDACIÓN DE ID Y ÁREA
-            // =========================
             if (!datosActuales.id_programa) {
                 mostrarToastValidacion('Error interno: ID del programa no encontrado', 'error');
                 return;
@@ -924,24 +902,17 @@ document.addEventListener("DOMContentLoaded", function () {
                 return;
             }
 
-            // =========================
-            // 2. VALIDACIÓN DE DESCRIPCIÓN
-            // =========================
             if (!validarDescripcion(datosActuales.descripcion)) {
                 mostrarToastValidacion('La descripción debe tener al menos 30 caracteres', 'warning');
                 return;
             }
 
-            // =========================
-            // 3. 🔥 VALIDACIÓN DE CAMBIOS 🔥
-            // =========================
             if (!programaSeleccionado) {
                 console.error('No hay datos originales del programa');
                 mostrarToastValidacion('Error al cargar los datos originales', 'error');
                 return;
             }
 
-            // Comparar cada campo relevante
             const codigoCambio = datosActuales.codigo_programa !== programaSeleccionado.codigo_programa;
             const nombreCambio = datosActuales.nombre_programa !== programaSeleccionado.nombre_programa;
             const areaCambio = parseInt(datosActuales.id_area) !== programaSeleccionado.id_area;
@@ -952,7 +923,6 @@ document.addEventListener("DOMContentLoaded", function () {
             const cuposCambio = datosActuales.cupos_formacion !== programaSeleccionado.cupos_formacion;
             const descripcionCambio = datosActuales.descripcion !== programaSeleccionado.descripcion;
 
-            // Verificar si hay algún cambio
             const hayCambios = codigoCambio || nombreCambio || areaCambio || nivelCambio || 
                             modalidadCambio || fechaInicioCambio || fechaFinCambio || 
                             cuposCambio || descripcionCambio;
@@ -974,7 +944,6 @@ document.addEventListener("DOMContentLoaded", function () {
                     if (modalEditar) modalEditar.classList.add("hidden");
                     mostrarModalEditado(datosActuales.nombre_programa);
                     cargarProgramas();
-                    // Limpiar variable después de guardar
                     programaSeleccionado = null;
                 } else {
                     mostrarToastValidacion(resultado.error || 'Error al actualizar', 'error');
@@ -989,7 +958,7 @@ document.addEventListener("DOMContentLoaded", function () {
         if (descEditar) descEditar.addEventListener('input', actualizarContadorEditar);
 }
 
-    // ===== ABRIR MODAL CREAR =====
+    // ===== OPEN MODAL CREATE =====
     if (btnCrearPrograma) {
         btnCrearPrograma.addEventListener('click', (e) => {
             e.preventDefault();
@@ -997,13 +966,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
             if (modalCrear) modalCrear.classList.remove('hidden');
 
-            // 🔥 LIMPIAR FORMULARIO AL ABRIR
             const form = document.getElementById("formPrograma");
 
             if (form) {
                 form.reset();
 
-                // limpieza forzada (por si hay valores persistentes)
                 form.querySelectorAll("input, textarea, select").forEach(el => {
                     if (el.type === "checkbox" || el.type === "radio") {
                         el.checked = false;
@@ -1015,11 +982,10 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    // ===== MODAL DESHABILITADO =====
+    // ===== MODE DISABLED =====
    function mostrarModalDeshabilitado(nombre) {
         if (!modalDeshabilitado) return;
         
-        // ✅ Búsqueda directa por ID
         const spanNombre = document.getElementById('nombre-perfil-deshabilitado');
         if (spanNombre) {
             spanNombre.textContent = `"${nombre}"`;
@@ -1049,13 +1015,10 @@ document.addEventListener("DOMContentLoaded", function () {
         timeoutDeshabilitado = setTimeout(() => { cerrarModalDeshabilitado(); }, 3000);
     }
 
-
-    // ===== MODAL HABILITADO =====
-    
+    // ===== MODAL ENABLED =====
     function mostrarModalHabilitado(nombre) {
         if (!modalHabilitadoConfirmacion) return;
         
-        // ✅ Búsqueda directa por ID
         const spanNombre = document.getElementById('nombre-perfil-habilitado-exito');
         if (spanNombre) {
             spanNombre.textContent = `"${nombre}"`;
@@ -1085,7 +1048,7 @@ document.addEventListener("DOMContentLoaded", function () {
         timeoutHabilitado = setTimeout(() => { cerrarModalHabilitado(); }, 3000);
     }
 
-    // ===== CERRAR MODAL DESHABILITADO =====
+    // ===== CLOSE DISABLED MODAL =====
     function cerrarModalDeshabilitado() {
         if (modalDeshabilitado) { modalDeshabilitado.classList.add('hidden'); document.body.classList.remove('overflow-hidden'); }
         if (timeoutDeshabilitado) { clearTimeout(timeoutDeshabilitado); timeoutDeshabilitado = null; }
@@ -1094,7 +1057,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const c = document.getElementById('contador-segundos-deshabilitado'); if (c) c.textContent = '3';
     }
 
-    // ===== CERRAR MODAL HABILITADO =====
+    // ===== CLOSE MODAL ENABLED =====
     function cerrarModalHabilitado() {
         if (modalHabilitadoConfirmacion) { modalHabilitadoConfirmacion.classList.add('hidden'); document.body.classList.remove('overflow-hidden'); }
         if (timeoutHabilitado) { clearTimeout(timeoutHabilitado); timeoutHabilitado = null; }
@@ -1103,7 +1066,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const c = document.getElementById('contador-segundos'); if (c) c.textContent = '3';
     }
 
-    // ===== MODAL CREADO =====
+    // ===== CREATED MODAL =====
     function mostrarModalCreado(nombre) {
         if (!modalCreadoConfirmacion) return;
         const span = document.getElementById('nombre-proyeccion-creada');
@@ -1143,7 +1106,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const c = document.getElementById('contador-segundos-creado'); if (c) c.textContent = '3';
     }
 
-    // ===== MODAL EDITADO =====
+    // ===== EDITED MODAL =====
     function mostrarModalEditado(nombre) {
         if (!modalEditadoConfirmacion) return;
         const span = document.getElementById('nombre-proyeccion-editado');
@@ -1183,7 +1146,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const c = document.getElementById('contador-segundos-editado'); if (c) c.textContent = '3';
     }
 
-    // ===== ACTUALIZAR PAGINACIÓN =====
+    // ===== UPDATE PAGINATION =====
     function actualizarPaginacion(totalElementos) {
         const totalPaginas = Math.ceil(totalElementos / elementosPorPagina);
         const paginacionContainer = document.getElementById('paginacion-container');
@@ -1197,7 +1160,6 @@ document.addEventListener("DOMContentLoaded", function () {
         
         paginacionContainer.classList.remove('hidden');
         
-        // Generar los botones de páginas con elipsis
         let paginasHTML = '';
         
         let inicio = Math.max(1, paginaActual - 2);
@@ -1302,7 +1264,7 @@ document.addEventListener("DOMContentLoaded", function () {
         
         paginacionContainer.innerHTML = paginacionHTML;
         
-        // Event listeners para paginación
+        // Event listeners for pagination
         document.querySelectorAll('.btn-pagina').forEach(btn => {
             btn.addEventListener('click', () => {
                 paginaActual = parseInt(btn.dataset.pagina);
@@ -1347,7 +1309,7 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    // ===== EVENT LISTENERS PARA CONTADORES =====
+    // ===== EVENT LISTENERS FOR ACCOUNTANTS =====
     const descCrear = document.getElementById('descripcionNuevoPrograma');
     if (descCrear) {
         descCrear.addEventListener('input', actualizarContadorCrear);
@@ -1358,7 +1320,6 @@ document.addEventListener("DOMContentLoaded", function () {
         descEditar.addEventListener('input', actualizarContadorEditar);
     }
 
-    // Cerrar modal detalle al hacer clic en botón o overlay
     document.querySelectorAll('.cerrar-modal-detalle-programa').forEach(btn => {
         btn.addEventListener('click', (e) => { e.preventDefault(); cerrarModal(modalDetalle); });
     });
@@ -1371,22 +1332,20 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    // ===== INICIALIZAR =====
+    // ===== INITIALIZE =====
     llenarSelectAreas('areaPrograma');
     llenarSelectAreas('areaProgramaEditar');
 
-    // ✅ ESPERAR A QUE AUTH ESTÉ LISTO - SIN FALLBACK
     if (typeof Auth !== 'undefined' && typeof Auth.whenReady === 'function') {
         Auth.whenReady(() => {
             cargarProgramas();
         });
     } else {
-        // Solo fallback si Auth realmente no existe (no si está cargando)
         setTimeout(() => {
             if (typeof Auth !== 'undefined' && typeof Auth.whenReady === 'function') {
                 Auth.whenReady(() => cargarProgramas());
             } else {
-                cargarProgramas(); // Último recurso
+                cargarProgramas(); 
             }
         }, 500);
     }

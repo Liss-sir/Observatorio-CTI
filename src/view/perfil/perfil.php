@@ -48,7 +48,6 @@ $esAdmin = ($_SESSION['usuario']['id_rol'] == 1);
 
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
-        <!-- IZQUIERDA -->
         <div class="lg:col-span-2 space-y-6">
 
             <!-- INFO -->
@@ -84,7 +83,7 @@ $esAdmin = ($_SESSION['usuario']['id_rol'] == 1);
                 </div>
             </div>
 
-            <!-- RESUMEN -->
+            <!-- RESUME -->
             <div class="bg-white p-6 rounded-2xl shadow border">
                 <h3 class="text-lg font-semibold text-gray-700 mb-4">
                     <?= $esAdmin ? 'Resumen de la plataforma' : 'Resumen de tu empresa' ?>
@@ -92,7 +91,7 @@ $esAdmin = ($_SESSION['usuario']['id_rol'] == 1);
 
                 <div id="resumenContainer" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-4">
 
-                    <!-- PERFILES -->
+                    <!-- PROFILES -->
                     <div class="border rounded-xl p-4 flex items-start gap-3">
                         <div class="bg-sena-soft p-2 rounded-lg">
                             <i data-lucide="file-text" class="w-5 h-5 text-green-600"></i>
@@ -162,7 +161,6 @@ $esAdmin = ($_SESSION['usuario']['id_rol'] == 1);
                 </div>
             </div>
 
-            <!-- PERFILES -->
             <div class="bg-white p-6 rounded-2xl shadow border">
                 <h3 class="text-lg font-semibold text-gray-700 mb-4">Perfiles recientes</h3>
                 <div id="listaPerfiles" class="space-y-2"></div>
@@ -170,13 +168,11 @@ $esAdmin = ($_SESSION['usuario']['id_rol'] == 1);
 
         </div>
 
-        <!-- DERECHA -->
         <div class="space-y-6">
 
-            <!-- ESTADÍSTICAS -->
+            <!-- STATISTICS -->
             <div class="bg-white p-6 rounded-2xl shadow border">
                 
-                <!-- 🔥 ICONO -->
                 <div class="flex items-center gap-2 mb-4">
                     <i data-lucide="bar-chart-3" class="w-5 h-5 text-green-600"></i>
                     <h3 class="text-lg font-semibold text-gray-700">Estadísticas</h3>
@@ -185,7 +181,7 @@ $esAdmin = ($_SESSION['usuario']['id_rol'] == 1);
                 <div id="listaEstadisticas" class="space-y-2 text-sm text-gray-600"></div>
             </div>
 
-            <!-- ACTIVIDAD -->
+            <!-- ACTIVITY -->
             <div class="bg-white p-6 rounded-2xl shadow border text-sm text-gray-500">
                 
                 <div class="flex items-center gap-2 mb-2">
