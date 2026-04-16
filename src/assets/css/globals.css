@@ -1,0 +1,151 @@
+
+.switch-sena {
+  position: relative;
+  width: 36px;
+  height: 20px;
+  background-color: #9ca3af;
+  border-radius: 9999px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  display: inline-block;
+}
+.switch-sena::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 16px;
+  height: 16px;
+  background-color: white;
+  border-radius: 9999px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+  transition: transform 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
+}
+.switch-sena.active {
+  background-color: #39A900;
+}
+.switch-sena.active::after {
+  transform: translateX(16px);
+}
+.switch-sena:active::after {
+  width: 20px;
+}
+.switch-sena.active:active::after {
+  transform: translateX(12px);
+}
+
+    /* Animación de entrada para las cards */
+    @keyframes slideInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .tarjeta-tecnologia {
+      animation: slideInUp 0.5s ease-out backwards;
+    }
+
+    /* Efecto de retraso escalonado para cada tarjeta */
+    .tarjeta-tecnologia:nth-child(1) { animation-delay: 0.1s; }
+    .tarjeta-tecnologia:nth-child(2) { animation-delay: 0.2s; }
+    .tarjeta-tecnologia:nth-child(3) { animation-delay: 0.3s; }
+    .tarjeta-tecnologia:nth-child(4) { animation-delay: 0.4s; }
+    .tarjeta-tecnologia:nth-child(5) { animation-delay: 0.5s; }
+    .tarjeta-tecnologia:nth-child(6) { animation-delay: 0.6s; }
+    .tarjeta-tecnologia:nth-child(7) { animation-delay: 0.7s; }
+    .tarjeta-tecnologia:nth-child(8) { animation-delay: 0.8s; }
+    .tarjeta-tecnologia:nth-child(9) { animation-delay: 0.9s; }
+    .tarjeta-tecnologia:nth-child(10) { animation-delay: 1s; }
+    .tarjeta-tecnologia:nth-child(11) { animation-delay: 1.1s; }
+    .tarjeta-tecnologia:nth-child(12) { animation-delay: 1.2s; }
+
+/* Animación para el modal de confirmación */
+@keyframes modalFadeIn {
+  from {
+opacity: 0;
+transform: scale(0.95);
+  }
+  to {
+opacity: 1;
+transform: scale(1);
+  }
+}
+.animate-modalFadeIn {
+  animation: modalFadeIn 0.45s cubic-bezier(0.4, 0.0, 0.2, 1);
+}
+
+/* Animación de deslizamiento desde arriba para crear/editar */
+@keyframes slideDownModal {
+  from {
+    opacity: 0;
+    transform: scale(0.92) translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+.animate-slideDownModal {
+  animation: slideDownModal 0.5s cubic-bezier(0.4, 0.0, 0.2, 1);
+}
+
+/* Clase hidden para el modal */
+.hidden {
+  display: none !important;
+}
+
+/* Estilos para los select personalizados */
+.select-container {
+  position: relative;
+  width: 100%;
+}
+
+.custom-select {
+  width: 100%;
+  padding: 0.5rem 2.5rem 0.5rem 0.75rem;
+  font-size: 0.875rem;
+  color: #1e293b;
+  background-color: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.5rem;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  cursor: pointer;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%236B7280'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  background-size: 0.8rem;
+}
+
+.custom-select:focus {
+  outline: none;
+  border-color: #39A900;
+}
+
+/* Asegurar que la bolita se vea */
+.estado-bolita {
+  display: inline-block !important;
+  width: 8px !important;
+  height: 8px !important;
+  border-radius: 9999px !important;
+  flex-shrink: 0 !important;
+}
+
+.estado-bolita.bg-sena {
+  background-color: #39A900 !important;
+}
+
+.estado-bolita.bg-gray-300 {
+  background-color: #D1D5DB !important;
+}
+
+
+.custom-select::-ms-expand {
+  display: none;
+}

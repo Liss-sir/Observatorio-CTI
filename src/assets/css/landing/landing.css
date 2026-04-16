@@ -1,0 +1,57 @@
+/* ---------- Helpers para cards ---------- */
+.card-hover {
+  transition: transform 200ms ease, box-shadow 200ms ease, border-color 200ms ease;
+}
+
+.card-hover:hover {
+  border-color: rgb(0 120 50); /* sena-strong */
+  transform: translateY(-0.25rem);
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+}
+
+/* Texto que debe cambiar al color del borde en hover */
+.card-hover:hover .card-hover-text {
+  color: rgb(0 120 50); /* sena-strong */
+}
+
+/* Iconos que deben cambiar al color del borde */
+.card-hover:hover .card-hover-icon {
+  color: rgb(0 120 50); /* sena-strong */
+}
+
+/* ---------- Líneas Tecnológicas centradas ---------- */
+/* Centra los items del grid y evita que se estiren feo */
+.lines-grid {
+  display: grid;
+  gap: 1rem;
+}
+
+@media (min-width: 768px) {
+  .lines-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    justify-items: center; /* centra cada card */
+  }
+}
+
+/* Controla ancho de cada card */
+.lines-card {
+  width: 100%;
+  max-width: 320px;
+}
+
+/* Si quieres que el contenido interno se vea alineado uniforme */
+.lines-card .lines-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.landing-page {
+  font-family: 'Inter', sans-serif;
+}
+
+.landing-page h1,
+.landing-page h2,
+.landing-page h3 {
+  font-family: 'Montserrat', sans-serif;
+}
