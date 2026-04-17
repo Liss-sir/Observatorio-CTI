@@ -173,17 +173,17 @@ document.addEventListener("DOMContentLoaded", () => {
         .map((row) => {
           const time = formatTime(row.when);
           return `
-            <tr class="border-b border-sena-border last:border-b-0">
-              <td class="px-4 py-3 text-sm text-sena-text-soft">${escapeHtml(time)}</td>
-              <td class="px-4 py-3">
+            <tr class="historial-row border-b border-sena-border last:border-b-0">
+              <td data-label="Hora" class="px-4 py-3 text-sm text-sena-text-soft">${escapeHtml(time)}</td>
+              <td data-label="Usuario" class="px-4 py-3">
                 <p class="text-sm font-medium text-sena-text-main">${escapeHtml(row.userName)}</p>
               </td>
-              <td class="px-4 py-3 text-sm text-sena-text-main">${escapeHtml(row.roleText)}</td>
-              <td class="px-4 py-3">
+              <td data-label="Rol" class="px-4 py-3 text-sm text-sena-text-main">${escapeHtml(row.roleText)}</td>
+              <td data-label="Accion" class="px-4 py-3">
                 <span class="inline-block ${escapeHtml(row.actionBadgeClass)} text-xs font-medium px-2.5 py-1 rounded-md">${escapeHtml(row.actionLabel)}</span>
               </td>
-              <td class="px-4 py-3 text-sm text-sena-text-main">${escapeHtml(row.moduleText)}</td>
-              <td class="px-4 py-3 text-sm text-sena-text-main">${escapeHtml(row.detailText)}</td>
+              <td data-label="Modulo" class="px-4 py-3 text-sm text-sena-text-main">${escapeHtml(row.moduleText)}</td>
+              <td data-label="Detalle" class="px-4 py-3 text-sm text-sena-text-main">${escapeHtml(row.detailText)}</td>
             </tr>
           `;
         })
@@ -199,8 +199,8 @@ document.addEventListener("DOMContentLoaded", () => {
             <span class="text-sm font-medium text-sena-text-main">${escapeHtml(dayTitle)}</span>
             <span class="historial-day-count bg-sena text-white text-xs font-medium px-2 py-0.5 rounded-full">${dayRows.length}</span>
           </div>
-          <div class="bg-white rounded-xl border border-sena-border overflow-hidden">
-            <table class="w-full">
+          <div class="historial-table-wrapper bg-white rounded-xl border border-sena-border overflow-x-auto overflow-y-hidden">
+            <table class="historial-table w-full min-w-[760px]">
               <thead>
                 <tr class="border-b border-sena-border">
                   <th class="text-left px-4 py-3 text-xs font-medium text-sena-text-soft uppercase tracking-wide">Hora</th>

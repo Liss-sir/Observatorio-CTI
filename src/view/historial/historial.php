@@ -29,6 +29,33 @@ include __DIR__ . '../../../includes/header.php';
     .linea-tec-select::-ms-expand {
       display: none;
     }
+
+    .historial-table-wrapper {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    @media (max-width: 768px) {
+      .historial-filtros {
+        align-items: stretch;
+      }
+
+      .historial-busqueda-wrap {
+        min-width: 0;
+        width: 100%;
+        flex-basis: 100%;
+      }
+
+      .historial-filtro-item {
+        min-width: 0;
+        width: 100%;
+        flex: 1 0 100%;
+      }
+
+      .historial-table {
+        min-width: 760px;
+      }
+    }
   </style>
 </head>
 <body class="font-['Inter'] text-sena-text-main antialiased min-h-screen flex flex-col">
@@ -101,24 +128,24 @@ include __DIR__ . '../../../includes/header.php';
       </div>
 
       <!-- Filtros -->
-      <div class="flex flex-wrap items-center gap-3 mb-2">
-        <div class="relative grow basis-[420px] min-w-[300px]">
+      <div class="historial-filtros flex flex-wrap items-center gap-3 mb-2">
+        <div class="historial-busqueda-wrap relative grow basis-full md:basis-[420px] min-w-0 md:min-w-[300px] w-full md:w-auto">
           <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-sena-text-soft" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
           </svg>
           <input id="historial-search" type="text" placeholder="Buscar por Rol, detalle, acción o módulo." class="w-full h-11 pl-10 pr-4 text-sm border border-sena-border rounded-xl bg-white text-sena-text-main placeholder:text-sena-text-soft shadow-sm focus:outline-none focus:ring-2 focus:ring-sena/20 focus:border-sena transition-all">
         </div>
-        <div class="min-w-[170px]">
+        <div class="historial-filtro-item min-w-0 md:min-w-[170px] w-full md:w-auto">
           <select id="historial-filter-accion" class="linea-tec-select w-full rounded-lg border border-sena-border pl-3 pr-10 py-2 text-sm text-sena-text-main bg-white focus:border-sena focus:ring-2 focus:ring-sena/20 focus:outline-none">
             <option value="">Todas las acciones...</option>
           </select>
         </div>
-        <div class="min-w-[200px]">
+        <div class="historial-filtro-item min-w-0 md:min-w-[200px] w-full md:w-auto">
           <select id="historial-filter-modulo" class="linea-tec-select w-full rounded-lg border border-sena-border pl-3 pr-10 py-2 text-sm text-sena-text-main bg-white focus:border-sena focus:ring-2 focus:ring-sena/20 focus:outline-none">
             <option value="">Todos los módulos...</option>
           </select>
         </div>
-        <div class="min-w-[170px]">
+        <div class="historial-filtro-item min-w-0 md:min-w-[170px] w-full md:w-auto">
           <select id="historial-filter-rol" class="linea-tec-select w-full rounded-lg border border-sena-border pl-3 pr-10 py-2 text-sm text-sena-text-main bg-white focus:border-sena focus:ring-2 focus:ring-sena/20 focus:outline-none">
             <option value="">Todos los roles...</option>
           </select>
