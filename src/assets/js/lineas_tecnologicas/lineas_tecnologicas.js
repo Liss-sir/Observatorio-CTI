@@ -2143,7 +2143,7 @@ document.addEventListener("DOMContentLoaded", () => {
         Desactivar
       `;
       btnDetalleDeshabilitar.className =
-        "inline-flex items-center gap-2 px-4 py-2 text-sm font-medium border border-[#e65100] rounded-lg bg-white text-[#e65100] hover:bg-[#e65100]/5 transition-colors";
+        "inline-flex items-center gap-2 px-4 py-2 text-sm font-medium border border-[#e65100] rounded-lg bg-white text-[#e65100] hover:bg-[#e65100]/5 transition-colors detalle-accion-btn";
 
       if (detalleBadgeEstado) {
         detalleBadgeEstado.className =
@@ -2184,7 +2184,7 @@ document.addEventListener("DOMContentLoaded", () => {
       Habilitar
     `;
     btnDetalleDeshabilitar.className =
-      "inline-flex items-center gap-2 px-4 py-2 text-sm font-medium border border-[#39A900] rounded-lg bg-white text-[#39A900] hover:bg-[#39A900]/5 transition-colors";
+      "inline-flex items-center gap-2 px-4 py-2 text-sm font-medium border border-[#39A900] rounded-lg bg-white text-[#39A900] hover:bg-[#39A900]/5 transition-colors detalle-accion-btn";
 
     if (detalleBadgeEstado) {
       detalleBadgeEstado.className =
@@ -2383,8 +2383,6 @@ document.addEventListener("DOMContentLoaded", () => {
   inicializarAccionesDetalle();
 
   function iniciarAplicacion() {
-  console.log('✅ Auth listo, inicializando líneas tecnológicas...');
-
   // Carga de catálogos y líneas
   cargarCatalogosDesdeBackend();
   if (isListadoView) {
@@ -3161,11 +3159,9 @@ document.addEventListener("DOMContentLoaded", () => {
   // ESPERAR A QUE AUTH ESTÉ LISTO ANTES DE INICIALIZAR
   // ============================================================
   if (typeof Auth !== 'undefined' && typeof Auth.whenReady === 'function') {
-    console.log('⏳ Esperando a que Auth esté listo...');
     Auth.whenReady(iniciarAplicacion);
   } else {
     // Fallback: si Auth no existe (por ejemplo, página sin login), iniciar directamente
-    console.warn('⚠️ Auth no disponible, iniciando sin permisos...');
     iniciarAplicacion();
   }
 });
