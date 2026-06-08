@@ -1,5 +1,3 @@
-<!-- modal_habilitar_tendencia_act.php -->
-<!-- Modal de confirmación para habilitar tendencia actual -->
 <div id="modal-habilitar-area" class="hidden fixed inset-0 z-50 overflow-y-auto" aria-hidden="true">
   <!-- Overlay -->
   <div class="fixed inset-0 bg-black bg-opacity-80 transition-opacity"></div>
@@ -8,7 +6,7 @@
     <div class="flex min-h-full items-center justify-center p-4">
       <div class="relative w-full max-w-md transform overflow-hidden rounded-xl border border-sena-border bg-white shadow-2xl transition-all animate-modalFadeIn">
 
-        <!-- Header con icono de advertencia/confirmación -->
+        <!-- Header -->
         <div class="border-b border-sena-border px-6 py-5 flex items-center gap-4">
           <div class="w-12 h-12 rounded-full bg-yellow-100 flex items-center justify-center flex-shrink-0">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 text-yellow-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -33,7 +31,7 @@
           </p>
         </div>
 
-        <!-- Footer con botones -->
+        <!-- Footer -->
         <div class="border-t border-sena-border px-6 py-4 flex justify-end gap-3">
           <button type="button" class="cerrar-modal-habilitar px-4 py-2 text-sm font-medium text-sena-text-main border border-sena-border rounded-lg hover:bg-sena-soft transition-colors">
             Cancelar
@@ -52,7 +50,6 @@
   </div>
 </div>
 
-<!-- Estilos necesarios (agrégalos al bloque <style> de tu página principal si no los tienes) -->
 <style>
   @keyframes modalFadeIn {
     from {

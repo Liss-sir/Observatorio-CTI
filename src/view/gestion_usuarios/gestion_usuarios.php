@@ -11,6 +11,30 @@ include __DIR__ . '../../../includes/header.php';
     <link rel="stylesheet" href="../../../assets/css/output.css">
     <link rel="stylesheet" href="../../assets/css/globals.css">
     <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        .custom-select {
+        padding: 0.5rem 2.5rem 0.5rem 0.75rem;
+        font-size: 0.875rem;
+        color: #1e293b;
+        background-color: white;
+        border: 1px solid #e2e8f0;
+        border-radius: 0.5rem;
+        appearance: none;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        cursor: pointer;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%236B7280'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 0.75rem center;
+        background-size: 0.8rem;
+        }
+
+        .custom-select:focus {
+        outline: none;
+        border-color: #39A900;
+        }
+    </style>
 </head>
 <body class="bg-gray-100">
     <div class="max-w-[82rem] mx-auto px-4 py-8 lg:px-8">
@@ -44,10 +68,14 @@ include __DIR__ . '../../../includes/header.php';
             </div>
         </div>
         
-        <!-- BUSCADOR -->
-        <div class="flex-1 items-center gap-3 mb-6">
+        <!-- SEEKER -->
+        <div class="flex items-center gap-3 mb-6">
+            
             <div class="relative flex-1">
-                <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-sena-text-soft pointer-events-none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-sena-text-soft pointer-events-none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"/>
+                    <path d="m21 21-4.3-4.3"/>
+                </svg>
                 <input
                     type="text"
                     id="buscador"
@@ -55,24 +83,21 @@ include __DIR__ . '../../../includes/header.php';
                     class="w-full rounded-lg border border-gray-200 bg-white py-2 pl-10 pr-4 text-sm focus:border-emerald-500 focus:outline-none"
                 />
             </div>
-        </div>
-        
-        <!-- FILTRO -->
-        <div class="flex items-center gap-2 mb-6">
+            
             <select
                 id="filtro-rol"
                 onchange="filtrarPorRol(this.value)"
-                class="rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm focus:border-sena focus:outline-none hover:border-sena"
+                class="custom-select w-auto min-w-[180px] focus:border-sena"
             >
                 <option value="todos">Todos los roles</option>
                 <option value="1">Administrador</option>
                 <option value="2">Empresa</option>
             </select>
+            
         </div>
         
-        <!-- TABLA -->
-        <div class="rounded-lg border border-gray-200 bg-white overflow-hidden">
-            <table class="w-full text-sm">
+        <div class="rounded-lg border border-gray-200 bg-white overflow-x-auto">
+            <table class="w-full text-sm min-w-[600px]">
                 <thead class="border-b border-gray-200 bg-gray-50">
                     <tr>
                         <th class="px-4 py-3 text-left font-medium text-gray-500">Usuario</th>
@@ -84,7 +109,6 @@ include __DIR__ . '../../../includes/header.php';
                 </thead>
                 <tbody id="tabla-usuarios"></tbody>
             </table>
-            <!-- MENSAJE SIN RESULTADOS -->
             <div id="mensaje-sin-resultados" class="hidden">
                 <div class="w-full flex flex-col items-center justify-center py-20 px-4 bg-white border border-gray-200 rounded-xl min-h-[400px]">
                     <div class="w-20 h-20 mb-5 bg-sena-soft rounded-2xl flex items-center justify-center">
@@ -97,7 +121,6 @@ include __DIR__ . '../../../includes/header.php';
                     <p id="texto-sin-resultados" class="text-sm text-sena-text-soft text-center max-w-sm"></p>
                 </div>
             </div>
-            <!-- Contenedor de paginación -->
           <div id="paginacion-container" class="hidden mt-6"></div>
         </div>
     </div>

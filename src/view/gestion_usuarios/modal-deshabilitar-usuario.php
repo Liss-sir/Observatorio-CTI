@@ -1,6 +1,4 @@
-<!-- modal-deshabilitar-usuario.php -->
 <div id="modal-deshabilitar-usuario" class="hidden fixed inset-0 z-50 overflow-y-auto" aria-hidden="true">
-    <!-- Overlay -->
     <div class="fixed inset-0 bg-black bg-opacity-80 transition-opacity"></div>
     <!-- Modal panel -->
     <div class="fixed inset-0 overflow-y-auto">
@@ -19,7 +17,7 @@
                 <!-- Content -->
                 <div class="px-6 py-4">
                     <p class="text-sm text-sena-text-soft leading-relaxed">
-                        ¿Estás seguro de deshabilitar al usuario <span class="font-medium text-sena-text-main" id="nombre-usuario-deshabilitar">Usuario</span>?
+                        ¿Estás seguro de deshabilitar al usuario <span class="font-medium text-[#e65100]" id="nombre-usuario-deshabilitar">Usuario</span>?
                         El registro no se eliminará, solo se marcará como inactivo.
                     </p>
                 </div>

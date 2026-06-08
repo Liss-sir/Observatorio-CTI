@@ -1,6 +1,4 @@
-<!-- modal_deshabilitar_perfiles.php -->
 <div id="modal-deshabilitar-perfil" class="hidden fixed inset-0 z-50 overflow-y-auto" aria-hidden="true">
-  <!-- Overlay -->
   <div class="fixed inset-0 bg-black bg-opacity-80 transition-opacity"></div>
 
   <!-- Modal panel -->
@@ -28,7 +26,7 @@
             El registro no se eliminará, solo se marcará como inactivo.
           </p>
         </div>
-        <!-- Footer buttons -->
+        <!-- Footer -->
         <div class="flex justify-end gap-3 border-t border-sena-border px-6 py-4">
           <button type="button" class="cerrar-modal-deshabilitar rounded-lg border border-sena-border px-4 py-2 text-sm font-medium text-sena-text-main hover:bg-sena-soft">
             Cancelar

@@ -1,5 +1,3 @@
-<!-- modal_detalle_tendencia_act.php -->
-<!-- Modal para ver detalle de tendencia actual -->
 <div id="modal-detalle-area" class="hidden fixed inset-0 z-50 overflow-y-auto" aria-hidden="true">
 <link rel="stylesheet" href="../../../assets/css/output.css">
 <link rel="stylesheet" href="../../assets/css/globals.css">
@@ -10,7 +8,7 @@
     <div class="flex min-h-full items-center justify-center p-4">
       <div class="relative w-full max-w-2xl transform overflow-hidden rounded-xl border border-sena-border bg-white shadow-2xl transition-all animate-modalFadeIn">
 
-        <!-- Header con icono de información -->
+        <!-- Header -->
         <div class="border-b border-sena-border px-6 py-5 flex items-center gap-4">
           <div class="w-12 h-12 rounded-full bg-sena-soft flex items-center justify-center flex-shrink-0">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 text-sena" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -34,14 +32,12 @@
 
         <!-- Content -->
         <div class="px-6 py-5">
-          <!-- Área/Nombre y Estado en la misma fila -->
           <div class="grid grid-cols-2 mb-6">
             <div class="pr-8">
               <span class="text-xs font-medium text-sena-text-soft uppercase tracking-wider">Nombre del área</span>
               <p class="text-base font-semibold text-sena-text-main mt-1" id="detalle-nombre">Inteligencia Artificial</p>
             </div>
             
-            <!-- Estado con badge de colores institucionales -->
             <div>
               <span class="text-xs font-medium text-sena-text-soft uppercase tracking-wider">Estado</span>
               <div class="mt-1">
@@ -53,7 +49,6 @@
             </div>
           </div>
 
-          <!-- Descripción -->
           <div class="mb-4">
             <span class="text-xs font-medium text-sena-text-soft uppercase tracking-wider">Descripción</span>
             <p class="text-sm text-sena-text-soft mt-1 leading-relaxed" id="detalle-descripcion">Computación cuántica accesible desde la nube para desarrolladores y empresas, permitiendo experimentación real en problemas de optimización y criptografía.</p>

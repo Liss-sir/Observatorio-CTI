@@ -290,7 +290,6 @@ $controller = new AreaController($conn);
 
 switch ($accion) {
     
-    // Basic CRUD
     case "listar":
         $controller->listar();
         break;
@@ -323,7 +322,6 @@ switch ($accion) {
         $controller->eliminar($id);
         break;
         
-    // Validations
     case "verificarNombre":
         $controller->verificarNombreExistente();
         break;
@@ -332,12 +330,10 @@ switch ($accion) {
         $controller->verificarDependencias($id);
         break;
         
-    // Statistics
     case "estadisticas":
         $controller->obtenerEstadisticas();
         break;
         
-    // Search and utils
     case "buscar":
         $controller->buscar();
         break;

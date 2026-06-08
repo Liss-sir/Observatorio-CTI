@@ -1,4 +1,22 @@
-﻿<?php include __DIR__ . '/../../includes/header.php'; ?>
+﻿<?php include __DIR__ . '/../../includes/header.php'; 
+
+?>
+
+  <style>
+    @media (max-width: 640px) {
+      .detalle-acciones {
+        width: 100%;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.5rem;
+      }
+
+      .detalle-acciones .detalle-accion-btn {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+  </style>
 
   <main class="flex-1 text-sena-text-main">
     <div class="max-w-[80rem] mx-auto px-4 py-8 lg:px-8">
@@ -31,14 +49,14 @@
             Linea Tecnologica
           </h1>
         </div>
-        <div class="flex items-center gap-3 flex-shrink-0">
+        <div class="flex items-center gap-3 flex-shrink-0 detalle-acciones">
         <!-- Editar -->
-        <button id="btn-detalle-editar" type="button" class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium border border-sena-border rounded-lg bg-white text-sena-text-main hover:bg-sena-soft transition-colors">
+        <button data-permiso="editar_linea" id="btn-detalle-editar" type="button" class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium border border-sena-border rounded-lg bg-white text-sena-text-main hover:bg-sena-soft transition-colors detalle-accion-btn">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-3.5 h-3.5"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/></svg>
           Editar
         </button>
         <!-- Desactivar -->
-        <button id="btn-detalle-deshabilitar" type="button" class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium border border-[#e65100] rounded-lg bg-white text-[#e65100] hover:bg-[#e65100]/5 transition-colors">
+        <button data-permiso="desactivar_linea" id="btn-detalle-deshabilitar" type="button" class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium border border-[#e65100] rounded-lg bg-white text-[#e65100] hover:bg-[#e65100]/5 transition-colors detalle-accion-btn">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-3.5 h-3.5"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><path d="M15 2v2"/><path d="M15 20v2"/><path d="M2 15h2"/><path d="M2 9h2"/><path d="M20 15h2"/><path d="M20 9h2"/><path d="M9 2v2"/><path d="M9 20v2"/></svg>
           Desactivar
         </button>

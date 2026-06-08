@@ -1,11 +1,41 @@
 document.addEventListener('DOMContentLoaded', function() {
+
+    const selectRol = document.querySelector('select[name="rol"]');
+
+    function toggleCamposPorRol(rol) {
+        const esAdmin = rol === 'administrador';
+        
+        document.querySelectorAll('[data-role="empresa"]').forEach(el => {
+            el.style.display = esAdmin ? 'none' : '';
+            const inputs = el.querySelectorAll('input, select, textarea');
+            inputs.forEach(input => input.disabled = esAdmin);
+        });
+        
+        const representanteHidden = document.querySelector('input[name="representante"][type="hidden"]');
+        const razonHidden = document.querySelector('input[name="razon_social"][type="hidden"]');
+        
+        if (representanteHidden) {
+            representanteHidden.value = esAdmin ? 'Administrador' : '';
+        }
+        if (razonHidden) {
+            razonHidden.value = esAdmin ? '' : '';
+        }
+    }
+
+    // Event listener for changes in the select
+    if (selectRol) {
+        selectRol.addEventListener('change', (e) => {
+            toggleCamposPorRol(e.target.value);
+        });
+        
+        toggleCamposPorRol(selectRol.value);
+    }
     
-    // ===== 1. INICIALIZAR LUCIDE ICONS =====
     if (typeof lucide !== 'undefined') {
         lucide.createIcons();
     }
 
-    // ===== 2. TOGGLE PASSWORD VISIBILITY =====
+    // ===== TOGGLE PASSWORD VISIBILITY =====
     const togglePassword = document.getElementById('togglePassword');
     const passwordInput = document.getElementById('password');
     
@@ -24,7 +54,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // ===== 3. TOGGLE CONFIRM PASSWORD VISIBILITY =====
+    // ===== TOGGLE CONFIRM PASSWORD VISIBILITY =====
     const toggleConfirmPassword = document.getElementById('toggleConfirmPassword');
     const confirmPasswordInput = document.getElementById('confirmPassword');
     
@@ -43,17 +73,15 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // ===== 4. MANEJO DEL FORMULARIO DE REGISTRO =====
+    // ===== MANAGING THE REGISTRATION FORM =====
     const registerForm = document.getElementById("registerForm");
     
     if (registerForm) {
         registerForm.addEventListener("submit", async (e) => {
-            e.preventDefault(); // Prevenir envío tradicional del formulario
-
+            e.preventDefault(); 
             const form = e.target;
             const submitBtn = form.querySelector('button[type="submit"]');
             
-            // Validar que existan todos los campos necesarios
             if (!form.representante || !form.empresa || !form.email || 
                 !form.tipo_documento || !form.documento || !form.password) {
                 console.error("No se encontraron todos los campos del formulario");
@@ -61,7 +89,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
 
-            // Guardar texto original del botón y mostrar spinner
             const originalText = submitBtn.innerHTML;
             submitBtn.disabled = true;
             submitBtn.innerHTML = `
@@ -74,7 +101,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 </span>
             `;
 
-            // Preparar datos para enviar
             const data = {
                 representante_legal: form.representante.value.trim(),
                 nombre_empresa: form.empresa.value.trim(),
@@ -88,18 +114,27 @@ document.addEventListener('DOMContentLoaded', function() {
                 data.rol = form.rol.value;
             }
 
-            // ===== VALIDACIONES =====
-            
-            // Campos requeridos
-            if (!data.representante_legal || !data.nombre_empresa || !data.correo || 
-                !data.tipo_documento || !data.numero_documento || !data.password) {
-                alert("Por favor completa todos los campos obligatorios");
-                submitBtn.disabled = false;
-                submitBtn.innerHTML = originalText;
-                return;
+            const esAdmin = form.rol?.value === 'administrador';
+
+            const camposRequeridos = {
+                representante_legal: !esAdmin,     
+                nombre_empresa: true,               
+                correo: true,                       
+                tipo_documento: !esAdmin,           
+                numero_documento: !esAdmin,         
+                password: true,
+                razon_social: false
+            };
+
+            for (const [campo, requerido] of Object.entries(camposRequeridos)) {
+                if (requerido && (!data[campo] || data[campo]?.trim() === '')) {
+                    alert(`El campo ${campo.replace('_', ' ')} es requerido`);
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalText;
+                    return;
+                }
             }
 
-            // Validar formato de correo
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
             if (!emailRegex.test(data.correo)) {
                 alert("Por favor ingresa un correo electrónico válido");
@@ -108,7 +143,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
 
-            // Validar contraseña mínima
             if (data.password.length < 6) {
                 alert("La contraseña debe tener al menos 6 caracteres");
                 submitBtn.disabled = false;
@@ -116,7 +150,20 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
 
-            // Validar que las contraseñas coincidan
+            if (data.password !== form.confirm_password?.value) {
+                alert("Las contraseñas no coinciden");
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalText;
+                return;
+            }
+       
+            if (data.password.length < 6) {
+                alert("La contraseña debe tener al menos 6 caracteres");
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalText;
+                return;
+            }
+
             if (data.password !== form.confirm_password.value) {
                 alert("Las contraseñas no coinciden");
                 submitBtn.disabled = false;
@@ -124,7 +171,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
 
-            // ===== ENVÍO AJAX =====
+            // ===== BACKEND SENDING =====
             try {
                 const response = await fetch("../../controllers/LogController.php?accion=register", {
                     method: "POST",
@@ -135,7 +182,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     body: JSON.stringify(data)
                 });
 
-                // Verificar que la respuesta sea JSON
                 const contentType = response.headers.get("content-type");
                 if (!contentType || !contentType.includes("application/json")) {
                     throw new Error("La respuesta del servidor no es JSON válido");
@@ -145,28 +191,23 @@ document.addEventListener('DOMContentLoaded', function() {
                 console.log("Respuesta del servidor:", result);
 
                 if (result.success) {
-                    // ===== ÉXITO: Mostrar modal =====
-                    
-                    // Animación de salida del formulario
+                    // ===== Show modal =====
                     const formContainer = document.querySelector('.animate-form-in');
                     if (formContainer) {
                         formContainer.classList.remove('animate-form-in');
                         formContainer.classList.add('animate-form-out');
                     }
                     
-                    // Mostrar modal de éxito después de la animación
                     setTimeout(() => {
                         if (typeof window.mostrarModalRegistroExitoso === 'function') {
                             window.mostrarModalRegistroExitoso();
                         } else {
-                            // Fallback si el modal no está disponible
                             alert("¡Registro exitoso! Por favor revisa tu correo para verificar tu cuenta.");
                             window.location.href = "../../auth/login/login.php";
                         }
                     }, 500);
                     
                 } else {
-                    // Error del servidor
                     alert("Error: " + (result.error || "Error desconocido"));
                     submitBtn.disabled = false;
                     submitBtn.innerHTML = originalText;

@@ -23,18 +23,7 @@ include __DIR__ . '/modal_detalles.pf.php';
   <link rel="stylesheet" href="../../../assets/css/output.css">
   <link rel="stylesheet" href="../../assets/css/globals.css">
   <link rel="stylesheet" href="../../assets/css/style_toast_alert.css">
-  <style>
-    /* Estilos adicionales para las tarjetas */
-    .tarjeta-proyeccion {
-      transition: all 0.2s ease;
-      cursor: pointer;
-    }
-    
-    .tarjeta-proyeccion:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
-    }
-  </style>
+
 </head>
 <body class="font-['Inter'] text-sena-text-main antialiased min-h-screen flex flex-col">
 

@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", () => {
-    // ========== REFERENCIAS DOM ==========
+    // ========== REFERENCES ==========
     const loginForm = document.getElementById("loginForm");
     const correoInput = document.getElementById("correo");
     const passwordInput = document.getElementById("password");
@@ -11,10 +11,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const formContainer = document.getElementById("formContainer");
     const formRecuperar = document.getElementById("form-recuperar");
 
-    // ========== CONFIGURACIÓN ==========
     const API_URL = "../../controllers/LogController.php?accion=login";
     
-    // Página por defecto si el servidor no envía redirect
     const DEFAULT_REDIRECT = "../../view/landing/landing.php";
 
     // ========== TOGGLE PASSWORD ==========
@@ -131,36 +129,27 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // ========== FUNCIONES AUXILIARES ==========
+    // ========== AUXILIARY FUNCTIONS ==========
 
     function manejarLoginExitoso(data) {
-        console.log("🔄 Iniciando redirección...");
         
-        // Guardar datos del usuario en sessionStorage
         if (data.usuario) {
             sessionStorage.setItem("usuario", JSON.stringify(data.usuario));
             sessionStorage.setItem("id_usuario", data.usuario.id_usuario);
             sessionStorage.setItem("correo", data.usuario.correo);
             sessionStorage.setItem("rol", data.usuario.rol_nombre);
-            console.log("💾 Datos guardados en sessionStorage");
         }
 
-        // Determinar URL de redirección
         const redirectUrl = "../../view/landing/landing.php" || DEFAULT_REDIRECT;
-        console.log("🔗 URL de redirección:", redirectUrl);
 
-        // Animación de salida
         if (formContainer) {
             formContainer.classList.remove("animate-form-in");
             formContainer.classList.add("animate-form-out");
-            console.log("🎬 Animación iniciada");
         }
 
-        // Redireccionar después de la animación
         setTimeout(() => {
-            console.log("🏃 Redirigiendo ahora a:", redirectUrl);
-            window.location.assign(redirectUrl); // Usar assign en lugar de href
-        }, 500); // Aumentado a 500ms para asegurar la animación
+            window.location.assign(redirectUrl);
+        }, 500); 
     }
 
     function mostrarError(mensaje) {
@@ -198,7 +187,7 @@ document.addEventListener("DOMContentLoaded", () => {
         return re.test(email);
     }
 
-    //ENVIO CORREO RECUPERAR
+    //SEND EMAIL RECOVER
     if (formRecuperar) {
         formRecuperar.addEventListener("submit", function(e) {
             e.preventDefault();
@@ -240,7 +229,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    //ESTABLECER NUEVA CONTRASEÑA
+    //SET NEW PASSWORD
     const btnCambiar = document.getElementById("btnCambiarPassword");
 
     if (btnCambiar) {
@@ -285,7 +274,6 @@ document.addEventListener("DOMContentLoaded", () => {
                     "success"
                 );
 
-                // 🔥 Redirección después de 2 segundos
                 setTimeout(() => {
                     window.location.href = "../login/login.php";
                 }, 2000);

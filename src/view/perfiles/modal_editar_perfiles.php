@@ -38,6 +38,10 @@
             <label class="mb-1 block text-sm font-medium text-sena-text-main">Descripción *</label>
             <textarea name="descripcion" id="editar_descripcion" rows="4" placeholder="Describe las responsabilidades, requisitos y habilidades necesarias..."
                       class="w-full rounded-lg border border-sena-border px-3 py-2 text-sm text-sena-text-main focus:border-sena focus:ring-2 focus:ring-sena/20 focus:outline-none" required></textarea>
+            <div class="mt-2 flex justify-between items-center">
+              <span id="alerta-minimo-editar-perfil" class="hidden text-xs text-red-500">Mínimo 30 caracteres requeridos</span>
+              <span id="contador-caracteres-editar-perfil" class="text-xs text-sena-text-soft">0 / 30 caracteres</span>
+            </div>
           </div>
 
           <!-- Nivel de Formación -->

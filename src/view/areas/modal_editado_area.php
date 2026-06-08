@@ -1,5 +1,3 @@
-<!-- modal_confirmacion_editar_tendencias_act.php -->
-<!-- Modal de éxito - Perfil editado correctamente (desaparece en 3 segundos) -->
 <div id="modal-editado-area" class="hidden fixed inset-0 z-50 overflow-y-auto" aria-hidden="true">
   <!-- Overlay -->
   <div class="fixed inset-0 bg-black bg-opacity-80 transition-opacity"></div>
@@ -8,11 +6,9 @@
     <div class="flex min-h-full items-center justify-center p-4">
       <div class="relative w-full max-w-md transform overflow-hidden rounded-xl border border-sena-border bg-white shadow-2xl transition-all animate-modalFadeIn">
 
-        <!-- Header con icono más bonito -->
+        <!-- Header -->
         <div class="border-b border-sena-border px-6 py-5 flex items-center gap-4">
-          <!-- Círculo con el azul institucional al 10% de opacidad -->
           <div class="w-14 h-14 rounded-full flex items-center justify-center flex-shrink-0" style="background-color: rgba(57, 169, 0, 0.1);">
-            <!-- Icono de check con círculo (más elegante) -->
             <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" style="color: #39A900;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
               <polyline points="22 4 12 14.01 9 11.01"></polyline>
@@ -43,7 +39,7 @@
           <div id="progress-bar-editado" class="h-1 transition-all duration-[3000ms] ease-linear" style="width: 0%; background-color: #39A900;"></div>
         </div>
 
-        <!-- Botón para cerrar manualmente -->
+        <!-- Manual close button -->
         <div class="absolute top-3 right-3">
           <button class="cerrar-modal-editado p-1 text-sena-text-soft hover:text-sena-text-main transition-colors">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">

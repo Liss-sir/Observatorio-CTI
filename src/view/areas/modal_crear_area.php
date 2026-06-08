@@ -13,7 +13,6 @@
           <div class="p-6 space-y-4">
             <div class="mb-4">
                     <label for="area-nueva" class="block text-sm font-medium text-gray-700 mb-1">Nombre del área</label>
-                    <!-- CORRECCIÓN: Agregados id="area-nueva" y name="area" -->
                     <input 
                         type="text" 
                         id="area-nueva" 
@@ -25,7 +24,6 @@
               </div>
             <div class="mb-6">
                     <label for="descripcion-nueva" class="block text-sm font-medium text-gray-700 mb-1">Descripción</label>
-                    <!-- CORRECCIÓN: Agregados id="descripcion-nueva" y name="descripcion" -->
                     <textarea 
                         id="descripcion-nueva" 
                         name="descripcion" 

@@ -1,10 +1,4 @@
 <?php
-/**
- * ESTO ES NUEVO
- * Middleware de autenticación
- * Incluir al inicio de páginas protegidas
- */
-
 function requerirAuth() {
     session_start();
     
@@ -20,18 +14,15 @@ function requerirRol($rolPermitido) {
     $rolActual = $_SESSION['rol_nombre'] ?? '';
     
     if (strtolower($rolActual) !== strtolower($rolPermitido)) {
-        // Redirigir al dashboard correspondiente
-        header('Location: ../../view/dashboard/dashboard.php');
+        header('Location: ../../view/landing/landing.php');
         exit;
     }
 }
 
-// Helper para verificar si es admin
 function esAdmin() {
     return ($_SESSION['rol_nombre'] ?? '') === 'ADMINISTRADOR';
 }
 
-// Helper para verificar si es empresa
 function esEmpresa() {
     return ($_SESSION['rol_nombre'] ?? '') === 'EMPRESA';
 }

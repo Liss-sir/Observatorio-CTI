@@ -15,10 +15,9 @@ class LogController {
 
     /**
      * POST /login
-     * Espera JSON con correo y password
+     * Expect JSON with email and password
      */
     public function login() {
-        // Iniciar sesión si no está iniciada
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
         }
@@ -33,10 +32,8 @@ class LogController {
             return;
         }
 
-        // Llamar al modelo
         $resultado = $this->model->login($input['correo'], $input['password']);
         
-        // Si el login fue exitoso, iniciar sesión PHP
         if ($resultado['success'] && isset($resultado['usuario'])) {
             $_SESSION['usuario'] = $resultado['usuario'];
             $_SESSION['id_usuario'] = $resultado['usuario']['id_usuario'];
@@ -44,7 +41,6 @@ class LogController {
             $_SESSION['rol_nombre'] = $resultado['usuario']['rol_nombre'];
             $_SESSION['autenticado'] = true;
             
-            // Agregar URL de redirección
             $resultado['redirect'] = '../../view/dashboard/dashboard.php';
         }
         
@@ -56,10 +52,8 @@ class LogController {
             session_start();
         }
         
-        // Destruir todas las variables de sesión
         $_SESSION = array();
         
-        // Destruir la sesión
         session_destroy();
         
         echo json_encode([
@@ -69,10 +63,10 @@ class LogController {
     }
 
     /**
-     * POST /enviar-verificacion
-     * Espera JSON con correo
-     * Envía un correo de verificación al usuario si existe y no está verificado
-     */
+     * POST /send-verification
+     * Waits for JSON with email address
+     * Sends a verification email to the user if they exist and are not verified
+    */
     public function enviarVerificacion() {
         $input = json_decode(file_get_contents("php://input"), true);
 
@@ -110,7 +104,7 @@ class LogController {
 
 
     /**
-     * Procesa la verificación mediante token (normalmente se accede desde el enlace del correo)
+     * Process the verification using a token (usually accessed via the email link)
      */
     public function verificarCuenta() {
         $token = $_GET['token'] ?? '';
@@ -134,7 +128,7 @@ class LogController {
     }
 
     /**
-     * Procesa la verificación mediante la session
+     * Process the verification through the session
      */
     public function verificarSesion() {
         try {
@@ -149,7 +143,6 @@ class LogController {
 
             $id = $_SESSION['id_usuario'];
             
-            // ✅ CORRECCIÓN CRÍTICA: usar $this->model
             $usuario = $this->model->obtenerPorId($id);
 
             if (!$usuario || $usuario['estado'] != 1) {
@@ -175,21 +168,20 @@ class LogController {
                 ]
             ]);
         } catch (\Throwable $e) {
-            // 🔥 Evita que PHP imprima HTML de error y rompa el JSON del fetch
             http_response_code(500);
             echo json_encode([
                 'success' => false,
                 'autenticado' => false,
                 'error' => 'Error interno en verificación',
-                'debug' => $e->getMessage() // ⚠️ Eliminar en producción
+                'debug' => $e->getMessage() 
             ]);
         }
     }
 
     /**
-     * POST /recuperar
-     * Solicita recuperación de contraseña (envía correo con token)
-     * Espera JSON con correo
+     * POST /recover
+     * Request password recovery (send email with token)
+     * Expect JSON with email
      */
     public function solicitarRecuperacion() {
         $input = json_decode(file_get_contents("php://input"), true);
@@ -204,7 +196,6 @@ class LogController {
 
         $usuario = $this->model->obtenerUsuarioPorCorreo($input['correo']);
         if (!$usuario) {
-            // Por seguridad, no revelar si el correo existe
             echo json_encode([
                 'success' => true,
                 'message' => 'Si el correo está registrado, recibirás un enlace de recuperación'
@@ -220,9 +211,9 @@ class LogController {
     }
 
     /**
-     * POST /restablecer
-     * Restablece la contraseña usando un token
-     * Espera JSON con token y nueva_password
+     * POST /restore
+     * Reset your password using a token
+     * Expect JSON with token and new_password
      */
     public function restablecerPassword() {
         $input = json_decode(file_get_contents("php://input"), true);
@@ -249,7 +240,7 @@ class LogController {
 
     /**
      * GET /estado-correo?correo=...
-     * Verifica si un correo existe y su estado (opcional, útil para frontend)
+     * Check if an email exists and its status (optional, useful for frontend)
      */
     public function estadoCorreo() {
         $correo = $_GET['correo'] ?? '';
@@ -273,35 +264,29 @@ class LogController {
 
     /**
      * POST /register
-     * Espera JSON con campos: nombre_empresa, razon_social (opcional), representante_legal, tipo_documento, numero_documento, correo, password
+     * Expect JSON with fields: company_name, legal_name (optional), legal_representative, document_type, document_number, email, password
      */
     public function register() {
         $input = json_decode(file_get_contents("php://input"), true);
 
-        // 🔐 SESIÓN
         session_start();
 
-        // 🧠 MAPA DE ROLES (ajústalo si cambia en tu BD)
         $mapaRoles = [
-            'admin' => 1,
-            'usuario' => 2,
+            'administrador' => 1,
             'empresa' => 2
         ];
 
-        // 🎯 POR DEFECTO
         $idRol = 2;
 
-        // ✅ SI ES ADMIN, PUEDE CAMBIAR EL ROL
         if (isset($_SESSION['rol_nombre']) && strtolower($_SESSION['rol_nombre']) === 'administrador') {
             if (isset($input['rol']) && isset($mapaRoles[$input['rol']])) {
                 $idRol = $mapaRoles[$input['rol']];
             }
         }
 
-        // 🚀 ESTA ES LA LÍNEA CLAVE
         $input['id_rol'] = $idRol;
 
-        // Validar campos requeridos
+        // Validate required fields
         $required = ['representante_legal', 'tipo_documento', 'numero_documento', 'correo', 'password'];
         foreach ($required as $field) {
             if (!isset($input[$field]) || empty(trim($input[$field]))) {
@@ -313,7 +298,7 @@ class LogController {
             }
         }
 
-        // Validar formato de correo
+        // Validate email format
         if (!filter_var($input['correo'], FILTER_VALIDATE_EMAIL)) {
             echo json_encode([
                 'success' => false,
@@ -322,7 +307,7 @@ class LogController {
             return;
         }
 
-        // Validar longitud de contraseña
+        // Validate password length
         if (strlen($input['password']) < 6) {
             echo json_encode([
                 'success' => false,
@@ -331,7 +316,7 @@ class LogController {
             return;
         }
 
-        // Validar tipo_documento contra valores permitidos
+        // Validate document_type against allowed values
         $tipos_permitidos = ['CC', 'CE', 'NIT', 'TI', 'PASAPORTE', 'RUT'];
         if (!in_array($input['tipo_documento'], $tipos_permitidos)) {
             echo json_encode([
@@ -341,8 +326,10 @@ class LogController {
             return;
         }
 
-        // Validar razon_social si se envía (opcional, pero debe ser uno de los valores del enum)
-        if (isset($input['razon_social']) && !empty($input['razon_social'])) {
+        // Validate company name if it is sent (optional, but it must be one of the values ​​in the enum)
+        $idRol = $input['id_rol'] ?? 2;
+
+        if (isset($input['razon_social']) && !empty($input['razon_social']) && $idRol != 1) {
             $razones_permitidas = [
                 'SOCIEDAD POR ACCIONES SIMPLIFICADA',
                 'SOCIEDAD ANONIMA',
@@ -354,6 +341,7 @@ class LogController {
                 'FUNDACION',
                 'ASOCIACION'
             ];
+            
             if (!in_array($input['razon_social'], $razones_permitidas)) {
                 echo json_encode([
                     'success' => false,
@@ -363,7 +351,7 @@ class LogController {
             }
         }
 
-        // Llamar al modelo
+        // Call the model
         $resultado = $this->model->registrar($input);
 
         if ($resultado['success']) {

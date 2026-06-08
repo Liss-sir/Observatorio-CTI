@@ -7,7 +7,6 @@ if (session_status() === PHP_SESSION_NONE) {
 
 <?php
 // Helper: determine current page (basename of path) and provide nav classes for active state.
-// If a caller sets $activePage before including this file, that will be used instead.
 $current = isset($activePage) ? $activePage : basename(parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH));
 
 function nav_classes(string $target): string {
@@ -17,7 +16,6 @@ function nav_classes(string $target): string {
 
   $default = 'text-sena-text-muted hover:bg-sena-soft hover:text-sena';
 
-  // Active style
   $active = 'bg-sena-soft text-sena-strong';
 
   return $base . ' ' . ($current === $target ? $active : $default);
@@ -25,7 +23,7 @@ function nav_classes(string $target): string {
 
 require_once __DIR__ . '/../helpers/permisos.php';
 
-// Obtener rol actual para mostrar/ocultar elementos
+// Get current role to show/hide items
 $rolActual = obtenerRolActual();
 ?>
 
@@ -36,7 +34,8 @@ $rolActual = obtenerRolActual();
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Observatorio CTI - SENA</title>
 
-  <!-- Google Fonts -->
+  <link rel="icon" type="image/png" href="../../assets/img/logo-sena-verde-complementario-png-2022.png">
+
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
 
   <script src="https://cdn.tailwindcss.com"></script>
@@ -57,7 +56,6 @@ $rolActual = obtenerRolActual();
   </script>
 
   <style>
-    /* Asegurar que el grupo funcione correctamente */
     .group:hover .group-hover\:block {
       display: block;
     }
@@ -66,7 +64,6 @@ $rolActual = obtenerRolActual();
       transform: rotate(180deg);
     }
 
-    /* Animación para el submenú */
     @keyframes fadeIn {
       from {
         opacity: 0;
@@ -82,7 +79,6 @@ $rolActual = obtenerRolActual();
       animation: fadeIn 0.15s ease-out;
     }
 
-    /* Estilos para el menú fijo por click */
     .menu-fijo #submenu-tendencias {
       display: block !important;
     }
@@ -91,7 +87,6 @@ $rolActual = obtenerRolActual();
       transform: rotate(180deg);
     }
 
-    /* NUEVO: Estilos para el menú fijo de Programas */
     .menu-fijo #submenu-programas {
       display: block !important;
     }
@@ -100,15 +95,13 @@ $rolActual = obtenerRolActual();
       transform: rotate(180deg);
     }
 
-    /* SOLUCIÓN: Menú con separación justa */
     #menu-tendencias {
       position: relative;
     }
 
-    /* Zona de seguridad que conecta el menú con el submenú - MÁS PEQUEÑA */
     .zona-seguridad {
       position: absolute;
-      height: 15px; /* Reducido de 30px a 15px */
+      height: 15px; 
       width: 100%;
       top: 100%;
       left: 0;
@@ -117,24 +110,20 @@ $rolActual = obtenerRolActual();
       z-index: 40;
     }
 
-    /* El submenú ahora se posiciona con la separación justa */
     #submenu-tendencias {
-      margin-top: 15px; /* Mismo valor reducido */
+      margin-top: 15px; 
     }
 
-    /* Mantener visible con hover */
     #menu-tendencias:hover #submenu-tendencias,
     #submenu-tendencias:hover,
     .menu-fijo #submenu-tendencias {
       display: block !important;
     }
 
-    /* Asegurar que la zona de seguridad también mantiene el hover */
     #menu-tendencias:hover .zona-seguridad {
       display: block;
     }
 
-    /* NUEVO: Estilos específicos para el menú de Programas (análogo a Tendencias) */
     #menu-programas {
       position: relative;
     }
@@ -152,12 +141,94 @@ $rolActual = obtenerRolActual();
     #menu-programas:hover .zona-seguridad {
       display: block;
     }
+
+    /* ===== RESPONSIVE STYLES ===== */
+    .hamburger-btn {
+      display: none;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      padding: 0;
+    }
+
+    .hamburger-btn svg {
+      width: 28px;
+      height: 28px;
+      stroke: #374151;
+      stroke-width: 1.5;
+    }
+
+    .mobile-overlay {
+      display: none;
+    }
+
+    @media (max-width: 768px) {
+      .hamburger-btn {
+        display: block;
+        margin-left: auto;
+        margin-right: 1rem;
+      }
+
+      #main-nav {
+        position: fixed;
+        top: 64px;
+        left: -280px;
+        width: 280px;
+        height: calc(100vh - 64px);
+        background: white;
+        flex-direction: column;
+        align-items: stretch;
+        padding: 1rem;
+        transition: left 0.3s ease;
+        box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+        z-index: 1000;
+        overflow-y: auto;
+        gap: 0.5rem !important;
+        justify-self: start !important;
+      }
+
+      #main-nav.mobile-open {
+        left: 0;
+      }
+
+      #main-nav > a,
+      #main-nav .menu-container {
+        width: 100%;
+      }
+
+      .mobile-overlay {
+        display: none;
+        position: fixed;
+        top: 64px;
+        left: 0;
+        width: 100%;
+        height: calc(100vh - 64px);
+        background: rgba(0,0,0,0.5);
+        z-index: 999;
+      }
+
+      .mobile-overlay.active {
+        display: block;
+      }
+
+      /* Los submenús en móvil se muestran en bloque */
+      .submenu {
+        position: static !important;
+        width: 100% !important;
+        margin-top: 0.5rem !important;
+        box-shadow: none !important;
+        border: 1px solid #e5e7eb !important;
+      }
+
+      .zona-seguridad {
+        display: none !important;
+      }
+    }
   </style>
 </head>
 
 <body id="body" class="opacity-0 font-[Inter] antialiased bg-white text-gray-800 transition-opacity duration-200">
 
-  <!-- HEADER -->
   <header class="sticky top-0 z-50 border-b border-gray-200 bg-white/95 backdrop-blur-sm shadow-sm">
     <div class="max-w-8xl mx-auto grid grid-cols-[auto_1fr_auto] items-center h-16 px-4 w-full">
 
@@ -168,21 +239,31 @@ $rolActual = obtenerRolActual();
         <img src="../../assets/img/logo-sena-verde-complementario-png-2022.png" alt="SENA" class="h-6 w-auto">
       </a>
 
-      <!-- NAVEGACIÓN -->
+      <!-- Hamburger button (mobile only) -->
+      <button class="hamburger-btn" id="hamburgerBtn">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+      </button>
+
+      <!-- Overlay to close menu -->
+      <div class="mobile-overlay" id="mobileOverlay"></div>
+
+      <!-- NAVIGATION -->
       <nav class="flex items-center gap-1 justify-self-center whitespace-nowrap" id="main-nav">
         
-        <!-- PÚBLICO: Inicio (todos pueden ver) -->
+        <!-- AUDIENCE: Home (everyone can see) -->
         <a href="../../view/landing/landing.php" class="<?= nav_classes('landing.php') ?>">
           Inicio
         </a>
 
-        <!-- PÚBLICO: Perfiles (todos pueden ver) -->
+        <!-- PUBLIC: Profiles (everyone can see them) -->
         <a href="../../view/perfiles/perfiles.php" class="<?= nav_classes('perfiles.php') ?>">
           Perfiles
         </a>
 
         <?php if (tienePermiso('ver_programas')): ?>
-        <!-- PROTEGIDO: Menú Programas Formación -->
+        <!-- PROTECTED: Training Programs Menu -->
           <div class="relative group menu-container <?= (in_array($current, ['programas.php','areas.php'])) ? 'bg-sena-soft text-sena-strong rounded-md' : '' ?>" id="menu-programas" data-permiso="ver_programas">
               <div class="flex items-center rounded-md hover:bg-sena-soft hover:text-sena transition">
                   <button id="btn-menu-programas-text" type="button" class="px-3 py-2 rounded-l-md text-sm font-medium text-gray-600 hover:text-sena">
@@ -226,7 +307,7 @@ $rolActual = obtenerRolActual();
         <?php endif; ?>
 
         <?php if (tienePermiso('ver_tendencias')): ?>
-        <!-- PROTEGIDO: Menú Tendencias Actuales -->
+        <!-- PROTECTED: Current Trends Menu -->
         <div class="relative group menu-container <?= (in_array($current, ['tendencias_actuales.php','tecnologias_emergentes.php','proyeccion_futuro.php'])) ? 'bg-sena-soft text-sena rounded-md' : '' ?>" id="menu-tendencias">
           <div class="flex items-center rounded-md hover:bg-sena-soft transition">
             <button id="btn-menu-tendencias-text" type="button" class="px-3 py-2 rounded-l-md text-sm font-medium text-gray-600 hover:text-sena">
@@ -284,21 +365,21 @@ $rolActual = obtenerRolActual();
         <?php endif; ?>
 
         <?php if (tienePermiso('ver_lineas_tecnologicas')): ?>
-        <!-- PROTEGIDO: Líneas Tecnológicas -->
+        <!-- PROTECTED: Technological Lines -->
         <a href="../../view/lineas_tecnologicas/lineas_tecnologicas.php" class="<?= nav_classes('lineas_tecnologicas.php') ?>">
           Líneas Tecnológicas
         </a>
         <?php endif; ?>
         
         <?php if (tienePermiso('ver_sugerencias')): ?>
-        <!-- PROTEGIDO: Sugerencias -->
+        <!-- PROTECTED: Suggestions -->
         <a href="../../view/sugerencias/sugerencias.php" class="<?= nav_classes('sugerencias.php') ?>">
           Sugerencias
         </a>
         <?php endif; ?>
 
         <?php if (tienePermiso('gestionar_usuarios')): ?>
-        <!-- ADMIN: Gestión Perfiles -->
+        <!-- ADMIN: Profile Management -->
         <a href="../../view/gestion_usuarios/gestion_usuarios.php" 
            class="<?= nav_classes('gestion_usuarios.php') ?>" 
            data-permiso="gestionar_usuarios">
@@ -323,11 +404,11 @@ $rolActual = obtenerRolActual();
 
       </nav>
 
-      <!-- BOTONES / MENÚ USUARIO -->
+      <!-- BUTTONS / USER MENU -->
       <div class="flex items-center gap-3">
         
         <?php if (!estaAutenticado()): ?>
-        <!-- INVITADO: Login/Register -->
+        <!-- GUEST: Login/Register -->
         <div id="nav-guest" class="flex items-center gap-2">
           <a href="../../auth/login/login.php" class="px-4 py-2 text-sm font-medium text-green-700 border border-green-600 rounded-md hover:bg-green-50 transition">
             Iniciar Sesión
@@ -337,11 +418,11 @@ $rolActual = obtenerRolActual();
           </a>
         </div>
         <?php else: ?>
-        <!-- USUARIO AUTENTICADO -->
+        <!-- AUTHENTICATED USER -->
         <div id="nav-user" class="flex items-center gap-3">
           
 
-          <!-- Menú desplegable usuario -->
+          <!-- User dropdown menu -->
           <div class="relative">
             <button id="user-menu-btn" class="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-sena-soft transition">
               <div class="w-8 h-8 bg-sena-soft rounded-full flex items-center justify-center">
@@ -408,68 +489,100 @@ $rolActual = obtenerRolActual();
 <script src="../../assets/js/perfil.js"></script>
 
 <?php include '../../view/perfil/modal_editar_perfil.php'; ?>
-  <!-- Script para menús desplegables -->
-  <script>
-document.addEventListener('DOMContentLoaded', function () {
 
-  function inicializarMenu(menuId) {
-    const menu = document.getElementById(menuId);
-    if (!menu) return;
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
 
-    const btn = menu.querySelector('.btn-toggle');
-    const btnText = menu.querySelector('[id$="-text"]');
-    const submenu = menu.querySelector('.submenu');
-    const zona = menu.querySelector('.zona-seguridad');
+    // ===== HAMBURGER MENU =====
+    const hamburgerBtn = document.getElementById('hamburgerBtn');
+    const mobileMenu = document.getElementById('main-nav');
+    const mobileOverlay = document.getElementById('mobileOverlay');
 
-    if (!btn || !submenu) return;
-
-    let activoPorClick = false;
-    let activoPorHover = false;
-    let timeout = null;
-
-    function actualizar() {
-      if (activoPorClick || activoPorHover) {
-        menu.classList.add('menu-fijo');
-      } else {
-        menu.classList.remove('menu-fijo');
-      }
+    function toggleMobileMenu() {
+      mobileMenu.classList.toggle('mobile-open');
+      mobileOverlay.classList.toggle('active');
+      document.body.style.overflow = mobileMenu.classList.contains('mobile-open') ? 'hidden' : '';
     }
 
-    function activarHover() {
-      clearTimeout(timeout);
-      activoPorHover = true;
-      actualizar();
+    function closeMobileMenu() {
+      mobileMenu.classList.remove('mobile-open');
+      mobileOverlay.classList.remove('active');
+      document.body.style.overflow = '';
     }
 
-    function desactivarHover() {
-      clearTimeout(timeout);
-      timeout = setTimeout(() => {
-        if (!activoPorClick && !menu.matches(':hover')) {
-          activoPorHover = false;
-          actualizar();
+    if (hamburgerBtn) {
+      hamburgerBtn.addEventListener('click', toggleMobileMenu);
+    }
+
+    if (mobileOverlay) {
+      mobileOverlay.addEventListener('click', closeMobileMenu);
+    }
+
+    document.querySelectorAll('#main-nav a').forEach(link => {
+      link.addEventListener('click', () => {
+        if (window.innerWidth <= 768) {
+          closeMobileMenu();
         }
-      }, 100);
-    }
-
-    // CLICK - en el botón de la flecha
-    btn.addEventListener('click', function (e) {
-      e.preventDefault();
-      e.stopPropagation();
-
-      activoPorClick = !activoPorClick;
-
-      if (activoPorClick) {
-        activoPorHover = false;
-      }
-
-      actualizar();
+      });
     });
 
-    // CLICK - en el texto del botón (abre el menú sin navegar)
-    if (btnText) {
-      btnText.addEventListener('click', function (e) {
+    window.addEventListener('resize', function() {
+      if (window.innerWidth > 768) {
+        closeMobileMenu();
+      }
+    });
+
+    function inicializarMenu(menuId) {
+      const menu = document.getElementById(menuId);
+      if (!menu) return;
+
+      const btn = menu.querySelector('.btn-toggle');
+      const btnText = menu.querySelector('[id$="-text"]');
+      const submenu = menu.querySelector('.submenu');
+      const zona = menu.querySelector('.zona-seguridad');
+
+      if (!btn || !submenu) return;
+
+      let activoPorClick = false;
+      let activoPorHover = false;
+      let timeout = null;
+
+      function actualizar() {
+        if (activoPorClick || activoPorHover) {
+          menu.classList.add('menu-fijo');
+        } else {
+          menu.classList.remove('menu-fijo');
+        }
+      }
+
+      function activarHover() {
+        clearTimeout(timeout);
+        activoPorHover = true;
+        actualizar();
+      }
+
+      function desactivarHover() {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => {
+          if (!activoPorClick && !menu.matches(':hover')) {
+            activoPorHover = false;
+            actualizar();
+          }
+        }, 100);
+      }
+
+      btn.addEventListener('click', function (e) {
         e.preventDefault();
         e.stopPropagation();
+
+        if (window.innerWidth <= 768) {
+          submenu.classList.toggle('hidden');
+          const chevron = btn.querySelector('.chevron');
+          if (chevron) {
+            chevron.style.transform = submenu.classList.contains('hidden') ? 'rotate(0deg)' : 'rotate(180deg)';
+          }
+          return;
+        }
 
         activoPorClick = !activoPorClick;
 
@@ -479,78 +592,111 @@ document.addEventListener('DOMContentLoaded', function () {
 
         actualizar();
       });
+
+      if (btnText) {
+        btnText.addEventListener('click', function (e) {
+          e.preventDefault();
+          e.stopPropagation();
+
+          if (window.innerWidth <= 768) {
+            submenu.classList.toggle('hidden');
+            const chevron = btn.querySelector('.chevron');
+            if (chevron) {
+              chevron.style.transform = submenu.classList.contains('hidden') ? 'rotate(0deg)' : 'rotate(180deg)';
+            }
+            return;
+          }
+
+          activoPorClick = !activoPorClick;
+
+          if (activoPorClick) {
+            activoPorHover = false;
+          }
+
+          actualizar();
+        });
+      }
+
+      // HOVER (only desktop)
+      if (window.innerWidth > 768) {
+        [menu, submenu, zona].forEach(el => {
+          if (!el) return;
+
+          el.addEventListener('mouseenter', activarHover);
+          el.addEventListener('mouseleave', desactivarHover);
+        });
+      }
+
+      submenu.querySelectorAll('a').forEach(link => {
+        link.addEventListener('click', () => {
+          activoPorClick = false;
+          activoPorHover = false;
+          actualizar();
+          if (window.innerWidth <= 768) {
+            submenu.classList.add('hidden');
+            const chevron = btn.querySelector('.chevron');
+            if (chevron) {
+              chevron.style.transform = 'rotate(0deg)';
+            }
+            closeMobileMenu();
+          }
+        });
+      });
+
+      // CLICK outside
+      document.addEventListener('click', function (e) {
+        if (window.innerWidth > 768) {
+          if (
+            menu &&
+            submenu &&
+            !menu.contains(e.target) &&
+            !submenu.contains(e.target)
+          ) {
+            activoPorClick = false;
+            actualizar();
+          }
+        }
+      });
     }
 
-    // HOVER
-    [menu, submenu, zona].forEach(el => {
-      if (!el) return;
+    function inicializarUserDropdown() {
+      const btnUser = document.getElementById('user-menu-btn');
+      const dropdownUser = document.getElementById('user-dropdown');
 
-      el.addEventListener('mouseenter', activarHover);
-      el.addEventListener('mouseleave', desactivarHover);
-    });
+      if (!btnUser || !dropdownUser) return;
 
-    // CLICK EN OPCIÓN → cerrar
-    submenu.querySelectorAll('a').forEach(link => {
-      link.addEventListener('click', () => {
-        activoPorClick = false;
-        activoPorHover = false;
-        actualizar();
+      let abierto = false;
+
+      btnUser.addEventListener('click', function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        abierto = !abierto;
+
+        if (abierto) {
+          dropdownUser.classList.remove('hidden');
+        } else {
+          dropdownUser.classList.add('hidden');
+        }
       });
-    });
 
-    // CLICK FUERA 
-    document.addEventListener('click', function (e) {
-      if (
-        menu &&
-        submenu &&
-        !menu.contains(e.target) &&
-        !submenu.contains(e.target)
-      ) {
-        activoPorClick = false;
-        actualizar();
-      }
-    });
-  }
+      document.addEventListener('click', function (e) {
+        if (
+          !btnUser.contains(e.target) &&
+          !dropdownUser.contains(e.target)
+        ) {
+          dropdownUser.classList.add('hidden');
+          abierto = false;
+        }
+      });
+    }
 
-  function inicializarUserDropdown() {
-    const btnUser = document.getElementById('user-menu-btn');
-    const dropdownUser = document.getElementById('user-dropdown');
+    // Initialize both menus
+    inicializarMenu('menu-tendencias');
+    inicializarMenu('menu-programas');
+    inicializarUserDropdown();
 
-    if (!btnUser || !dropdownUser) return;
-
-    let abierto = false;
-
-    btnUser.addEventListener('click', function (e) {
-      e.preventDefault();
-      e.stopPropagation();
-
-      abierto = !abierto;
-
-      if (abierto) {
-        dropdownUser.classList.remove('hidden');
-      } else {
-        dropdownUser.classList.add('hidden');
-      }
-    });
-
-    // Cerrar al hacer click fuera
-    document.addEventListener('click', function (e) {
-      if (
-        !btnUser.contains(e.target) &&
-        !dropdownUser.contains(e.target)
-      ) {
-        dropdownUser.classList.add('hidden');
-        abierto = false;
-      }
-    });
-  }
-
-  // Inicializar ambos menús
-  inicializarMenu('menu-tendencias');
-  inicializarMenu('menu-programas');
-  inicializarUserDropdown();
-
-});
+  });
 </script>
 
 <script>

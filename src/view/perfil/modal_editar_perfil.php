@@ -1,12 +1,8 @@
-<!-- Modal Editar Perfil -->
 <div id="modalEditar" class="hidden fixed inset-0 z-[9999] overflow-y-auto" aria-hidden="true">
-    <!-- Overlay SEPARADO (fondo negro) -->
+    <!-- Overlay -->
     <div class="fixed inset-0 bg-black bg-opacity-80 transition-opacity"></div>
-    
-    <!-- Contenedor del contenido -->
     <div class="fixed inset-0 overflow-y-auto">
         <div class="flex min-h-full items-center justify-center p-4">
-            <!-- Contenido del modal -->
             <div class="relative w-full max-w-md transform overflow-hidden rounded-2xl bg-white shadow-2xl transition-all animate-modalFadeIn">
                 <!-- Header -->
                 <div class="flex justify-between items-center mb-6 px-8 pt-8">
@@ -73,7 +69,6 @@
 </div>
 
 <script>
-// Cerrar modal con botón X
 document.getElementById('btnCerrarModal')?.addEventListener('click', () => {
     const modal = document.getElementById('modalEditar');
     modal.classList.add('hidden');

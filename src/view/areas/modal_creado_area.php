@@ -1,5 +1,3 @@
-<!-- modal_confirmacion_crear_tendencia_actual -->
-<!-- Modal de éxito - Perfil creado correctamente (desaparece en 3 segundos) -->
 <div id="modal-creado-area" class="hidden fixed inset-0 z-50 overflow-y-auto" aria-hidden="true">
 <link rel="stylesheet" href="../../../assets/css/output.css">    
 <link rel="stylesheet" href="../../assets/css/globals.css">
@@ -9,11 +7,9 @@
     <div class="flex min-h-full items-center justify-center p-4">
       <div class="relative w-full max-w-md transform overflow-hidden rounded-xl border border-sena-border bg-white shadow-2xl transition-all animate-modalFadeIn">
 
-        <!-- Header con icono de creación y verde SENA -->
+        <!-- Header -->
         <div class="border-b border-sena-border px-6 py-5 flex items-center gap-4">
-          <!-- Círculo con el verde SENA al 10% de opacidad -->
           <div class="w-14 h-14 rounded-full flex items-center justify-center flex-shrink-0" style="background-color: rgba(57, 169, 0, 0.1);">
-            <!-- Icono de "plus" con círculo (para creación) -->
             <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" style="color: #39A900;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <circle cx="12" cy="12" r="10"></circle>
               <path d="M12 8v8"></path>
@@ -40,12 +36,12 @@
           </div>
         </div>
 
-        <!-- Barra de progreso animada con verde SENA -->
+        <!-- Animated progress bar with SENA green -->
         <div class="h-2 bg-gray-100 w-full rounded-b-xl overflow-hidden">
           <div id="progress-bar-creado" class="h-1 transition-all duration-[3000ms] ease-linear" style="width: 0%; background-color: #39A900;"></div>
         </div>
 
-        <!-- Botón para cerrar manualmente -->
+        <!-- Manual close button -->
         <div class="absolute top-3 right-3">
           <button class="cerrar-modal-creado p-1 text-sena-text-soft hover:text-sena-text-main transition-colors">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">

@@ -133,9 +133,6 @@ function build_changes_text($old, $new, $max = 3) {
     return $txt;
 }
 
-/**
- * Genera un resumen de los valores más importantes para un INSERT.
- */
 function build_insert_highlights($data, $max = 3) {
     if (!is_array($data)) return '';
 
@@ -172,32 +169,89 @@ function build_insert_highlights($data, $max = 3) {
     return empty($pairs) ? '' : implode(' • ', $pairs);
 }
 
-/**
- * Enriquece cada registro con una descripción textual generada a partir de los JSON.
- */
+// Converts a value to integer if possible.
+function to_int_or_null($value) {
+    if ($value === null) return null;
+    if (is_bool($value)) return $value ? 1 : 0;
+    if (is_numeric($value)) return (int)$value;
+
+    $txt = trim((string)$value);
+    if ($txt === '') return null;
+    if (!preg_match('/^-?\d+$/', $txt)) return null;
+    return (int)$txt;
+}
+
+// Detects status changes (enabled/disabled) between old/new.
+function detect_status_transition($old, $new) {
+    if (!is_array($old) || !is_array($new)) return null;
+
+    $statusKeys = ['estado', 'activo', 'estatus', 'habilitado'];
+    foreach ($statusKeys as $k) {
+        if (!array_key_exists($k, $old) || !array_key_exists($k, $new)) continue;
+
+        $oldVal = to_int_or_null($old[$k]);
+        $newVal = to_int_or_null($new[$k]);
+
+        if ($oldVal === null || $newVal === null || $oldVal === $newVal) continue;
+
+        return [
+            'field' => $k,
+            'old' => $oldVal,
+            'new' => $newVal,
+        ];
+    }
+
+    return null;
+}
+
+// Enrich each record with a textual description generated from the JSON.
 function enrich_items(&$items) {
     foreach ($items as &$item) {
         $tabla = $item['tabla_nombre'] ?? '';
-        $accion = $item['accion'] ?? '';
+        $accion = strtoupper(trim((string)($item['accion'] ?? '')));
         $pk = $item['pk_valor'] ?? '';
 
         $old = safe_json_decode($item['old_values'] ?? null);
         $new = safe_json_decode($item['new_values'] ?? null);
 
         $modulo = $tabla ? ucfirst(str_replace('_', ' ', $tabla)) : 'Módulo';
+        $accionUi = $accion;
 
-        if ($accion === 'INSERT' && $new) {
+        if ($accion === 'UPDATE') {
+            $statusTransition = detect_status_transition($old, $new);
+            if ($statusTransition) {
+                if ($statusTransition['old'] === 0 && $statusTransition['new'] === 1) {
+                    $accionUi = 'HABILITAR';
+                } elseif ($statusTransition['old'] === 1 && $statusTransition['new'] === 0) {
+                    $accionUi = 'DESHABILITAR';
+                }
+            }
+        }
+
+        $item['accion_ui'] = $accionUi;
+
+        if ($accionUi === 'INSERT' && $new) {
             $high = build_insert_highlights($new, 3);
             $desc = "Creó registro en $modulo" . ($pk ? " (#$pk)" : '');
             if ($high) $desc .= " — $high";
         }
-        elseif ($accion === 'UPDATE' && ($old || $new)) {
+        elseif ($accionUi === 'HABILITAR') {
+            $changes = build_changes_text($old, $new, 3);
+            $desc = "Habilitó registro en $modulo" . ($pk ? " (#$pk)" : '');
+            if ($changes) $desc .= " — $changes";
+        }
+        elseif ($accionUi === 'DESHABILITAR') {
+            $changes = build_changes_text($old, $new, 3);
+            $desc = "Deshabilitó registro en $modulo" . ($pk ? " (#$pk)" : '');
+            if ($changes) $desc .= " — $changes";
+        }
+        elseif ($accionUi === 'UPDATE' && ($old || $new)) {
             $changes = build_changes_text($old, $new, 3);
             $desc = "Actualizó $modulo" . ($pk ? " (#$pk)" : '');
             if ($changes) $desc .= " — $changes";
             else $desc .= " (sin cambios visibles)";
         }
-        elseif ($accion === 'DELETE' && $old) {
+        elseif ($accionUi === 'DELETE' && $old) {
             $high = build_insert_highlights($old, 2);
             $desc = "Eliminó registro en $modulo" . ($pk ? " (#$pk)" : '');
             if ($high) $desc .= " — $high";

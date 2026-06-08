@@ -256,6 +256,17 @@ document.addEventListener("DOMContentLoaded", () => {
         .linea-tec-select::-ms-expand {
           display: none;
         }
+
+        #linea-modal-crear input:focus,
+        #linea-modal-crear select:focus,
+        #linea-modal-crear textarea:focus,
+        #linea-modal-editar input:focus,
+        #linea-modal-editar select:focus,
+        #linea-modal-editar textarea:focus {
+          outline: none;
+          border-color: #39A900;
+          box-shadow: 0 0 0 0.125rem rgba(57, 169, 0, 0.2);
+        }
       `;
       document.head.appendChild(style);
     }
@@ -1053,7 +1064,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     paginacionContainer.innerHTML = `
       <div class="flex flex-col items-center gap-3 mb-6 mt-6">
-        <div class="text-sm text-sena-text-soft">
+        <div class="text-sm text-sena-text-soft text-center px-4">
           Mostrando <span class="font-medium text-sena">${((paginaActual - 1) * elementosPorPagina) + 1}</span> -
           <span class="font-medium text-sena">${Math.min(paginaActual * elementosPorPagina, totalElementos)}</span> de
           <span class="font-medium text-sena">${totalElementos}</span> lineas
@@ -1698,11 +1709,11 @@ document.addEventListener("DOMContentLoaded", () => {
       };
 
       const block = document.createElement("div");
-      block.className = `linea-tec-meta-item min-w-0 rounded-lg px-3 py-2 min-h-[52px] ${style.wrapper} ${item.kind === "proyeccion" ? "sm:col-span-2" : ""}`;
+      block.className = `linea-tec-meta-item min-w-0 rounded-lg px-3 py-2 min-h-[3.25rem] ${style.wrapper} ${item.kind === "proyeccion" ? "sm:col-span-2" : ""}`;
       block.dataset.metaKind = item.kind;
       block.innerHTML = `
         <p class="linea-tec-meta-label text-xs font-bold uppercase tracking-wide ${style.label}">${item.label}</p>
-        <p class="linea-tec-meta-value mt-0.5 text-[11px] font-medium text-sena-text-main truncate" title="${item.value}">${item.value}</p>
+        <p class="linea-tec-meta-value mt-0.5 text-[0.6875rem] font-medium text-sena-text-main truncate" title="${item.value}">${item.value}</p>
       `;
       metaWrap.appendChild(block);
     });
@@ -1739,9 +1750,6 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function crearCardLinea(nombre, state) {
-    const puedeEditar = typeof Auth !== 'undefined' && Auth.tienePermiso('editar_linea');
-    const puedeDesactivar = typeof Auth !== 'undefined' && Auth.tienePermiso('desactivar_linea');
-
     if (!cardsGrid) {
       return null;
     }
@@ -1774,7 +1782,7 @@ document.addEventListener("DOMContentLoaded", () => {
         </p>
       </div>
       <div class="linea-tec-meta-list grid grid-cols-1 gap-2.5 sm:grid-cols-2"></div>
-      <a href="#" class="text-sm text-sena-strong font-medium mt-auto inline-flex items-center gap-1 hover:underline">Ver perfiles &rarr;</a>
+      <a href="#" class="text-sm text-sena-strong font-medium mt-auto inline-flex items-center gap-1 hover:underline">Ver detalles &rarr;</a>
     `;
 
     card.querySelector("h3").textContent = nombre;
@@ -1857,8 +1865,11 @@ document.addEventListener("DOMContentLoaded", () => {
     if (thumb) {
       // Support both legacy absolute thumb and inline flex thumb switches.
       if (thumb.classList.contains("absolute")) {
-        const travel = Math.max(switchBtn.clientWidth - thumb.clientWidth - 4, 0);
-        thumb.style.transform = isActive ? `translateX(${travel}px)` : "translateX(0)";
+        const rootFontSize = parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
+        const horizontalInset = 0.25 * rootFontSize;
+        const travel = Math.max(switchBtn.clientWidth - thumb.clientWidth - horizontalInset, 0);
+        const travelRem = travel / rootFontSize;
+        thumb.style.transform = isActive ? `translateX(${travelRem}rem)` : "translateX(0)";
       } else {
         thumb.style.transform = "";
         switchBtn.classList.toggle("justify-end", isActive);
@@ -2132,7 +2143,7 @@ document.addEventListener("DOMContentLoaded", () => {
         Desactivar
       `;
       btnDetalleDeshabilitar.className =
-        "inline-flex items-center gap-2 px-4 py-2 text-sm font-medium border border-[#e65100] rounded-lg bg-white text-[#e65100] hover:bg-[#e65100]/5 transition-colors";
+        "inline-flex items-center gap-2 px-4 py-2 text-sm font-medium border border-[#e65100] rounded-lg bg-white text-[#e65100] hover:bg-[#e65100]/5 transition-colors detalle-accion-btn";
 
       if (detalleBadgeEstado) {
         detalleBadgeEstado.className =
@@ -2173,7 +2184,7 @@ document.addEventListener("DOMContentLoaded", () => {
       Habilitar
     `;
     btnDetalleDeshabilitar.className =
-      "inline-flex items-center gap-2 px-4 py-2 text-sm font-medium border border-[#39A900] rounded-lg bg-white text-[#39A900] hover:bg-[#39A900]/5 transition-colors";
+      "inline-flex items-center gap-2 px-4 py-2 text-sm font-medium border border-[#39A900] rounded-lg bg-white text-[#39A900] hover:bg-[#39A900]/5 transition-colors detalle-accion-btn";
 
     if (detalleBadgeEstado) {
       detalleBadgeEstado.className =
@@ -2338,6 +2349,19 @@ document.addEventListener("DOMContentLoaded", () => {
     switchEstadoBtn.setAttribute("data-nombre", nombreTecnologia);
     setSwitchState(switchEstadoBtn, estadoLineas[nombreTecnologia]?.active !== false);
 
+     //PERMISOS
+    const puedeEditar = typeof Auth !== 'undefined' && Auth.tienePermiso('editar_linea');
+    const puedeDesactivar = typeof Auth !== 'undefined' && Auth.tienePermiso('desactivar_linea');
+
+    if (!puedeEditar) {
+      editarBtn.style.display = "none";
+    }
+                                            
+    if (!puedeDesactivar) {
+      switchEstadoBtn.style.display = "none";
+    }
+
+
     editarBtn.addEventListener("click", () => abrirModalEdicionLinea(card, titleEl));
     switchEstadoBtn.addEventListener("click", () => manejarToggleLinea(switchEstadoBtn, titleEl));
 
@@ -2358,11 +2382,18 @@ document.addEventListener("DOMContentLoaded", () => {
   inicializarDetalleDesdeStorage();
   inicializarAccionesDetalle();
 
+  function iniciarAplicacion() {
+  // Carga de catálogos y líneas
   cargarCatalogosDesdeBackend();
   if (isListadoView) {
     cargarLineasDesdeBackend();
   }
 
+  // Inicializar detalle y acciones de detalle (si estamos en página de detalle)
+  inicializarDetalleDesdeStorage();
+  inicializarAccionesDetalle();
+
+  // Eventos del buscador (solo en listado)
   if (isListadoView && inputBuscarLinea) {
     inputBuscarLinea.addEventListener("input", () => {
       paginaActual = 1;
@@ -2370,6 +2401,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  // Eventos de cambio de área en modales
   if (modals.createArea) {
     modals.createArea.addEventListener("change", () => {
       cargarCatalogosPorArea(modals.createArea.value, {
@@ -2392,11 +2424,13 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  // Aplicar filtros y actualizar estado vacío (solo en listado)
   if (isListadoView) {
     aplicarFiltroBusqueda();
     actualizarEmptyState();
   }
 
+  // Botón "Nueva línea"
   if (btnNuevaLinea) {
     btnNuevaLinea.addEventListener("click", () => {
       modals.createForm.reset();
@@ -2406,6 +2440,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  // Botón "Crear desde empty state"
   if (btnCrearDesdeEmpty) {
     btnCrearDesdeEmpty.addEventListener("click", () => {
       modals.createForm.reset();
@@ -2849,6 +2884,7 @@ document.addEventListener("DOMContentLoaded", () => {
       cerrarModal(modals.disableModal);
     }
   });
+}
 
   function crearModales() {
     const wrapper = document.createElement("div");
@@ -3118,5 +3154,14 @@ document.addEventListener("DOMContentLoaded", () => {
       successText: document.getElementById("linea-success-text"),
       successClose: document.querySelectorAll(".linea-close-success"),
     };
+  }
+  // ============================================================
+  // ESPERAR A QUE AUTH ESTÉ LISTO ANTES DE INICIALIZAR
+  // ============================================================
+  if (typeof Auth !== 'undefined' && typeof Auth.whenReady === 'function') {
+    Auth.whenReady(iniciarAplicacion);
+  } else {
+    // Fallback: si Auth no existe (por ejemplo, página sin login), iniciar directamente
+    iniciarAplicacion();
   }
 });

@@ -29,28 +29,128 @@ include __DIR__ . '../../../includes/header.php';
     .linea-tec-select::-ms-expand {
       display: none;
     }
+
+    @media (max-width: 768px) {
+      .estadisticas-main-wrap {
+        padding-top: 1.25rem;
+        padding-bottom: 1.5rem;
+      }
+
+      .estadisticas-titulo {
+        margin-bottom: 1.25rem;
+      }
+
+      .estadisticas-grid-resumen {
+        gap: 0.75rem;
+        margin-bottom: 1rem;
+      }
+
+      .estadisticas-resumen-item {
+        padding: 1rem;
+      }
+
+      .estadisticas-resumen-item .estadisticas-resumen-contenido {
+        justify-content: flex-start;
+      }
+
+      .estadisticas-resumen-item .estadisticas-resumen-texto {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.25rem;
+      }
+
+      .estadisticas-global-report {
+        width: 100%;
+        justify-content: center;
+      }
+
+      .estadisticas-global-report-wrap {
+        margin-bottom: 1rem;
+      }
+
+      .estadisticas-card {
+        padding: 1rem;
+        margin-bottom: 1rem;
+      }
+
+      .estadisticas-bar-header {
+        margin-bottom: 0.75rem;
+      }
+
+      .estadisticas-filtros-barra {
+        width: 100%;
+      }
+
+      .estadisticas-filtros-barra > div {
+        width: 100%;
+      }
+
+      .estadisticas-filtros-barra select {
+        width: 100%;
+      }
+
+      .estadisticas-bar-report-wrap {
+        justify-content: stretch;
+      }
+
+      .estadisticas-bar-report {
+        width: 100%;
+        justify-content: center;
+      }
+
+      .estadisticas-pie-header {
+        align-items: stretch;
+      }
+
+      .estadisticas-pie-report {
+        width: 100%;
+        justify-content: center;
+        margin-left: 0;
+      }
+
+      .estadisticas-pie-content {
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+      }
+
+      .estadisticas-bar-chart-wrap {
+        height: 290px;
+      }
+
+      .estadisticas-pie-chart-wrap {
+        width: 100%;
+        max-width: 220px;
+        margin: 0 auto;
+      }
+
+      .estadisticas-pie-legend {
+        width: 100%;
+        gap: 0.5rem;
+      }
+    }
   </style>
 </head>
 
 <body class="bg-white min-h-screen">
   <!-- Contenido principal -->
   <main class="flex-1">
-    <div class="max-w-[80rem] mx-auto px-4 py-8 lg:px-8">
+    <div class="estadisticas-main-wrap max-w-[80rem] mx-auto px-4 py-8 lg:px-8">
       <!-- Título -->
-      <div class="mb-8">
+      <div class="estadisticas-titulo mb-8">
         <h1 class="font-['Montserrat'] text-2xl font-bold text-sena-text-main">Estadísticas</h1>
         <p class="mt-2 text-sm text-sena-text-soft">Análisis de perfiles ocupacionales, oferta de formación y distribución de solicitudes por línea tecnológica.</p>
       </div>
       
       <!-- Tarjetas de estadísticas -->
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 mb-8">
+      <div class="estadisticas-grid-resumen grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 mb-8">
         <!-- Total Perfiles -->
-        <div class="bg-white rounded-xl border border-sena-border p-6 shadow-sm hover:shadow-md transition-shadow">
-          <div class="flex items-center gap-4">
+        <div class="estadisticas-resumen-item bg-white rounded-xl border border-sena-border p-6 shadow-sm hover:shadow-md transition-shadow">
+          <div class="estadisticas-resumen-contenido flex items-center gap-4">
             <div class="w-12 h-12 rounded-xl bg-sena-soft flex items-center justify-center">
               <i data-lucide="users" class="w-6 h-6 text-sena-strong"></i>
             </div>
-            <div class="flex items-center gap-2">
+            <div class="estadisticas-resumen-texto flex items-center gap-2">
               <p id="totalPerfilesCount" class="text-3xl font-bold text-sena-text-main leading-none">156</p>
               <p class="text-sm text-sena-text-muted leading-none">Total Perfiles</p>
             </div>
@@ -58,12 +158,12 @@ include __DIR__ . '../../../includes/header.php';
         </div>
 
         <!-- Líneas Tecnológicas -->
-        <div class="bg-white rounded-xl border border-sena-border p-6 shadow-sm hover:shadow-md transition-shadow">
-          <div class="flex items-center gap-4">
+        <div class="estadisticas-resumen-item bg-white rounded-xl border border-sena-border p-6 shadow-sm hover:shadow-md transition-shadow">
+          <div class="estadisticas-resumen-contenido flex items-center gap-4">
             <div class="w-12 h-12 rounded-xl bg-blue-100 flex items-center justify-center">
               <i data-lucide="grid-3x3" class="w-6 h-6 text-blue-600"></i>
             </div>
-            <div class="flex items-center gap-2">
+            <div class="estadisticas-resumen-texto flex items-center gap-2">
               <p id="lineasCount" class="text-3xl font-bold text-sena-text-main leading-none">12</p>
               <p class="text-sm text-sena-text-muted leading-none">Líneas Tecnológicas</p>
             </div>
@@ -71,12 +171,12 @@ include __DIR__ . '../../../includes/header.php';
         </div>
 
         <!-- Solicitudes Registradas -->
-        <div class="bg-white rounded-xl border border-sena-border p-6 shadow-sm hover:shadow-md transition-shadow">
-          <div class="flex items-center gap-4">
+        <div class="estadisticas-resumen-item bg-white rounded-xl border border-sena-border p-6 shadow-sm hover:shadow-md transition-shadow">
+          <div class="estadisticas-resumen-contenido flex items-center gap-4">
             <div class="w-12 h-12 rounded-xl bg-purple-100 flex items-center justify-center">
               <i data-lucide="clipboard-list" class="w-6 h-6 text-purple-600"></i>
             </div>
-            <div class="flex items-center gap-2">
+            <div class="estadisticas-resumen-texto flex items-center gap-2">
               <p id="solicitudesCount" class="text-3xl font-bold text-sena-text-main leading-none">117</p>
               <p class="text-sm text-sena-text-muted leading-none">Solicitudes Registradas</p>
             </div>
@@ -85,17 +185,17 @@ include __DIR__ . '../../../includes/header.php';
     </div>
 
       <!-- Reporte global -->
-      <div class="flex items-center justify-center gap-3 mb-8">
-        <button id="globalReportBtn" class="flex items-center gap-2 px-4 py-2.5 bg-white border border-sena-border rounded-lg text-[13px] text-sena-text-muted hover:bg-sena-soft hover:border-sena-strong transition-all duration-200 shadow-sm">
+      <div class="estadisticas-global-report-wrap flex items-center justify-center gap-3 mb-8">
+        <button id="globalReportBtn" class="estadisticas-global-report flex items-center gap-2 px-4 py-2.5 bg-white border border-sena-border rounded-lg text-[13px] text-sena-text-muted hover:bg-sena-soft hover:border-sena-strong transition-all duration-200 shadow-sm">
           <i data-lucide="file-text" class="w-4 h-4 text-sena-text-muted"></i>
           Generar reporte global de estadísticas
         </button>
       </div>
 
       <!-- Gráfica de barras -->
-      <div class="bg-white rounded-xl border border-sena-border p-6 mb-8 shadow-sm">
+      <div class="estadisticas-card bg-white rounded-xl border border-sena-border p-6 mb-8 shadow-sm">
         <!-- Título -->
-        <div class="mb-4 grid gap-3 lg:grid-cols-[1fr_auto] lg:items-start">
+        <div class="estadisticas-bar-header mb-4 grid gap-3 lg:grid-cols-[1fr_auto] lg:items-start">
           <div class="min-w-0 flex items-start gap-3">
             <div class="w-9 h-9 rounded-lg bg-slate-100 flex items-center justify-center flex-shrink-0">
               <i data-lucide="bar-chart-3" class="w-5 h-5 text-slate-600"></i>
@@ -106,7 +206,7 @@ include __DIR__ . '../../../includes/header.php';
             </div>
           </div>
           <div class="w-full lg:w-auto lg:justify-self-end">
-            <div class="flex flex-wrap items-end justify-start lg:justify-end gap-2">
+            <div class="estadisticas-filtros-barra flex flex-wrap items-end justify-start lg:justify-end gap-2">
               <div>
                 <label for="monthFilter" class="mb-1 block text-sm font-medium text-sena-text-main">Mes</label>
                 <select id="monthFilter" class="linea-tec-select w-full rounded-lg border border-sena-border pl-3 pr-10 py-2 text-sm text-sena-text-main bg-white focus:border-sena focus:ring-2 focus:ring-sena/20">
@@ -136,8 +236,8 @@ include __DIR__ . '../../../includes/header.php';
               </div>
             </div>
           </div>
-          <div class="flex justify-center lg:col-span-2">
-            <button id="barReportBtn" class="inline-flex items-center gap-2 px-4 py-2.5 bg-white border border-sena-border rounded-lg text-[13px] text-sena-text-muted hover:bg-sena-soft hover:border-sena-strong transition-all duration-200 shadow-sm whitespace-nowrap">
+          <div class="estadisticas-bar-report-wrap flex justify-center lg:col-span-2">
+            <button id="barReportBtn" class="estadisticas-bar-report inline-flex items-center gap-2 px-4 py-2.5 bg-white border border-sena-border rounded-lg text-[13px] text-sena-text-muted hover:bg-sena-soft hover:border-sena-strong transition-all duration-200 shadow-sm whitespace-nowrap">
               <i data-lucide="file-chart-column" class="w-4 h-4 text-sena-text-muted"></i>
               Reporte individual
             </button>
@@ -145,15 +245,15 @@ include __DIR__ . '../../../includes/header.php';
         </div>
 
       <!-- Canvas para Chart.js -->
-      <div class="relative h-[350px]">
+      <div class="estadisticas-bar-chart-wrap relative h-[350px]">
         <canvas id="barChart"></canvas>
       </div>
     </div>
 
       <!-- Gráfica circular -->
-      <div class="bg-white rounded-xl border border-sena-border p-6 mb-8 shadow-sm">
+      <div class="estadisticas-card bg-white rounded-xl border border-sena-border p-6 mb-8 shadow-sm">
         <!-- Título -->
-        <div class="flex flex-col gap-3 mb-6 md:flex-row md:items-start md:justify-between">
+        <div class="estadisticas-pie-header flex flex-col gap-3 mb-6 md:flex-row md:items-start md:justify-between">
           <div class="flex items-start gap-3">
           <div class="w-9 h-9 rounded-lg bg-slate-100 flex items-center justify-center flex-shrink-0">
             <i data-lucide="pie-chart" class="w-5 h-5 text-slate-600"></i>
@@ -163,20 +263,20 @@ include __DIR__ . '../../../includes/header.php';
             <p class="text-[12px] text-sena-text-muted mt-0.5">Muestra cuáles líneas tecnológicas concentran la mayor demanda de perfiles por parte del sector productivo.</p>
           </div>
           </div>
-          <button id="pieReportBtn" class="inline-flex w-auto items-center gap-2 px-3 py-2.5 bg-white border border-sena-border rounded-lg text-[13px] text-sena-text-muted hover:bg-sena-soft hover:border-sena-strong transition-all duration-200 shadow-sm md:ml-4">
+          <button id="pieReportBtn" class="estadisticas-pie-report inline-flex w-auto items-center gap-2 px-3 py-2.5 bg-white border border-sena-border rounded-lg text-[13px] text-sena-text-muted hover:bg-sena-soft hover:border-sena-strong transition-all duration-200 shadow-sm md:ml-4">
             <i data-lucide="file-chart-column" class="w-4 h-4 text-sena-text-muted"></i>
             Reporte individual
           </button>
         </div>
 
-      <div class="flex items-center gap-12">
+      <div class="estadisticas-pie-content flex items-center gap-12">
         <!-- Canvas para gráfico circular -->
-        <div class="w-[220px] h-[220px] flex-shrink-0">
+        <div class="estadisticas-pie-chart-wrap w-[220px] h-[220px] flex-shrink-0">
           <canvas id="pieChart"></canvas>
         </div>
 
         <!-- Leyenda -->
-        <div id="pieLegend" class="flex-1 space-y-3"></div>
+        <div id="pieLegend" class="estadisticas-pie-legend flex-1 space-y-3"></div>
       </div>
     </div>
 

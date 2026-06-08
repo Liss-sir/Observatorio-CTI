@@ -6,7 +6,7 @@
   <!-- Modal panel -->
   <div class="fixed inset-0 overflow-y-auto">
     <div class="flex min-h-full items-center justify-center p-4">
-      <div class="relative w-full max-w-md transform overflow-hidden rounded-xl border border-sena-border bg-white shadow-xl transition-all">
+      <div class="relative w-full max-w-md transform overflow-hidden rounded-xl border border-sena-border bg-white shadow-xl transition-all animate-modalFadeIn">
         
         <!-- Close button -->
         <button class="cerrar-modal-deshabilitar absolute right-4 top-4 text-sena-text-soft hover:text-sena-text-main">

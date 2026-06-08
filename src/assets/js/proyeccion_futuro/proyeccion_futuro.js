@@ -524,7 +524,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const estaDeshabilitada = proyeccion.estado != 1;
         const opacidadClass = estaDeshabilitada ? 'opacity-60' : '';
         
-        div.className = `border border-sena-border rounded-lg bg-white p-4 hover:border-sena/30 hover:shadow-sm transition-all cursor-pointer tarjeta-proyeccion flex flex-col h-full ${opacidadClass}`;
+        div.className = `border border-sena-border rounded-lg bg-white p-4 hover:border-sena/30 hover:shadow-sm transition-all cursor-pointer tarjeta-tecnologia flex flex-col h-full ${opacidadClass}`;
         div.setAttribute('data-id', proyeccion.id_proyeccion);
         div.setAttribute('data-area', proyeccion.id_area);
         div.setAttribute('data-nombre', proyeccion.nombre);
@@ -1082,7 +1082,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     function asignarEventosTarjetas() {
-        document.querySelectorAll('.tarjeta-proyeccion').forEach(tarjeta => {
+        document.querySelectorAll('.tarjeta-tecnologia').forEach(tarjeta => {
             asignarEventosTarjeta(tarjeta);
         });
     }

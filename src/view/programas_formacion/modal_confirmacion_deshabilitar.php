@@ -1,14 +1,11 @@
-<!-- modal_deshabilitar_perfiles.php -->
 <div id="modal-deshabilitado-perfil" class="hidden fixed inset-0 z-50 overflow-y-auto" aria-hidden="true">
-  <!-- Overlay con opacidad suave -->
   <div class="fixed inset-0 bg-black bg-opacity-80 transition-opacity"></div>
 
-  <!-- Modal panel -->
   <div class="fixed inset-0 overflow-y-auto">
     <div class="flex min-h-full items-center justify-center p-4">
       <div class="relative w-full max-w-md transform overflow-hidden rounded-xl border border-sena-border bg-white shadow-2xl transition-all animate-modalFadeIn">
 
-        <!-- Header con icono de éxito -->
+        <!-- Header -->
         <div class="border-b border-sena-border px-6 py-5 flex items-center gap-4">
           <!-- Círculo con el verde SENA -->
           <div class="w-12 h-12 rounded-full bg-[#39A900] bg-opacity-10 flex items-center justify-center flex-shrink-0">
@@ -28,7 +25,7 @@
             El programa de formacion <span class="font-semibold text-sena" id="nombre-perfil-deshabilitado">"Desarrollador Full Stack Senior"</span> ha sido deshabilitado correctamente.
           </p>
           
-          <!-- Contador de segundos (NUEVO) -->
+          <!-- COUNTER -->
           <div class="mt-4 flex items-center gap-2 text-xs text-sena-text-soft">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <circle cx="12" cy="12" r="10"/>
@@ -38,12 +35,12 @@
           </div>
         </div>
 
-        <!-- Barra de progreso con color SENA (cambiada a 6 segundos) -->
+        <!-- progress bar -->
         <div class="h-1.5 bg-gray-100 w-full rounded-b-xl overflow-hidden">
           <div id="progress-bar-deshabilitado" class="h-1 bg-[#39A900] transition-all duration-[3000ms] ease-linear" style="width: 0%;"></div>
         </div>
 
-        <!-- Botón para cerrar manualmente (NUEVO) -->
+        <!-- Manual close button -->
         <div class="absolute top-3 right-3">
           <button class="cerrar-modal-deshabilitado p-1 text-sena-text-soft hover:text-sena-text-main transition-colors">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
