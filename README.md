@@ -51,7 +51,7 @@ La plataforma busca centralizar y estructurar la información del entorno produc
 ### Pasos de instalación
 
 1. Clonar el repositorio:
-  git clone https://github.com/TU-USUARIO/Observatorio-CTI.git
+  git clone https://github.com/Liss-sir/Observatorio-CTI.git
 
 2. Copiar el proyecto en el directorio del servidor local:
    
@@ -69,7 +69,7 @@ La plataforma busca centralizar y estructurar la información del entorno produc
     $host = 'localhost';
     $dbname = 'observatorio_cti';
     $user = 'root';
-    $pass = 'Tu_contraseña_mysql';
+    $pass = 'Tu_contraseña_mysql'; (no siempre requerida, depende de tu configuracion)
 
 5. Iniciar el servidor local.
 
